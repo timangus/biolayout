@@ -2,9 +2,10 @@ package org.BioLayoutExpress3D.GPUComputing.OpenGLContext.LinearAlgebra;
 
 import java.nio.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
 import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -25,8 +26,8 @@ public class LinearAlgebraComputing extends OpenGLContext
     */
     public static final long serialVersionUID = 117222333444555669L;
 
-    private final IntBuffer TEXTURE_ID_X  = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-    private final IntBuffer TEXTURE_ID_YS = (IntBuffer)BufferUtil.newIntBuffer(2).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_X  = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_YS = (IntBuffer)Buffers.newDirectIntBuffer(2).put( new int[] { 0 } ).rewind();
 
     private int writeTexture = 0;
     private int readTexture = 1;
@@ -177,8 +178,8 @@ public class LinearAlgebraComputing extends OpenGLContext
     private void performComputation()
     {
         // attach two textures to FBO
-        gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, ATTACHMENT_POINTS[writeTexture], textureParameters.textureTarget, TEXTURE_ID_YS.get(writeTexture), 0);
-        gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, ATTACHMENT_POINTS[readTexture], textureParameters.textureTarget, TEXTURE_ID_YS.get(readTexture), 0);
+        gl.glFramebufferTexture2D(GL_FRAMEBUFFER, ATTACHMENT_POINTS[writeTexture], textureParameters.textureTarget, TEXTURE_ID_YS.get(writeTexture), 0);
+        gl.glFramebufferTexture2D(GL_FRAMEBUFFER, ATTACHMENT_POINTS[readTexture], textureParameters.textureTarget, TEXTURE_ID_YS.get(readTexture), 0);
 
         // check if that worked
         if ( !checkFrameBufferStatus() )

@@ -12,10 +12,14 @@ import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.j2d.*;
-import com.sun.opengl.util.texture.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.opengl.util.gl2.TileRenderer;
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import javax.media.opengl.awt.GLCanvas;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.Graph.ActionsUI.*;
 import org.BioLayoutExpress3D.Graph.GraphElements.*;
@@ -23,6 +27,7 @@ import org.BioLayoutExpress3D.Graph.Selection.*;
 import org.BioLayoutExpress3D.Models.Lathe3D.*;
 import org.BioLayoutExpress3D.Network.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
+import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
 import static org.BioLayoutExpress3D.Graph.GraphRenderer3DFinalVariables.*;
 import static org.BioLayoutExpress3D.Graph.GraphRendererCommonVariables.*;
 import static org.BioLayoutExpress3D.Graph.GraphRendererCommonFinalVariables.*;
@@ -73,7 +78,7 @@ public class Graph extends GLCanvas implements GraphInterface
     /**
     *  Constant value needed for the OpenGL renderer.
     */
-    public static final IntBuffer OPENGL_INT_VALUE = BufferUtil.newIntBuffer(1);        
+    public static final IntBuffer OPENGL_INT_VALUE = Buffers.newDirectIntBuffer(1);        
     
     /**
     *  Constant value needed for the OpenGL renderer.
@@ -216,7 +221,7 @@ public class Graph extends GLCanvas implements GraphInterface
     */
     public static GLCapabilities getCaps()
     {
-        GLCapabilities caps = new GLCapabilities();
+        GLCapabilities caps = new GLCapabilities(OpenGLContext.getGLProfile());
         caps.setAccumBlueBits(16);
         caps.setAccumGreenBits(16);
         caps.setAccumRedBits(16);        
@@ -284,7 +289,7 @@ public class Graph extends GLCanvas implements GraphInterface
     /**
     *  Prepares the high quality rendering.
     */
-    public void prepareHighQualityRendering(GL gl)
+    public void prepareHighQualityRendering(GL2 gl)
     {
         gl.glEnable(GL_MULTISAMPLE);
 
@@ -303,7 +308,7 @@ public class Graph extends GLCanvas implements GraphInterface
     /**
     *  Prepares the low quality rendering.
     */
-    public void prepareLowQualityRendering(GL gl)
+    public void prepareLowQualityRendering(GL2 gl)
     {
         gl.glDisable(GL_MULTISAMPLE);
 
@@ -348,7 +353,7 @@ public class Graph extends GLCanvas implements GraphInterface
     *  Prepares the animation spectrum texture.
     *  Package access for GraphRenderer2D & GraphRenderer3D.
     */
-    void prepareAnimationSpectrumTexture(GL gl)
+    void prepareAnimationSpectrumTexture(GL2 gl)
     {
         animationSpectrumImage = ( ANIMATION_USER_SPECTRUM_IMAGE_FILE.isEmpty() ) ? ANIMATION_DEFAULT_SPECTRUM_IMAGES.getImage(ANIMATION_DEFAULT_SPECTRUM_IMAGE_FILES[ANIMATION_CHOSEN_DEFAULT_SPECTRUM_IMAGE_FILE_INDEX])
                                                                                   : loadImage(ANIMATION_USER_SPECTRUM_IMAGE_FILE, false);
@@ -360,7 +365,7 @@ public class Graph extends GLCanvas implements GraphInterface
     *  Draws the profile mode.
     *  Package access for GraphRenderer2D & GraphRenderer3D.
     */      
-    void drawProfileMode(GL gl, int width, int height, String profileModeText,  boolean isScreenSaver)
+    void drawProfileMode(GL2 gl, int width, int height, String profileModeText,  boolean isScreenSaver)
     {        
         if (DEBUG_BUILD) println("Graph drawProfileMode()");
 
@@ -423,7 +428,7 @@ public class Graph extends GLCanvas implements GraphInterface
     *  Draws the OS compatible profile mode.
     *  Package access for GraphRenderer2D & GraphRenderer3D.
     */
-    void drawOSCompatibleProfileMode(GL gl)
+    void drawOSCompatibleProfileMode(GL2 gl)
     {
         if (DEBUG_BUILD) println("Graph drawOSCompatibleProfileMode()");
 
@@ -462,7 +467,7 @@ public class Graph extends GLCanvas implements GraphInterface
     *  Draws the animation time block.
     *  Package access for GraphRenderer2D & GraphRenderer3D.
     */
-    void drawAnimationCurrentTick(GL gl, long tick)
+    void drawAnimationCurrentTick(GL2 gl, long tick)
     {
         if (DEBUG_BUILD) println("Graph drawAnimationCurrentTick()");
 
@@ -524,7 +529,7 @@ public class Graph extends GLCanvas implements GraphInterface
     *  Draws the node name background legend.
     *  Package access for GraphRenderer2D & GraphRenderer3D.
     */      
-    void drawNodeNameBackgroundLegend(GL gl, GraphNode node, String nodeName)
+    void drawNodeNameBackgroundLegend(GL2 gl, GraphNode node, String nodeName)
     {
         float[] colorArray = new float[]{ 1.0f, 1.0f, 1.0f, 0.5f }; // default is white color with 0.5 alpha
         if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() == 2)
@@ -693,7 +698,7 @@ public class Graph extends GLCanvas implements GraphInterface
     /**
     *  Loads the texture from a given image in a given texture unit.
     */
-    private Texture loadTextureFromImage(GL gl, Texture texture, BufferedImage image, int textureUnit)
+    private Texture loadTextureFromImage(GL2 gl, Texture texture, BufferedImage image, int textureUnit)
     {
         gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
         disposeTexture(gl, texture);
@@ -763,11 +768,11 @@ public class Graph extends GLCanvas implements GraphInterface
     /**
     *  Disposes the node texture.
     */
-    private void disposeTexture(GL gl, Texture texture)
+    private void disposeTexture(GL2 gl, Texture texture)
     {
         if (texture != null)
         {
-            texture.dispose();
+            texture.dispose(gl);
             texture = null;
         }
     }    
@@ -775,7 +780,7 @@ public class Graph extends GLCanvas implements GraphInterface
     /**
     *  Prepares the node texture.
     */
-    public Texture prepareNodeTexture(GL gl, Texture nodeTexture)
+    public Texture prepareNodeTexture(GL2 gl, Texture nodeTexture)
     {
         BufferedImage image = null;
         boolean flushAtEnd = false;
@@ -816,7 +821,7 @@ public class Graph extends GLCanvas implements GraphInterface
     /**
     *  Chooses the anaglyph glasses color mask.
     */    
-    public void chooseAnaglyphGlassesColorMask(GL gl, boolean leftOrRightEyeMask)
+    public void chooseAnaglyphGlassesColorMask(GL2 gl, boolean leftOrRightEyeMask)
     {
         if ( GRAPH_ANAGLYPH_GLASSES_TYPE.equals(RED_BLUE) )
         {
@@ -1235,7 +1240,7 @@ public class Graph extends GLCanvas implements GraphInterface
     }
     
     /**
-    *  Called by the JOGL glDrawable immediately after the OpenGL context is initialized.
+    *  Called by the JOGL2 glDrawable immediately after the OpenGL context is initialized.
     */
     @Override
     public void init(GLAutoDrawable glDrawable) 
@@ -1263,7 +1268,7 @@ public class Graph extends GLCanvas implements GraphInterface
         if (width <= 0) width = 1;
         if (height <= 0) height = 1;        
         
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
         makeContextCurrent(glDrawable);
 
         GL_VENDOR_STRING = gl.glGetString(GL_VENDOR);
@@ -1311,7 +1316,7 @@ public class Graph extends GLCanvas implements GraphInterface
                 GL_SHADING_LANGUAGE_VERSION_STRING = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);
                 gl.glGetIntegerv(GL_MAX_DRAW_BUFFERS, OPENGL_INT_VALUE);
                 GL_MAX_DRAW_BUFFERS_INTEGER = OPENGL_INT_VALUE.get(0);
-                gl.glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, OPENGL_INT_VALUE);
+                gl.glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, OPENGL_INT_VALUE);
                 GL_MAX_COLOR_ATTACHMENTS_INTEGER = OPENGL_INT_VALUE.get(0);
                 gl.glGetIntegerv(GL_AUX_BUFFERS, OPENGL_INT_VALUE);
                 GL_AUX_BUFFERS_INTEGER = OPENGL_INT_VALUE.get(0);
@@ -1344,14 +1349,16 @@ public class Graph extends GLCanvas implements GraphInterface
                 GL_MAX_TEXTURE_SIZE_INTEGER = OPENGL_INT_VALUE.get(0);
                 if ( USE_GL_EXT_FRAMEBUFFER_OBJECT = gl.isExtensionAvailable("GL_EXT_framebuffer_object") )
                 {
-                    gl.glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE_EXT, OPENGL_INT_VALUE);
+                    gl.glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, OPENGL_INT_VALUE);
                     GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
                 }                
                 // make sure GLSL 330 and above is present: Geometry Shaders need high-end hardware to efficiently execute. Tested to work ok on Nvidia hardware, AMD/ATI ones are creating color artifacts
                 if ( USE_330_SHADERS_PROCESS && GL_IS_NVIDIA && ( USE_GL_ARB_GEOMETRY_SHADER4 = gl.isExtensionAvailable("GL_ARB_geometry_shader4") ) )
                 {
-                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, OPENGL_INT_VALUE);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
+                  //FIXME needs GL3
+/*                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, OPENGL_INT_VALUE);
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);*/
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = 0;
                 }
                 USE_GL_EXT_GPU_SHADER4 = gl.isExtensionAvailable("GL_EXT_gpu_shader4");
                 USE_GL_ARB_GPU_SHADER5 = gl.isExtensionAvailable("GL_ARB_gpu_shader5");
@@ -1423,12 +1430,12 @@ public class Graph extends GLCanvas implements GraphInterface
     }
 
     /**
-    *  Called by the JOGL glDrawable to initiate OpenGL rendering by the client.
+    *  Called by the JOGL2 glDrawable to initiate OpenGL rendering by the client.
     */
     @Override
     public void display(GLAutoDrawable glDrawable) 
     {
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
         
         boolean hasReInitializeRendererMode = false;
         if (reInitializeRendererMode)
@@ -1467,7 +1474,7 @@ public class Graph extends GLCanvas implements GraphInterface
     }
 
     /**
-    *  Called by the JOGL glDrawable during the first repaint after the component has been resized.
+    *  Called by the JOGL2 glDrawable during the first repaint after the component has been resized.
     */
     @Override
     public void reshape(GLAutoDrawable glDrawable, int x, int y, int widthCanvas, int heightCanvas) 
@@ -1478,7 +1485,7 @@ public class Graph extends GLCanvas implements GraphInterface
         width = widthCanvas;
         height = heightCanvas;
 
-        GL gl = glDrawable.getGL();        
+        GL2 gl = glDrawable.getGL().getGL2();        
         if (!GL_IS_AMD_ATI) // recent AMD/ATI cards lack an accumulation buffer
         {        
             if ( USE_MOTION_BLUR_FOR_SCENE.get() )
@@ -1503,15 +1510,6 @@ public class Graph extends GLCanvas implements GraphInterface
         }        
     }
 
-    /**
-    *  Called by the glDrawable when the display mode or the display device associated with the GLAutoDrawable has changed.
-    */
-    @Override
-    public void displayChanged(GLAutoDrawable glDrawable, boolean modeChanged, boolean deviceChanged) 
-    {
-        // currentGraphRenderer.displayChanged(glDrawable, modeChanged, deviceChanged);
-    }    
-    
     /**
     *  KeyPressed keyEvent.
     */
@@ -1972,5 +1970,13 @@ public class Graph extends GLCanvas implements GraphInterface
         listener = null;
     }
     
-    
+    /**
+    *  Clean up resources
+    */
+    @Override
+    public void dispose(GLAutoDrawable glAutoDrawable)
+    {
+      //FIXME this was added during the move to JOGL 2
+      //TODO check if resources need to be freed here
+    }
 }

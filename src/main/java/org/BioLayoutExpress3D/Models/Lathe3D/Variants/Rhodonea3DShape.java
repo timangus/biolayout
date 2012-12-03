@@ -32,7 +32,7 @@ public class Rhodonea3DShape extends Lathe3DShape
     /** 
     *  The Rhodonea3DShape class constructor.
     */        
-    public Rhodonea3DShape(GL gl, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, Lathe3DSettings lathe3DSettings, ModelSettings modelSettings)
+    public Rhodonea3DShape(GL2 gl, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, Lathe3DSettings lathe3DSettings, ModelSettings modelSettings)
     { 
         super(gl, lathe3DShapeAngleIncrement, lathe3DSettings, modelSettings); 
     }    

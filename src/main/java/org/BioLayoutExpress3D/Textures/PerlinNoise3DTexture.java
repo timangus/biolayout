@@ -5,8 +5,9 @@ import java.util.*;
 import java.util.concurrent.*;
 import static java.lang.Math.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.CPUParallelism.*;
 import org.BioLayoutExpress3D.CPUParallelism.Executors.*;
 import org.BioLayoutExpress3D.DataStructures.*;
@@ -59,7 +60,7 @@ public final class PerlinNoise3DTexture
     /**
     *  Texture ID reference.
     */
-    private final IntBuffer TEXTURE_ID = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();    
+    private final IntBuffer TEXTURE_ID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();    
     
     /**
     *  Random reference.
@@ -77,7 +78,7 @@ public final class PerlinNoise3DTexture
     public PerlinNoise3DTexture()
     {
         random = new Random(30757);
-        perlinNoise3DTextureBuffer = BufferUtil.newByteBuffer(4 * NOISE_3D_TEXTURE_SIZE * NOISE_3D_TEXTURE_SIZE * NOISE_3D_TEXTURE_SIZE);
+        perlinNoise3DTextureBuffer = Buffers.newDirectByteBuffer(4 * NOISE_3D_TEXTURE_SIZE * NOISE_3D_TEXTURE_SIZE * NOISE_3D_TEXTURE_SIZE);
     }
 
     /**
@@ -674,7 +675,7 @@ public final class PerlinNoise3DTexture
     /**
     *  Binds the Perlin Noise 3D texture.
     */
-    private void bind(GL gl)
+    private void bind(GL2 gl)
     {
         gl.glBindTexture( GL_TEXTURE_3D, TEXTURE_ID.get(0) );
     }
@@ -683,7 +684,7 @@ public final class PerlinNoise3DTexture
     *  Binds the Perlin Noise 3D texture with a given active texture unit.
     *  Overloaded version of the method above that selects an active texture unit for the Perlin Noise 3D texture.
     */
-    private void bind(GL gl, int textureUnit)
+    private void bind(GL2 gl, int textureUnit)
     {
         gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
         gl.glBindTexture( GL_TEXTURE_3D, TEXTURE_ID.get(0) );
@@ -692,7 +693,7 @@ public final class PerlinNoise3DTexture
     /**
     *  Initializes the Perlin Noise 3D texture.
     */
-    public void initPerlinNoise3DTexture(GL gl)
+    public void initPerlinNoise3DTexture(GL2 gl)
     {
         initPerlinNoise3DTexture(gl, 0);
     }
@@ -701,7 +702,7 @@ public final class PerlinNoise3DTexture
     *  Initializes the Perlin Noise 3D texture with a given active texture unit.
     *  Overloaded version of the method above that selects an active texture unit for the Perlin Noise 3D texture.
     */
-    public void initPerlinNoise3DTexture(GL gl, int textureUnit)
+    public void initPerlinNoise3DTexture(GL2 gl, int textureUnit)
     {
         // allocate the Perlin Noise 3D texture
         gl.glGenTextures(1, TEXTURE_ID);
@@ -725,7 +726,7 @@ public final class PerlinNoise3DTexture
     /**
     *  Disposes all Perlin Noise 3D texture resources.
     */
-    public void disposeAllPerlinNoise3DTextureResources(GL gl)
+    public void disposeAllPerlinNoise3DTextureResources(GL2 gl)
     {
         //  free the Perlin Noise 3D texture
         gl.glDeleteTextures(1, TEXTURE_ID);

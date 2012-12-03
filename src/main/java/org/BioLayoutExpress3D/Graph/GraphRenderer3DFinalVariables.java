@@ -2,7 +2,8 @@ package org.BioLayoutExpress3D.Graph;
 
 import java.awt.*;
 import java.nio.*;
-import com.sun.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.util.*;
 import static javax.media.opengl.GL.*;
 import org.BioLayoutExpress3D.Graph.Camera.*;
 import org.BioLayoutExpress3D.Utils.*;
@@ -27,12 +28,12 @@ public final class GraphRenderer3DFinalVariables
     /**
     *  Variable to be used for OpenGL Vertex Arrays support.
     */
-    // private static final Buffer indices = BufferUtil.newByteBuffer(24).put( new byte[] {  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 } ).rewind();
+    // private static final Buffer indices = Buffers.newDirectByteBuffer(24).put( new byte[] {  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 } ).rewind();
 
     /**
     *  Variable to be used for OpenGL Vertex Arrays support.
     */
-    static final Buffer ALL_VERTEX_3D_COORDS_LAYOUT_CUBE_BUFFER = BufferUtil.newFloatBuffer(3 * 24).put( new float[] {
+    static final Buffer ALL_VERTEX_3D_COORDS_LAYOUT_CUBE_BUFFER = Buffers.newDirectFloatBuffer(3 * 24).put( new float[] {
                                                                                                                        -5.0f, -5.0f, -5.0f,
                                                                                                                        -5.0f,  5.0f, -5.0f,
                                                                                                                        -5.0f,  5.0f, -5.0f,
@@ -64,25 +65,25 @@ public final class GraphRenderer3DFinalVariables
     /**
     *  Variable to be used for OpenGL Vertex Arrays support.
     */
-    static final FloatBuffer ALL_VERTEX_3D_COORDS_SELECT_BOX_BUFFER = BufferUtil.newFloatBuffer(2 * 8);    
+    static final FloatBuffer ALL_VERTEX_3D_COORDS_SELECT_BOX_BUFFER = Buffers.newDirectFloatBuffer(2 * 8);    
     
     // Lighting related variables
-    public static final FloatBuffer NO_LIGHT_SPECULAR_ARRAY = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { 0.0f, 0.0f, 0.0f, 1.0f } ).rewind();
-    public static final FloatBuffer LIGHT_SPECULAR_ARRAY    = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { 1.0f, 1.0f, 1.0f, 1.0f } ).rewind();
-    public static final FloatBuffer LIGHT_AMBIENT_ARRAY     = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { 0.0f, 0.0f, 0.0f, 1.0f } ).rewind();
-    public static final FloatBuffer LIGHT_DIFFUSE_ARRAY     = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { 1.0f, 1.0f, 1.0f, 1.0f } ).rewind();
-    public static final FloatBuffer MODEL_AMBIENT_ARRAY     = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { 0.4f, 0.4f, 0.4f, 1.0f } ).rewind();
+    public static final FloatBuffer NO_LIGHT_SPECULAR_ARRAY = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { 0.0f, 0.0f, 0.0f, 1.0f } ).rewind();
+    public static final FloatBuffer LIGHT_SPECULAR_ARRAY    = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { 1.0f, 1.0f, 1.0f, 1.0f } ).rewind();
+    public static final FloatBuffer LIGHT_AMBIENT_ARRAY     = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { 0.0f, 0.0f, 0.0f, 1.0f } ).rewind();
+    public static final FloatBuffer LIGHT_DIFFUSE_ARRAY     = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { 1.0f, 1.0f, 1.0f, 1.0f } ).rewind();
+    public static final FloatBuffer MODEL_AMBIENT_ARRAY     = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { 0.4f, 0.4f, 0.4f, 1.0f } ).rewind();
     public static final int LOCAL_VIEWER = GL_TRUE; // GL_TRUE = infinite distance from scene, optimization trick for OpenGL lighting calculations
     
     // Fog related variable
-    static final FloatBuffer FOG_COLOR = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { 0.0f, 0.0f, 0.0f, 1.0f } ).rewind(); // Fog Color
+    static final FloatBuffer FOG_COLOR = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { 0.0f, 0.0f, 0.0f, 1.0f } ).rewind(); // Fog Color
 
     // Point Sprite variables
-    static final FloatBuffer POINT_DISTANCE_ATTENUATION_ARRAY = (FloatBuffer)BufferUtil.newFloatBuffer(3).put( new float[] { 1.0f, 0.0f, 0.01f } ).rewind();
-    static final FloatBuffer ALIASED_POINT_SIZE_RANGE = BufferUtil.newFloatBuffer(2);
+    static final FloatBuffer POINT_DISTANCE_ATTENUATION_ARRAY = (FloatBuffer)Buffers.newDirectFloatBuffer(3).put( new float[] { 1.0f, 0.0f, 0.01f } ).rewind();
+    static final FloatBuffer ALIASED_POINT_SIZE_RANGE = Buffers.newDirectFloatBuffer(2);
 
     // Shadow projection matrix
-    static final FloatBuffer SHADOW_PROJECTION_MATRIX = (FloatBuffer)BufferUtil.newFloatBuffer(16).put( new float[] { 1.0f, 0.0f, 0.0f, 0.0f,
+    static final FloatBuffer SHADOW_PROJECTION_MATRIX = (FloatBuffer)Buffers.newDirectFloatBuffer(16).put( new float[] { 1.0f, 0.0f, 0.0f, 0.0f,
                                                                                                                       0.0f, 1.0f, 0.0f, 0.0f,
                                                                                                                       0.0f, 0.0f, 1.0f, 0.0f,
                                                                                                                       0.0f, 0.0f, 0.0f, 0.0f

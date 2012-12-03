@@ -4,8 +4,10 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.texture.*;
+import javax.media.opengl.GL2;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.opengl.util.awt.ImageUtil;
 import org.BioLayoutExpress3D.CPUParallelism.Executors.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.StaticLibraries.ImageProducer.*;
@@ -430,7 +432,7 @@ public class TexturesLoader
     /**
     *  The manual destructor of this class. Has to vbe used to release internal resources of all textures.
     */
-    public void destructor()
+    public void destructor(GL2 gl)
     {
         if (DEBUG_BUILD) println("\nNow disposing all textures:");
 
@@ -441,7 +443,7 @@ public class TexturesLoader
             for (String stringKey : allStringKeys)
             {
                 texture = texturesMap.get(stringKey);
-                texture.dispose();
+                texture.dispose(gl);
                 texture = null;
 
                 if (DEBUG_BUILD) println("Texture " + stringKey + " disposed");

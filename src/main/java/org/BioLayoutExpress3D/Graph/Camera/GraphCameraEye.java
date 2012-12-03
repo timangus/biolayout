@@ -4,7 +4,7 @@ import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
 import org.BioLayoutExpress3D.Utils.*;
 import static java.lang.Math.*;
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import static org.BioLayoutExpress3D.Graph.Camera.GraphCameraEyeTypes.*;
 import static org.BioLayoutExpress3D.Graph.Camera.GraphCameraFinalVariables.*;
 
@@ -116,7 +116,7 @@ public class GraphCameraEye
     /**
     *  Updates the viewport and frustum dimensions.
     */      
-    public final void updateViewPortAndFrustumDimensions(GL gl, int x, int y, int width, int height)  
+    public final void updateViewPortAndFrustumDimensions(GL2 gl, int x, int y, int width, int height)  
     {
         // update viewport coordinates
         viewPortX = x; 
@@ -155,7 +155,7 @@ public class GraphCameraEye
     /**
     *  Sets the perspective projection frustum for this camera.
     */          
-    public final void setProjection(GL gl)
+    public final void setProjection(GL2 gl)
     {
         gl.glMatrixMode(GL_PROJECTION); // set the view attributes
         gl.glLoadIdentity();
@@ -170,7 +170,7 @@ public class GraphCameraEye
     /**
     *  Sets the position for this camera.
     */          
-    public final void setCamera(GL gl, float translateDX, float translateDY, float scaleValue, float xRotate, float yRotate, float zRotate, Point3D focusPoint, boolean invertYAxis)
+    public final void setCamera(GL2 gl, float translateDX, float translateDY, float scaleValue, float xRotate, float yRotate, float zRotate, Point3D focusPoint, boolean invertYAxis)
     {
         gl.glTranslated(-translateDX, translateDY, -scaleValue);
         if (invertYAxis) gl.glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
@@ -183,7 +183,7 @@ public class GraphCameraEye
     /**
     *  Sets the position for this camera (gluLookAt() case).
     */          
-    public final void setCamera(GL gl, GLU glu, double eyeX, double eyeY, double eyeZ, double xLookAt, double yLookAt, double zLookAt)
+    public final void setCamera(GL2 gl, GLU glu, double eyeX, double eyeY, double eyeZ, double xLookAt, double yLookAt, double zLookAt)
     {
         glu.gluLookAt(eyeX, eyeY, eyeZ, xLookAt, yLookAt, zLookAt, 0.0, 1.0, 0.0); // position camera
     }       
@@ -191,7 +191,7 @@ public class GraphCameraEye
     /**
     *  Sets the perspective projection frustum for this camera and its position.
     */          
-    public final void setProjectionAndCamera(GL gl, float translateDX, float translateDY, float scaleValue, float xRotate, float yRotate, float zRotate, Point3D focusPoint, boolean invertYAxis)
+    public final void setProjectionAndCamera(GL2 gl, float translateDX, float translateDY, float scaleValue, float xRotate, float yRotate, float zRotate, Point3D focusPoint, boolean invertYAxis)
     {
         gl.glMatrixMode(GL_PROJECTION); // set the view attributes
         gl.glLoadIdentity();
@@ -232,7 +232,7 @@ public class GraphCameraEye
     /**
     *  Sets the perspective projection frustum for this camera and its position (gluLookAt() case).
     */          
-    public final void setProjectionAndCamera(GL gl, GLU glu, double eyeX, double eyeY, double eyeZ, double xLookAt, double yLookAt, double zLookAt)
+    public final void setProjectionAndCamera(GL2 gl, GLU glu, double eyeX, double eyeY, double eyeZ, double xLookAt, double yLookAt, double zLookAt)
     {        
         gl.glMatrixMode(GL_PROJECTION); // set the view attributes
         gl.glLoadIdentity();

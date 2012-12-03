@@ -194,7 +194,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Constructor of the ExpressionDataComputingShaders class.
     */
-    public ExpressionDataComputingShaders(GL gl, boolean isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo)
+    public ExpressionDataComputingShaders(GL2 gl, boolean isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo)
     {
         loadAndCompileAllShaderPrograms(gl, isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo);
     }
@@ -202,7 +202,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Loads and compiles all the shader programs.
     */
-    private void loadAndCompileAllShaderPrograms(GL gl, boolean isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo)
+    private void loadAndCompileAllShaderPrograms(GL2 gl, boolean isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo)
     {
         String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );
         String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
@@ -236,7 +236,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Uses a particular shader texture SFX program.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, float[] texelCenters, int totalColumns)
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, float[] texelCenters, int totalColumns)
     {
         gl.glUseProgram(SHADER_PROGRAMS[effectIndex]);
         gl.glUniform1i(SHADER_PROGRAM_TEXTURE_XS[effectIndex], textureX);
@@ -258,7 +258,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Uses the R Texture Rectangle shader for the Expression Data computations.
     */
-    public void useRTextureRectangleShaderForExpressionData(GL gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int totalColumns)
+    public void useRTextureRectangleShaderForExpressionData(GL2 gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int totalColumns)
     {
         useProgramAndUniforms(gl, ShaderTypes.EXPRESSIONDATARTEXTURERECTANGLE.ordinal(), textureX, textureY, textureSumX_cache, textureSumX_sumX2_cache, textureSumColumns_X2_cache, textureExpressionMatrix, oneDimensionalExpressionDataConvertedTo2DSquareTextureSize,  oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, null, totalColumns);
     }
@@ -266,7 +266,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Uses the R Texture 2D shader for the Expression Data computations.
     */
-    public void useRTexture2DShaderForExpressionData(GL gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, float[] texelCenters, int totalColumns)
+    public void useRTexture2DShaderForExpressionData(GL2 gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, float[] texelCenters, int totalColumns)
     {
         useProgramAndUniforms(gl, ShaderTypes.EXPRESSIONDATARTEXTURE2D.ordinal(), textureX, textureY, textureSumX_cache, textureSumX_sumX2_cache, textureSumColumns_X2_cache, textureExpressionMatrix, oneDimensionalExpressionDataConvertedTo2DSquareTextureSize,  oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, texelCenters, totalColumns);
     }
@@ -274,7 +274,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Uses the RGBA Texture Rectangle shader for the Expression Data computations.
     */
-    public void useRGBATextureRectangleShaderForExpressionData(GL gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int totalColumns)
+    public void useRGBATextureRectangleShaderForExpressionData(GL2 gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int totalColumns)
     {
         useProgramAndUniforms(gl, ShaderTypes.EXPRESSIONDATARGBATEXTURERECTANGLE.ordinal(), textureX, textureY, textureSumX_cache, textureSumX_sumX2_cache, textureSumColumns_X2_cache, textureExpressionMatrix, oneDimensionalExpressionDataConvertedTo2DSquareTextureSize,  oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, null, totalColumns);
     }
@@ -282,7 +282,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Uses the RGBA Texture 2D shader for the Expression Data computations.
     */
-    public void useRGBATexture2DShaderForExpressionData(GL gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, float[] texelCenters, int totalColumns)
+    public void useRGBATexture2DShaderForExpressionData(GL2 gl, int textureX, int textureY, int textureSumX_cache, int textureSumX_sumX2_cache, int textureSumColumns_X2_cache, int textureExpressionMatrix, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, int twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, float[] texelCenters, int totalColumns)
     {
         useProgramAndUniforms(gl, ShaderTypes.EXPRESSIONDATARGBATEXTURE2D.ordinal(), textureX, textureY, textureSumX_cache, textureSumX_sumX2_cache, textureSumColumns_X2_cache, textureExpressionMatrix, oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, oneDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, oneDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizeModuloDivision, twoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo, texelCenters, totalColumns);
     }
@@ -290,7 +290,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Disables the Expression Data Computing.
     */
-    public void disableExpressionDataComputing(GL gl)
+    public void disableExpressionDataComputing(GL2 gl)
     {
         gl.glUseProgram(0);
     }
@@ -298,7 +298,7 @@ public class ExpressionDataComputingShaders
     /**
     *  Destroys (de-initializes) all shader resources.
     */
-    public void destructor(GL gl)
+    public void destructor(GL2 gl)
     {
         for (int i = 0; i < NUMBER_OF_AVAILABLE_SHADERS; i++)
             ShaderUtils.detachAndDeleteShader(gl, new boolean[]{ false, true }, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i);

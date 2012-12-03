@@ -212,7 +212,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates the relevant lathe3D-based model shape.
     */      
-    public static ModelShape createLathe3DShape(GL gl, Lathe3DSettings lathe3DSettings, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createLathe3DShape(GL2 gl, Lathe3DSettings lathe3DSettings, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         if ( lathe3DSettings.lathe3DShapeType.equals(CIRCLE) )
             return new Lathe3DShape(gl, lathe3DShapeAngleIncrement, lathe3DSettings, modelSettings);
@@ -253,7 +253,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Cylinder' model shape.
     */      
-    public static ModelShape createCylinderShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createCylinderShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {      
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(CYLINDER);
                 
@@ -263,7 +263,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Cone' model shape.
     */      
-    public static ModelShape createConeShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createConeShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(CONE);
         
@@ -273,7 +273,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Trapezoid' model shape.
     */      
-    public static ModelShape createTrapezoidShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createTrapezoidShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(TRAPEZOID);
         
@@ -283,7 +283,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates an 'Egg' model shape.
     */      
-    public static ModelShape createEggShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createEggShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(EGG);
         
@@ -293,7 +293,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Drip' model shape.
     */          
-    public static ModelShape createDripShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createDripShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(DRIP);
         
@@ -303,7 +303,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Cup' model shape.
     */          
-    public static ModelShape createCupShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createCupShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(CUP);
         
@@ -313,7 +313,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Limb' model shape.
     */          
-    public static ModelShape createLimbShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createLimbShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(LIMB);
         
@@ -323,7 +323,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Round R' model shape.
     */          
-    public static ModelShape createRoundRShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createRoundRShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {        
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(ROUND_R);
         
@@ -333,7 +333,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates an 'Oval R' model shape.
     */          
-    public static ModelShape createOvalRShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createOvalRShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(OVAL_R);
         
@@ -343,7 +343,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Flower' model shape.
     */          
-    public static ModelShape createFlowerShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createFlowerShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(FLOWER);
         
@@ -353,7 +353,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Chess Piece' model shape.
     */          
-    public static ModelShape createChessPieceShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createChessPieceShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(CHESS_PIECE);
         
@@ -363,7 +363,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Branch' model shape.
     */          
-    public static ModelShape createBranchShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createBranchShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(BRANCH);
         
@@ -373,7 +373,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Torus' model shape.
     */          
-    public static ModelShape createTorusShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createTorusShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(TORUS);
         
@@ -383,7 +383,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Dump Bell' model shape.
     */          
-    public static ModelShape createDumbBellShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createDumbBellShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(DUMB_BELL);
         
@@ -393,7 +393,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Dome' model shape.
     */          
-    public static ModelShape createDomeShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createDomeShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(DOME);
         
@@ -403,7 +403,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates an 'Armour' model shape.
     */          
-    public static ModelShape createArmourShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createArmourShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {    
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(ARMOUR);
         
@@ -413,7 +413,7 @@ public final class Lathe3DShapesProducer
     /** 
     *  Creates a 'Saucer' model shape.
     */          
-    public static ModelShape createSaucerShape(GL gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
+    public static ModelShape createSaucerShape(GL2 gl, int splineStep, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, ModelSettings modelSettings)
     {    
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(SAUCER);
         

@@ -2,7 +2,7 @@ package org.BioLayoutExpress3D.StaticLibraries;
 
 import java.io.*;
 import java.lang.reflect.*;
-import com.sun.gluegen.runtime.*;
+import com.jogamp.gluegen.runtime.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -635,7 +635,7 @@ public final class LoadNativeLibrary
     */
     public static boolean is64bit()
     {
-        return !CPU.is32Bit();
+        return System.getProperty("sun.arch.data.model") == "64";
     }
 
     /** 

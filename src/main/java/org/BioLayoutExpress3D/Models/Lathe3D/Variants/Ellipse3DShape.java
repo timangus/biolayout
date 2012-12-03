@@ -31,7 +31,7 @@ public class Ellipse3DShape extends Lathe3DShape
     /** 
     *  The Ellipse3DShape class constructor.
     */      
-    public Ellipse3DShape(GL gl, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, Lathe3DSettings lathe3DSettings, ModelSettings modelSettings)
+    public Ellipse3DShape(GL2 gl, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, Lathe3DSettings lathe3DSettings, ModelSettings modelSettings)
     { 
         super(gl, lathe3DShapeAngleIncrement, lathe3DSettings, modelSettings);
     }        

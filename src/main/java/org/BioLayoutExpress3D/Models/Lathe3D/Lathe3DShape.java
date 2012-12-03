@@ -60,7 +60,7 @@ public class Lathe3DShape extends ModelShape
     /** 
     *  The Lathe3DShape class constructor.
     */      
-    public Lathe3DShape(GL gl, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, Lathe3DSettings lathe3DSettings, ModelSettings modelSettings)
+    public Lathe3DShape(GL2 gl, Lathe3DShapeAngleIncrements lathe3DShapeAngleIncrement, Lathe3DSettings lathe3DSettings, ModelSettings modelSettings)
     {
         super(modelSettings);
         
@@ -129,7 +129,7 @@ public class Lathe3DShape extends ModelShape
     *  Turned to 'final' to avoid problems with sub-classes, as it being called in the Lathe3DShape constructor.
     */     
     @Override
-    protected final void performCreateGeometry(GL gl)
+    protected final void performCreateGeometry(GL2 gl)
     {
         vertices = new float[4 * 3 * numberOfSlices * (xsOut.length - 1)];
         if (modelSettings.usingNormals)
@@ -842,7 +842,7 @@ public class Lathe3DShape extends ModelShape
     *  No usage here. 
     */       
     @Override
-    protected void releaseAdditionalResources(){}
+    protected void releaseAdditionalResources(GL2 gl){}
     
     /** 
     *  The Lathe3D shapeName.

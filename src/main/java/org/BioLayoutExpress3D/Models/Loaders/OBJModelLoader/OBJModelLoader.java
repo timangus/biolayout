@@ -6,9 +6,10 @@ import java.nio.*;
 import java.util.*;
 import javax.media.opengl.*;
 import javax.swing.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.texture.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.common.nio.Buffers;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.DataStructures.*;
 import org.BioLayoutExpress3D.Models.*;
 import org.BioLayoutExpress3D.StaticLibraries.ArraysAutoBoxUtils;
@@ -91,7 +92,7 @@ public class OBJModelLoader extends ModelShape
     /** 
     *  The first OBJModelLoader class constructor.
     */ 
-    public OBJModelLoader(GL gl, Component component, String directoryFilename , String modelFilename, ModelRenderingStates modelRenderingState, boolean usingPatches)
+    public OBJModelLoader(GL2 gl, Component component, String directoryFilename , String modelFilename, ModelRenderingStates modelRenderingState, boolean usingPatches)
     {  
         this(gl, component, directoryFilename, modelFilename, 1.0f, modelRenderingState, false, true, usingPatches);
     }    
@@ -99,7 +100,7 @@ public class OBJModelLoader extends ModelShape
     /** 
     *  The second OBJModelLoader class constructor.
     */ 
-    public OBJModelLoader(GL gl, Component component, String directoryFilename , String modelFilename, float maxSize, ModelRenderingStates modelRenderingState, boolean usingPatches)
+    public OBJModelLoader(GL2 gl, Component component, String directoryFilename , String modelFilename, float maxSize, ModelRenderingStates modelRenderingState, boolean usingPatches)
     {  
         this(gl, component, directoryFilename, modelFilename, maxSize, modelRenderingState, false, true, usingPatches);
     }
@@ -107,7 +108,7 @@ public class OBJModelLoader extends ModelShape
     /** 
     *  The third OBJModelLoader class constructor.
     */    
-    public OBJModelLoader(GL gl, Component component, String directoryFilename, String modelFilename, ModelRenderingStates modelRenderingState, boolean loadFromFileOrFromJar, boolean usingPatches)
+    public OBJModelLoader(GL2 gl, Component component, String directoryFilename, String modelFilename, ModelRenderingStates modelRenderingState, boolean loadFromFileOrFromJar, boolean usingPatches)
     {    
         this(gl, component, directoryFilename, modelFilename, 1.0f, modelRenderingState, loadFromFileOrFromJar, true, usingPatches);
     }    
@@ -115,7 +116,7 @@ public class OBJModelLoader extends ModelShape
     /** 
     *  The fourth OBJModelLoader class constructor.
     */    
-    public OBJModelLoader(GL gl, Component component, String directoryFilename, String modelFilename, float maxSize, ModelRenderingStates modelRenderingState, boolean loadFromFileOrFromJar, boolean usingPatches)
+    public OBJModelLoader(GL2 gl, Component component, String directoryFilename, String modelFilename, float maxSize, ModelRenderingStates modelRenderingState, boolean loadFromFileOrFromJar, boolean usingPatches)
     {    
         this(gl, component, directoryFilename, modelFilename, maxSize, modelRenderingState, loadFromFileOrFromJar, true, usingPatches);
     }    
@@ -123,7 +124,7 @@ public class OBJModelLoader extends ModelShape
     /** 
     *  The fifth OBJModelLoader class constructor.
     */    
-    public OBJModelLoader(GL gl, Component component, String directoryFilename, String modelFilename, float maxSize, ModelRenderingStates modelRenderingState, boolean loadFromFileOrFromJar, boolean useMaterialColors, boolean usingPatches)
+    public OBJModelLoader(GL2 gl, Component component, String directoryFilename, String modelFilename, float maxSize, ModelRenderingStates modelRenderingState, boolean loadFromFileOrFromJar, boolean useMaterialColors, boolean usingPatches)
     {    
         super();
         
@@ -369,7 +370,7 @@ public class OBJModelLoader extends ModelShape
     *  Not needed in OBJModelClass, as its geometry is being loaded from an OBJ file. 
     */    
     @Override
-    protected final void performCreateGeometry(GL gl) {}
+    protected final void performCreateGeometry(GL2 gl) {}
 
     /** 
     *  Initializes the data structures for buffer usage.
@@ -423,7 +424,7 @@ public class OBJModelLoader extends ModelShape
             bufferSize = arrayLists.third.size();
             if (modelSettings.usingNormals) bufferSize += arrayLists.second.size();
             if (modelSettings.usingTexCoords) bufferSize += arrayLists.first.size();
-            interleavedDataBuffer = BufferUtil.newFloatBuffer(bufferSize);
+            interleavedDataBuffer = Buffers.newDirectFloatBuffer(bufferSize);
             
             int texCoordIndex = 0;
             for (int vertexIndex = 0; vertexIndex < arrayLists.third.size(); vertexIndex += 3)
@@ -481,13 +482,13 @@ public class OBJModelLoader extends ModelShape
             // fail safe check
             if ( ( arrayLists.first == null || arrayLists.first.isEmpty() ) && ( arrayLists.second == null || arrayLists.second.isEmpty() ) && ( arrayLists.third == null || arrayLists.third.isEmpty() ) ) continue;
             
-            texture2DOr3DCoordsBuffer = BufferUtil.newFloatBuffer( arrayLists.first.size() );
+            texture2DOr3DCoordsBuffer = Buffers.newDirectFloatBuffer( arrayLists.first.size() );
             texture2DOr3DCoordsBuffer.put( ArraysAutoBoxUtils.toPrimitiveListFloat(arrayLists.first) ).rewind();
             
-            normal3DCoordsBuffer = BufferUtil.newFloatBuffer( arrayLists.second.size() );
+            normal3DCoordsBuffer = Buffers.newDirectFloatBuffer( arrayLists.second.size() );
             normal3DCoordsBuffer.put( ArraysAutoBoxUtils.toPrimitiveListFloat(arrayLists.second) ).rewind();
             
-            vertex3DCoordsBuffer = BufferUtil.newFloatBuffer( arrayLists.third.size() );
+            vertex3DCoordsBuffer = Buffers.newDirectFloatBuffer( arrayLists.third.size() );
             vertex3DCoordsBuffer.put( ArraysAutoBoxUtils.toPrimitiveListFloat(arrayLists.third) ).rewind();
             
             allNonInterleavedDataBuffersMap.put( key, Tuples.tuple(texture2DOr3DCoordsBuffer, normal3DCoordsBuffer, vertex3DCoordsBuffer) );
@@ -503,7 +504,7 @@ public class OBJModelLoader extends ModelShape
     *  Initializes the interleaved buffer.
     */       
     @Override
-    protected void initializeInterleavedBuffer(GL gl)
+    protected void initializeInterleavedBuffer(GL2 gl)
     {
         convertToInterleavedBuffer( initializeDataStructuresForBufferUsage() );        
     }
@@ -512,7 +513,7 @@ public class OBJModelLoader extends ModelShape
     *  Initializes the non-interleaved buffers.
     */    
     @Override
-    protected void initializeNonInterleavedBuffers(GL gl)
+    protected void initializeNonInterleavedBuffers(GL2 gl)
     {
         // enable/disable Vertex Array state accordingly
         if (modelSettings.usingTexCoords)
@@ -532,15 +533,15 @@ public class OBJModelLoader extends ModelShape
     *  Initializes the VBO buffers.
     */    
     @Override
-    protected void initializeVBOBuffers(GL gl)
+    protected void initializeVBOBuffers(GL2 gl)
     {
         allNonInterleavedDataBuffersSize = allNonInterleavedDataBuffersMap.size();
         
         if (modelSettings.usingTexCoords)
-            VBOTexCoordsID = (IntBuffer)BufferUtil.newIntBuffer(allNonInterleavedDataBuffersSize).put( new int[] { 0 } ).rewind();
+            VBOTexCoordsID = (IntBuffer)Buffers.newDirectIntBuffer(allNonInterleavedDataBuffersSize).put( new int[] { 0 } ).rewind();
         if (modelSettings.usingNormals)
-            VBONormalsID = (IntBuffer)BufferUtil.newIntBuffer(allNonInterleavedDataBuffersSize).put( new int[] { 0 } ).rewind();
-        VBOVerticesID = (IntBuffer)BufferUtil.newIntBuffer(allNonInterleavedDataBuffersSize).put( new int[] { 0 } ).rewind();  
+            VBONormalsID = (IntBuffer)Buffers.newDirectIntBuffer(allNonInterleavedDataBuffersSize).put( new int[] { 0 } ).rewind();
+        VBOVerticesID = (IntBuffer)Buffers.newDirectIntBuffer(allNonInterleavedDataBuffersSize).put( new int[] { 0 } ).rewind();  
         
         if (modelSettings.usingTexCoords)
             gl.glGenBuffers(allNonInterleavedDataBuffersSize, VBOTexCoordsID);
@@ -557,15 +558,15 @@ public class OBJModelLoader extends ModelShape
             if (modelSettings.usingTexCoords)
             {
                 gl.glBindBuffer( GL_ARRAY_BUFFER, VBOTexCoordsID.get(index) );
-                gl.glBufferData(GL_ARRAY_BUFFER, nonInterleavedDataBuffers.first.capacity() * BufferUtil.SIZEOF_FLOAT, nonInterleavedDataBuffers.first, GL_STATIC_DRAW);
+                gl.glBufferData(GL_ARRAY_BUFFER, nonInterleavedDataBuffers.first.capacity() * Buffers.SIZEOF_FLOAT, nonInterleavedDataBuffers.first, GL_STATIC_DRAW);
             }
             if (modelSettings.usingNormals)
             {
                 gl.glBindBuffer( GL_ARRAY_BUFFER, VBONormalsID.get(index) );
-                gl.glBufferData(GL_ARRAY_BUFFER, nonInterleavedDataBuffers.second.capacity() * BufferUtil.SIZEOF_FLOAT, nonInterleavedDataBuffers.second, GL_STATIC_DRAW);            
+                gl.glBufferData(GL_ARRAY_BUFFER, nonInterleavedDataBuffers.second.capacity() * Buffers.SIZEOF_FLOAT, nonInterleavedDataBuffers.second, GL_STATIC_DRAW);            
             }
             gl.glBindBuffer( GL_ARRAY_BUFFER, VBOVerticesID.get(index) );
-            gl.glBufferData(GL_ARRAY_BUFFER, nonInterleavedDataBuffers.third.capacity() * BufferUtil.SIZEOF_FLOAT, nonInterleavedDataBuffers.third, GL_STATIC_DRAW);  
+            gl.glBufferData(GL_ARRAY_BUFFER, nonInterleavedDataBuffers.third.capacity() * Buffers.SIZEOF_FLOAT, nonInterleavedDataBuffers.third, GL_STATIC_DRAW);  
             
             index++;
         }        
@@ -575,7 +576,7 @@ public class OBJModelLoader extends ModelShape
     *  Draws the model in Immediate Mode.
     */    
     @Override
-    protected void drawModelShapeInImmediateMode(GL gl)
+    protected void drawModelShapeInImmediateMode(GL2 gl)
     {
         if (modelSettings.hasTexture) gl.glEnable(GL_TEXTURE_2D);
         
@@ -596,7 +597,7 @@ public class OBJModelLoader extends ModelShape
                 {
                     texture = materials.drawWithMaterial(gl, faceMaterial, useMaterialColors);
                     if (texture != null)
-                        texture.bind();                    
+                        texture.bind(gl);                    
                 }
             }
             previousPolygonType = faces.drawFaceInImmediateMode(gl, index, (texture != null) ? texture.getMustFlipVertically() : false, previousPolygonType, applyNewMaterial); // draw index face
@@ -614,7 +615,7 @@ public class OBJModelLoader extends ModelShape
     *  Draws the model shape with the interleaved vertex array.
     */     
     @Override
-    protected void drawModelShapeWithInterleavedVertexArray(GL gl)
+    protected void drawModelShapeWithInterleavedVertexArray(GL2 gl)
     {        
         int mode = GL_V3F;
         if      ( modelSettings.usingNormals && !modelSettings.usingTexCoords)
@@ -639,7 +640,7 @@ public class OBJModelLoader extends ModelShape
                 {
                     texture = materials.drawWithMaterial(gl, key.second, useMaterialColors);  
                     if (texture != null)
-                        texture.bind();
+                        texture.bind(gl);
                 }
                 gl.glInterleavedArrays(mode, 0, interleavedDataBuffer.second);                
                 gl.glDrawArrays(key.first, 0, interleavedDataBuffer.first / 3);            
@@ -658,7 +659,7 @@ public class OBJModelLoader extends ModelShape
     *  Draws the model shape with non-interleaved vertex arrays.
     */   
     @Override
-    protected void drawModelShapeWithNonInterleavedVertexArrays(GL gl)
+    protected void drawModelShapeWithNonInterleavedVertexArrays(GL2 gl)
     {        
         if (modelSettings.hasTexture) gl.glEnable(GL_TEXTURE_2D);
         
@@ -675,7 +676,7 @@ public class OBJModelLoader extends ModelShape
                 {
                     texture = materials.drawWithMaterial(gl, key.second, useMaterialColors);  
                     if (texture != null)
-                        texture.bind();
+                        texture.bind(gl);
                 }
 
                 if (modelSettings.usingTexCoords)
@@ -699,7 +700,7 @@ public class OBJModelLoader extends ModelShape
     *  Draws the model shape with VBOs.
     */     
     @Override
-    protected void drawModelShapeWithVBOs(GL gl)
+    protected void drawModelShapeWithVBOs(GL2 gl)
     {        
         if (modelSettings.hasTexture) gl.glEnable(GL_TEXTURE_2D);
         
@@ -717,7 +718,7 @@ public class OBJModelLoader extends ModelShape
                 {
                     texture = materials.drawWithMaterial(gl, key.second, useMaterialColors);  
                     if (texture != null)
-                        texture.bind();
+                        texture.bind(gl);
                 }
 
                 if (modelSettings.usingTexCoords)
@@ -754,7 +755,7 @@ public class OBJModelLoader extends ModelShape
     *  Disposes the interleaved vertex array buffer.    
     */      
     @Override
-    protected void disposeInterleavedBuffer(GL gl)
+    protected void disposeInterleavedBuffer(GL2 gl)
     { 
         if (allInterleavedDataBuffersMap != null)
         {
@@ -774,7 +775,7 @@ public class OBJModelLoader extends ModelShape
     *  Disposes the non-interleaved vertex array buffers.
     */     
     @Override
-    protected void disposeNonInterleavedBuffers(GL gl)
+    protected void disposeNonInterleavedBuffers(GL2 gl)
     {        
         if (   (modelSettings.modelRenderingState.equals(VERTEX_ARRAY) && !USE_INTERLEAVED_ARRAY_COORDS_BUFFER)
              || modelSettings.modelRenderingState.equals(VBO) )
@@ -805,7 +806,7 @@ public class OBJModelLoader extends ModelShape
     *  Disposes the VBOs.
     */
     @Override
-    protected void disposeVBOs(GL gl)
+    protected void disposeVBOs(GL2 gl)
     {               
         if (modelSettings.usingTexCoords)
             gl.glDeleteBuffers(allNonInterleavedDataBuffersSize, VBOTexCoordsID);
@@ -833,7 +834,7 @@ public class OBJModelLoader extends ModelShape
     *  Releases additional resources.
     */    
     @Override
-    protected void releaseAdditionalResources()
+    protected void releaseAdditionalResources(GL2 gl)
     {        
         faceMaterials.clearAllFaceMaterials();
         faceMaterials = null;
@@ -843,7 +844,7 @@ public class OBJModelLoader extends ModelShape
         
         if (materials != null)
         {
-            materials.clearAllMaterials();
+            materials.clearAllMaterials(gl);
             materials = null;
         }
     }    

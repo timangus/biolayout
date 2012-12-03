@@ -3,9 +3,9 @@ package org.BioLayoutExpress3D.Textures;
 import java.awt.image.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.*;
 import static java.lang.Math.*;
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Textures.DrawTextureSFXs.*;
 import static org.BioLayoutExpress3D.Graph.Graph.*;
@@ -938,7 +938,7 @@ public class ShaderTextureSFXs
     /**
     *  The constructor of the ShaderTextureSFXs class.
     */
-    public ShaderTextureSFXs(GL gl, int width, int height, boolean isGLExtFramebufferObjectSupported)
+    public ShaderTextureSFXs(GL2 gl, int width, int height, boolean isGLExtFramebufferObjectSupported)
     {
         this.isGLExtFramebufferObjectSupported = isGLExtFramebufferObjectSupported;
                 
@@ -962,7 +962,7 @@ public class ShaderTextureSFXs
     /**
     *  Initializes the spot circle 2D textures.
     */
-    private void initSpotCircle2DTextures(GL gl, int width, int height, int firstTextureUnit, int secondTextureUnit)
+    private void initSpotCircle2DTextures(GL2 gl, int width, int height, int firstTextureUnit, int secondTextureUnit)
     {
         spotCircleTexture = createTextureFromImage(gl, new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB), spotCircleTexture, firstTextureUnit);
 
@@ -975,10 +975,10 @@ public class ShaderTextureSFXs
     /**
     *  Creates a texture from a given image at a given texture unit. Using package access.
     */
-    static Texture createTextureFromImage(GL gl, BufferedImage image, Texture texture, int textureUnit)
+    static Texture createTextureFromImage(GL2 gl, BufferedImage image, Texture texture, int textureUnit)
     {
         gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
-        if (texture != null) texture.dispose();
+        if (texture != null) texture.dispose(gl);
         texture = TextureProducer.createTextureFromBufferedImageAndDeleteOrigContext(image);
         if (textureUnit != 0)
             gl.glActiveTexture(GL_TEXTURE0);
@@ -989,7 +989,7 @@ public class ShaderTextureSFXs
     /**
     *  Loads and compiles all the shader programs.
     */
-    private void loadAndCompileAllShaderPrograms(GL gl)
+    private void loadAndCompileAllShaderPrograms(GL2 gl)
     {
         String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );        
         String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
@@ -1069,7 +1069,7 @@ public class ShaderTextureSFXs
     /**
     *  Uses a particular shader texture SFX program.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, float effectTimerUpdate, float alpha, boolean oldLCDStyleTransparency, float centerX, float centerY, float radius, float preCalcAlphaValues, boolean withNoiseEffect, int state, boolean interpolation, float size, float px, float py, float power)
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, float effectTimerUpdate, float alpha, boolean oldLCDStyleTransparency, float centerX, float centerY, float radius, float preCalcAlphaValues, boolean withNoiseEffect, int state, boolean interpolation, float size, float px, float py, float power)
     {
         gl.glUseProgram(SHADER_PROGRAMS[effectIndex]);
         gl.glUniform1i(SHADER_PROGRAM_2D_TEXTURES[effectIndex], ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE);
@@ -1114,7 +1114,7 @@ public class ShaderTextureSFXs
     *  Uses a particular shader texture SFX program.
     *  Overloaded version for also passing all the animation uniform values.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, float effectTimerUpdate, float alpha, boolean oldLCDStyleTransparency, float centerX, float centerY, float radius, float preCalcAlphaValues, boolean withNoiseEffect, int state, boolean interpolation, float size,
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, float effectTimerUpdate, float alpha, boolean oldLCDStyleTransparency, float centerX, float centerY, float radius, float preCalcAlphaValues, boolean withNoiseEffect, int state, boolean interpolation, float size,
                                               float px, float py, float power, float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
     {
         useProgramAndUniforms(gl, effectIndex, effectTimerUpdate, alpha, oldLCDStyleTransparency, centerX, centerY, radius, preCalcAlphaValues, withNoiseEffect, state, interpolation, size, px, py, power);
@@ -1171,7 +1171,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the texture displacement effect.    
     */
-    public void textureDisplacementEffectRender(GL gl, Texture textureDisplacementEffectTexture, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
+    public void textureDisplacementEffectRender(GL2 gl, Texture textureDisplacementEffectTexture, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
         textureDisplacementEffectRender(gl, textureDisplacementEffectTexture, x1, y1, x2, y2, 1.0f, oldLCDStyleTransparency);
     }
@@ -1180,7 +1180,7 @@ public class ShaderTextureSFXs
     *  Renders the texture displacement effect.
     *  Overloaded version to include an alpha value.
     */
-    public void textureDisplacementEffectRender(GL gl, Texture textureDisplacementEffectTexture, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
+    public void textureDisplacementEffectRender(GL2 gl, Texture textureDisplacementEffectTexture, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
     {
         useProgramAndUniforms(gl, ShaderTypes.TEXTURE_DISPLACEMENT.ordinal(), textureDisplacementTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, 0.0f, 0.0f, 0.0f, 0.0f);
         drawTexture(gl, textureDisplacementEffectTexture, x1, y1, x2, y2);
@@ -1190,7 +1190,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the texture displacement effect with an added rotozoom effect.    
     */
-    public void textureDisplacementEffectRotoZoomRender(GL gl, Texture textureDisplacementEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
+    public void textureDisplacementEffectRotoZoomRender(GL2 gl, Texture textureDisplacementEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
         textureDisplacementEffectRotoZoomRender(gl, textureDisplacementEffectTexture, x1, y1, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency);
     }
@@ -1199,7 +1199,7 @@ public class ShaderTextureSFXs
     *  Renders the texture displacement effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void textureDisplacementEffectRotoZoomRender(GL gl, Texture textureDisplacementEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
+    public void textureDisplacementEffectRotoZoomRender(GL2 gl, Texture textureDisplacementEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
     {
         useProgramAndUniforms(gl, ShaderTypes.TEXTURE_DISPLACEMENT.ordinal(), textureDisplacementTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, 0.0f, 0.0f, 0.0f, 0.0f);
         drawRotoZoomTexture(gl, textureDisplacementEffectTexture, x1, y1, theta, zoomFactorX, zoomFactorY);
@@ -1226,7 +1226,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the plasma effect.    
     */
-    public void plasmaEffectRender(GL gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
+    public void plasmaEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
         plasmaEffectRender(gl, x1, y1, x2 ,y2, 1.0f, oldLCDStyleTransparency);
     }
@@ -1235,7 +1235,7 @@ public class ShaderTextureSFXs
     *  Renders the plasma effect.
     *  Overloaded version to include an alpha value.
     */
-    public void plasmaEffectRender(GL gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
+    public void plasmaEffectRender(GL2 gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
     {
         useProgramAndUniforms(gl, ShaderTypes.PLASMA.ordinal(), plasmaTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, 0.0f, 0.0f, 0.0f, 0.0f);
         drawQuad(gl, x1, y1, x2, y2);
@@ -1245,7 +1245,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the plasma effect with an added rotozoom effect.    
     */
-    public void plasmaEffectRotoZoomRender(GL gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
+    public void plasmaEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
         plasmaEffectRotoZoomRender(gl, x1, y1, x2 ,y2, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency);
     }
@@ -1254,7 +1254,7 @@ public class ShaderTextureSFXs
     *  Renders the plasma effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void plasmaEffectRotoZoomRender(GL gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
+    public void plasmaEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
     {
         useProgramAndUniforms(gl, ShaderTypes.PLASMA.ordinal(), plasmaTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, 0.0f, 0.0f, 0.0f, 0.0f);
         drawRotoZoomQuad(gl, x1, y1, x2, y2, theta, zoomFactorX, zoomFactorY);
@@ -1334,7 +1334,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the spot circle effect.    
     */
-    public void spotCircleEffectRender(GL gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
+    public void spotCircleEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
         spotCircleEffectRender(gl, x1, y1, x2 ,y2, 1.0f, oldLCDStyleTransparency);
     }
@@ -1343,7 +1343,7 @@ public class ShaderTextureSFXs
     *  Renders the spot circle effect.
     *  Overloaded version to include an alpha value.
     */
-    public void spotCircleEffectRender(GL gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
+    public void spotCircleEffectRender(GL2 gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
     {
         useProgramAndUniforms(gl, ShaderTypes.SPOT_CIRCLE.ordinal(), spotCircleTimerUpdate, alpha, oldLCDStyleTransparency, spotCircleCenterX, spotCircleCenterY, radius, (spotCirclePreCalcAlphaValues != null) ? spotCirclePreCalcAlphaValues[arrayIndexPreCalcAlphaValues] : 1.0f, withNoiseEffect, 0, false, 0.0f, 0.0f, 0.0f, 0.0f);
         if (USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE)
@@ -1356,7 +1356,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the spot circle effect with an added rotozoom effect.    
     */
-    public void spotCircleEffectRotoZoomRender(GL gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
+    public void spotCircleEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
         spotCircleEffectRotoZoomRender(gl, x1, y1, x2, y2, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency);
     }
@@ -1365,7 +1365,7 @@ public class ShaderTextureSFXs
     *  Renders the spot circle effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void spotCircleEffectRotoZoomRender(GL gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
+    public void spotCircleEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
     {
         useProgramAndUniforms(gl, ShaderTypes.SPOT_CIRCLE.ordinal(), spotCircleTimerUpdate, alpha, oldLCDStyleTransparency, spotCircleCenterX, spotCircleCenterY, radius, (spotCirclePreCalcAlphaValues != null) ? spotCirclePreCalcAlphaValues[arrayIndexPreCalcAlphaValues] : 1.0f, withNoiseEffect, 0, false, 0.0f, 0.0f, 0.0f, 0.0f);
         if (USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE)
@@ -1563,7 +1563,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the water effect.
     */
-    public void waterEffectRender(GL gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float specularWaterSize)
+    public void waterEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float specularWaterSize)
     {
         waterEffectRender(gl, x1, y1, x2, y2, 1.0f, oldLCDStyleTransparency, specularWaterSize);
     }
@@ -1572,7 +1572,7 @@ public class ShaderTextureSFXs
     *  Renders the water effect.
     *  Overloaded version to include an alpha value.
     */
-    public void waterEffectRender(GL gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float specularWaterSize)
+    public void waterEffectRender(GL2 gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float specularWaterSize)
     {
         if (updateWaterBufferImageTexture)
         {
@@ -1588,7 +1588,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the water effect with an added rotozoom effect.
     */
-    public void waterEffectRotoZoomRender(GL gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float specularWaterSize)
+    public void waterEffectRotoZoomRender(GL2 gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float specularWaterSize)
     {
         waterEffectRotoZoomRender(gl, x1, y1, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency, specularWaterSize);
     }
@@ -1597,7 +1597,7 @@ public class ShaderTextureSFXs
     *  Renders the water effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void waterEffectRotoZoomRender(GL gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float specularWaterSize)
+    public void waterEffectRotoZoomRender(GL2 gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float specularWaterSize)
     {
         if (updateWaterBufferImageTexture)
         {
@@ -1613,7 +1613,7 @@ public class ShaderTextureSFXs
     /**
     *  Initializes the bump effect.
     */
-    public void bumpEffectInit(GL gl, BufferedImage bumpImage, Texture bumpTexture, boolean bumpRandomEmboss, float bumpTimeStep)
+    public void bumpEffectInit(GL2 gl, BufferedImage bumpImage, Texture bumpTexture, boolean bumpRandomEmboss, float bumpTimeStep)
     {
         this.bumpTexture = bumpTexture;
         this.bumpRandomEmboss = bumpRandomEmboss;
@@ -1674,14 +1674,14 @@ public class ShaderTextureSFXs
                 }
             }
 
-            bumpEmbossTexture = createTextureFromImage(GLU.getCurrentGL(), bumpImage, bumpEmbossTexture, ACTIVE_TEXTURE_UNIT_FOR_BUMP2D_EMBOSS_2D_TEXTURE);
+            bumpEmbossTexture = createTextureFromImage(GLU.getCurrentGL().getGL2(), bumpImage, bumpEmbossTexture, ACTIVE_TEXTURE_UNIT_FOR_BUMP2D_EMBOSS_2D_TEXTURE);
         }
     }
 
     /**
     *  Creates a random emboss texture. Using package access.
     */
-    static Texture createRandomEmbossTexture(GL gl, Texture bumpEmbossTexture, int textureUnit, int bumpWidth, int bumpHeight, int bumpBufferSize, boolean useRandomRGBColors) // package acess
+    static Texture createRandomEmbossTexture(GL2 gl, Texture bumpEmbossTexture, int textureUnit, int bumpWidth, int bumpHeight, int bumpBufferSize, boolean useRandomRGBColors) // package acess
     {
         BufferedImage bumpEmbossBitmap = new BufferedImage(bumpWidth, bumpHeight, BufferedImage.TYPE_INT_ARGB);
         int[] bumpEmbossBitmapBuffer = ( (DataBufferInt)bumpEmbossBitmap.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
@@ -1727,7 +1727,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the bump effect.
     */
-    public void bumpEffectRender(GL gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float specularBumpSize)
+    public void bumpEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float specularBumpSize)
     {
         bumpEffectRender(gl, x1, y1, x2, y2, 1.0f, oldLCDStyleTransparency, specularBumpSize);
     }
@@ -1736,7 +1736,7 @@ public class ShaderTextureSFXs
     *  Renders the bump effect.
     *  Overloaded version to include an alpha value.
     */
-    public void bumpEffectRender(GL gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float specularBumpSize)
+    public void bumpEffectRender(GL2 gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float specularBumpSize)
     {
         useProgramAndUniforms(gl, ShaderTypes.BUMP.ordinal(), bumpTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, (bumpRandomEmboss) ? 0 : 1, false, specularBumpSize, (float)bumpWidth, (float)bumpHeight, 0.0f);
         drawTexture(gl, bumpTexture, x1, y1, x2, y2);
@@ -1746,7 +1746,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the bump effect with an added rotozoom effect.
     */
-    public void bumpEffectRotoZoomRender(GL gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float specularBumpSize)
+    public void bumpEffectRotoZoomRender(GL2 gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float specularBumpSize)
     {
         bumpEffectRotoZoomRender(gl, x1, y1, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency, specularBumpSize);
     }
@@ -1755,7 +1755,7 @@ public class ShaderTextureSFXs
     *  Renders the bump effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void bumpEffectRotoZoomRender(GL gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float specularBumpSize)
+    public void bumpEffectRotoZoomRender(GL2 gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float specularBumpSize)
     {
         useProgramAndUniforms(gl, ShaderTypes.BUMP.ordinal(), bumpTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, (bumpRandomEmboss) ? 0 : 1, false, specularBumpSize, (float)bumpWidth, (float)bumpHeight, 0.0f);
         drawRotoZoomTexture(gl, bumpTexture, x1, y1, theta, zoomFactorX, zoomFactorY);
@@ -1765,7 +1765,7 @@ public class ShaderTextureSFXs
     /**
     *  Initializes the blur effect.
     */
-    public void blurEffectInit(GL gl, int renderToBlurWidth, int renderToBlurHeight, Texture blurEffectTexture, ShaderTextureSFXsBlurStates shaderTextureSFXsBlurState, boolean blurInterpolation)
+    public void blurEffectInit(GL2 gl, int renderToBlurWidth, int renderToBlurHeight, Texture blurEffectTexture, ShaderTextureSFXsBlurStates shaderTextureSFXsBlurState, boolean blurInterpolation)
     {
         this.renderToBlurWidth = renderToBlurWidth;
         this.renderToBlurHeight = renderToBlurHeight;
@@ -1786,7 +1786,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the first pass of blur effect in a FBO texture.
     */
-    private void blurEffectFirstPassRenderToTexture(GL gl, float alpha, boolean oldLCDStyleTransparency, float blurSize)
+    private void blurEffectFirstPassRenderToTexture(GL2 gl, float alpha, boolean oldLCDStyleTransparency, float blurSize)
     {
         renderToBlurTexture.startRender(gl);
         if ( NORMAL_QUALITY_ANTIALIASING.get() || HIGH_QUALITY_ANTIALIASING.get() )
@@ -1804,7 +1804,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the blur effect.
     */
-    public void blurEffectRender(GL gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float blurSize)
+    public void blurEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float blurSize)
     {
         blurEffectRender(gl, x1, y1, x2, y2, 1.0f, oldLCDStyleTransparency, blurSize);
     }
@@ -1813,7 +1813,7 @@ public class ShaderTextureSFXs
     *  Renders the blur effect.
     *  Overloaded version to include an alpha value.
     */
-    public void blurEffectRender(GL gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float blurSize)
+    public void blurEffectRender(GL2 gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float blurSize)
     {
         if (shaderTextureSFXsBlurState.equals(ShaderTextureSFXsBlurStates.FULL_BLUR) && isGLExtFramebufferObjectSupported)
         {
@@ -1835,7 +1835,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the blur effect with an added rotozoom effect.
     */
-    public void blurEffectRotoZoomRender(GL gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float blurSize)
+    public void blurEffectRotoZoomRender(GL2 gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float blurSize)
     {
         blurEffectRotoZoomRender(gl, x1, y1, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency, blurSize);
     }
@@ -1844,7 +1844,7 @@ public class ShaderTextureSFXs
     *  Renders the blur effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void blurEffectRotoZoomRender(GL gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float blurSize)
+    public void blurEffectRotoZoomRender(GL2 gl, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float blurSize)
     {
         if (shaderTextureSFXsBlurState.equals(ShaderTextureSFXsBlurStates.FULL_BLUR) && isGLExtFramebufferObjectSupported)
         {
@@ -1882,7 +1882,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the radial blur effect.
     */
-    public void radialBlurEffectRender(GL gl, Texture radialBlurEffectTexture, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
+    public void radialBlurEffectRender(GL2 gl, Texture radialBlurEffectTexture, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
     {
         radialBlurEffectRender(gl, radialBlurEffectTexture, x1, y1, x2, y2, 1.0f, oldLCDStyleTransparency, radialBlurSize, radialBlurPower);
     }
@@ -1891,7 +1891,7 @@ public class ShaderTextureSFXs
     *  Renders the radial blur effect.
     *  Overloaded version to include an alpha value.
     */
-    public void radialBlurEffectRender(GL gl, Texture radialBlurEffectTexture, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
+    public void radialBlurEffectRender(GL2 gl, Texture radialBlurEffectTexture, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
     {
         useProgramAndUniforms(gl, ShaderTypes.RADIAL_BLUR.ordinal(), radialblurTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, radialBlurSize, 0.0f, 0.0f, radialBlurPower);
         drawTexture(gl, radialBlurEffectTexture, x1, y1, x2, y2);
@@ -1901,7 +1901,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the radial blur effect with an added rotozoom effect.
     */
-    public void radialBlurEffectRotoZoomRender(GL gl, Texture radialBlurEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
+    public void radialBlurEffectRotoZoomRender(GL2 gl, Texture radialBlurEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
     {
         radialBlurEffectRotoZoomRender(gl, radialBlurEffectTexture, x1, y1, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency, radialBlurSize, radialBlurPower);
     }
@@ -1910,7 +1910,7 @@ public class ShaderTextureSFXs
     *  Renders the radial blur effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void radialBlurEffectRotoZoomRender(GL gl, Texture radialBlurEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
+    public void radialBlurEffectRotoZoomRender(GL2 gl, Texture radialBlurEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency, float radialBlurSize, float radialBlurPower)
     {
         useProgramAndUniforms(gl, ShaderTypes.RADIAL_BLUR.ordinal(), radialblurTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, radialBlurSize, 0.0f, 0.0f, radialBlurPower);
         drawRotoZoomTexture(gl, radialBlurEffectTexture, x1, y1, theta, zoomFactorX, zoomFactorY);
@@ -1951,7 +1951,7 @@ public class ShaderTextureSFXs
     /**
     *  Initializes the blob stars 3D scroller effect.
     */
-    public void blobStars3DScrollerEffectInit(GL gl, BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer, float blobStars3DScrollerTimerUpdateStep, int width, int height)
+    public void blobStars3DScrollerEffectInit(GL2 gl, BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer, float blobStars3DScrollerTimerUpdateStep, int width, int height)
     {
         this.blobStars3DScrollerEffectInitializer = blobStars3DScrollerEffectInitializer;
         this.blobStars3DScrollerTimerUpdateStep = blobStars3DScrollerTimerUpdateStep;
@@ -1991,7 +1991,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the first pass of blob 3D stars effect in a FBO texture.
     */
-    private void blob3DStarsPingPongFBOsMotionBlurRenderToTexture(GL gl, float alpha, boolean oldLCDStyleTransparency, double x1, double y1, int x2, int y2)
+    private void blob3DStarsPingPongFBOsMotionBlurRenderToTexture(GL2 gl, float alpha, boolean oldLCDStyleTransparency, double x1, double y1, int x2, int y2)
     {
         // bind first FBO texture
         renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].bind(gl, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE);        
@@ -2015,7 +2015,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the blob stars 3D scroller effect.    
     */
-    public void blobStars3DScrollerEffectRender(GL gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
+    public void blobStars3DScrollerEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
         blobStars3DScrollerEffectRender(gl, x1, y1, x2 ,y2, 1.0f, oldLCDStyleTransparency);
     }
@@ -2024,7 +2024,7 @@ public class ShaderTextureSFXs
     *  Renders the blob stars 3D scroller effect.
     *  Overloaded version to include an alpha value.
     */
-    public void blobStars3DScrollerEffectRender(GL gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
+    public void blobStars3DScrollerEffectRender(GL2 gl, double x1, double y1, int x2, int y2, float alpha, boolean oldLCDStyleTransparency)
     {
         if (blobStars3DScrollerEffectInitializer.useBlobMotionBlur && isGLExtFramebufferObjectSupported)
         {
@@ -2042,7 +2042,7 @@ public class ShaderTextureSFXs
     /**
     *  Renders the blob stars 3D scroller effect with an added rotozoom effect.    
     */
-    public void blobStars3DScrollerEffectRotoZoomRender(GL gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
+    public void blobStars3DScrollerEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
         blobStars3DScrollerEffectRotoZoomRender(gl, x1, y1, x2, y2, theta, zoomFactorX, zoomFactorY, 1.0f, oldLCDStyleTransparency);
     }
@@ -2051,7 +2051,7 @@ public class ShaderTextureSFXs
     *  Renders the blob stars 3D scroller effect with an added rotozoom effect.
     *  Overloaded version to include an alpha value.
     */
-    public void blobStars3DScrollerEffectRotoZoomRender(GL gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
+    public void blobStars3DScrollerEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean oldLCDStyleTransparency)
     {
         if (blobStars3DScrollerEffectInitializer.useBlobMotionBlur && isGLExtFramebufferObjectSupported)
         {
@@ -2069,7 +2069,7 @@ public class ShaderTextureSFXs
     /**
     *  Uses the Shader animation GPU Computing.
     */
-    public void useShaderAnimationGPUComputing(GL gl, boolean oldLCDStyleTransparency, float textureWidth, float textureHeight, float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
+    public void useShaderAnimationGPUComputing(GL2 gl, boolean oldLCDStyleTransparency, float textureWidth, float textureHeight, float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
     {
         useShaderAnimationGPUComputing(gl, 1.0f, oldLCDStyleTransparency, textureWidth, textureHeight, nodeValue, processNextNodeValue, nextNodeValue, animationFrameCount);
     }
@@ -2078,7 +2078,7 @@ public class ShaderTextureSFXs
     *  Uses the Shader animation GPU Computing.
     *  Overloaded version to include an alpha value.
     */
-    public void useShaderAnimationGPUComputing(GL gl, float alpha, boolean oldLCDStyleTransparency, float textureWidth, float textureHeight, float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
+    public void useShaderAnimationGPUComputing(GL2 gl, float alpha, boolean oldLCDStyleTransparency, float textureWidth, float textureHeight, float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
     {
         useProgramAndUniforms(gl, ShaderTypes.ANIMATION.ordinal(), 0.0f, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, 0.0f, 0.0f,
                                   textureWidth, textureHeight, nodeValue, processNextNodeValue, nextNodeValue, animationFrameCount);
@@ -2087,7 +2087,7 @@ public class ShaderTextureSFXs
     /**
     *  Disables the Shader animation GPU Computing.
     */
-    public void disableShaderAnimationGPUComputing(GL gl)
+    public void disableShaderAnimationGPUComputing(GL2 gl)
     {
         gl.glUseProgram(0);
     }
@@ -2095,19 +2095,19 @@ public class ShaderTextureSFXs
     /**
     *  Destroys (de-initializes) all the effect resources.
     */
-    public void destructor(GL gl)
+    public void destructor(GL2 gl)
     {
         for (int i = 0; i < NUMBER_OF_AVAILABLE_SHADERS; i++)
             ShaderUtils.detachAndDeleteShader(gl, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i);
 
         if (USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE)
         {
-            spotCircleTexture.dispose();
-            spotCircleRandomTexture.dispose();
+            spotCircleTexture.dispose(gl);
+            spotCircleRandomTexture.dispose(gl);
         }
         if (waterBufferImage != null) waterBufferImage.flush();
-        if (waterBufferTexture != null) waterBufferTexture.dispose();
-        if (bumpEmbossTexture != null) bumpEmbossTexture.dispose();
+        if (waterBufferTexture != null) waterBufferTexture.dispose(gl);
+        if (bumpEmbossTexture != null) bumpEmbossTexture.dispose(gl);
         if (isGLExtFramebufferObjectSupported && renderToBlurTexture != null) renderToBlurTexture.disposeAllRenderToTextureResources(gl);
         if (isGLExtFramebufferObjectSupported && renderToMotionBlurForBlob3DStarsTextures != null) 
         {

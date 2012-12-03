@@ -2,6 +2,7 @@ package org.BioLayoutExpress3D.Graph.ActiveRendering;
 
 import java.util.concurrent.*;
 import javax.media.opengl.*;
+import javax.media.opengl.awt.GLCanvas;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 

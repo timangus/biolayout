@@ -6,10 +6,14 @@ import java.util.concurrent.*;
 import javax.swing.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.*;
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.nativewindow.awt.*;
 import org.BioLayoutExpress3D.DataStructures.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
-import static javax.media.opengl.GL.*;
+import javax.media.opengl.GLCapabilities;
+import javax.media.nativewindow.*;
+import static javax.media.opengl.GL2.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -33,7 +37,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Frame buffer object attachment points.
     */
-    protected static final int[] ATTACHMENT_POINTS = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_COLOR_ATTACHMENT2_EXT, GL_COLOR_ATTACHMENT3_EXT };
+    protected static final int[] ATTACHMENT_POINTS = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 
     /**
     *  Number of current conntext retries.
@@ -43,7 +47,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Frame buffer object reference.
     */
-    private final IntBuffer FBO = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer FBO = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
 
     /**
     *  Reference for the GLCapabilities class.
@@ -61,9 +65,14 @@ public abstract class OpenGLContext extends Canvas
     private GLContext context = null;     // the rendering context (holds rendering state info)
 
     /**
+    *  Reference for the AWTGraphicsConfiguration class.
+    */
+    private static AWTGraphicsConfiguration awtConfig = null;
+
+    /**
     *  Reference for the GL class.
     */
-    protected GL gl = null;
+    protected GL2 gl = null;
 
     /**
     *  Reference for the GLU class.
@@ -150,11 +159,19 @@ public abstract class OpenGLContext extends Canvas
     }
 
     /**
+    *  Method to return a GLProfile
+    */
+    public static GLProfile getGLProfile()
+    {
+        return GLProfile.getDefault(); //FIXME getDefault?
+    }
+
+    /**
     *  Method to initialize the preferred GLCapabilities for this Canvas.
     */
     private static void initCapabilities()
     {
-        caps = new GLCapabilities();
+        caps = new GLCapabilities(getGLProfile());
         caps.setDoubleBuffered(false);
         caps.setHardwareAccelerated(true);
         caps.setSampleBuffers(false);
@@ -168,12 +185,13 @@ public abstract class OpenGLContext extends Canvas
     {
         initCapabilities();
 
-        AWTGraphicsDevice dev = new AWTGraphicsDevice(null);
-        AWTGraphicsConfiguration awtConfig = (AWTGraphicsConfiguration)GLDrawableFactory.getFactory().chooseGraphicsConfiguration(caps, null, dev);
+        AWTGraphicsScreen screen = (AWTGraphicsScreen)AWTGraphicsScreen.createDefault();
+        awtConfig = (AWTGraphicsConfiguration)GraphicsConfigurationFactory.getFactory(AWTGraphicsDevice.class,
+              caps.getClass()).chooseGraphicsConfiguration(caps, caps, null, screen, VisualIDHolder.VID_UNDEFINED);
 
         GraphicsConfiguration config = null;
         if (awtConfig != null)
-          config = awtConfig.getGraphicsConfiguration();
+          config = awtConfig.getAWTGraphicsConfiguration();
 
         return config;
     }
@@ -183,7 +201,9 @@ public abstract class OpenGLContext extends Canvas
     */
     private void initRenderingSurfaceAndContext()
     {
-        drawable = GLDrawableFactory.getFactory().getGLDrawable(this, caps, null);
+        drawable = GLDrawableFactory.getFactory(getGLProfile()).createGLDrawable(
+            NativeWindowFactory.getNativeWindow(this, awtConfig));
+
         context = drawable.createContext(null);
     }
 
@@ -277,7 +297,7 @@ public abstract class OpenGLContext extends Canvas
             */
             // gl = new TraceGL(context.getGL(), System.out);
 
-            gl = context.getGL();
+            gl = context.getGL().getGL2();
 
             requestFocusInCanvas();
             checkOpenGLSupportAndExtensions();
@@ -430,11 +450,11 @@ public abstract class OpenGLContext extends Canvas
                 USE_330_SHADERS_PROCESS = (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_330_SHADERS);
                 USE_400_SHADERS_PROCESS = USE_NATIVE_CODE && (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_400_SHADERS); // GL4 library is natively connected manually
                 
-                IntBuffer OPENGL_INT_VALUE = BufferUtil.newIntBuffer(1);
+                IntBuffer OPENGL_INT_VALUE = Buffers.newDirectIntBuffer(1);
                 GL_SHADING_LANGUAGE_VERSION_STRING = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);
                 gl.glGetIntegerv(GL_MAX_DRAW_BUFFERS, OPENGL_INT_VALUE);
                 GL_MAX_DRAW_BUFFERS_INTEGER = OPENGL_INT_VALUE.get(0);
-                gl.glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, OPENGL_INT_VALUE);
+                gl.glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, OPENGL_INT_VALUE);
                 GL_MAX_COLOR_ATTACHMENTS_INTEGER = OPENGL_INT_VALUE.get(0);
                 gl.glGetIntegerv(GL_AUX_BUFFERS, OPENGL_INT_VALUE);
                 GL_AUX_BUFFERS_INTEGER = OPENGL_INT_VALUE.get(0);
@@ -467,14 +487,16 @@ public abstract class OpenGLContext extends Canvas
                 GL_MAX_TEXTURE_SIZE_INTEGER = OPENGL_INT_VALUE.get(0);
                 if ( USE_GL_EXT_FRAMEBUFFER_OBJECT = gl.isExtensionAvailable("GL_EXT_framebuffer_object") )
                 {
-                    gl.glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE_EXT, OPENGL_INT_VALUE);
+                    gl.glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, OPENGL_INT_VALUE);
                     GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
                 }
                 // make sure GLSL 330 and above is present: Geometry Shaders need high-end hardware to efficiently execute. Tested to work ok on Nvidia hardware, AMD/ATI ones are creating color artifacts
                 if ( USE_330_SHADERS_PROCESS && GL_IS_NVIDIA && ( USE_GL_ARB_GEOMETRY_SHADER4 = gl.isExtensionAvailable("GL_ARB_geometry_shader4") ) )
                 {
-                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, OPENGL_INT_VALUE);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
+                  //FIXME needs GL3
+/*                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, OPENGL_INT_VALUE);
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);*/
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = 0;
                 }             
                 USE_GL_EXT_GPU_SHADER4 = gl.isExtensionAvailable("GL_EXT_gpu_shader4");
                 USE_GL_ARB_GPU_SHADER5 = gl.isExtensionAvailable("GL_ARB_gpu_shader5");
@@ -540,8 +562,8 @@ public abstract class OpenGLContext extends Canvas
     */
     private void initializeClamping()
     {
-        gl.glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB, GL_FALSE);
-        gl.glClampColorARB(GL_CLAMP_FRAGMENT_COLOR_ARB, GL_FALSE);
+        gl.glClampColor(GL_CLAMP_VERTEX_COLOR, GL_FALSE);
+        gl.glClampColor(GL_CLAMP_FRAGMENT_COLOR, GL_FALSE);
     }
 
     /**
@@ -550,8 +572,8 @@ public abstract class OpenGLContext extends Canvas
     private void initializeFBO()
     {
         //  allocate a framebuffer object
-        gl.glGenFramebuffersEXT(1, FBO);
-        gl.glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, FBO.get(0) );
+        gl.glGenFramebuffers(1, FBO);
+        gl.glBindFramebuffer( GL_FRAMEBUFFER, FBO.get(0) );
     }
 
     /**
@@ -635,10 +657,10 @@ public abstract class OpenGLContext extends Canvas
         {
             deleteOpenGLContextForGPUComputing();
 
-            gl.glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+            gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             // free the framebuffer
-            gl.glDeleteFramebuffersEXT(1, FBO);
+            gl.glDeleteFramebuffers(1, FBO);
 
             checkGLErrors("deleteOpenGLContext()");
         }
@@ -730,11 +752,11 @@ public abstract class OpenGLContext extends Canvas
 
         /*
         // version (b): HW-accelerated on ATI
-        gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, textureParameters.textureTarget, textureID, 0);
-        gl.glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+        gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureParameters.textureTarget, textureID, 0);
+        gl.glDrawBuffer(GL_COLOR_ATTACHMENT0);
         gl.glRasterPos2i(0, 0);
         gl.glDrawPixels(textureSize, textureSize, textureParameters.textureFormat, GL_FLOAT, data);
-        gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, textureParameters.textureTarget, 0, 0);
+        gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureParameters.textureTarget, 0, 0);
         */
     }
 
@@ -801,16 +823,16 @@ public abstract class OpenGLContext extends Canvas
     */
     protected boolean checkFrameBufferStatus()
     {
-        int status = gl.glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        int status = gl.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (status)
         {
-            case GL_FRAMEBUFFER_COMPLETE_EXT:
+            case GL_FRAMEBUFFER_COMPLETE:
 
                 if (DEBUG_BUILD) println("Framebuffer initialization is complete.");
 
                 return true;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, incomplete attachment.");
 
@@ -818,7 +840,7 @@ public abstract class OpenGLContext extends Canvas
 
                 return false;
 
-            case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+            case GL_FRAMEBUFFER_UNSUPPORTED:
 
                 if (DEBUG_BUILD) println("Unsupported framebuffer format.");
 
@@ -826,7 +848,7 @@ public abstract class OpenGLContext extends Canvas
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, missing attachment.");
 
@@ -834,7 +856,7 @@ public abstract class OpenGLContext extends Canvas
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, attached images must have same dimensions.");
 
@@ -842,7 +864,7 @@ public abstract class OpenGLContext extends Canvas
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, attached images must have same format.");
 
@@ -850,7 +872,7 @@ public abstract class OpenGLContext extends Canvas
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, missing draw buffer.");
 
@@ -858,7 +880,7 @@ public abstract class OpenGLContext extends Canvas
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, missing read buffer.");
 

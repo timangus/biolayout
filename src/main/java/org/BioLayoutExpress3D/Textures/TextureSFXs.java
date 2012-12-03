@@ -3,9 +3,10 @@ package org.BioLayoutExpress3D.Textures;
 import java.nio.*;
 import static java.lang.Math.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.texture.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.common.nio.Buffers;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.StaticLibraries.Random.*;
@@ -48,22 +49,22 @@ public class TextureSFXs
     /**
     *  Variable to be used for OpenGL Vertex Arrays support for the displacement effect.
     */
-    // private final IntBuffer INDICES_DISPLACEMENT_BUFFER = BufferUtil.newIntBuffer(4 * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y);
+    // private final IntBuffer INDICES_DISPLACEMENT_BUFFER = Buffers.newDirectIntBuffer(4 * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y);
 
     /**
     *  Variable to be used for OpenGL Vertex Arrays support for the displacement effect.
     */
-    // private final FloatBuffer ALL_TEXTURE_2D_COORDS_DISPLACEMENT_BUFFER = BufferUtil.newFloatBuffer(2 * 4 * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y);
+    // private final FloatBuffer ALL_TEXTURE_2D_COORDS_DISPLACEMENT_BUFFER = Buffers.newDirectFloatBuffer(2 * 4 * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y);
     
     /**
     *  Variable to be used for OpenGL Vertex Arrays support for the displacement effect.
     */         
-    // private final FloatBuffer ALL_VERTEX_2D_COORDS_DISPLACEMENT_BUFFER = BufferUtil.newFloatBuffer(2 * 4 * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y);
+    // private final FloatBuffer ALL_VERTEX_2D_COORDS_DISPLACEMENT_BUFFER = Buffers.newDirectFloatBuffer(2 * 4 * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y);
 
     /**
     *  Variable to be used for OpenGL Vertex Arrays support for the displacement effect.
     */
-    private final FloatBuffer INTERLEAVED_ARRAY_COORDS_DISPLACEMENT_BUFFER = BufferUtil.newFloatBuffer((2 * 2 * 4 + 4) * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y); // add 4 dummy values for GL_T2F_V3F V3F part
+    private final FloatBuffer INTERLEAVED_ARRAY_COORDS_DISPLACEMENT_BUFFER = Buffers.newDirectFloatBuffer((2 * 2 * 4 + 4) * DISPLACEMENT_GRID_X * DISPLACEMENT_GRID_Y); // add 4 dummy values for GL_T2F_V3F V3F part
 
     /** 
     *  Variable used for the texture displacement effect.
@@ -211,7 +212,7 @@ public class TextureSFXs
     *  Renders the texture displacement effect.
     *  Overloaded version to include an alpha value.
     */
-    public void textureDisplacementRender(GL gl, Texture imageTexture, int x1, int y1, int x2, int y2)
+    public void textureDisplacementRender(GL2 gl, Texture imageTexture, int x1, int y1, int x2, int y2)
     {
         textureDisplacementRender(gl, imageTexture, x1, y1, x2, y2, 1.0f);
     }
@@ -219,7 +220,7 @@ public class TextureSFXs
     /** 
     *  Renders the texture displacement effect.
     */             
-    public void textureDisplacementRender(GL gl, Texture imageTexture, int x1, int y1, int x2, int y2, float alpha)
+    public void textureDisplacementRender(GL2 gl, Texture imageTexture, int x1, int y1, int x2, int y2, float alpha)
     {
         TextureCoords tc = imageTexture.getImageTexCoords();
         float tx1 = tc.left();
@@ -277,8 +278,8 @@ public class TextureSFXs
         
         gl.glShadeModel(GL_SMOOTH);
 
-        imageTexture.bind();
-        imageTexture.enable();      
+        imageTexture.bind(gl);
+        imageTexture.enable(gl);      
 
         if (!USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER)
             gl.glBegin(GL_QUADS);
@@ -377,7 +378,7 @@ public class TextureSFXs
         else            
             gl.glEnd();
         
-        imageTexture.disable();
+        imageTexture.disable(gl);
         
         gl.glDisable(GL_ALPHA_TEST);
         gl.glDisable(GL_BLEND);
@@ -417,7 +418,7 @@ public class TextureSFXs
     /** 
     *  Initializes the blob stars 3D scroller effect.
     */
-    public void blobStars3DScrollerEffectInit(GL gl, BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer, boolean useAutoMipmapGeneration)
+    public void blobStars3DScrollerEffectInit(GL2 gl, BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer, boolean useAutoMipmapGeneration)
     {     
         this.blobStars3DScrollerEffectInitializer = blobStars3DScrollerEffectInitializer;
                 
@@ -463,10 +464,10 @@ public class TextureSFXs
     /** 
     *  Initializes the blob star quad display list.
     */    
-    private void initBlobStarDisplayList(GL gl, boolean useAutoMipmapGeneration)
+    private void initBlobStarDisplayList(GL2 gl, boolean useAutoMipmapGeneration)
     {
         // dispose previous blob star texture
-        if (blobStarTexture != null) blobStarTexture.dispose();
+        if (blobStarTexture != null) blobStarTexture.dispose(gl);
         blobStarTexture = DrawTextureSFXs.blobStarTextureGenerate(blobStars3DScrollerEffectInitializer.blobWidth, blobStars3DScrollerEffectInitializer.blobHeight, useAutoMipmapGeneration);
 
         // if ( gl.glIsList(nodeList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
@@ -483,10 +484,10 @@ public class TextureSFXs
         
         if (USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER)
         {
-            // Buffer indices = BufferUtil.newByteBuffer(4).put( new byte[] { 0, 1, 2, 3 } ).rewind();
-            // Buffer allTex2DCoordsBuffer = BufferUtil.newFloatBuffer(8).put( new float[] { tx1, ty2, tx2, ty2, tx2, ty1, tx1, ty1 } ).rewind();
-            // Buffer allVertex2DCoordsBuffer = BufferUtil.newFloatBuffer(8).put( new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f } ).rewind();
-            Buffer interleavedArrayCoordsBuffer = BufferUtil.newFloatBuffer(2 * 8 + 4).put( new float[] { tx1, ty2, -1.0f, -1.0f, 0,
+            // Buffer indices = Buffers.newDirectByteBuffer(4).put( new byte[] { 0, 1, 2, 3 } ).rewind();
+            // Buffer allTex2DCoordsBuffer = Buffers.newDirectFloatBuffer(8).put( new float[] { tx1, ty2, tx2, ty2, tx2, ty1, tx1, ty1 } ).rewind();
+            // Buffer allVertex2DCoordsBuffer = Buffers.newDirectFloatBuffer(8).put( new float[] { -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f } ).rewind();
+            Buffer interleavedArrayCoordsBuffer = Buffers.newDirectFloatBuffer(2 * 8 + 4).put( new float[] { tx1, ty2, -1.0f, -1.0f, 0,
                                                                                                           tx2, ty2,  1.0f, -1.0f, 0,
                                                                                                           tx2, ty1,  1.0f,  1.0f, 0,
                                                                                                           tx1, ty1, -1.0f,  1.0f, 0 } ).rewind();
@@ -558,7 +559,7 @@ public class TextureSFXs
     /** 
     *  Renders all the blob stars as quad textures.
     */
-    public void blobStars3DScrollerRender(GL gl, int width, int height)
+    public void blobStars3DScrollerRender(GL2 gl, int width, int height)
     {  
         blobStars3DScrollerRender(gl, width, height, 1.0f);
     }       
@@ -567,7 +568,7 @@ public class TextureSFXs
     *  Renders all the blob stars as quad textures.
     *  Overloaded version to include a star field aplha value.
     */
-    public void blobStars3DScrollerRender(GL gl, int width, int height, float starFieldAlpha)
+    public void blobStars3DScrollerRender(GL2 gl, int width, int height, float starFieldAlpha)
     {
         float r = blobStars3DScrollerEffectInitializer.blobColor.getRed()   / 255.0f;
         float g = blobStars3DScrollerEffectInitializer.blobColor.getGreen() / 255.0f;
@@ -585,8 +586,8 @@ public class TextureSFXs
         // each pixel in the texture by the current alpha value
         gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);                     
 
-        blobStarTexture.bind();
-        blobStarTexture.enable();
+        blobStarTexture.bind(gl);
+        blobStarTexture.enable(gl);
         
         float sx = 0.0f, sy = 0.0f, sz = 0.0f;
         float starAlpha = 0.0f;
@@ -606,7 +607,7 @@ public class TextureSFXs
             gl.glPopMatrix();
         }
         
-        blobStarTexture.disable();
+        blobStarTexture.disable(gl);
 
         gl.glDisable(GL_ALPHA_TEST);
         gl.glDisable(GL_BLEND);   
@@ -615,12 +616,12 @@ public class TextureSFXs
     /** 
     *  Destroys (de-initializes) the effects.
     */      
-    public void destructor(GL gl)
+    public void destructor(GL2 gl)
     {
         // if ( gl.glIsList(nodeList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
         gl.glDeleteLists(blobStarDisplayList, 1);
         
-        if (blobStarTexture != null) blobStarTexture.dispose();
+        if (blobStarTexture != null) blobStarTexture.dispose(gl);
     } 
     
     

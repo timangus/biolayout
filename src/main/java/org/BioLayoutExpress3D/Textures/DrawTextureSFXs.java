@@ -7,13 +7,17 @@ import java.nio.*;
 import java.util.*;
 import static java.lang.Math.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.j2d.*;
-import com.sun.opengl.util.texture.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
+import com.jogamp.common.nio.Buffers;
+import static javax.media.opengl.GL2.*;
+import com.jogamp.opengl.util.gl2.GLUT;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
 
 /** 
 *   
@@ -30,28 +34,28 @@ public final class DrawTextureSFXs
     /**
     *  Variable to be used for OpenGL Vertex Arrays support.
     */
-    // private static final Buffer INDICES_BUFFER = BufferUtil.newByteBuffer(4).put( new byte[] { 0, 1, 2, 3 } ).rewind();
+    // private static final Buffer INDICES_BUFFER = Buffers.newDirectByteBuffer(4).put( new byte[] { 0, 1, 2, 3 } ).rewind();
 
     /**
     *  Variable to be used for OpenGL Vertex Arrays support.
     */         
-    // private static final DoubleBuffer ALL_TEXTURE_2D_COORDS_BUFFER = BufferUtil.newDoubleBuffer(8);
+    // private static final DoubleBuffer ALL_TEXTURE_2D_COORDS_BUFFER = Buffers.newDirectDoubleBuffer(8);
     
     /**
     *  Variable to be used for OpenGL Vertex Arrays support.
     */         
-    // private static final DoubleBuffer ALL_VERTEX_2D_COORDS_BUFFER = BufferUtil.newDoubleBuffer(8);
+    // private static final DoubleBuffer ALL_VERTEX_2D_COORDS_BUFFER = Buffers.newDirectDoubleBuffer(8);
 
     /**
     *  Variable to be used for OpenGL Vertex Arrays support.
     */
-    private static final FloatBuffer INTERLEAVED_ARRAY_COORDS_BUFFER = BufferUtil.newFloatBuffer(2 * 8 + 4); // add 4 dummy values for GL_T2F_V3F V3F part
+    private static final FloatBuffer INTERLEAVED_ARRAY_COORDS_BUFFER = Buffers.newDirectFloatBuffer(2 * 8 + 4); // add 4 dummy values for GL_T2F_V3F V3F part
 
     /** 
     *  Draws a string 2D texture from a textRenderer. In case of a null supplied textRenderer, the method draws
     *  a white box with red text (?!?) in it.
     */      
-    public static void drawString2DTexture(GL gl, int height, TextRenderer textRenderer, String str, int x, int y)
+    public static void drawString2DTexture(GL2 gl, int height, TextRenderer textRenderer, String str, int x, int y)
     {
         if (textRenderer == null) 
         {
@@ -66,7 +70,7 @@ public final class DrawTextureSFXs
     *  Draws a string 2D texture from a textRenderer. In case of a null supplied textRenderer, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to choose a color.
     */      
-    public static void drawString2DTexture(GL gl, int height, TextRenderer textRenderer, String str, int x, int y, Color color)
+    public static void drawString2DTexture(GL2 gl, int height, TextRenderer textRenderer, String str, int x, int y, Color color)
     {
         if (textRenderer == null) 
         {
@@ -84,7 +88,7 @@ public final class DrawTextureSFXs
     *  Draws a string 2D texture from a textRenderer. In case of a null supplied textRenderer, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to choose a color & an alpha value.
     */     
-    public static void drawString2DTexture(GL gl, int height, TextRenderer textRenderer, String str, int x, int y, Color color, float alpha)
+    public static void drawString2DTexture(GL2 gl, int height, TextRenderer textRenderer, String str, int x, int y, Color color, float alpha)
     {
         if (textRenderer == null) 
         {
@@ -112,7 +116,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws an OpenGL string as bitmap to a specified (x, y) coord.
     */
-    public static void drawOpenGLBitmapString(GL gl, int GLFont, String label, double x, double y)
+    public static void drawOpenGLBitmapString(GL2 gl, int GLFont, String label, double x, double y)
     {
         drawOpenGLBitmapString(gl, GLFont, label, x, y, 1.0f, null);
     }
@@ -120,7 +124,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws an OpenGL string as bitmap to a specified (x, y) coord. Overloaded version to choose an alpha value.
     */
-    public static void drawOpenGLBitmapString(GL gl, int GLFont, String label, double x, double y, float alpha)
+    public static void drawOpenGLBitmapString(GL2 gl, int GLFont, String label, double x, double y, float alpha)
     {
         drawOpenGLBitmapString(gl, GLFont, label, x, y, alpha, null);
     }
@@ -128,7 +132,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws an OpenGL string as bitmap to a specified (x, y) coord. Overloaded version to choose a color.
     */
-    public static void drawOpenGLBitmapString(GL gl, int GLFont, String label, double x, double y, Color color)
+    public static void drawOpenGLBitmapString(GL2 gl, int GLFont, String label, double x, double y, Color color)
     {
         drawOpenGLBitmapString(gl, GLFont, label, x, y, 1.0f, color);
     }
@@ -136,7 +140,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws an OpenGL string as bitmap to a specified (x, y) coord. Overloaded version to choose a color & an alpha value.
     */
-    public static void drawOpenGLBitmapString(GL gl, int GLFont, String label, double x, double y, float alpha, Color color)
+    public static void drawOpenGLBitmapString(GL2 gl, int GLFont, String label, double x, double y, float alpha, Color color)
     {
         if (label == null)
         {
@@ -188,7 +192,7 @@ public final class DrawTextureSFXs
     *  Draws a line from a specified (x1, y1) coord to a specified (x2, y2) coord.
     *  Also optionally accepts to use individual OpenGL commands for line drawing.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2)
     {
         drawLine(gl, x1, y1, x2, y2, 1.0f, null, true);
     }     
@@ -197,7 +201,7 @@ public final class DrawTextureSFXs
     *  Draws a line from a specified (x1, y1) coord to a specified (x2, y2) coord.
     *  Overloaded version to also choose a line width to mix the line.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth)
     {
         drawLine(gl, x1, y1, x2, y2, lineWidth, null, true);
     }      
@@ -206,7 +210,7 @@ public final class DrawTextureSFXs
     *  Draws a line from a specified (x1, y1) coord to a specified (x2, y2) coord.
     *  Overloaded version to also choose a line width & a color to mix the line.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth, Color color)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth, Color color)
     {
         drawLine(gl, x1, y1, x2, y2, lineWidth, color, true);
     }       
@@ -215,7 +219,7 @@ public final class DrawTextureSFXs
     *  Draws a line from a specified (x1, y1) coord to a specified (x2, y2) coord.
     *  Overloaded version to also choose a line width & an alpha value to mix the line.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha)
     {
         drawLine(gl, x1, y1, x2, y2, lineWidth, alpha, null, true);
     }
@@ -224,7 +228,7 @@ public final class DrawTextureSFXs
     *  Draws a line from a specified (x1, y1) coord to a specified (x2, y2) coord.
     *  Overloaded version to also choose a line width, an alpha value & a color to mix the line.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha, Color color)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha, Color color)
     {
         drawLine(gl, x1, y1, x2, y2, lineWidth, alpha, color, true);
     }
@@ -233,7 +237,7 @@ public final class DrawTextureSFXs
     *  Draws a line from a specified (x1, y1) coord to a specified (x2, y2) coord.
     *  Also optionally accepts to use individual OpenGL commands for line drawing.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, boolean useIndividualGLCommands)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, boolean useIndividualGLCommands)
     {
         drawLine(gl, x1, y1, x2, y2, 1.0f, null, useIndividualGLCommands);
     }      
@@ -243,7 +247,7 @@ public final class DrawTextureSFXs
     *  Overloaded version to also choose a line width to mix the line.
     *  Also optionally accepts to use individual OpenGL commands for line drawing.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth, boolean useIndividualGLCommands)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth, boolean useIndividualGLCommands)
     {
         drawLine(gl, x1, y1, x2, y2, lineWidth, null, useIndividualGLCommands);
     }     
@@ -253,7 +257,7 @@ public final class DrawTextureSFXs
     *  Overloaded version to also choose a line width & a color to mix the line.
     *  Also optionally accepts to use individual OpenGL commands for line drawing.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth, Color color, boolean useIndividualGLCommands)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth, Color color, boolean useIndividualGLCommands)
     {
         if (lineWidth <= 0.0f)
         {
@@ -287,7 +291,7 @@ public final class DrawTextureSFXs
     /** 
     *  Draws all lines from a specified ArrayList<Point2D.Double> collection.
     */     
-    public static void drawLines(GL gl, ArrayList<Point2D.Double> allPoints, float lineWidth, Color color, boolean useIndividualGLCommands)
+    public static void drawLines(GL2 gl, ArrayList<Point2D.Double> allPoints, float lineWidth, Color color, boolean useIndividualGLCommands)
     {
         if (lineWidth <= 0.0f)
         {
@@ -327,7 +331,7 @@ public final class DrawTextureSFXs
     *  Overloaded version to also choose a line width & an alpha value to mix the texture.
     *  Also optionally accepts to use individual OpenGL commands for line drawing.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha, boolean useIndividualGLCommands)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha, boolean useIndividualGLCommands)
     {
         drawLine(gl, x1, y1, x2, y2, lineWidth, alpha, null, useIndividualGLCommands);
     }
@@ -337,7 +341,7 @@ public final class DrawTextureSFXs
     *  Overloaded version to also choose a line width, an alpha value & a color to mix the texture.
     *  Also optionally accepts to use individual OpenGL commands for line drawing.
     */     
-    public static void drawLine(GL gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha, Color color, boolean useIndividualGLCommands)
+    public static void drawLine(GL2 gl, double x1, double y1, double x2, double y2, float lineWidth, float alpha, Color color, boolean useIndividualGLCommands)
     {
         if (lineWidth <= 0.0f)
         {
@@ -393,7 +397,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws a quad in a specified point with given width/height.
     */
-    public static void drawQuad(GL gl, double x, double y, double width, double height)
+    public static void drawQuad(GL2 gl, double x, double y, double width, double height)
     {
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
@@ -434,7 +438,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws a quad in a specified point with given width/height with texture coordinates.
     */
-    public static void drawQuadWithTextureCoords(GL gl, double x, double y, double width, double height)
+    public static void drawQuadWithTextureCoords(GL2 gl, double x, double y, double width, double height)
     {
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
@@ -478,7 +482,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y)
     {
         if (image == null)
         {
@@ -493,7 +497,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, float alpha)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, float alpha)
     {
         if (image == null)
         {
@@ -508,7 +512,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, Color color)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, Color color)
     {
         if (image == null)
         {
@@ -523,7 +527,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, float alpha, Color color)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, float alpha, Color color)
     {
         if (image == null)
         {
@@ -538,7 +542,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture in a specified rectangle width/height. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height)
     {
         drawImageTexture(gl, image, x, y, width, height, 1.0f, null, true);
     }   
@@ -547,7 +551,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture in a specified rectangle width/height. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height, float alpha)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height, float alpha)
     {
         drawImageTexture(gl, image, x, y, width, height, alpha, null, true);
     }     
@@ -556,7 +560,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture in a specified rectangle width/height. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height, Color color)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height, Color color)
     {
         drawImageTexture(gl, image, x, y, width, height, 1.0f, color, true);
     }      
@@ -565,7 +569,7 @@ public final class DrawTextureSFXs
     *  Draws a buffered image converted to texture in a specified rectangle width/height. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height, float alpha, Color color)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height, float alpha, Color color)
     {
         if (image == null) 
         {
@@ -574,9 +578,9 @@ public final class DrawTextureSFXs
         }
         else
         {
-            Texture imageTexture = TextureIO.newTexture(image, false);
+            Texture imageTexture = AWTTextureIO.newTexture(OpenGLContext.getGLProfile(), image, false);
             drawTexture(gl, imageTexture, x, y, width, height, alpha, color, true);
-            imageTexture.dispose();
+            imageTexture.dispose(gl);
         }
     }  
     
@@ -585,7 +589,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it.
     *  Also optionally accepts to bind/enable the texture.
     */         
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, boolean bindEnableAndDisableTexture)
     {
         if (image == null)
         {
@@ -601,7 +605,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, float alpha, boolean bindEnableAndDisableTexture)
     {
         if (image == null)
         {
@@ -617,7 +621,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, Color color, boolean bindEnableAndDisableTexture)
     {
         if (image == null)
         {
@@ -633,7 +637,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         if (image == null)
         {
@@ -649,7 +653,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height, boolean bindEnableAndDisableTexture)
     {
         drawImageTexture(gl, image, x, y, width, height, 1.0f, null, bindEnableAndDisableTexture);
     }    
@@ -659,7 +663,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height, float alpha, boolean bindEnableAndDisableTexture)
     {
         drawImageTexture(gl, image, x, y, width, height, alpha, null, bindEnableAndDisableTexture);
     }    
@@ -669,7 +673,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height, Color color, boolean bindEnableAndDisableTexture)
     {
         drawImageTexture(gl, image, x, y, width, height, 1.0f, color, bindEnableAndDisableTexture);
     }        
@@ -679,7 +683,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawImageTexture(GL gl, BufferedImage image, double x, double y, double width, double height, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawImageTexture(GL2 gl, BufferedImage image, double x, double y, double width, double height, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         if (image == null) 
         {
@@ -688,9 +692,9 @@ public final class DrawTextureSFXs
         }
         else
         {
-            Texture imageTexture = TextureIO.newTexture(image, false);           
+            Texture imageTexture = AWTTextureIO.newTexture(OpenGLContext.getGLProfile(), image, false);
             drawTexture(gl, imageTexture, x, y, width, height, alpha, color, bindEnableAndDisableTexture);
-            imageTexture.dispose();
+            imageTexture.dispose(gl);
         }
     }    
 
@@ -698,7 +702,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y)
     {
         if (imageTexture == null)
         {
@@ -713,7 +717,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, float alpha)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, float alpha)
     {
         if (imageTexture == null)
         {
@@ -728,7 +732,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, Color color)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, Color color)
     {
         if (imageTexture == null)
         {
@@ -743,7 +747,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, float alpha, Color color)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, float alpha, Color color)
     {
         if (imageTexture == null)
         {
@@ -758,7 +762,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture in a specified rectangle width/height. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height)
     {
         drawTexture(gl, imageTexture, x, y, width, height, 1.0f, null, true);
     }     
@@ -767,7 +771,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture in a specified rectangle width/height. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height, float alpha)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height, float alpha)
     {
         drawTexture(gl, imageTexture, x, y, width, height, alpha, null, true);
     }      
@@ -776,7 +780,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture in a specified rectangle width/height. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height, Color color)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height, Color color)
     {
         drawTexture(gl, imageTexture, x, y, width, height, 1.0f, color, true);
     }     
@@ -785,7 +789,7 @@ public final class DrawTextureSFXs
     *  Draws an image texture in a specified rectangle width/height. In case of a null supplied image texture, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height, float alpha, Color color)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height, float alpha, Color color)
     {
         drawTexture(gl, imageTexture, x, y, width, height, alpha, color, true);
     }  
@@ -795,7 +799,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, boolean bindEnableAndDisableTexture)
     {
         if (imageTexture == null)
         {
@@ -811,7 +815,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, float alpha, boolean bindEnableAndDisableTexture)
     {
         if (imageTexture == null)
         {
@@ -827,7 +831,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, Color color, boolean bindEnableAndDisableTexture)
     {
         if (imageTexture == null)
         {
@@ -843,7 +847,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         if (imageTexture == null)
         {
@@ -859,7 +863,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height, boolean bindEnableAndDisableTexture)
     {
         drawTexture(gl, imageTexture, x, y, width, height, 1.0f, null, bindEnableAndDisableTexture);
     }    
@@ -869,7 +873,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height, float alpha, boolean bindEnableAndDisableTexture)
     {
         drawTexture(gl, imageTexture, x, y, width, height, alpha, null, bindEnableAndDisableTexture);
     }     
@@ -879,7 +883,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height, Color color, boolean bindEnableAndDisableTexture)
     {
         drawTexture(gl, imageTexture, x, y, width, height, 1.0f, color, bindEnableAndDisableTexture);
     }   
@@ -889,7 +893,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawTexture(GL gl, Texture imageTexture, double x, double y, double width, double height, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawTexture(GL2 gl, Texture imageTexture, double x, double y, double width, double height, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         if (imageTexture == null) 
         {
@@ -940,8 +944,8 @@ public final class DrawTextureSFXs
      
             if (bindEnableAndDisableTexture)
             {
-                imageTexture.bind();
-                imageTexture.enable();
+                imageTexture.bind(gl);
+                imageTexture.enable(gl);
             }
 
             if (USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER)
@@ -973,7 +977,7 @@ public final class DrawTextureSFXs
              }
             
             if (bindEnableAndDisableTexture)
-                imageTexture.disable();
+                imageTexture.disable(gl);
 
             gl.glDisable(GL_ALPHA_TEST);
             gl.glDisable(GL_BLEND);
@@ -983,7 +987,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws a rotated & zoomed quad in a specified point with given width/height.
     */
-    public static void drawRotoZoomQuad(GL gl, double x, double y, double width, double height, double theta, double zoomFactorX, double zoomFactorY)
+    public static void drawRotoZoomQuad(GL2 gl, double x, double y, double width, double height, double theta, double zoomFactorX, double zoomFactorY)
     {
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
@@ -1034,7 +1038,7 @@ public final class DrawTextureSFXs
     /**
     *  Draws a rotated & zoomed quad in a specified point with given width/height.
     */
-    public static void drawRotoZoomQuadWithTextureCoords(GL gl, double x, double y, double width, double height, double theta, double zoomFactorX, double zoomFactorY)
+    public static void drawRotoZoomQuadWithTextureCoords(GL2 gl, double x, double y, double width, double height, double theta, double zoomFactorX, double zoomFactorY)
     {
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
@@ -1088,7 +1092,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, 1.0f, null, true);
     }     
@@ -1097,7 +1101,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose alpha.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, float alpha)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, float alpha)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, alpha, null, true);
     }   
@@ -1106,7 +1110,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, Color color)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, Color color)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, 1.0f, color, true);
     }        
@@ -1115,7 +1119,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, float alpha, Color color)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, float alpha, Color color)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, alpha, color, true);
     }        
@@ -1124,7 +1128,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, null, true);
     }
@@ -1133,7 +1137,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, zoomFactorX, zoomFactorY, alpha, null, true);
     }   
@@ -1142,7 +1146,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & a color to mix the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, color, true);
     }      
@@ -1151,7 +1155,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed buffered image converted to texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value & a color to mix the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, zoomFactorX, zoomFactorY, alpha, color, true);
     }
@@ -1161,7 +1165,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, 1.0f, null, bindEnableAndDisableTexture);
     }    
@@ -1171,7 +1175,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose alpha.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, float alpha, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, alpha, null, bindEnableAndDisableTexture);
     }    
@@ -1181,7 +1185,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.     
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, Color color, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, 1.0f, color, bindEnableAndDisableTexture);
     }        
@@ -1191,7 +1195,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, 1.0, 1.0, alpha, color, bindEnableAndDisableTexture);
     }          
@@ -1201,7 +1205,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, null, bindEnableAndDisableTexture);
     }
@@ -1211,7 +1215,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, zoomFactorX, zoomFactorY, alpha, null, bindEnableAndDisableTexture);
     }     
@@ -1221,7 +1225,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomImageTexture(gl, image, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, color, bindEnableAndDisableTexture);
     }        
@@ -1231,7 +1235,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomImageTexture(GL gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomImageTexture(GL2 gl, BufferedImage image, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         if (image == null) 
         {
@@ -1240,9 +1244,9 @@ public final class DrawTextureSFXs
         }
         else
         {
-            Texture imageTexture = TextureIO.newTexture(image, false);           
+            Texture imageTexture = AWTTextureIO.newTexture(OpenGLContext.getGLProfile(), image, false);
             drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, alpha, color, bindEnableAndDisableTexture);
-            imageTexture.dispose();
+            imageTexture.dispose(gl);
         }
     }
     
@@ -1250,7 +1254,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, 1.0f, null, true);
     }      
@@ -1259,7 +1263,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose alpha.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, float alpha)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, float alpha)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, alpha, null, true);
     }       
@@ -1268,7 +1272,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, Color color)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, Color color)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, 1.0f, color, true);
     }          
@@ -1277,7 +1281,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, float alpha, Color color)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, float alpha, Color color)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, alpha, color, true);
     }   
@@ -1286,7 +1290,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, null, true);
     }
@@ -1295,7 +1299,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, alpha, null, true);
     }    
@@ -1304,7 +1308,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & a color to mix the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, color, true);
     }   
@@ -1313,7 +1317,7 @@ public final class DrawTextureSFXs
     *  Draws a rotated & zoomed image texture. In case of a null supplied image, the method draws
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value & a color to mix the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, alpha, color, true);
     }
@@ -1323,7 +1327,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, 1.0f, null, bindEnableAndDisableTexture);
     }    
@@ -1333,7 +1337,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose alpha.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, float alpha, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, alpha, null, bindEnableAndDisableTexture);
     }       
@@ -1343,7 +1347,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, Color color, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, 1.0f, color, bindEnableAndDisableTexture);
     }          
@@ -1353,7 +1357,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, 1.0, 1.0, alpha, color, bindEnableAndDisableTexture);
     }     
@@ -1363,7 +1367,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, null, bindEnableAndDisableTexture);
     }
@@ -1373,7 +1377,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, alpha, null, bindEnableAndDisableTexture);
     }     
@@ -1383,7 +1387,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, Color color, boolean bindEnableAndDisableTexture)
     {
         drawRotoZoomTexture(gl, imageTexture, x, y, theta, zoomFactorX, zoomFactorY, 1.0f, color, bindEnableAndDisableTexture);
     }    
@@ -1393,7 +1397,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Overloaded version to also choose horizontal & vertical zoom factors & an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */     
-    public static void drawRotoZoomTexture(GL gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color, boolean bindEnableAndDisableTexture)
+    public static void drawRotoZoomTexture(GL2 gl, Texture imageTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color, boolean bindEnableAndDisableTexture)
     {
         if (imageTexture == null)
         {
@@ -1444,8 +1448,8 @@ public final class DrawTextureSFXs
 
             if (bindEnableAndDisableTexture)
             {
-                imageTexture.bind();
-                imageTexture.enable();
+                imageTexture.bind(gl);
+                imageTexture.enable(gl);
             }
             
             int width = imageTexture.getImageWidth();
@@ -1490,7 +1494,7 @@ public final class DrawTextureSFXs
             gl.glPopMatrix();
            
             if (bindEnableAndDisableTexture) 
-                imageTexture.disable();
+                imageTexture.disable(gl);
             
             gl.glDisable(GL_ALPHA_TEST);
             gl.glDisable(GL_BLEND);
@@ -1502,7 +1506,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Version to also choose an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */
-    public static void drawRenderToTexture(GL gl, RenderToTexture renderToTexture, double x, double y, double width, double height, float alpha, Color color, boolean bindEnableAndDisableRenderToTexture, int textureUnit)
+    public static void drawRenderToTexture(GL2 gl, RenderToTexture renderToTexture, double x, double y, double width, double height, float alpha, Color color, boolean bindEnableAndDisableRenderToTexture, int textureUnit)
     {
         if (renderToTexture == null)
         {
@@ -1595,7 +1599,7 @@ public final class DrawTextureSFXs
     *  a white box with red text (?!?) in it. Version to also choose horizontal & vertical zoom factors & an alpha value & a color to mix the texture.
     *  Also optionally accepts to bind/enable the texture.
     */
-    public static void drawRotoZoomRenderToTexture(GL gl, RenderToTexture renderToTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color, boolean bindEnableAndDisableRenderToTexture, int textureUnit)
+    public static void drawRotoZoomRenderToTexture(GL2 gl, RenderToTexture renderToTexture, double x, double y, double theta, double zoomFactorX, double zoomFactorY, float alpha, Color color, boolean bindEnableAndDisableRenderToTexture, int textureUnit)
     {
         if (renderToTexture == null)
         {
@@ -1753,7 +1757,7 @@ public final class DrawTextureSFXs
     /** 
     *  This method draws a white box with red text (?!?) in it (used for when supplying null image textures).
     */    
-    public static void drawNullPointerTexture(GL gl, double x, double y)
+    public static void drawNullPointerTexture(GL2 gl, double x, double y)
     {
         drawTexture(gl, TextureProducer.getNullPointerTexture(), x, y, 40, 40);
     }

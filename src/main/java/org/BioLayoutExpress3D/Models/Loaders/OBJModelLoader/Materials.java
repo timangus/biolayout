@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.*;
 import javax.media.opengl.*;
 import javax.swing.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.*;
 import static org.BioLayoutExpress3D.Models.Loaders.OBJModelLoader.OBJModelLoader.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
@@ -163,7 +163,7 @@ public class Materials
     * 
     *  Returns the texture if needed to texturise the material.
     */    
-    public Texture drawWithMaterial(GL gl, String faceMaterial, boolean useMaterialColors)
+    public Texture drawWithMaterial(GL2 gl, String faceMaterial, boolean useMaterialColors)
     {
         Texture texture = null;
         if ( !faceMaterial.equals(drawnMaterialName) ) // is faceMaterial is a new material?
@@ -174,7 +174,7 @@ public class Materials
             // set up new rendering material
             texture = getTexture(drawnMaterialName);
             if (texture != null) // switch on the material's texture
-                switchOnTexture(texture);
+                switchOnTexture(gl, texture);
             else if (useMaterialColors) // use the material's colours
                 setMaterialColors(gl, drawnMaterialName);
         }
@@ -195,10 +195,10 @@ public class Materials
     /* 
     *  Switches the texturing on (binds the texture). 
     */      
-    private void switchOnTexture(Texture texture)
+    private void switchOnTexture(GL2 gl, Texture texture)
     {
         usingTexture = true;
-        texture.bind();
+        texture.bind(gl);
     }
 
     /* 
@@ -222,7 +222,7 @@ public class Materials
     /* 
     *  Starts rendering using the colours specified by the named material.
     */          
-    private void setMaterialColors(GL gl, String materialName)    
+    private void setMaterialColors(GL2 gl, String materialName)    
     {
         Material material = materialsMap.get(materialName);
         if (material != null)
@@ -244,23 +244,23 @@ public class Materials
     /* 
     *  Disposes all material textures.
     */                  
-    private void disposeAllMaterialTextures()
+    private void disposeAllMaterialTextures(GL2 gl)
     {
         Texture materialTexture = null;
         for ( Material material : materialsMap.values() )
         {
             materialTexture = material.getTexture();
             if (materialTexture != null)
-                materialTexture.dispose();
+                materialTexture.dispose(gl);
         }
     }
 
     /** 
     *  Clears all materials.
     */       
-    public void clearAllMaterials()
+    public void clearAllMaterials(GL2 gl)
     {
-        disposeAllMaterialTextures();
+        disposeAllMaterialTextures(gl);
         materialsMap.clear();
     }
     

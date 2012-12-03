@@ -48,7 +48,7 @@ public class SuperQuadricShape extends ModelShape
     /** 
     *  The SuperQuadricShape class constructor.
     */      
-    public SuperQuadricShape(GL gl, SuperQuadricSettings superQuadricSettings, ModelSettings modelSettings)
+    public SuperQuadricShape(GL2 gl, SuperQuadricSettings superQuadricSettings, ModelSettings modelSettings)
     {
         super(modelSettings);
         this.superQuadricSettings = superQuadricSettings;
@@ -92,7 +92,7 @@ public class SuperQuadricShape extends ModelShape
     *  Turned to 'final' to avoid problems with sub-classes, as it being called in the SuperQuadricShape constructor.
     */     
     @Override
-    protected final void performCreateGeometry(GL gl)
+    protected final void performCreateGeometry(GL2 gl)
     {
         vertices = new float[6 * 3 * superQuadricSettings.uSegments * superQuadricSettings.vSegments]; // 6 -> 2 * 3 triangles vertices, 3 for 3D vertex points
         if (modelSettings.usingNormals)
@@ -530,7 +530,7 @@ public class SuperQuadricShape extends ModelShape
     *  Releases all native C++ resources.
     */       
     @Override
-    protected void releaseAdditionalResources()
+    protected void releaseAdditionalResources(GL2 gl)
     {
         if (USE_NATIVE_CODE && USE_OOP_NATIVE_CODE) releaseNativeResources();
     }    

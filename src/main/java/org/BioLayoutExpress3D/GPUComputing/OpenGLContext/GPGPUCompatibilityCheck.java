@@ -52,7 +52,7 @@ public final class GPGPUCompatibilityCheck
     /**
     *  Checks for problem domain size compatibility, FBO, float_texture & TextureRectangle (if used in the textureParameters) availability in that order.
     */
-    public Tuple2<Boolean, String> isGPUCompatible(GL gl)
+    public Tuple2<Boolean, String> isGPUCompatible(GL2 gl)
     {
         String message = "";
         if ( ( (long)problemDomainX * (long)problemDomainY ) > ( (textureParameters.textureFormat == GL_RGBA)

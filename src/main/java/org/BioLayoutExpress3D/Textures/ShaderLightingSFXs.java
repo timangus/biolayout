@@ -2,7 +2,7 @@ package org.BioLayoutExpress3D.Textures;
 
 import java.awt.image.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.*;
 import static javax.media.opengl.GL.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Textures.ShaderTextureSFXs.*;
@@ -678,7 +678,7 @@ public class ShaderLightingSFXs
     /**
     *  The first constructor of the ShaderLightingSFXs class.
     */
-    public ShaderLightingSFXs(GL gl)
+    public ShaderLightingSFXs(GL2 gl)
     {
         this(gl, 0.01f, false, false, true);
     }
@@ -686,7 +686,7 @@ public class ShaderLightingSFXs
     /**
     *  The second constructor of the ShaderLightingSFXs class.
     */
-    public ShaderLightingSFXs(GL gl, float timerUpdateStep)
+    public ShaderLightingSFXs(GL2 gl, float timerUpdateStep)
     {
         this(gl, timerUpdateStep, false, false, true);
     }    
@@ -694,7 +694,7 @@ public class ShaderLightingSFXs
     /**
     *  The third constructor of the ShaderLightingSFXs class.
     */
-    public ShaderLightingSFXs(GL gl, boolean useGeometryShaders)
+    public ShaderLightingSFXs(GL2 gl, boolean useGeometryShaders)
     {
         this(gl, 0.01f, useGeometryShaders, false, true);
     }       
@@ -702,7 +702,7 @@ public class ShaderLightingSFXs
     /**
     *  The fourth constructor of the ShaderLightingSFXs class.
     */
-    public ShaderLightingSFXs(GL gl, boolean useGeometryShaders, boolean applyNormalsGeometry)
+    public ShaderLightingSFXs(GL2 gl, boolean useGeometryShaders, boolean applyNormalsGeometry)
     {
         this(gl, 0.01f, useGeometryShaders, applyNormalsGeometry, true);
     }     
@@ -710,7 +710,7 @@ public class ShaderLightingSFXs
     /**
     *  The fifth constructor of the ShaderLightingSFXs class.
     */
-    public ShaderLightingSFXs(GL gl, float timerUpdateStep, boolean useGeometryShaders, boolean applyNormalsGeometry)
+    public ShaderLightingSFXs(GL2 gl, float timerUpdateStep, boolean useGeometryShaders, boolean applyNormalsGeometry)
     {
         this(gl, timerUpdateStep, useGeometryShaders, applyNormalsGeometry, true);
     }
@@ -718,7 +718,7 @@ public class ShaderLightingSFXs
     /**
     *  The sixth constructor of the ShaderLightingSFXs class. Package access only.
     */
-    ShaderLightingSFXs(GL gl, float timerUpdateStep, boolean useGeometryShaders, boolean applyNormalsGeometry, boolean useInitMethods)
+    ShaderLightingSFXs(GL2 gl, float timerUpdateStep, boolean useGeometryShaders, boolean applyNormalsGeometry, boolean useInitMethods)
     {
         this.timerUpdateStep = timerUpdateStep;
         this.useGeometryShaders = useGeometryShaders;
@@ -731,7 +731,7 @@ public class ShaderLightingSFXs
     /**
     *  Initializes all relevant methods.
     */    
-    private void initAllMethods(GL gl)
+    private void initAllMethods(GL2 gl)
     {
         initWaterEffect(32, true, 1, 10.0f);
         initBump3D2DTexture(gl, ACTIVE_TEXTURE_UNIT_FOR_BUMP3D_EMBOSS_2D_TEXTURE);
@@ -780,7 +780,7 @@ public class ShaderLightingSFXs
     /**
     *  Initializes the bump3d 2D texture.
     */
-    private void initBump3D2DTexture(GL gl, int textureUnit)
+    private void initBump3D2DTexture(GL2 gl, int textureUnit)
     {
         if (bump3DEmboss2DTexture == null)
             bump3DEmboss2DTexture = createRandomEmbossTexture(gl, bump3DEmboss2DTexture, textureUnit, PRE_CALC_EFFECTS_2D_TEXTURE_SIZE, PRE_CALC_EFFECTS_2D_TEXTURE_SIZE, PRE_CALC_EFFECTS_2D_TEXTURE_SIZE * PRE_CALC_EFFECTS_2D_TEXTURE_SIZE, false);
@@ -789,7 +789,7 @@ public class ShaderLightingSFXs
     /**
     *  Initializes the Perlin noise 3D texture.
     */
-    private void initPerlinNoise3DTexture(GL gl, int textureUnit)
+    private void initPerlinNoise3DTexture(GL2 gl, int textureUnit)
     {
         if (perlinNoise3DTexture == null)
         {
@@ -802,7 +802,7 @@ public class ShaderLightingSFXs
     /**
     *  Initializes the glyphbombing 3D texture.
     */
-    private void initGlyphbombing3DTexture(GL gl, int textureUnit)
+    private void initGlyphbombing3DTexture(GL2 gl, int textureUnit)
     {
         if (glyphbombing3DTexture == null)
         {
@@ -814,7 +814,7 @@ public class ShaderLightingSFXs
     /**
     *  Loads and compiles all the shader programs.
     */
-    private void loadAndCompileAllShaderPrograms(GL gl)
+    private void loadAndCompileAllShaderPrograms(GL2 gl)
     {        
         int NUMBER_OF_OUTPUT_GS_VERTICES = GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER;
         if (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders)
@@ -981,7 +981,7 @@ public class ShaderLightingSFXs
     /**
     *  Uses a particular shader program with given texturing & fog variables.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py)
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py)
     {
         if (updateWaterBufferImageTexture)
         {
@@ -1022,7 +1022,7 @@ public class ShaderLightingSFXs
     *  Uses a particular shader program with given texturing & fog variables.
     *  Overloaded version for also passing all the animation uniform values.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py,
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py,
                                               float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
     {
         useProgramAndUniforms(gl, effectIndex, useTexturing, useSphericalMapping, useEmbossBioLayoutLogoName, useFog, morphingValue, useUserClipping, useAntiAlias, state, oldLCDStyleTransparency, erosion, shrinkTriangles, solidWireFrame, normals, px, py);
@@ -1062,7 +1062,7 @@ public class ShaderLightingSFXs
     /**
     *  Uses the given shader SFX lighting program.
     */
-    public void useShaderLightingSFX(GL gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py)
+    public void useShaderLightingSFX(GL2 gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py)
     {
         useProgramAndUniforms(gl, shaderType.ordinal(), useTexturing, useSphericalMapping, useEmbossBioLayoutLogoName, useFog, morphingValue, useUserClipping, useAntiAlias, state, oldLCDStyleTransparency, erosion, shrinkTriangles, solidWireFrame, normals, px, py);
     }
@@ -1071,7 +1071,7 @@ public class ShaderLightingSFXs
     *  Uses the given shader SFX lighting program.
     *  Overloaded version for also passing all the animation uniform values.
     */
-    public void useShaderLightingSFX(GL gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py,
+    public void useShaderLightingSFX(GL2 gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean erosion, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py,
                                             float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
     {
         useProgramAndUniforms(gl, shaderType.ordinal(), useTexturing, useSphericalMapping, useEmbossBioLayoutLogoName, useFog, morphingValue, useUserClipping, useAntiAlias, state, oldLCDStyleTransparency, erosion, shrinkTriangles, solidWireFrame, normals, px, py,
@@ -1081,7 +1081,7 @@ public class ShaderLightingSFXs
     /**
     *  Disabled the shader programs.
     */
-    public void disableShaders(GL gl)
+    public void disableShaders(GL2 gl)
     {
         gl.glUseProgram(0);
     }
@@ -1089,7 +1089,7 @@ public class ShaderLightingSFXs
     /**
     *  Destroys (de-initializes) all the effect resources.
     */
-    public void destructor(GL gl)
+    public void destructor(GL2 gl)
     {
         if (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders)
         {
@@ -1114,10 +1114,10 @@ public class ShaderLightingSFXs
         }
         if (bump3DEmboss2DTexture != null)
         {
-            bump3DEmboss2DTexture.dispose();
+            bump3DEmboss2DTexture.dispose(gl);
             bump3DEmboss2DTexture = null;
         }
-        if (waterBufferTexture != null) waterBufferTexture.dispose();
+        if (waterBufferTexture != null) waterBufferTexture.dispose(gl);
     }
 
 

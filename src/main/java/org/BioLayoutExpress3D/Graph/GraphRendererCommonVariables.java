@@ -5,7 +5,7 @@ import java.io.*;
 import java.nio.*;
 import java.util.*;
 import java.util.concurrent.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.*;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
 import org.BioLayoutExpress3D.Graph.ActiveRendering.*;

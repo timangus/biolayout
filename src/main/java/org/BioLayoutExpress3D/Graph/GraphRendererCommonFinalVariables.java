@@ -5,14 +5,16 @@ import java.nio.*;
 import java.text.*;
 import java.util.concurrent.*;
 import javax.media.opengl.glu.*;
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.gl2.TileRenderer;
 import org.BioLayoutExpress3D.Graph.Selection.SelectionUI.*;
-import static com.sun.opengl.util.GLUT.*;
+import static com.jogamp.opengl.util.gl2.GLUT.*;
+import com.jogamp.opengl.util.gl2.GLUT;
 
 /**
 * 
 * The GraphRendererCommonFinalVariables class is the class that holds all relevant GraphRenderer2D, GraphRenderer3D & ModelShapeRenderer OpenGL variables.
-* 
+*
 * @see org.BioLayoutExpress3D.Graph.GraphRenderer2D
 * @see org.BioLayoutExpress3D.Graph.GraphRenderer3D
 * @see org.BioLayoutExpress3D.Models.UIComponents.ModelShapeRenderer

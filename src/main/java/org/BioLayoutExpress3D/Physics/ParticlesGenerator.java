@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import static java.lang.Math.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Textures.DrawTextureSFXs.*;
 
@@ -145,7 +145,7 @@ public final class ParticlesGenerator
     /** 
     *  Renders all generated particles. Use float precision for rendering in this case.
     */    
-    public void renderAllGeneratedParticles(GL gl)
+    public void renderAllGeneratedParticles(GL2 gl)
     {
         renderAllGeneratedParticles(gl, 1.0f);
     }    
@@ -154,7 +154,7 @@ public final class ParticlesGenerator
     *  Renders all generated particles.
     *  Overloaded version which provides a given alpha value to blend with the particle's life one. Use float precision for rendering in this case.
     */    
-    public void renderAllGeneratedParticles(GL gl,  float alpha)
+    public void renderAllGeneratedParticles(GL2 gl,  float alpha)
     {
         for (ArrayList<Particle> particles : particleGeneratorEffect)
             for (Particle particle : particles)
@@ -165,7 +165,7 @@ public final class ParticlesGenerator
     /**
     *  RotoZooms & renders all generated particles. Use float precision for rendering in this case.
     */
-    public void rotoZoomRenderAllGeneratedParticles(GL gl)
+    public void rotoZoomRenderAllGeneratedParticles(GL2 gl)
     {
         rotoZoomRenderAllGeneratedParticles(gl, 1.0f);
     }
@@ -174,7 +174,7 @@ public final class ParticlesGenerator
     *  RotoZooms & renders all generated particles.
     *  Overloaded version which provides a given alpha value to blend with the particle's life one. Use float precision for rendering in this case.
     */
-    public void rotoZoomRenderAllGeneratedParticles(GL gl,  float alpha)
+    public void rotoZoomRenderAllGeneratedParticles(GL2 gl,  float alpha)
     {
         for (ArrayList<Particle> particles : particleGeneratorEffect)
             for (Particle particle : particles)
@@ -185,9 +185,9 @@ public final class ParticlesGenerator
     /** 
     *  The manual destructor of this class.
     */       
-    public void destructor()
+    public void destructor(GL2 gl)
     { 
-        particleImageTexture.dispose();
+        particleImageTexture.dispose(gl);
         particleImageTexture = null;
         
         particleGeneratorEffect = null;

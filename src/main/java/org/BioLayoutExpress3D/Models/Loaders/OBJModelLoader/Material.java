@@ -1,8 +1,8 @@
 package org.BioLayoutExpress3D.Models.Loaders.OBJModelLoader;
 
 import javax.media.opengl.*;
-import com.sun.opengl.util.texture.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.texture.*;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import org.BioLayoutExpress3D.Utils.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
@@ -154,7 +154,7 @@ public class Material
     */        
     public static void resetMaterialValues()
     {
-        GL gl = GLContext.getCurrent().getGL();        
+        GL2 gl = GLContext.getCurrent().getGL().getGL2();        
         float[] colorAmbient = { 0.2f, 0.2f, 0.2f, 1.0f };
         gl.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, colorAmbient, 0);
         float[] colorDiffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
@@ -169,7 +169,7 @@ public class Material
     /** 
     *  Starts rendering using this material's values.
     */     
-    public void setMaterialValues(GL gl)    
+    public void setMaterialValues(GL2 gl)    
     {
         if (ka != null) // ambient color
         {

@@ -2,7 +2,7 @@ package org.BioLayoutExpress3D.Textures;
 
 import java.awt.image.*;
 import java.io.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 
 

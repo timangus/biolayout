@@ -56,7 +56,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  The first constructor of the ShaderLODSFXs class.
     */
-    public ShaderLODSFXs(GL gl)
+    public ShaderLODSFXs(GL2 gl)
     {
         this(gl, 0.01f, false, false);
     }
@@ -64,7 +64,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  The second constructor of the ShaderLODSFXs class.
     */
-    public ShaderLODSFXs(GL gl, float timerUpdateStep)
+    public ShaderLODSFXs(GL2 gl, float timerUpdateStep)
     {
         this(gl, timerUpdateStep, false, false);
     }    
@@ -72,7 +72,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  The third constructor of the ShaderLODSFXs class.
     */
-    public ShaderLODSFXs(GL gl, boolean useGeometryShaders)
+    public ShaderLODSFXs(GL2 gl, boolean useGeometryShaders)
     {
         this(gl, 0.01f, useGeometryShaders, false);
     }       
@@ -80,7 +80,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  The fourth constructor of the ShaderLODSFXs class.
     */
-    public ShaderLODSFXs(GL gl, boolean useGeometryShaders, boolean applyNormalsGeometry)
+    public ShaderLODSFXs(GL2 gl, boolean useGeometryShaders, boolean applyNormalsGeometry)
     {
         this(gl, 0.01f, useGeometryShaders, applyNormalsGeometry);
     }     
@@ -88,7 +88,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  The fifth constructor of the ShaderLODSFXs class.
     */
-    public ShaderLODSFXs(GL gl, float timerUpdateStep, boolean useGeometryShaders, boolean applyNormalsGeometry)
+    public ShaderLODSFXs(GL2 gl, float timerUpdateStep, boolean useGeometryShaders, boolean applyNormalsGeometry)
     {
         super(gl, timerUpdateStep, useGeometryShaders, applyNormalsGeometry, false);
 
@@ -144,7 +144,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  Loads and compiles all the shader programs.
     */
-    private void loadAndCompileAllShaderPrograms(GL gl)
+    private void loadAndCompileAllShaderPrograms(GL2 gl)
     {        
         int NUMBER_OF_OUTPUT_GS_VERTICES = GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER;
         if (useGeometryShaders)
@@ -231,7 +231,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  Uses a particular shader program with given texturing & fog variables.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation)
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation)
     {
         gl.glUseProgram(SHADER_PROGRAMS[effectIndex]);
         gl.glUniform1i(SHADER_PROGRAM_2D_TEXTURES[effectIndex], ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE);
@@ -260,7 +260,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     *  Uses a particular shader program with given texturing & fog variables.
     *  Overloaded version for also passing all the animation uniform values.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation,
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation,
                                               float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
     {
         useProgramAndUniforms(gl, effectIndex, useTexturing, useSphericalMapping, useEmbossBioLayoutLogoName, useFog, morphingValue, useUserClipping, useAntiAlias, state, oldLCDStyleTransparency, shrinkTriangles, solidWireFrame, normals, px, py, tessellation);
@@ -300,7 +300,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     /**
     *  Uses the given shader SFX lighting program.
     */
-    public void useShaderLODSFX(GL gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation)
+    public void useShaderLODSFX(GL2 gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation)
     {
         useProgramAndUniforms(gl, shaderType.ordinal(), useTexturing, useSphericalMapping, useEmbossBioLayoutLogoName, useFog, morphingValue, useUserClipping, useAntiAlias, state, oldLCDStyleTransparency, shrinkTriangles, solidWireFrame, normals, px, py, tessellation);
     }
@@ -309,7 +309,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     *  Uses the given shader SFX lighting program.
     *  Overloaded version for also passing all the animation uniform values.
     */
-    public void useShaderLODSFX(GL gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation,
+    public void useShaderLODSFX(GL2 gl, ShaderTypes shaderType, boolean useTexturing, boolean useSphericalMapping, boolean useEmbossBioLayoutLogoName, boolean useFog, float morphingValue, boolean useUserClipping, boolean useAntiAlias, boolean state, boolean oldLCDStyleTransparency, boolean shrinkTriangles, boolean solidWireFrame, boolean normals, float px, float py, float tessellation,
                                             float nodeValue, boolean processNextNodeValue, float nextNodeValue, int animationFrameCount)
     {
         useProgramAndUniforms(gl, shaderType.ordinal(), useTexturing, useSphericalMapping, useEmbossBioLayoutLogoName, useFog, morphingValue, useUserClipping, useAntiAlias, state, oldLCDStyleTransparency, shrinkTriangles, solidWireFrame, normals, px, py, tessellation,
@@ -320,7 +320,7 @@ public class ShaderLODSFXs extends ShaderLightingSFXs
     *  Destroys (de-initializes) all the effect resources.
     */
     @Override
-    public void destructor(GL gl)
+    public void destructor(GL2 gl)
     {
         if (useGeometryShaders)
         {

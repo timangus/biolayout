@@ -3,8 +3,9 @@ package org.BioLayoutExpress3D.Textures;
 import java.awt.image.*;
 import java.nio.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
@@ -61,12 +62,12 @@ public final class Glyphbombing3DTexture
     /**
     *  Texture ID reference.
     */
-    private final IntBuffer TEXTURE_ID = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
 
     /**
     *  Max 3D texture reference.
     */
-    private final IntBuffer MAX_3D_TEXTURE_SIZE = BufferUtil.newIntBuffer(1);
+    private final IntBuffer MAX_3D_TEXTURE_SIZE = Buffers.newDirectIntBuffer(1);
 
     /**
     *  Curent texture 2D slice size.
@@ -81,20 +82,20 @@ public final class Glyphbombing3DTexture
     /**
     *  The Glyphbombing3DTexture constructor.
     */
-    public Glyphbombing3DTexture(GL gl)
+    public Glyphbombing3DTexture(GL2 gl)
     {
         texturesLoader = new TexturesLoader(DIR_NAME, FILE_NAME, false, false, true, false);
 
         gl.glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, MAX_3D_TEXTURE_SIZE);
         if (DEBUG_BUILD) println("For the Glyphbombing3DTexture GL_MAX_3D_TEXTURE_SIZE: " + MAX_3D_TEXTURE_SIZE.get(0));
         currentTexture2DSliceSize = (MAX_3D_TEXTURE_SIZE.get(0) < MAX_TEXTURE_2D_SLICE_SIZE) ? MAX_3D_TEXTURE_SIZE.get(0) : MAX_TEXTURE_2D_SLICE_SIZE;
-        glyphbombing3DTextureBuffer = BufferUtil.newByteBuffer(NUMBER_OF_BYTES_PER_PIXEL * currentTexture2DSliceSize * currentTexture2DSliceSize * NUMBER_OF_2D_SLICES);
+        glyphbombing3DTextureBuffer = Buffers.newDirectByteBuffer(NUMBER_OF_BYTES_PER_PIXEL * currentTexture2DSliceSize * currentTexture2DSliceSize * NUMBER_OF_2D_SLICES);
     }
 
     /**
     *  Binds the Glyphbombing 3D texture.
     */
-    private void bind(GL gl)
+    private void bind(GL2 gl)
     {
         gl.glBindTexture( GL_TEXTURE_3D, TEXTURE_ID.get(0) );
     }
@@ -103,7 +104,7 @@ public final class Glyphbombing3DTexture
     *  Binds the Glyphbombing 3D texture with a given active texture unit.
     *  Overloaded version of the method above that selects an active texture unit for the Glyphbombing 3D texture.
     */
-    private void bind(GL gl, int textureUnit)
+    private void bind(GL2 gl, int textureUnit)
     {
         gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
         gl.glBindTexture( GL_TEXTURE_3D, TEXTURE_ID.get(0) );
@@ -112,7 +113,7 @@ public final class Glyphbombing3DTexture
     /**
     *  Initializes the Glyphbombing 3D texture with a given active texture unit.
     */
-    public void initGlyphbombing3DTexture(GL gl)
+    public void initGlyphbombing3DTexture(GL2 gl)
     {
         initGlyphbombing3DTexture(gl, 0);
     }
@@ -121,7 +122,7 @@ public final class Glyphbombing3DTexture
     *  Initializes the Glyphbombing 3D texture with a given active texture unit.
     *  Overloaded version of the method above that selects an active texture unit for the Glyphbombing 3D texture.
     */
-    public void initGlyphbombing3DTexture(GL gl, int textureUnit)
+    public void initGlyphbombing3DTexture(GL2 gl, int textureUnit)
     {
         // allocate the Glyphbombing 3D texture
         gl.glGenTextures(1, TEXTURE_ID);
@@ -182,9 +183,9 @@ public final class Glyphbombing3DTexture
     /**
     *  Disposes all Glyphbombing 3D texture resources.
     */
-    public void disposeAllGlyphbombing3DTextureResources(GL gl)
+    public void disposeAllGlyphbombing3DTextureResources(GL2 gl)
     {
-        texturesLoader.destructor();
+        texturesLoader.destructor(gl);
         //  free the glyphbombing 3D texture
         gl.glDeleteTextures(1, TEXTURE_ID);
         glyphbombing3DTextureBuffer.clear();

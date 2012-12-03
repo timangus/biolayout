@@ -31,7 +31,7 @@ public class ShaderLinesSFXs extends ShaderLightingSFXs
     /**
     *  The constructor of the ShaderLinesSFXs class.
     */
-    public ShaderLinesSFXs(GL gl)
+    public ShaderLinesSFXs(GL2 gl)
     {
         super(gl, 0.01f, false, false, false);
 
@@ -53,7 +53,7 @@ public class ShaderLinesSFXs extends ShaderLightingSFXs
     /**
     *  Loads and compiles all the shader programs.
     */
-    private void loadAndCompileAllShaderPrograms(GL gl)
+    private void loadAndCompileAllShaderPrograms(GL2 gl)
     {            
         String versionString =  MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE;
         String GLSLPreprocessorCommands = "#version " + versionString + "\n";
@@ -72,7 +72,7 @@ public class ShaderLinesSFXs extends ShaderLightingSFXs
     /**
     *  Uses a particular shader program with given texturing & fog variables.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex)
+    private void useProgramAndUniforms(GL2 gl, int effectIndex)
     {
         gl.glUseProgram(SHADER_PROGRAMS[effectIndex]);
     }
@@ -80,7 +80,7 @@ public class ShaderLinesSFXs extends ShaderLightingSFXs
     /**
     *  Uses the given shader SFX lighting program.
     */
-    public void useShaderLinesSFX(GL gl, ShaderTypes shaderType)
+    public void useShaderLinesSFX(GL2 gl, ShaderTypes shaderType)
     {
         useProgramAndUniforms(gl, shaderType.ordinal());
     }
@@ -89,7 +89,7 @@ public class ShaderLinesSFXs extends ShaderLightingSFXs
     *  Destroys (de-initializes) all the effect resources.
     */
     @Override
-    public void destructor(GL gl)
+    public void destructor(GL2 gl)
     {
         for (int i = 0; i < NUMBER_OF_AVAILABLE_LINE_SHADERS; i++)
             ShaderUtils.detachAndDeleteShader(gl, loadShadersPairs, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i);

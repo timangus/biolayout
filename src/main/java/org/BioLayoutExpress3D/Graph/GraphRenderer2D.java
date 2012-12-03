@@ -9,10 +9,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import javax.swing.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.opengl.util.awt.Screenshot;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.common.nio.Buffers;
 import static java.lang.Math.*;
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.DataStructures.*;
 import org.BioLayoutExpress3D.GPUComputing.GLSL.Animation.*;
@@ -475,7 +478,7 @@ final class GraphRenderer2D implements GraphInterface // package access
         if (texturesLoader == null) texturesLoader = new TexturesLoader(DIR_NAME, FILE_NAME, qualityRendering, false); // only instantiate it once in first switch
     }
 
-    private void clearScreen2D(GL gl)
+    private void clearScreen2D(GL2 gl)
     {
         if (TRIPPY_BACKGROUND.get() && !takeHighResScreenshot)
             graph.colorCycle(BACKGROUND_COLOR_ARRAY);
@@ -497,15 +500,15 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Prepares the image special effects.
     */
-    private void prepareImageAndTextureSFXs(GL gl)
+    private void prepareImageAndTextureSFXs(GL2 gl)
     {
-        if (backgroundImageTexture != null) backgroundImageTexture.dispose();
+        if (backgroundImageTexture != null) backgroundImageTexture.dispose(gl);
         backgroundImageTexture = TextureProducer.createTextureFromBufferedImage(BACKGROUND_IMAGE, qualityRendering);
 
-        if (biolayoutLogoImageTexture != null) biolayoutLogoImageTexture.dispose();
+        if (biolayoutLogoImageTexture != null) biolayoutLogoImageTexture.dispose(gl);
         biolayoutLogoImageTexture = TextureProducer.createTextureFromBufferedImage(BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE, qualityRendering);
 
-        if (biolayoutLogoImageTextureWithBorders != null) biolayoutLogoImageTextureWithBorders.dispose();
+        if (biolayoutLogoImageTextureWithBorders != null) biolayoutLogoImageTextureWithBorders.dispose(gl);
         biolayoutLogoImageTextureWithBorders = TextureProducer.createTextureFromBufferedImage(BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE_WITH_BORDERS, qualityRendering);
 
         if ( blobInitAnimIndex.isEmpty() )
@@ -629,7 +632,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Takes a high resolution screenshot.
     */
-    private void takeHighResScreenshot(GL gl)
+    private void takeHighResScreenshot(GL2 gl)
     {
         try
         {
@@ -759,7 +762,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Deletes all display lists.
     */
-    private void deleteAllDisplayLists(GL gl)
+    private void deleteAllDisplayLists(GL2 gl)
     {
         for (int i = 0; i < ALL_SHAPES_2D_DISPLAY_LISTS.length; i++)
             gl.glDeleteLists(ALL_SHAPES_2D_DISPLAY_LISTS[i], 1);
@@ -798,7 +801,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Disposes all textures.
     */
-    private void disposeAllTextures(GL gl)
+    private void disposeAllTextures(GL2 gl)
     {
         if (DEBUG_BUILD) println("Dispose all 2D textures");
 
@@ -847,26 +850,26 @@ final class GraphRenderer2D implements GraphInterface // package access
         if (allParticlesGeneratorEffects != null)
         {
             for (ParticlesGenerator particlesGenerator : allParticlesGeneratorEffects)
-                particlesGenerator.destructor();
+                particlesGenerator.destructor(gl);
 
             allParticlesGeneratorEffects = null;
         }
 
         if (backgroundImageTexture != null)
         {
-            backgroundImageTexture.dispose();
+            backgroundImageTexture.dispose(gl);
             backgroundImageTexture = null;
         }
 
         if (biolayoutLogoImageTexture != null)
         {
-            biolayoutLogoImageTexture.dispose();
+            biolayoutLogoImageTexture.dispose(gl);
             biolayoutLogoImageTexture = null;
         }
 
         if (biolayoutLogoImageTextureWithBorders != null)
         {
-            biolayoutLogoImageTextureWithBorders.dispose();
+            biolayoutLogoImageTextureWithBorders.dispose(gl);
             biolayoutLogoImageTextureWithBorders = null;
         }
 
@@ -906,7 +909,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Renders the background layer.
     */
-    private void renderBackgroundLayer(GL gl)
+    private void renderBackgroundLayer(GL2 gl)
     {
         if (DEBUG_BUILD) println("Rendering 2D Background Layer");
 
@@ -965,7 +968,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Renders the foreground layer.
     */
-    private void renderForegroundLayer(GL gl)
+    private void renderForegroundLayer(GL2 gl)
     {
         // foreground layer resets all previous scene transformations
         gl.glLoadIdentity();
@@ -978,7 +981,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Performs all OpenGL related transformations.
     */
-    private void performOpenGLTransformations(GL gl)
+    private void performOpenGLTransformations(GL2 gl)
     {
         // center the rotation to the FOCUS_POSITION_2D
         gl.glTranslatef(FOCUS_POSITION_2D.x, FOCUS_POSITION_2D.y, 0.0f);
@@ -998,7 +1001,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Builds all display lists and renders the 2D OpenGL scene.
     */
-    private void buildAllDisplayListsAndRenderScene2D(GL gl)
+    private void buildAllDisplayListsAndRenderScene2D(GL2 gl)
     {
         if (DEBUG_BUILD) println("Rendering 2D Map");
 
@@ -1136,7 +1139,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Builds all 2D shapes display lists.
     */
-    private void buildAllShapes2DDisplayLists(GL gl)
+    private void buildAllShapes2DDisplayLists(GL2 gl)
     {
         Texture nodeTexture = null;
         // FloatBuffer allTex2DCoordsBuffer = null;
@@ -1146,10 +1149,10 @@ final class GraphRenderer2D implements GraphInterface // package access
 
         if (USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER)
         {
-            // indices = BufferUtil.newByteBuffer(4).put( new byte[] { 0, 1, 2, 3 } ).rewind();
-            // allTex2DCoordsBuffer = BufferUtil.newFloatBuffer(8);
-            // allVertex2DCoordsBuffer = BufferUtil.newFloatBuffer(8);
-            interleavedArrayCoordsBuffer = BufferUtil.newFloatBuffer(2 * 8 + 4); // add 4 dummy values for GL_T2F_V3F V3F part
+            // indices = Buffers.newDirectByteBuffer(4).put( new byte[] { 0, 1, 2, 3 } ).rewind();
+            // allTex2DCoordsBuffer = Buffers.newDirectFloatBuffer(8);
+            // allVertex2DCoordsBuffer = Buffers.newDirectFloatBuffer(8);
+            interleavedArrayCoordsBuffer = Buffers.newDirectFloatBuffer(2 * 8 + 4); // add 4 dummy values for GL_T2F_V3F V3F part
         }
 
         int shapeIndex = CIRCLE.ordinal();
@@ -1207,7 +1210,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Draws all visible edges nodes.
     */
-    private IntBuffer drawAllVisibleEdges(GL gl, IntBuffer edgesDisplayLists, HashSet<GraphEdge> edgesToRender, boolean isNodeDragMode)
+    private IntBuffer drawAllVisibleEdges(GL2 gl, IntBuffer edgesDisplayLists, HashSet<GraphEdge> edgesToRender, boolean isNodeDragMode)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D drawAllVisibleEdges()");
 
@@ -1250,7 +1253,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                 edgesDisplayLists.clear();
 
             // allocate new edge display lists
-            edgesDisplayLists = BufferUtil.newIntBuffer(howManyDisplayListsToCreate);
+            edgesDisplayLists = Buffers.newDirectIntBuffer(howManyDisplayListsToCreate);
             for (int i = 0; i < howManyDisplayListsToCreate; i++)
                 edgesDisplayLists.put( gl.glGenLists(1) );
             edgesDisplayLists.rewind();
@@ -1436,7 +1439,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Draws an arrowhead.
     */
-    private void drawArrowHeads(GL gl, double x3, double y3, float lineWidth, Color color, double lineTheta, boolean useIndividualGLCommands)
+    private void drawArrowHeads(GL2 gl, double x3, double y3, float lineWidth, Color color, double lineTheta, boolean useIndividualGLCommands)
     {
         // upper line flap
         double xArrow1 = x3 - ( 0.5 * ARROW_HEAD_SIZE.get() * cos(ARROW_HEAD_THETA  + lineTheta) );
@@ -1474,7 +1477,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Draws all visible nodes. Uses a texture non-binding-if-not-necessary optimization technique.
     */
-    private void drawAllVisibleNodes(GL gl)
+    private void drawAllVisibleNodes(GL2 gl)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D drawAllVisibleNodes()");
 
@@ -1527,10 +1530,10 @@ final class GraphRenderer2D implements GraphInterface // package access
             {
                 if (DEBUG_BUILD) println("Texture change for visible node with nodeID: " + node.getNodeID());
 
-                if (prevNodeTexture != null) prevNodeTexture.disable();
+                if (prevNodeTexture != null) prevNodeTexture.disable(gl);
 
-                currentNodeTexture.bind();
-                currentNodeTexture.enable();
+                currentNodeTexture.bind(gl);
+                currentNodeTexture.enable(gl);
             }
 
             if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
@@ -1600,7 +1603,7 @@ final class GraphRenderer2D implements GraphInterface // package access
             prevNodeTexture = currentNodeTexture;
         }
 
-        if (prevNodeTexture != null) prevNodeTexture.disable();
+        if (prevNodeTexture != null) prevNodeTexture.disable(gl);
 
         String nodeName = "";
         boolean isSelectedNodesAnimation = false;
@@ -1724,7 +1727,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Draws all selected nodes. Uses a texture non-binding-if-not-necessary optimization technique.
     */
-    private void drawAllSelectedNodes(GL gl)
+    private void drawAllSelectedNodes(GL2 gl)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D drawAllSelectedNodes()");
 
@@ -1769,10 +1772,10 @@ final class GraphRenderer2D implements GraphInterface // package access
             {
                 if (DEBUG_BUILD) println("Texture change for selected node with nodeID: " + node.getNodeID());
 
-                if (prevNodeTexture != null) prevNodeTexture.disable();
+                if (prevNodeTexture != null) prevNodeTexture.disable(gl);
 
-                currentNodeTexture.bind();
-                currentNodeTexture.enable();
+                currentNodeTexture.bind(gl);
+                currentNodeTexture.enable(gl);
             }
 
             if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
@@ -1812,7 +1815,7 @@ final class GraphRenderer2D implements GraphInterface // package access
             prevNodeTexture = currentNodeTexture;
         }
 
-        if (prevNodeTexture != null) prevNodeTexture.disable();
+        if (prevNodeTexture != null) prevNodeTexture.disable(gl);
 
         gl.glDisable(GL_ALPHA_TEST);
         gl.glDisable(GL_BLEND);
@@ -1821,7 +1824,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Draws the pathway component containers in 3D mode.
     */    
-    private void drawPathwayComponentContainers2DMode(GL gl)
+    private void drawPathwayComponentContainers2DMode(GL2 gl)
     {
         Rectangle2D.Float rectangle2D = null;
         gl.glBegin(GL_QUADS);
@@ -1843,7 +1846,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Draws the selection box.
     */
-    private void drawSelectBox(GL gl)
+    private void drawSelectBox(GL2 gl)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D drawSelectBox()");
 
@@ -1872,7 +1875,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     /**
     *  Selects the 2D OpenGL scene.
     */
-    private void selectScene(GL gl)
+    private void selectScene(GL2 gl)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D selectScene()");
 
@@ -2274,14 +2277,14 @@ final class GraphRenderer2D implements GraphInterface // package access
     }
 
     /**
-    *  Called by the JOGL glDrawable immediately after the OpenGL context is initialized.
+    *  Called by the JOGL2 glDrawable immediately after the OpenGL context is initialized.
     */
     @Override
     public void init(GLAutoDrawable glDrawable)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D init()");
         
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
         clearScreen2D(gl);
         gl.glDisable(GL_DEPTH_TEST); //disables the depth test for the 2D mode (hidden surface removal)
 
@@ -2308,14 +2311,14 @@ final class GraphRenderer2D implements GraphInterface // package access
     }
 
     /**
-    *  Called by the JOGL glDrawable to initiate OpenGL rendering by the client.
+    *  Called by the JOGL2 glDrawable to initiate OpenGL rendering by the client.
     */
     @Override
     public void display(GLAutoDrawable glDrawable)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D display()");
 
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
 
         if (deAllocOpenGLMemory)
         {
@@ -2378,14 +2381,14 @@ final class GraphRenderer2D implements GraphInterface // package access
     }
 
     /**
-    *  Called by the JOGL glDrawable during the first repaint after the component has been resized.
+    *  Called by the JOGL2 glDrawable during the first repaint after the component has been resized.
     */
     @Override
     public void reshape(GLAutoDrawable glDrawable, int x, int y, int widthCanvas, int heightCanvas)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D reshape()");
 
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
 
         gl.glViewport(x, y, width, height); // update the viewport
         
@@ -2419,15 +2422,6 @@ final class GraphRenderer2D implements GraphInterface // package access
                 shaderTextureSFXs.blobStars3DScrollerEffectInit(gl, blobStars3DScrollerEffectInitializer, 1.5f, width / 2, height / 2);
             }
         }
-    }
-
-    /**
-    *  Called by the glDrawable when the display mode or the display device associated with the GLAutoDrawable has changed.
-    */
-    @Override
-    public void displayChanged(GLAutoDrawable glDrawable, boolean modeChanged, boolean deviceChanged) 
-    {
-        if (DEBUG_BUILD) println("GraphRenderer2D displayChanged()");
     }
 
     /**
@@ -3519,5 +3513,12 @@ final class GraphRenderer2D implements GraphInterface // package access
         return "2D OpenGL renderer";
     }
 
-
+    /**
+    *  Clean up resources
+    */
+    @Override
+    public void dispose(GLAutoDrawable glAutoDrawable)
+    {
+      //FIXME
+    }
 }

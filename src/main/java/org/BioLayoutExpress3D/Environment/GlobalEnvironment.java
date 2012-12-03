@@ -64,10 +64,7 @@ public final class GlobalEnvironment
                                                                                          {  80649, 104547, 0, 0, 0 }, { 115565, 143530, 0, 0, 0 }, {  12288,  15360, 0, 0, 0 }, { 437771, 559586, 0, 0, 0 },
                                                                                          { 275456, 339968, 0, 0, 0 }
                                                                                        };    
-    public static final String[] NAME_OF_JOGL_NATIVE_LIBRARIES = { "gluegen-rt", "jogl_awt", 
-                                                                   "jogl",       "jogl_cg" };
-    public static final long[][] FILE_SIZES_OF_JOGL_NATIVE_LIBRARIES = { {  20480,   7680,    7199,    9506,   49800 }, {  20480,   9216,  8997,   11713,  50312 }, 
-                                                                         { 315392, 351232, 1212542, 1336663, 2838744 }, { 114688, 131072, 191882, 223456, 470352 } };
+
     public static final String NAME_OF_JOCL_NATIVE_LIBRARY = "jocl";
     public static final long[] FILE_SIZES_OF_JOCL_NATIVE_LIBRARIES = { 236032, 280576, 112823, 106231, 90632 };
 

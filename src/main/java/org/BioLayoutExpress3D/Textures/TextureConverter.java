@@ -3,7 +3,8 @@ package org.BioLayoutExpress3D.Textures;
 import java.awt.*;
 import java.awt.image.*;
 import java.nio.*;
-import com.sun.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.util.*;
 
 /**
 * 
@@ -100,7 +101,7 @@ public final class TextureConverter
         image.getRGB( 0, 0, image.getWidth(), image.getHeight(), packedPixels, 0, image.getWidth() ); // just get the initial bitmap buffer
         
         int bytesPerPixel = storeAlphaChannel ? 4 : 3;
-        ByteBuffer unpackedPixels = BufferUtil.newByteBuffer(packedPixels.length * bytesPerPixel);
+        ByteBuffer unpackedPixels = Buffers.newDirectByteBuffer(packedPixels.length * bytesPerPixel);
         int packedPixel = 0;
 
         for (int row = image.getHeight() - 1; row >= 0; row--)

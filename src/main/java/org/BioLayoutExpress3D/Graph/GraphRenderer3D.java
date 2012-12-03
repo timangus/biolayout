@@ -10,9 +10,13 @@ import java.util.concurrent.*;
 import static java.lang.Math.*;
 import javax.swing.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.texture.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.util.gl2.GLUT;
+import com.jogamp.opengl.util.awt.Screenshot;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.DataStructures.*;
 import org.BioLayoutExpress3D.GPUComputing.GLSL.*;
@@ -130,7 +134,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Enables the lighting shaders.
     */
-    private void enableShaders(GL gl, boolean isNodesShading)
+    private void enableShaders(GL2 gl, boolean isNodesShading)
     {
         enableShaders(gl, isNodesShading, false, false, 0.0f, false, 0.0f);
     }
@@ -139,7 +143,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Enables the lighting shaders.
     *  1st overloaded method for enforcing the Voronoi shader.
     */
-    private void enableShaders(GL gl, boolean isNodesShading, boolean enforceVoronoiBlobsShader)
+    private void enableShaders(GL2 gl, boolean isNodesShading, boolean enforceVoronoiBlobsShader)
     {
         enableShaders(gl, isNodesShading, enforceVoronoiBlobsShader, false, 0.0f, false, 0.0f);
     }
@@ -148,7 +152,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Enables the lighting shaders.
     *  2nd overloaded method for passing the animation parameters.
     */
-    private void enableShaders(GL gl,  boolean isNodesShading, boolean enforceVoronoiBlobsShader, boolean enableAnimationGPUComputing, float nodeValue, boolean processNextNodeValue, float nextNodeValue)
+    private void enableShaders(GL2 gl,  boolean isNodesShading, boolean enforceVoronoiBlobsShader, boolean enableAnimationGPUComputing, float nodeValue, boolean processNextNodeValue, float nextNodeValue)
     {
         if ( USE_SHADERS_PROCESS && MATERIAL_SPECULAR.get() )
         {
@@ -206,7 +210,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Disables the lighting shaders.
     */
-    private void disableShaders(GL gl)
+    private void disableShaders(GL2 gl)
     {
         if ( USE_SHADERS_PROCESS && MATERIAL_SPECULAR.get() ) shaderSFXsCurrentReference.disableShaders(gl);
     } 
@@ -214,7 +218,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Renders the 3D OpenGL scene.
     */
-    private void renderScene3D(GL gl, boolean doRenderEnvironmentMapping)
+    private void renderScene3D(GL2 gl, boolean doRenderEnvironmentMapping)
     {
         if (DEBUG_BUILD) println("Rendering 3D Scene");
         
@@ -289,7 +293,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         if (checkForNodeTexturing() && USE_SHADERS_PROCESS) // so as to re-bind the texture object for proper point sprites rendering
         {
             if ( TEXTURE_ENABLED.get() && !SHOW_3D_ENVIRONMENT_MAPPING.get() )
-                nodeTexture.bind();                    
+                nodeTexture.bind(gl);                    
             else if ( USE_GL_EXT_FRAMEBUFFER_OBJECT && SHOW_3D_ENVIRONMENT_MAPPING.get() )
                 renderToTexture.bind(gl);
         }   
@@ -303,7 +307,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Selects the 3D OpenGL scene.
     */
-    private void selectScene(GL gl)
+    private void selectScene(GL2 gl)
     {
         SELECTION_BUFFER.clear(); // Prepare buffer for reading
 
@@ -375,7 +379,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Does the same thing as GLU.gluPerspective() but in one step.
     */
-    private void setPerspective(GL gl, double fovy, double aspect, double zNear, double zFar)
+    private void setPerspective(GL2 gl, double fovy, double aspect, double zNear, double zFar)
     {
         double top = zNear * tan(fovy * PI / 360.0);
         double bottom = -top;
@@ -404,7 +408,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Prepares the lighting.
     */
-    private void prepareLighting(GL gl)
+    private void prepareLighting(GL2 gl)
     {
         // OpenGL will setup our emissions etc.
         gl.glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
@@ -424,7 +428,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Prepares the point sprites.
     */
-    private void preparePointSprites(GL gl)
+    private void preparePointSprites(GL2 gl)
     {
         // enable Point Sprites GL 1.5 extension using GL Point Sprites
         // then also enabling combined Shader Usage only to avoid very slow GL_POINTS rendering with shaders on
@@ -451,7 +455,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Prepares the shader lighting.
     */
-    private void prepareShaderLighting(GL gl)
+    private void prepareShaderLighting(GL2 gl)
     {
         // only instantiate them once in first switch
         if (shaderLightingSFXsNodes == null) shaderSFXsCurrentReference = shaderLightingSFXsNodes = new ShaderLightingSFXs(gl);
@@ -476,7 +480,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Prepares the environment mapping.
     */
-    private void prepareEnvironmentMapping(GL gl)
+    private void prepareEnvironmentMapping(GL2 gl)
     {
         renderToTexture = new RenderToTexture(gl, !(NORMAL_QUALITY_ANTIALIASING.get() || HIGH_QUALITY_ANTIALIASING.get() ), true);
     }
@@ -484,7 +488,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Clears the screen.
     */
-    private void clearScreen3D(GL gl)
+    private void clearScreen3D(GL2 gl)
     {
         // trippy mode disabled for tile based rendering to avoid artifacts
         if (TRIPPY_BACKGROUND.get() && !takeHighResScreenshot) 
@@ -519,7 +523,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Uses the node material.
     */     
-    private void useNodeMaterial(GL gl)
+    private void useNodeMaterial(GL2 gl)
     {
         if ( MATERIAL_SPECULAR.get() )
         {
@@ -536,7 +540,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Enables the spherical texture coordinates generation.
     */    
-    private void enableGenerateSphericalTextureCoordinates(GL gl)
+    private void enableGenerateSphericalTextureCoordinates(GL2 gl)
     {
         gl.glEnable(GL_TEXTURE_GEN_S);
         gl.glEnable(GL_TEXTURE_GEN_T);
@@ -547,7 +551,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Disables the spherical texture coordinates generation.
     */        
-    private void disableGenerateSphericalTextureCoordinates(GL gl)
+    private void disableGenerateSphericalTextureCoordinates(GL2 gl)
     {
         gl.glDisable(GL_TEXTURE_GEN_S);
         gl.glDisable(GL_TEXTURE_GEN_T);     
@@ -556,7 +560,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Builds all 3D shapes display lists.
     */
-    private void buildAllShapes3DDisplayLists(GL gl)
+    private void buildAllShapes3DDisplayLists(GL2 gl)
     {
         buildAllShapes3DDisplayLists(gl, true, true, true);
     }
@@ -565,7 +569,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Builds all 3D shapes display lists.
     *  Overloaded version of the method above. 
     */
-    private void buildAllShapes3DDisplayLists(GL gl, boolean changeAllShapes, boolean changeTesselationRelatedShapes, boolean changeSphericalCoordsRelatedShapes)
+    private void buildAllShapes3DDisplayLists(GL2 gl, boolean changeAllShapes, boolean changeTesselationRelatedShapes, boolean changeSphericalCoordsRelatedShapes)
     {
         int tesselation = NODE_TESSELATION.get();
         int shapeIndex = SPHERE.ordinal();
@@ -609,7 +613,9 @@ final class GraphRenderer3D implements GraphInterface // package access
 
                     gl.glPushMatrix();
                     gl.glScalef(1.0f, 1.0f, 0.005f);
-                    GLUT.glutSolidCubeWithTriangles(0.2f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                    /*GLUT.glutSolidCubeWithTriangles(0.2f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                    //FIXME
+                    GLUT.glutSolidCube(0.2f);
                     gl.glPopMatrix();
 
                     gl.glEndList();                    
@@ -621,7 +627,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
                 
-                GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                /*GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                //FIXME
+                GLUT.glutSolidCube(1.0f);
                 
                 gl.glEndList();
             }
@@ -631,7 +639,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
-                GLUT.glutSolidTetrahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                /*GLUT.glutSolidTetrahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                //FIXME
+                GLUT.glutSolidTetrahedron();
                 
                 gl.glEndList();
             }
@@ -641,7 +651,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
                 
-                GLUT.glutSolidOctahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                /*GLUT.glutSolidOctahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                //FIXME
+                GLUT.glutSolidOctahedron();
                 
                 gl.glEndList();
             }
@@ -651,7 +663,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
      
-                GLUT.glutSolidDodecahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                /*GLUT.glutSolidDodecahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                //FIXME
+                GLUT.glutSolidDodecahedron();
                 
                 gl.glEndList();
             }
@@ -661,7 +675,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);                
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
                 
-                GLUT.glutSolidIcosahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                /*GLUT.glutSolidIcosahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                //FIXME
+                GLUT.glutSolidIcosahedron();
                 
                 gl.glEndList();
             }
@@ -809,7 +825,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 
                 gl.glPushMatrix();
                 gl.glScalef(0.3f, 1.7f, 1.0f);
-                GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                /*GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                //FIXME
+                GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
                 
                 gl.glEndList();
@@ -822,7 +840,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 
                 gl.glPushMatrix();
                 gl.glScalef(1.7f, 0.3f, 1.0f);
-                GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                /*GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
+                //FIXME
+                GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
                 
                 gl.glEndList();
@@ -1181,7 +1201,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Builds all 3D shapes fast selection display lists.
     */
-    private void buildAllShapes3DFastSelectionDisplayLists(GL gl)
+    private void buildAllShapes3DFastSelectionDisplayLists(GL2 gl)
     {
         int shapeIndex = SPHERE.ordinal();
         // don't use a display list here, as it will create problems with the disposeAllModelShapeResources() method where the display list is being disposed and the last diplay list will take its place. Use Immediate Mode, Vertex Arrays or VBO instead
@@ -1716,7 +1736,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Builds all display lists.
     */
-    private void buildAllDisplayLists(GL gl)
+    private void buildAllDisplayLists(GL2 gl)
     {
         if (CHANGE_NODE_TESSELATION || CHANGE_SPHERICAL_MAPPING_ENABLED)
         {            
@@ -1824,7 +1844,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws all visible edges.
     */
-    private void drawAllVisibleEdges(GL gl)
+    private void drawAllVisibleEdges(GL2 gl)
     {
         if (DEBUG_BUILD) println("Building Edge Display List");
 
@@ -1860,7 +1880,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 allEdgesDisplayLists.clear();
 
             // allocate new edge display lists
-            allEdgesDisplayLists = BufferUtil.newIntBuffer(howManyDisplayListsToCreate);
+            allEdgesDisplayLists = Buffers.newDirectIntBuffer(howManyDisplayListsToCreate);
             for (int i = 0; i < howManyDisplayListsToCreate; i++)
                 allEdgesDisplayLists.put( gl.glGenLists(1) );
             allEdgesDisplayLists.rewind();
@@ -2039,7 +2059,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws all visible nodes.
     */
-    private void drawAllVisibleNodes(GL gl)
+    private void drawAllVisibleNodes(GL2 gl)
     {
         if (DEBUG_BUILD) println("Building Node Display List");
 
@@ -2133,7 +2153,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             if (enableDisableNodeTexture)
             {
                 if ( TEXTURE_ENABLED.get() && !SHOW_3D_ENVIRONMENT_MAPPING.get() )
-                    nodeTexture.disable();
+                    nodeTexture.disable(gl);
                 else if ( USE_GL_EXT_FRAMEBUFFER_OBJECT && SHOW_3D_ENVIRONMENT_MAPPING.get() )
                     renderToTexture.disable(gl);
             }
@@ -2250,7 +2270,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws all visible nodes for fast selection.
     */
-    private void drawAllVisibleNodesForFastSelection(GL gl)
+    private void drawAllVisibleNodesForFastSelection(GL2 gl)
     {
         if (DEBUG_BUILD) println("Building Node Display List For Fast Selection");
 
@@ -2286,7 +2306,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws all selected nodes.
     */
-    private void drawAllSelectedNodes(GL gl)
+    private void drawAllSelectedNodes(GL2 gl)
     {
         if (DEBUG_BUILD) println("Building Selected Display List");
 
@@ -2372,7 +2392,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws the node.
     */
-    private void drawNode(GL gl, Point3D point, Color color, float alpha, int name, Shapes3D shape, float size, boolean normal)
+    private void drawNode(GL2 gl, Point3D point, Color color, float alpha, int name, Shapes3D shape, float size, boolean normal)
     {
         useNodeMaterial(gl);                
         boolean enableDepthMask = false;
@@ -2396,8 +2416,8 @@ final class GraphRenderer3D implements GraphInterface // package access
 
                     if ( TEXTURE_ENABLED.get() && !SHOW_3D_ENVIRONMENT_MAPPING.get() )
                     {
-                        nodeTexture.bind();
-                        nodeTexture.enable();
+                        nodeTexture.bind(gl);
+                        nodeTexture.enable(gl);
                     }
                     else if ( USE_GL_EXT_FRAMEBUFFER_OBJECT && SHOW_3D_ENVIRONMENT_MAPPING.get() )
                     {
@@ -2413,7 +2433,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     enableDisableNodeTexture = false;
 
                     if ( TEXTURE_ENABLED.get() && !SHOW_3D_ENVIRONMENT_MAPPING.get() )
-                        nodeTexture.disable();
+                        nodeTexture.disable(gl);
                     else if ( USE_GL_EXT_FRAMEBUFFER_OBJECT && SHOW_3D_ENVIRONMENT_MAPPING.get() )
                         renderToTexture.disable(gl);
                 }
@@ -2447,7 +2467,7 @@ final class GraphRenderer3D implements GraphInterface // package access
    /**
     *  Draws the node 3D shape.
     */
-    private void drawNode3DShape(GL gl, float coordX, float coordY, float coordZ, Shapes3D shape3D, float size, boolean isFastSelectionNode)
+    private void drawNode3DShape(GL2 gl, float coordX, float coordY, float coordZ, Shapes3D shape3D, float size, boolean isFastSelectionNode)
     {
         if (MATERIAL_POINT_SPHERES_LOD.get() && USE_400_SHADERS_PROCESS)
         {
@@ -2646,7 +2666,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws the 3D shape.
     */
-    private void draw3DShape(GL gl, float coordX, float coordY, float coordZ, Shapes3D shape3D, float size, float factor, boolean isFastSelectionNode)
+    private void draw3DShape(GL2 gl, float coordX, float coordY, float coordZ, Shapes3D shape3D, float size, float factor, boolean isFastSelectionNode)
     {
         gl.glPushMatrix();
         gl.glTranslatef(coordX, coordY, coordZ);
@@ -2661,7 +2681,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws the 3D shadows.
     */
-    private void draw3DShadows(GL gl)
+    private void draw3DShadows(GL2 gl)
     {
         gl.glPushMatrix();
         gl.glDisable(GL_LIGHT0);
@@ -2692,7 +2712,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Initializes the 3D environment mapping.
     */
-    private void init3DEnviromentMapping(GL gl)
+    private void init3DEnviromentMapping(GL2 gl)
     {
         int ratioFactor = HIGH_QUALITY_ANTIALIASING.get() ? 1 : ( NORMAL_QUALITY_ANTIALIASING.get() ? 2 : 4 );
         if (DEBUG_BUILD) println("Render-to-texture ratioFactor: " + ratioFactor);
@@ -2704,7 +2724,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws the 3D environment mapping.
     */
-    private void draw3DEnvironmentMapping(GL gl)
+    private void draw3DEnvironmentMapping(GL2 gl)
     {
         // enable low quality rendering for polygons (if needed) for the environment mapping to avoid artifacts
         if (qualityRendering)
@@ -2725,7 +2745,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws the pathway component containers in 3D mode.
     */    
-    private void drawPathwayComponentContainers3DMode(GL gl)
+    private void drawPathwayComponentContainers3DMode(GL2 gl)
     {        
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
@@ -2789,7 +2809,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws the frustum.
     */
-    private void drawFrustum(GL gl)
+    private void drawFrustum(GL2 gl)
     {
         FRUSTUM_COLOR.getRGBColorComponents(CURRENT_COLOR);
         if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);
@@ -3054,7 +3074,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Draws the selection box.
     */
-    private void drawSelectBox(GL gl, int width, int height)
+    private void drawSelectBox(GL2 gl, int width, int height)
     {
         viewOrtho(gl, width, height);
 
@@ -3108,7 +3128,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Orthogonal view.
     */
-    private void viewOrtho(GL gl, int width, int height)    // Set Up An Ortho View
+    private void viewOrtho(GL2 gl, int width, int height)    // Set Up An Ortho View
     {
         gl.glMatrixMode(GL_PROJECTION);                     // Select Projection
         gl.glPushMatrix();                                  // Push The Matrix
@@ -3124,7 +3144,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Perspective view.
     */
-    private void viewPerspective(GL gl)                     // Set Up A Perspective View
+    private void viewPerspective(GL2 gl)                     // Set Up A Perspective View
     {
         gl.glMatrixMode(GL_PROJECTION);                     // Select Projection
         gl.glPopMatrix();                                   // Pop The Matrix
@@ -3135,7 +3155,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Deletes all display lists.
     */
-    private void deleteAllDisplayLists(GL gl)
+    private void deleteAllDisplayLists(GL2 gl)
     {
         for (int i = 0; i < ALL_SHAPES_3D_DISPLAY_LISTS.length; i++)
             gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[i], 1);
@@ -3244,11 +3264,11 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Deletes an OpenGL texture.
     */
-    private void disposeAllTextures(GL gl)
+    private void disposeAllTextures(GL2 gl)
     {
         if (nodeTexture != null)
         {
-            nodeTexture.dispose();
+            nodeTexture.dispose(gl);
             nodeTexture = null;
         }
 
@@ -3316,7 +3336,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     /**
     *  Takes a high resolution screenshot.
     */
-    private void takeHighResScreenshot(GL gl)
+    private void takeHighResScreenshot(GL2 gl)
     {
         try
         {
@@ -3586,14 +3606,14 @@ final class GraphRenderer3D implements GraphInterface // package access
     }   
     
     /**
-    *  Called by the JOGL glDrawable immediately after the OpenGL context is initialized.
+    *  Called by the JOGL2 glDrawable immediately after the OpenGL context is initialized.
     */
     @Override
     public void init(GLAutoDrawable glDrawable) 
     {
         if (DEBUG_BUILD) println("GraphRenderer3D init()");
         
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
         clearScreen3D(gl);
 
         nodesDisplayList = gl.glGenLists(1);
@@ -3642,14 +3662,14 @@ final class GraphRenderer3D implements GraphInterface // package access
     }
 
     /**
-    *  Called by the JOGL glDrawable to initiate OpenGL rendering by the client.
+    *  Called by the JOGL2 glDrawable to initiate OpenGL rendering by the client.
     */
     @Override
     public void display(GLAutoDrawable glDrawable) 
     {
         if (DEBUG_BUILD) println("GraphRenderer3D display()");
         
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
         if (deAllocOpenGLMemory)
         {
             if (DEBUG_BUILD) println("GraphRenderer3D draw: delete all display lists & destroy all textures");
@@ -3751,14 +3771,14 @@ final class GraphRenderer3D implements GraphInterface // package access
     }    
 
     /**
-    *  Called by the JOGL glDrawable during the first repaint after the component has been resized.
+    *  Called by the JOGL2 glDrawable during the first repaint after the component has been resized.
     */
     @Override
     public void reshape(GLAutoDrawable glDrawable, int x, int y, int widthCanvas, int heightCanvas) 
     {             
         if (DEBUG_BUILD) println("GraphRenderer3D reshape()");
 
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
         double intraOcularDistance = extractDouble(GRAPH_INTRA_OCULAR_DISTANCE_TYPE);        
         LEFT_EYE_CAMERA.setIntraOcularDistanceAndFrustumShift(DEFAULT_INTRA_OCULAR_DISTANCE);
         LEFT_EYE_CAMERA.updateFrustumDimensions(width, height);
@@ -3771,15 +3791,6 @@ final class GraphRenderer3D implements GraphInterface // package access
         if (USE_GL_EXT_FRAMEBUFFER_OBJECT) init3DEnviromentMapping(gl);
     }
 
-    /**
-    *  Called by the glDrawable when the display mode or the display device associated with the GLAutoDrawable has changed.
-    */
-    @Override
-    public void displayChanged(GLAutoDrawable glDrawable, boolean modeChanged, boolean deviceChanged) 
-    {
-        if (DEBUG_BUILD) println("GraphRenderer3D displayChanged()");
-    }    
-    
     /**
     *  KeyPressed keyEvent.
     */
@@ -4738,5 +4749,13 @@ final class GraphRenderer3D implements GraphInterface // package access
         return "3D OpenGL renderer";
     }
     
-    
+    /**
+    *  Clean up resources
+    */
+    @Override
+    public void dispose(GLAutoDrawable glAutoDrawable)
+    {
+      //FIXME this was added during the move to JOGL 2
+      //TODO check if resources need to be freed here
+    }
 }

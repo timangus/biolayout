@@ -6,10 +6,12 @@ import java.nio.*;
 import javax.swing.*;
 import static java.lang.Math.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import com.sun.opengl.util.texture.*;
+import javax.media.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.common.nio.Buffers;
 import java.awt.Color;
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.Graph.*;
 import org.BioLayoutExpress3D.Models.*;
 import org.BioLayoutExpress3D.Models.Lathe3D.*;
@@ -92,12 +94,12 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Value needed for the OpenGL renderer for the lighting calculations. The light is located at the right, top and back.
     */    
-    private static final FloatBuffer LIGHT0_POSITION = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { 10.0f, 10.0f, -10.0f, 1.0f } ).rewind();
+    private static final FloatBuffer LIGHT0_POSITION = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { 10.0f, 10.0f, -10.0f, 1.0f } ).rewind();
 
     /**
     *  Value needed for the OpenGL renderer for the lighting calculations. The light is located at the left, bottom and front.
     */    
-    private static final FloatBuffer LIGHT1_POSITION = (FloatBuffer)BufferUtil.newFloatBuffer(4).put( new float[] { -10.0f, -10.0f, 10.0f, 1.0f } ).rewind();
+    private static final FloatBuffer LIGHT1_POSITION = (FloatBuffer)Buffers.newDirectFloatBuffer(4).put( new float[] { -10.0f, -10.0f, 10.0f, 1.0f } ).rewind();
     
     /**
     *  Value needed for the OpenGL renderer.
@@ -718,7 +720,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Prepares the OpenGL lights.
     */
-    private void prepareLighting(GL gl)    
+    private void prepareLighting(GL2 gl)    
     {
         if ( !MATERIAL_SMOOTH_SHADING.get() )
             gl.glShadeModel(GL_FLAT);
@@ -786,7 +788,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Uses the OpenGL scene materials.
     */    
-    private void useSceneMaterial(GL gl)
+    private void useSceneMaterial(GL2 gl)
     {
         if ( MATERIAL_SPECULAR.get() )
         {
@@ -803,7 +805,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Creates the model shape.
     */    
-    private ModelShape createModelShape(GL gl)
+    private ModelShape createModelShape(GL2 gl)
     {
         if ( modelShapeType.equals(LATHE3D_SHAPE) )
         {
@@ -842,7 +844,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Clears the screen.
     */    
-    private void clearScreen3D(GL gl)
+    private void clearScreen3D(GL2 gl)
     {
         if ( TRIPPY_BACKGROUND.get() ) 
             graph.colorCycle(BACKGROUND_COLOR_ARRAY);
@@ -854,7 +856,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Renders the Cartesian coordinate lines.
     */    
-    private void renderCartesianCoordinateLines(GL gl)
+    private void renderCartesianCoordinateLines(GL2 gl)
     {        
         Point3D allAxesLengths = modelShape.getAllAxes();
         // x-axis step-by-step line length change instead of multiplying with (1.0f + userScaleX) for a continuous change
@@ -921,7 +923,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Renders the scene.
     */    
-    private void renderScene(GL gl)
+    private void renderScene(GL2 gl)
     {
         if (USE_SHADERS_PROCESS && usePhongNLightsShader)
         {            
@@ -956,13 +958,13 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         
         if ( texturingView && !isOBJModelLoaderType() )
         {
-            nodeTexture.bind();
-            nodeTexture.enable();
+            nodeTexture.bind(gl);
+            nodeTexture.enable(gl);
 
             if (sphericalMappingView) enableGenerateSphericalTextureCoordinates(gl);
         }
         else
-            nodeTexture.disable();
+            nodeTexture.disable(gl);
 
         gl.glPushMatrix();
             gl.glScalef(1.0f + userScaleX, 1.0f + userScaleY, 1.0f + userScaleZ);
@@ -974,7 +976,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         
         if ( texturingView && !isOBJModelLoaderType() )
         {
-            nodeTexture.disable();                        
+            nodeTexture.disable(gl);                        
 
             if (sphericalMappingView) disableGenerateSphericalTextureCoordinates(gl);
         }        
@@ -1138,7 +1140,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Does the same thing as GLU.gluPerspective() but in one step.
     */    
-    private void setPerspective(GL gl, double fovy, double aspect, double zNear, double zFar)
+    private void setPerspective(GL2 gl, double fovy, double aspect, double zNear, double zFar)
     {
         double top = zNear * tan(fovy * PI / 360.0);
         double bottom = -top;
@@ -1202,7 +1204,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Enables the spherical texture coordinates generation.
     */    
-    private void enableGenerateSphericalTextureCoordinates(GL gl)
+    private void enableGenerateSphericalTextureCoordinates(GL2 gl)
     {
         gl.glEnable(GL_TEXTURE_GEN_S);
         gl.glEnable(GL_TEXTURE_GEN_T);
@@ -1213,7 +1215,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     /**
     *  Disables the spherical texture coordinates generation.
     */        
-    private void disableGenerateSphericalTextureCoordinates(GL gl)
+    private void disableGenerateSphericalTextureCoordinates(GL2 gl)
     {
         gl.glDisable(GL_TEXTURE_GEN_S);
         gl.glDisable(GL_TEXTURE_GEN_T);     
@@ -1261,7 +1263,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     }    
     
     /**
-    *  Called by the JOGL glDrawable immediately after the OpenGL context is initialized.
+    *  Called by the JOGL2 glDrawable immediately after the OpenGL context is initialized.
     */
     @Override
     public void init(GLAutoDrawable glDrawable) 
@@ -1291,7 +1293,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         if (width <= 0) width = 1;
         if (height <= 0) height = 1;        
 
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
         graph.makeContextCurrent(glDrawable);
 
         GL_VENDOR_STRING = gl.glGetString(GL_VENDOR);
@@ -1339,7 +1341,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
                 GL_SHADING_LANGUAGE_VERSION_STRING = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);
                 gl.glGetIntegerv(GL_MAX_DRAW_BUFFERS, OPENGL_INT_VALUE);
                 GL_MAX_DRAW_BUFFERS_INTEGER = OPENGL_INT_VALUE.get(0);
-                gl.glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, OPENGL_INT_VALUE);
+                gl.glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, OPENGL_INT_VALUE);
                 GL_MAX_COLOR_ATTACHMENTS_INTEGER = OPENGL_INT_VALUE.get(0);
                 gl.glGetIntegerv(GL_AUX_BUFFERS, OPENGL_INT_VALUE);
                 GL_AUX_BUFFERS_INTEGER = OPENGL_INT_VALUE.get(0);
@@ -1372,14 +1374,16 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
                 GL_MAX_TEXTURE_SIZE_INTEGER = OPENGL_INT_VALUE.get(0);
                 if ( USE_GL_EXT_FRAMEBUFFER_OBJECT = gl.isExtensionAvailable("GL_EXT_framebuffer_object") )
                 {
-                    gl.glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE_EXT, OPENGL_INT_VALUE);
+                    gl.glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, OPENGL_INT_VALUE);
                     GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
                 }
                 // make sure GLSL 330 and above is present: Geometry Shaders need high-end hardware to efficiently execute. Tested to work ok on Nvidia hardware, AMD/ATI ones are creating color artifacts
                 if ( USE_330_SHADERS_PROCESS && GL_IS_NVIDIA && ( USE_GL_ARB_GEOMETRY_SHADER4 = gl.isExtensionAvailable("GL_ARB_geometry_shader4") ) )
                 {
-                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, OPENGL_INT_VALUE);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
+                  //FIXME needs GL3
+/*                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, OPENGL_INT_VALUE);
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);*/
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = 0;
                 }                
                 USE_GL_EXT_GPU_SHADER4 = gl.isExtensionAvailable("GL_EXT_gpu_shader4");
                 USE_GL_ARB_GPU_SHADER5 = gl.isExtensionAvailable("GL_ARB_gpu_shader5");
@@ -1467,14 +1471,14 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     }
     
     /**
-    *  Called by the JOGL glDrawable to initiate OpenGL rendering by the client.
+    *  Called by the JOGL2 glDrawable to initiate OpenGL rendering by the client.
     */    
     @Override
     public void display(GLAutoDrawable glDrawable)     
     {
         if (DEBUG_BUILD) println("ModelShapeRenderer display()");
         
-        GL gl = glDrawable.getGL();
+        GL2 gl = glDrawable.getGL().getGL2();
 
         if (!deAllocOpenGLMemory)
         {
@@ -1532,7 +1536,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
                 else
                     ShaderUtils.detachAndDeleteShader(gl, VERTEX_SHADER, FRAGMENT_SHADER, SHADER_PROGRAM, 0);
             }
-            nodeTexture.dispose();
+            nodeTexture.dispose(gl);
             modelShape.disposeAllModelShapeResources(gl);
             
             if (DEBUG_BUILD) println("Deallocated all ModelShapeRenderer resources.");
@@ -1552,7 +1556,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
     }    
 
     /**
-    *  Called by the JOGL glDrawable during the first repaint after the component has been resized.
+    *  Called by the JOGL2 glDrawable during the first repaint after the component has been resized.
     */    
     @Override
     public void reshape(GLAutoDrawable glDrawable, int x, int y, int widthCanvas, int heightCanvas)     
@@ -1565,7 +1569,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         width = widthCanvas;
         height = heightCanvas;
 
-        GL gl = glDrawable.getGL(); 
+        GL2 gl = glDrawable.getGL().getGL2(); 
         if (!GL_IS_AMD_ATI) // recent AMD/ATI cards lack an accumulation buffer
         {        
             if ( USE_MOTION_BLUR_FOR_SCENE.get() )
@@ -1598,15 +1602,6 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
             JOptionPane.showMessageDialog(modelShapeEditorParentUIDialog, "OpenGL reported an error: " + error + "!", "OpenGL Error: " + error, JOptionPane.WARNING_MESSAGE);
             if (DEBUG_BUILD) println("ModelShapeRenderer reshape(GLAutoDrawable) glGetError() returned: " + error);
         }         
-    }
-
-    /**
-    *  Called by the glDrawable when the display mode or the display device associated with the GLAutoDrawable has changed.
-    */    
-    @Override
-    public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) 
-    {
-        if (DEBUG_BUILD) println("ModelShapeRenderer displayChanged()");
     }
 
     /**
@@ -1844,6 +1839,14 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         autoRotationZ = (autoRotationZ + incrementZ) % 360.0f;       
     }   
     
-    
+    /**
+    *  Clean up resources
+    */
+    @Override
+    public void dispose(GLAutoDrawable glAutoDrawable)
+    {
+      //FIXME this was added during the move to JOGL 2
+      //TODO check if resources need to be freed here
+    }
  }
 

@@ -5,14 +5,15 @@ import java.nio.*;
 import java.text.*;
 import java.util.concurrent.*;
 import javax.swing.*;
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
 import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
 import org.BioLayoutExpress3D.CPUParallelism.*;
 import org.BioLayoutExpress3D.CPUParallelism.Executors.*;
 import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
 import org.BioLayoutExpress3D.Expression.*;
 import static java.lang.Math.*;
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -36,13 +37,13 @@ public class ExpressionDataComputing extends OpenGLContext
     private static final int TEXTURE_SUM_COLUMNS_X2_CACHE_TEXTURE_UNIT = 5;
     private static final int TEXTURE_EXPRESSION_MATRIX_TEXTURE_UNIT = 6;
 
-    private final IntBuffer TEXTURE_ID_RESULTS = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-    private final IntBuffer TEXTURE_ID_X = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-    private final IntBuffer TEXTURE_ID_Y = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-    private final IntBuffer TEXTURE_ID_SUM_X_CACHE = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-    private final IntBuffer TEXTURE_ID_SUM_X_SUM_X2_CACHE = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-    private final IntBuffer TEXTURE_ID_SUM_COLUMNS_X2_CACHE = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-    private final IntBuffer TEXTURE_ID_EXPRESSION_MATRIX = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_RESULTS = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_X = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_Y = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_SUM_X_CACHE = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_SUM_X_SUM_X2_CACHE = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_SUM_COLUMNS_X2_CACHE = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID_EXPRESSION_MATRIX = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
 
     private ExpressionDataComputingShaders expressionDataComputingShaders = null;
 
@@ -248,7 +249,7 @@ public class ExpressionDataComputing extends OpenGLContext
     */
     private void createDataArrays()
     {
-        // create data vectors (use FloatBuffer.allocate(capacity) instead of BufferUtil.newFloatBuffer(capacity) for less Java CPU memory consumption)
+        // create data vectors (use FloatBuffer.allocate(capacity) instead of Buffers.newDirectFloatBuffer(capacity) for less Java CPU memory consumption)
         dataResultsGPUBuffer = FloatBuffer.allocate(N);
         if (compareResults || showResults)
             dataResultsCPUArray = new float[N];
@@ -408,7 +409,7 @@ public class ExpressionDataComputing extends OpenGLContext
             layoutProgressBarDialog.startProgressBar();
 
             // attach texture x to FBO for proper FBO completion
-            gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, textureParameters.textureTarget, TEXTURE_ID_RESULTS.get(0), 0);
+            gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureParameters.textureTarget, TEXTURE_ID_RESULTS.get(0), 0);
 
             // check if that worked
             if ( !checkFrameBufferStatus() )
@@ -446,7 +447,7 @@ public class ExpressionDataComputing extends OpenGLContext
                     startTime = System.nanoTime();
 
                 // set render destination
-                gl.glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+                gl.glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
                 if (textureParameters.textureFormat == GL_RGBA)
                 {
@@ -494,7 +495,7 @@ public class ExpressionDataComputing extends OpenGLContext
 
                 // get GPU results
                 // dataResultsGPUBuffer.clear();
-                transferFromTexture(GL_COLOR_ATTACHMENT0_EXT, dataResultsGPUBuffer);
+                transferFromTexture(GL_COLOR_ATTACHMENT0, dataResultsGPUBuffer);
 
                 gl.glFlush();
                 gl.glFinish();

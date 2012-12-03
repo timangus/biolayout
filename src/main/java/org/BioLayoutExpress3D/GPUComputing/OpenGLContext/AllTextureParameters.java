@@ -1,6 +1,6 @@
 package org.BioLayoutExpress3D.GPUComputing.OpenGLContext;
 
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 
 /*
 *
@@ -19,17 +19,17 @@ public final class AllTextureParameters
     /**
     *  Texture rectangle, texture_float_ARB, RGBA, 32 bit.
     */
-    public static final TextureParameters TEXTURE_RECTANGLE_ARB_RGBA_32 = new TextureParameters("TEXTURE_RECTANGLE - float_ARB - RGBA - 32", GL_TEXTURE_RECTANGLE_ARB, GL_RGBA32F_ARB, GL_RGBA);
+    public static final TextureParameters TEXTURE_RECTANGLE_ARB_RGBA_32 = new TextureParameters("TEXTURE_RECTANGLE - float_ARB - RGBA - 32", GL_TEXTURE_RECTANGLE_ARB, GL_RGBA32F, GL_RGBA);
 
     /**
     *  Texture rectangle, texture_float_ARB, RGBA, 16 bit.
     */
-    public static final TextureParameters TEXTURE_RECTANGLE_ARB_RGBA_16 = new TextureParameters("TEXTURE_RECTANGLE - float_ARB - RGBA - 16", GL_TEXTURE_RECTANGLE_ARB, GL_RGBA16F_ARB, GL_RGBA);
+    public static final TextureParameters TEXTURE_RECTANGLE_ARB_RGBA_16 = new TextureParameters("TEXTURE_RECTANGLE - float_ARB - RGBA - 16", GL_TEXTURE_RECTANGLE_ARB, GL_RGBA16F, GL_RGBA);
 
     /**
     *  Texture rectangle, texture_float_ARB, R, 32 bit.
     */
-    public static final TextureParameters TEXTURE_RECTANGLE_ARB_R_32 = new TextureParameters("TEXTURE_RECTANGLE - float_ARB - R - 32", GL_TEXTURE_RECTANGLE_ARB, GL_LUMINANCE32F_ARB, GL_LUMINANCE);
+    public static final TextureParameters TEXTURE_RECTANGLE_ARB_R_32 = new TextureParameters("TEXTURE_RECTANGLE - float_ARB - R - 32", GL_TEXTURE_RECTANGLE_ARB, GL_LUMINANCE32F, GL_LUMINANCE);
 
 
 
@@ -72,17 +72,17 @@ public final class AllTextureParameters
     /**
     *  Texture 2D, texture_float_ARB, RGBA, 32 bit.
     */
-    public static final TextureParameters TEXTURE_2D_ARB_RGBA_32 = new TextureParameters("TEXTURE_2D - float_ARB - RGBA - 32", GL_TEXTURE_2D, GL_RGBA32F_ARB, GL_RGBA);
+    public static final TextureParameters TEXTURE_2D_ARB_RGBA_32 = new TextureParameters("TEXTURE_2D - float_ARB - RGBA - 32", GL_TEXTURE_2D, GL_RGBA32F, GL_RGBA);
 
     /**
     *  Texture 2D, texture_float_ARB, RGBA, 16 bit.
     */
-    public static final TextureParameters TEXTURE_2D_ARB_RGBA_16 = new TextureParameters("TEXTURE_2D - float_ARB - RGBA - 16", GL_TEXTURE_2D, GL_RGBA16F_ARB, GL_RGBA);
+    public static final TextureParameters TEXTURE_2D_ARB_RGBA_16 = new TextureParameters("TEXTURE_2D - float_ARB - RGBA - 16", GL_TEXTURE_2D, GL_RGBA16F, GL_RGBA);
 
     /**
     *  Texture 2D, texture_float_ARB, R, 32 bit.
     */
-    public static final TextureParameters TEXTURE_2D_ARB_R_32 = new TextureParameters("TEXTURE_2D - float_ARB - R - 32", GL_TEXTURE_2D, GL_LUMINANCE32F_ARB, GL_LUMINANCE);
+    public static final TextureParameters TEXTURE_2D_ARB_R_32 = new TextureParameters("TEXTURE_2D - float_ARB - R - 32", GL_TEXTURE_2D, GL_LUMINANCE32F, GL_LUMINANCE);
 
 
 

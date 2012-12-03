@@ -2,8 +2,9 @@ package org.BioLayoutExpress3D.Textures;
 
 import java.nio.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
-import static javax.media.opengl.GL.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
+import static javax.media.opengl.GL2.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -22,17 +23,17 @@ public final class RenderToTexture
     /**
     *  Frame buffer object reference.
     */
-    private final IntBuffer FBO = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();    
+    private final IntBuffer FBO = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();    
     
     /**
     *  Texture ID reference.
     */
-    private final IntBuffer TEXTURE_ID = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer TEXTURE_ID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
 
     /**
     *  Depth render buffer reference.
     */
-    private final IntBuffer DEPTH_RENDER_BUFFER = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
+    private final IntBuffer DEPTH_RENDER_BUFFER = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
 
     /**
     *  Width of the render-to-texture.
@@ -72,7 +73,7 @@ public final class RenderToTexture
     /**
     *  First constructor of the RenderToTexture class.
     */
-    public RenderToTexture(GL gl)
+    public RenderToTexture(GL2 gl)
     {
         this(gl, false, GL_RGBA8, GL_RGBA, false, false);
     }
@@ -80,7 +81,7 @@ public final class RenderToTexture
     /**
     *  Second constructor of the RenderToTexture class.
     */
-    public RenderToTexture(GL gl, boolean hasDepthRenderBuffer)
+    public RenderToTexture(GL2 gl, boolean hasDepthRenderBuffer)
     {
         this(gl, false, GL_RGBA8, GL_RGBA, hasDepthRenderBuffer, false);
     }
@@ -88,7 +89,7 @@ public final class RenderToTexture
     /**
     *  Third constructor of the RenderToTexture class.
     */
-    public RenderToTexture(GL gl, boolean hasShadowMap, boolean hasDepthRenderBuffer)
+    public RenderToTexture(GL2 gl, boolean hasShadowMap, boolean hasDepthRenderBuffer)
     {
         this(gl, hasShadowMap, GL_RGBA8, GL_RGBA, hasDepthRenderBuffer, false);
     }
@@ -96,7 +97,7 @@ public final class RenderToTexture
     /**
     *  Fourth constructor of the RenderToTexture class.
     */
-    public RenderToTexture(GL gl, boolean hasShadowMap, int textureFormat1, int textureFormat2, boolean hasDepthRenderBuffer, boolean generateMipmap)
+    public RenderToTexture(GL2 gl, boolean hasShadowMap, int textureFormat1, int textureFormat2, boolean hasDepthRenderBuffer, boolean generateMipmap)
     {
         this.hasShadowMap = hasShadowMap;
         this.textureFormat1 = textureFormat1;
@@ -108,7 +109,7 @@ public final class RenderToTexture
     /**
     *  Initializes all render-to-texture resources.
     */
-    public void initAllRenderToTextureResources(GL gl, int width, int height)
+    public void initAllRenderToTextureResources(GL2 gl, int width, int height)
     {
         initAllRenderToTextureResources(gl, 0, width, height);
     }
@@ -117,23 +118,23 @@ public final class RenderToTexture
     *  Initializes all render-to-texture resources.
     *  Overloaded version of the method above that selects an active texture unit for the render-to-texture.
     */
-    public void initAllRenderToTextureResources(GL gl, int textureUnit, int width, int height)
+    public void initAllRenderToTextureResources(GL2 gl, int textureUnit, int width, int height)
     {
         this.width = width;
         this.height = height;
 
         //  allocate a framebuffer object
-        gl.glGenFramebuffersEXT(1, FBO);
-        gl.glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, FBO.get(0) );
+        gl.glGenFramebuffers(1, FBO);
+        gl.glBindFramebuffer( GL_FRAMEBUFFER, FBO.get(0) );
 
         if (hasDepthRenderBuffer)
         {
             //  allocate a depth renderbuffer for our depth buffer the same size as our texture
-            gl.glGenRenderbuffersEXT(1, DEPTH_RENDER_BUFFER);
-            gl.glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, DEPTH_RENDER_BUFFER.get(0) );
-            gl.glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT32, width, height);
+            gl.glGenRenderbuffers(1, DEPTH_RENDER_BUFFER);
+            gl.glBindRenderbuffer( GL_RENDERBUFFER, DEPTH_RENDER_BUFFER.get(0) );
+            gl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
             //  attach the depth renderbuffer to our framebuffer
-            gl.glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, DEPTH_RENDER_BUFFER.get(0) );
+            gl.glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, DEPTH_RENDER_BUFFER.get(0) );
         }
 
         //  allocate the texture that we will render into
@@ -155,18 +156,18 @@ public final class RenderToTexture
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);        
 
         if (generateMipmap)
-            gl.glGenerateMipmapEXT(GL_TEXTURE_2D);
+            gl.glGenerateMipmap(GL_TEXTURE_2D);
 
         //  attach the framebuffer to our texture, which may be a depth texture
         if (hasShadowMap)
         {
-            gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, TEXTURE_ID.get(0), 0);
+            gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, TEXTURE_ID.get(0), 0);
             //  disable drawing to any buffers, we only want the depth
             gl.glDrawBuffer(GL_NONE);
             gl.glReadBuffer(GL_NONE);
         }
         else
-            gl.glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, TEXTURE_ID.get(0), 0);
+            gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TEXTURE_ID.get(0), 0);
 
         if ( checkFrameBufferStatus(gl) )
         {
@@ -177,60 +178,60 @@ public final class RenderToTexture
             if (DEBUG_BUILD) println("checkFrameBufferStatus() reported a Framebuffer error.");
         }
 
-        gl.glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     /**
     *  Checks the status of the Frame Buffer (FBO) initialization.
     */
-    private boolean checkFrameBufferStatus(GL gl)
+    private boolean checkFrameBufferStatus(GL2 gl)
     {
-        int status = gl.glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        int status = gl.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (status)
         {
-            case GL_FRAMEBUFFER_COMPLETE_EXT:
+            case GL_FRAMEBUFFER_COMPLETE:
 
                 if (DEBUG_BUILD) println("Framebuffer initialization is complete.");
 
                 return true;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, incomplete attachment.");
 
                 return false;
 
-            case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+            case GL_FRAMEBUFFER_UNSUPPORTED:
 
                 if (DEBUG_BUILD) println("Unsupported framebuffer format.");
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, missing attachment.");
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, attached images must have same dimensions.");
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, attached images must have same format.");
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, missing draw buffer.");
 
                 return false;
 
-            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
 
                 if (DEBUG_BUILD) println("Framebuffer incomplete, missing read buffer.");
 
@@ -247,9 +248,9 @@ public final class RenderToTexture
     /**
     *  Binds the framebuffer & sets the viewport to the given texture dimensions (uses glPushAttrib).
     */
-    public void startRender(GL gl)
+    public void startRender(GL2 gl)
     {
-        gl.glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, FBO.get(0) );
+        gl.glBindFramebuffer( GL_FRAMEBUFFER, FBO.get(0) );
         gl.glPushAttrib(GL_VIEWPORT_BIT);
         gl.glViewport(0, 0, width, height);
     }
@@ -258,16 +259,16 @@ public final class RenderToTexture
     *  Unbinds the framebuffer & returns to default state.
     *  Always restore the viewport when ready to render to the screen (uses glPopAttrib).
     */
-    public void finishRender(GL gl)
+    public void finishRender(GL2 gl)
     {
         gl.glPopAttrib();
-        gl.glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     /**
     *  Enable the render-to-texture.
     */
-    public void enable(GL gl)
+    public void enable(GL2 gl)
     {
         gl.glEnable(GL_TEXTURE_2D);
     }
@@ -275,7 +276,7 @@ public final class RenderToTexture
     /**
     *  Disable the render-to-texture.
     */
-    public void disable(GL gl)
+    public void disable(GL2 gl)
     {
         gl.glDisable(GL_TEXTURE_2D);
     }
@@ -283,7 +284,7 @@ public final class RenderToTexture
     /**
     *  Binds the render-to-texture.
     */
-    public void bind(GL gl)
+    public void bind(GL2 gl)
     {
         gl.glBindTexture( GL_TEXTURE_2D, TEXTURE_ID.get(0) );
     }
@@ -292,7 +293,7 @@ public final class RenderToTexture
     *  Binds the render-to-texture with a given active texture unit.
     *  Overloaded version of the method above that selects an active texture unit for the render-to-texture.
     */
-    public void bind(GL gl, int textureUnit)
+    public void bind(GL2 gl, int textureUnit)
     {
         gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
         gl.glBindTexture( GL_TEXTURE_2D, TEXTURE_ID.get(0) );
@@ -301,7 +302,7 @@ public final class RenderToTexture
     /**
     *  Prepares the high quality rendering.
     */
-    public void prepareHighQualityRendering(GL gl)
+    public void prepareHighQualityRendering(GL2 gl)
     {
         gl.glEnable(GL_MULTISAMPLE);
 
@@ -320,7 +321,7 @@ public final class RenderToTexture
     /**
     *  Prepares the low quality rendering.
     */
-    public void prepareLowQualityRendering(GL gl)
+    public void prepareLowQualityRendering(GL2 gl)
     {
         gl.glDisable(GL_MULTISAMPLE);
 
@@ -355,16 +356,16 @@ public final class RenderToTexture
     /**
     *  Disposes all render-to-texture resources.
     */
-    public void disposeAllRenderToTextureResources(GL gl)
+    public void disposeAllRenderToTextureResources(GL2 gl)
     {
         //  free the framebuffer
-        gl.glDeleteFramebuffersEXT(1, FBO);
+        gl.glDeleteFramebuffers(1, FBO);
         
         //  free the render-to-texture texture
         gl.glDeleteTextures(1, TEXTURE_ID);
         
         //  free the depth renderbuffer
-        if (hasDepthRenderBuffer) gl.glDeleteRenderbuffersEXT(1, DEPTH_RENDER_BUFFER);
+        if (hasDepthRenderBuffer) gl.glDeleteRenderbuffers(1, DEPTH_RENDER_BUFFER);
     }
 
 

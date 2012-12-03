@@ -6,8 +6,10 @@ import java.text.*;
 import java.util.*;
 import java.util.concurrent.*;
 import javax.media.opengl.*;
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.util.*;
+import com.jogamp.common.nio.Buffers;
 import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.CPUParallelism.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import org.BioLayoutExpress3D.Utils.*;
@@ -103,7 +105,7 @@ public abstract class ModelShape
     *  Creates the surface geometry.
     *  To be implemented in a sub-class. 
     */     
-    protected abstract void performCreateGeometry(GL gl);  
+    protected abstract void performCreateGeometry(GL2 gl);  
     
     /** 
     *  Checks the vertices model with the ModelDimensions object.
@@ -234,7 +236,7 @@ public abstract class ModelShape
     /** 
     *  Initializes the interleaved buffer.
     */    
-    private void initializeDisplayList(GL gl)
+    private void initializeDisplayList(GL2 gl)
     {
         modelShapeDisplayList = gl.glGenLists(1);
         // if ( gl.glIsList(modelShapeDisplayList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
@@ -248,12 +250,12 @@ public abstract class ModelShape
     *  Initializes the interleaved buffer.
     *  May be potentially overriden in an implementing class (see the OBJModelLoader class). 
     */    
-    protected void initializeInterleavedBuffer(GL gl)
+    protected void initializeInterleavedBuffer(GL2 gl)
     {
         int bufferSize = vertices.length;
         if (modelSettings.usingNormals) bufferSize += normals.length;
         if (modelSettings.usingTexCoords) bufferSize += vertices.length;
-        interleavedArrayCoordsBuffer = BufferUtil.newFloatBuffer(bufferSize);
+        interleavedArrayCoordsBuffer = Buffers.newDirectFloatBuffer(bufferSize);
 
         int texCoordIndex = 0;
         for (int vertexIndex = 0; vertexIndex < vertices.length; vertexIndex += 3)
@@ -281,7 +283,7 @@ public abstract class ModelShape
     *  Initializes the non-interleaved buffers.
     *  May be potentially overriden in an implementing class (see the OBJModelLoader class). 
     */    
-    protected void initializeNonInterleavedBuffers(GL gl)
+    protected void initializeNonInterleavedBuffers(GL2 gl)
     {
         // enable/disable Vertex Array state accordingly
         if (modelSettings.usingTexCoords)
@@ -296,15 +298,15 @@ public abstract class ModelShape
 
         if (modelSettings.usingTexCoords)
         {
-            allTexture2DCoordsBuffer = BufferUtil.newFloatBuffer(texCoords.length);
+            allTexture2DCoordsBuffer = Buffers.newDirectFloatBuffer(texCoords.length);
             allTexture2DCoordsBuffer.put(texCoords).rewind();
         }
         if (modelSettings.usingNormals)
         {
-            allNormal3DCoordsBuffer = BufferUtil.newFloatBuffer(normals.length);
+            allNormal3DCoordsBuffer = Buffers.newDirectFloatBuffer(normals.length);
             allNormal3DCoordsBuffer.put(normals).rewind();                     
         }
-        allVertex3DCoordsBuffer = BufferUtil.newFloatBuffer(vertices.length);
+        allVertex3DCoordsBuffer = Buffers.newDirectFloatBuffer(vertices.length);
         allVertex3DCoordsBuffer.put(vertices).rewind();            
     }   
     
@@ -312,36 +314,36 @@ public abstract class ModelShape
     *  Initializes the VBO buffers.
     *  May be potentially overriden in an implementing sub-class (see the OBJModelLoader class). 
     */    
-    protected void initializeVBOBuffers(GL gl)
+    protected void initializeVBOBuffers(GL2 gl)
     {
         if (modelSettings.usingTexCoords)
-            VBOTexCoordsID = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
+            VBOTexCoordsID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
         if (modelSettings.usingNormals)
-            VBONormalsID = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();
-        VBOVerticesID = (IntBuffer)BufferUtil.newIntBuffer(1).put( new int[] { 0 } ).rewind();          
+            VBONormalsID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+        VBOVerticesID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();          
 
         if (modelSettings.usingTexCoords)
         {
             gl.glGenBuffers(1, VBOTexCoordsID);
             gl.glBindBuffer( GL_ARRAY_BUFFER, VBOTexCoordsID.get(0) );
-            gl.glBufferData(GL_ARRAY_BUFFER, allTexture2DCoordsBuffer.capacity() * BufferUtil.SIZEOF_FLOAT, allTexture2DCoordsBuffer, GL_STATIC_DRAW);
+            gl.glBufferData(GL_ARRAY_BUFFER, allTexture2DCoordsBuffer.capacity() * Buffers.SIZEOF_FLOAT, allTexture2DCoordsBuffer, GL_STATIC_DRAW);
         }
         if (modelSettings.usingNormals)
         {
             gl.glGenBuffers(1, VBONormalsID);
             gl.glBindBuffer( GL_ARRAY_BUFFER, VBONormalsID.get(0) );
-            gl.glBufferData(GL_ARRAY_BUFFER, allNormal3DCoordsBuffer.capacity() * BufferUtil.SIZEOF_FLOAT, allNormal3DCoordsBuffer, GL_STATIC_DRAW);            
+            gl.glBufferData(GL_ARRAY_BUFFER, allNormal3DCoordsBuffer.capacity() * Buffers.SIZEOF_FLOAT, allNormal3DCoordsBuffer, GL_STATIC_DRAW);            
         }
         gl.glGenBuffers(1, VBOVerticesID);
         gl.glBindBuffer( GL_ARRAY_BUFFER, VBOVerticesID.get(0) );
-        gl.glBufferData(GL_ARRAY_BUFFER, allVertex3DCoordsBuffer.capacity() * BufferUtil.SIZEOF_FLOAT, allVertex3DCoordsBuffer, GL_STATIC_DRAW);   
+        gl.glBufferData(GL_ARRAY_BUFFER, allVertex3DCoordsBuffer.capacity() * Buffers.SIZEOF_FLOAT, allVertex3DCoordsBuffer, GL_STATIC_DRAW);   
     }        
     
     /** 
     *  Creates the geometry OpenGL GPU storage data structures.
     *  Cannot be overriden by an implementing sub-class.
     */    
-    protected final void createGeometryStorage(GL gl)
+    protected final void createGeometryStorage(GL2 gl)
     {   
         if ( modelSettings.modelRenderingState.equals(DISPLAY_LIST) )
         {
@@ -365,7 +367,7 @@ public abstract class ModelShape
     *  Draws the model shape in immediate mode.
     *  May be overriden by an implementing class (see the OBJModelLoader class). 
     */     
-    protected void drawModelShapeInImmediateMode(GL gl)
+    protected void drawModelShapeInImmediateMode(GL2 gl)
     {
         gl.glBegin(modelSettings.usingPatches ? GL_PATCHES : GL_TRIANGLES);
         int texCoordIndex = 0;
@@ -388,7 +390,7 @@ public abstract class ModelShape
     /** 
     *  Draws the model shape with the display list.
     */     
-    private void drawModelShapeWithDisplayList(GL gl)
+    private void drawModelShapeWithDisplayList(GL2 gl)
     {
         gl.glCallList(modelShapeDisplayList);
     }       
@@ -397,7 +399,7 @@ public abstract class ModelShape
     *  Draws the model shape with the interleaved vertex array.
     *  May be overriden by an implementing class (see the OBJModelLoader class). 
     */     
-    protected void drawModelShapeWithInterleavedVertexArray(GL gl)
+    protected void drawModelShapeWithInterleavedVertexArray(GL2 gl)
     {
         int mode = GL_V3F;
         if      ( modelSettings.usingNormals && !modelSettings.usingTexCoords)
@@ -418,7 +420,7 @@ public abstract class ModelShape
     *  Draws the model shape with non-interleaved vertex arrays.
     *  May be overriden by an implementing class (see the OBJModelLoader class). 
     */     
-    protected void drawModelShapeWithNonInterleavedVertexArrays(GL gl)
+    protected void drawModelShapeWithNonInterleavedVertexArrays(GL2 gl)
     {
         if ( modelSettings.usingTexCoords && (allTexture2DCoordsBuffer != null) )
             gl.glTexCoordPointer(2, GL_FLOAT, 0, allTexture2DCoordsBuffer);
@@ -436,7 +438,7 @@ public abstract class ModelShape
     *  Draws the model shape with VBOs.
     *  May be overriden by an implementing class (see the OBJModelLoader class). 
     */     
-    protected void drawModelShapeWithVBOs(GL gl)
+    protected void drawModelShapeWithVBOs(GL2 gl)
     {
         if (modelSettings.usingTexCoords)
         {
@@ -469,7 +471,7 @@ public abstract class ModelShape
     *  Draws the model shape.
     *  Cannot be overriden by an implementing sub-class.
     */      
-    public final void drawModelShape(GL gl)
+    public final void drawModelShape(GL2 gl)
     {
         if ( modelSettings.modelRenderingState.equals(IMMEDIATE_MODE) )
         {
@@ -495,7 +497,7 @@ public abstract class ModelShape
     /** 
     *  Disposes the display list.
     */      
-    private void disposeDisplayList(GL gl)
+    private void disposeDisplayList(GL2 gl)
     { 
         // if ( gl.glIsList(nodesDisplayList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
         gl.glDeleteLists(modelShapeDisplayList, 1);        
@@ -505,7 +507,7 @@ public abstract class ModelShape
     *  Disposes the interleaved vertex array buffer.
     *  May be overriden by an implementing class (see the OBJModelLoader class). 
     */      
-    protected void disposeInterleavedBuffer(GL gl)
+    protected void disposeInterleavedBuffer(GL2 gl)
     { 
         if (interleavedArrayCoordsBuffer != null)
         {
@@ -518,7 +520,7 @@ public abstract class ModelShape
     *  Disposes the non-interleaved vertex array buffers.
     *  May be overriden by an implementing class (see the OBJModelLoader class). 
     */     
-    protected void disposeNonInterleavedBuffers(GL gl)
+    protected void disposeNonInterleavedBuffers(GL2 gl)
     {        
         if (   (modelSettings.modelRenderingState.equals(VERTEX_ARRAY) && !USE_INTERLEAVED_ARRAY_COORDS_BUFFER)
              || modelSettings.modelRenderingState.equals(VBO) )
@@ -559,7 +561,7 @@ public abstract class ModelShape
     *  Disposes the VBOs.
     *  May be overriden by an implementing class (see the OBJModelLoader class). 
     */      
-    protected void disposeVBOs(GL gl)
+    protected void disposeVBOs(GL2 gl)
     {       
         if (modelSettings.usingTexCoords)
             gl.glDeleteBuffers(1, VBOTexCoordsID);
@@ -587,7 +589,7 @@ public abstract class ModelShape
     *  Disposes all model shape resources.
     *  Cannot be overriden by an implementing sub-class.
     */
-    public final void disposeAllModelShapeResources(GL gl)
+    public final void disposeAllModelShapeResources(GL2 gl)
     {
         if ( modelSettings.modelRenderingState.equals(DISPLAY_LIST) )
         {
@@ -633,14 +635,14 @@ public abstract class ModelShape
         }     
         vertices = null;
         
-        releaseAdditionalResources();
+        releaseAdditionalResources(gl);
     }    
     
     /** 
     *  Releases additional resources.
     *  To be implemented in a sub-class. 
     */       
-    protected abstract void releaseAdditionalResources();
+    protected abstract void releaseAdditionalResources(GL2 gl);
     
     /** 
     *  Gets the usingNormals variable.

@@ -200,10 +200,40 @@ public final class Layout
     */     
     private static boolean initJOGLNativeLibraries()
     {
-        for (int i = 0; i < NAME_OF_JOGL_NATIVE_LIBRARIES.length; i++)
-            if( !LoadNativeLibrary.copyNativeLibrary(NAME_OF_JOGL_NATIVE_LIBRARIES[i], FILE_SIZES_OF_JOGL_NATIVE_LIBRARIES[i]) )
+        // This prevents JOGL (2) from trying to load the native libraries from the official jar files, instead
+        // falling back on loading extracted versions which we create from our jar
+        System.setProperty("jogamp.gluegen.UseTempJarCache", "false");
+
+        if( !LoadNativeLibrary.copyNativeLibrary("gluegen-rt") )
+            return false;
+
+        if( !LoadNativeLibrary.copyNativeLibrary("jogl_desktop") )
+            return false;
+
+        if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_awt") )
+            return false;
+
+        // FIXME: this probably belongs somewhere slightly deeper in the library loading code
+        String osName = System.getProperty("os.name");
+
+        if( osName.startsWith("Windows") )
+        {
+            if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_win32") )
                 return false;
-        
+        }
+        else if( osName.startsWith("Linux") )
+        {
+            if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_x11") )
+                return false;
+        }
+        else if( osName.startsWith("Mac") || osName.startsWith("Darwin") )
+        {
+            if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_macosx") )
+                return false;
+        }
+        else
+            return false;
+
         LoadNativeLibrary.setJavaLibraryPath();
         
         return true;

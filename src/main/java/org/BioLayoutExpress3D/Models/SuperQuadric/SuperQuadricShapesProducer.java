@@ -288,7 +288,7 @@ public final class SuperQuadricShapesProducer
     /** v
     *  Creates a 'Sphere' model shape.
     */     
-    public static ModelShape createSphereShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createSphereShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(SPHERE);
 
@@ -298,7 +298,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'Cylinder' model shape.
     */     
-    public static ModelShape createCylinderShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createCylinderShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(CYLINDER);
         
@@ -308,7 +308,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'Star' model shape.
     */     
-    public static ModelShape createStarShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createStarShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(STAR);
         
@@ -318,7 +318,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'DoublePyramid' model shape.
     */     
-    public static ModelShape createDoublePyramidShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createDoublePyramidShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(DOUBLE_PYRAMID);
         
@@ -328,7 +328,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'Torus' model shape.
     */     
-    public static ModelShape createTorusShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createTorusShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(TORUS);
         
@@ -338,7 +338,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'PineappleSlice' model shape.
     */     
-    public static ModelShape createPineappleSliceShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createPineappleSliceShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(PINEAPPLE_SLICE);
         
@@ -348,7 +348,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'Pillow' model shape.
     */     
-    public static ModelShape createPillowShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createPillowShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(PILLOW);
 
@@ -358,7 +358,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'SquareTorus' model shape.
     */     
-    public static ModelShape createSquareTorusShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createSquareTorusShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(SQUARE_TORUS);
         
@@ -368,7 +368,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'PinchedTorus' model shape.
     */     
-    public static ModelShape createPinchedTorusShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createPinchedTorusShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(PINCHED_TORUS);
         
@@ -378,7 +378,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'RoundCube' model shape.
     */     
-    public static ModelShape createRoundCubeShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createRoundCubeShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(ROUND_CUBE);
         
@@ -388,7 +388,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'HyperboloidOneSheetExample' model shape.
     */     
-    public static ModelShape createHyperboloidOneSheetExampleShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createHyperboloidOneSheetExampleShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(SuperQuadricShapes.HYPERBOLOID_ONE_SHEET);
 
@@ -398,7 +398,7 @@ public final class SuperQuadricShapesProducer
     /** 
     *  Creates a 'HyperboloidTwoSheetsExample' model shape.
     */     
-    public static ModelShape createHyperboloidTwoSheetsExampleShape(GL gl, int slices, int segments, ModelSettings modelSettings)
+    public static ModelShape createHyperboloidTwoSheetsExampleShape(GL2 gl, int slices, int segments, ModelSettings modelSettings)
     {
         modelSettings.shapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(SuperQuadricShapes.HYPERBOLOID_TWO_SHEETS);
 

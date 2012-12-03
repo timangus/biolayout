@@ -84,7 +84,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Constructor of the LinearAlgebraComputingShaders class.
     */
-    public LinearAlgebraComputingShaders(GL gl)
+    public LinearAlgebraComputingShaders(GL2 gl)
     {
         loadAndCompileAllShaderPrograms(gl);
     }
@@ -92,7 +92,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Loads and compiles all the shader programs.
     */
-    private void loadAndCompileAllShaderPrograms(GL gl)
+    private void loadAndCompileAllShaderPrograms(GL2 gl)
     {
         String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );
         String GLSLPreprocessorCommands = "#version " + versionString + "\n";
@@ -114,7 +114,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Uses a particular shader texture SFX program.
     */
-    private void useProgramAndUniforms(GL gl, int effectIndex, int textureX, int textureY, float alpha)
+    private void useProgramAndUniforms(GL2 gl, int effectIndex, int textureX, int textureY, float alpha)
     {
         gl.glUseProgram(SHADER_PROGRAMS[effectIndex]);
         gl.glUniform1i(SHADER_PROGRAM_TEXTURE_XS[effectIndex], textureX);
@@ -125,7 +125,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Uses the Texture Rectangle shader for the Linear Algebra computations.
     */
-    public void useTextureRectangleShaderForLinearAlgebra(GL gl, int textureX, int textureY, float alpha)
+    public void useTextureRectangleShaderForLinearAlgebra(GL2 gl, int textureX, int textureY, float alpha)
     {
         useProgramAndUniforms(gl, ShaderTypes.LINEARALGEBRATEXTURERECTANGLE.ordinal(), textureX, textureY, alpha);
     }
@@ -133,7 +133,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Uses the Texture 2D shader for the Linear Algebra computations.
     */
-    public void useTexture2DShaderForLinearAlgebra(GL gl, int textureX, int textureY, float alpha)
+    public void useTexture2DShaderForLinearAlgebra(GL2 gl, int textureX, int textureY, float alpha)
     {
         useProgramAndUniforms(gl, ShaderTypes.LINEARALGEBRATEXTURE2D.ordinal(), textureX, textureY, alpha);
     }
@@ -141,7 +141,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Uses the Texture Rectangle shader for the Linear Algebra computations.
     */
-    public void useTextureRectangleShaderForTextureYUniform(GL gl, int textureY)
+    public void useTextureRectangleShaderForTextureYUniform(GL2 gl, int textureY)
     {
         gl.glUniform1i(SHADER_PROGRAM_TEXTURE_YS[ShaderTypes.LINEARALGEBRATEXTURERECTANGLE.ordinal()], textureY);
     }
@@ -149,7 +149,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Uses the Texture 2D shader for the Linear Algebra computations.
     */
-    public void useTexture2DShaderForTextureYUniform(GL gl, int textureY)
+    public void useTexture2DShaderForTextureYUniform(GL2 gl, int textureY)
     {
         gl.glUniform1i(SHADER_PROGRAM_TEXTURE_YS[ShaderTypes.LINEARALGEBRATEXTURE2D.ordinal()], textureY);
     }
@@ -157,7 +157,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Disables the Linear Algebra Computing.
     */
-    public void disableLinearAlgebraComputing(GL gl)
+    public void disableLinearAlgebraComputing(GL2 gl)
     {
         gl.glUseProgram(0);
     }
@@ -165,7 +165,7 @@ public class LinearAlgebraComputingShaders
     /**
     *  Destroys (de-initializes) all shader resources.
     */
-    public void destructor(GL gl)
+    public void destructor(GL2 gl)
     {
         for (int i = 0; i < NUMBER_OF_AVAILABLE_SHADERS; i++)
             ShaderUtils.detachAndDeleteShader(gl, new boolean[]{ false, true }, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i);

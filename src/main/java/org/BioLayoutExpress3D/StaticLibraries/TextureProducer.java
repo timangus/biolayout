@@ -1,7 +1,10 @@
 package org.BioLayoutExpress3D.StaticLibraries;
 
 import java.awt.image.*;
-import com.sun.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
+import javax.media.opengl.GL2;
+import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -41,7 +44,7 @@ public final class TextureProducer
             return getNullPointerTexture();
         }
 
-        return TextureIO.newTexture(image, useAutoMipmapGeneration);
+        return AWTTextureIO.newTexture(OpenGLContext.getGLProfile(), image, useAutoMipmapGeneration);
     } 
 
     /**
@@ -88,11 +91,11 @@ public final class TextureProducer
     /** 
     *  This method disposes the null pointer texture.
     */    
-    public static void disposeNullPointerTexture()    
+    public static void disposeNullPointerTexture(GL2 gl)    
     {
         if (nullPointerTexture != null)
         {
-            nullPointerTexture.dispose();
+            nullPointerTexture.dispose(gl);
             nullPointerTexture = null;
         }        
     }    

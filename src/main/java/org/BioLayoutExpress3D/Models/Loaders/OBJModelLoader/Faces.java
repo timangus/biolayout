@@ -2,7 +2,7 @@ package org.BioLayoutExpress3D.Models.Loaders.OBJModelLoader;
 
 import java.util.*;
 import javax.media.opengl.*;
-import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.DataStructures.*;
 import org.BioLayoutExpress3D.Utils.*;
 import static org.BioLayoutExpress3D.GPUComputing.GL4.GL4.*;
@@ -145,7 +145,7 @@ public class Faces
     * 
     *  If the texture coords need flipping then the t-values are changed.
     */
-    public int drawFaceInImmediateMode(GL gl, int index, boolean flipTexCoords, int previousPolygonType, boolean applyNewMaterial)
+    public int drawFaceInImmediateMode(GL2 gl, int index, boolean flipTexCoords, int previousPolygonType, boolean applyNewMaterial)
     {
         if ( index >= facesVerticesIdices.size() ) // i out of bounds?
           return -1; // dummy previousPolygonType OpenGL value
