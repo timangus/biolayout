@@ -1,0 +1,338 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.BioLayoutExpress3D.BioLayout</groupId>
+    <artifactId>Layout</artifactId>
+    <version>2.3</version>
+    <packaging>jar</packaging>
+
+    <name>BioLayoutExpress3D</name>
+    <url>http://biolayout.org</url>
+
+    <properties>
+        <jogampVersion>2.0-rc11</jogampVersion>
+        <joclVersion>0.1.7</joclVersion>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <version>${jogampVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all</artifactId>
+            <version>${jogampVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jocl</groupId>
+            <artifactId>jocl</artifactId>
+            <version>${joclVersion}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.name}-${project.version}</finalName>
+
+        <plugins>
+
+            <!-- This unpacks the jars we depend on into the final jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <filter> 
+                            </filter>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>.SF</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>.DSA</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>.RSA</resource>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Set the main class -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.BioLayoutExpress3D.Layout</mainClass>
+                            <packageName>org.BioLayoutExpress3D</packageName>
+                        </manifest>
+                        <manifestEntries>
+                            <url>${project.url}</url>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Extract the native libraries we depend on into the resources tree -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+
+                                <!-- jogl-all native windows-i586 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.jogl</groupId>
+                                    <artifactId>jogl-all</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-windows-i586</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win32</outputDirectory>
+                                    <includes>*.dll</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- gluegen-rt native windows-i586 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.gluegen</groupId>
+                                    <artifactId>gluegen-rt</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-windows-i586</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win32</outputDirectory>
+                                    <includes>*.dll</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- jocl native windows-i586 -->
+                                <artifactItem>
+                                    <groupId>org.jocl</groupId>
+                                    <artifactId>jocl</artifactId>
+                                    <version>${joclVersion}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win32</outputDirectory>
+                                    <includes>**/*x86.dll</includes>
+                                </artifactItem>
+
+                                <!-- jogl-all native windows-amd64 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.jogl</groupId>
+                                    <artifactId>jogl-all</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-windows-amd64</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win64</outputDirectory>
+                                    <includes>*.dll</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- gluegen-rt native windows-amd64 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.gluegen</groupId>
+                                    <artifactId>gluegen-rt</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-windows-amd64</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win64</outputDirectory>
+                                    <includes>*.dll</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- jocl native windows-amd64 -->
+                                <artifactItem>
+                                    <groupId>org.jocl</groupId>
+                                    <artifactId>jocl</artifactId>
+                                    <version>${joclVersion}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win64</outputDirectory>
+                                    <includes>**/*x86_64.dll</includes>
+                                </artifactItem>
+
+                                <!-- jogl-all native linux-i586 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.jogl</groupId>
+                                    <artifactId>jogl-all</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-linux-i586</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux32</outputDirectory>
+                                    <includes>*.so</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- gluegen-rt native linux-i586 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.gluegen</groupId>
+                                    <artifactId>gluegen-rt</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-linux-i586</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux32</outputDirectory>
+                                    <includes>*.so</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- jocl native linux-i586 -->
+                                <artifactItem>
+                                    <groupId>org.jocl</groupId>
+                                    <artifactId>jocl</artifactId>
+                                    <version>${joclVersion}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux32</outputDirectory>
+                                    <includes>**/*x86.so</includes>
+                                </artifactItem>
+
+                                <!-- jogl-all native linux-amd64 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.jogl</groupId>
+                                    <artifactId>jogl-all</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-linux-amd64</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux64</outputDirectory>
+                                    <includes>*.so</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- gluegen-rt native linux-amd64 -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.gluegen</groupId>
+                                    <artifactId>gluegen-rt</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-linux-amd64</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux64</outputDirectory>
+                                    <includes>*.so</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- jocl native linux-amd64 -->
+                                <artifactItem>
+                                    <groupId>org.jocl</groupId>
+                                    <artifactId>jocl</artifactId>
+                                    <version>${joclVersion}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux64</outputDirectory>
+                                    <includes>**/*x86_64.so</includes>
+                                </artifactItem>
+
+                                <!-- jogl-all native macosx-universal -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.jogl</groupId>
+                                    <artifactId>jogl-all</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-macosx-universal</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Mac</outputDirectory>
+                                    <includes>*.jnilib</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- gluegen-rt native macosx-universal -->
+                                <artifactItem>
+                                    <groupId>org.jogamp.gluegen</groupId>
+                                    <artifactId>gluegen-rt</artifactId>
+                                    <version>${jogampVersion}</version>
+                                    <classifier>natives-macosx-universal</classifier>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Mac</outputDirectory>
+                                    <includes>*.jnilib</includes>
+                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                </artifactItem>
+
+                                <!-- jocl native macosx-amd64 -->
+                                <artifactItem>
+                                    <groupId>org.jocl</groupId>
+                                    <artifactId>jocl</artifactId>
+                                    <version>${joclVersion}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Mac</outputDirectory>
+                                    <includes>**/*.jnilib</includes>
+                                </artifactItem>
+
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- The native libraries in the jocl jar aren't named suitably for our purposes, so
+                 we have this antrun task list to fix them up. Be aware that the original file names
+                 include the version number so will need adjusted if the version of jocl is changed -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <move file="${project.build.directory}/classes/Resources/Libraries/Win32/lib/JOCL_0_1_7-windows-x86.dll"
+                                    tofile="${project.build.directory}/classes/Resources/Libraries/Win32/jocl.dll" />
+                                <move file="${project.build.directory}/classes/Resources/Libraries/Win64/lib/JOCL_0_1_7-windows-x86_64.dll"
+                                    tofile="${project.build.directory}/classes/Resources/Libraries/Win64/jocl.dll" />
+                                <move file="${project.build.directory}/classes/Resources/Libraries/Linux32/lib/libJOCL_0_1_7-linux-x86.so"
+                                    tofile="${project.build.directory}/classes/Resources/Libraries/Linux32/libjocl.so" />
+                                <move file="${project.build.directory}/classes/Resources/Libraries/Linux64/lib/libJOCL_0_1_7-linux-x86_64.so"
+                                    tofile="${project.build.directory}/classes/Resources/Libraries/Linux64/libjocl.so" />
+                                <move file="${project.build.directory}/classes/Resources/Libraries/Mac/lib/libJOCL_0_1_7-apple-x86_64.jnilib"
+                                    tofile="${project.build.directory}/classes/Resources/Libraries/Mac/libjocl.jnilib" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
