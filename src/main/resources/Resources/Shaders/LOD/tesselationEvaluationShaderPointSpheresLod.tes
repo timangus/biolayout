@@ -1,0 +1,100 @@
+/*
+
+ BioLayoutExpress3D - A tool for visualisation
+ and analysis of biological networks
+
+ Copyright (c) 2006-2012 Genome Research Ltd.
+ Authors: Thanos Theo, Anton Enright, Leon Goldovsky, Ildefonso Cases, Markus Brosch, Stijn van Dongen, Michael Kargas, Benjamin Boyer and Tom Freeman
+ Contact: support@biolayout.org
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+ @ author, GLSL & OpenGL code author Thanos Theo, 2012
+
+*/
+
+#extension GL_ARB_tessellation_shader : enable
+#extension GL_EXT_gpu_shader4: enable
+
+patch in  vec3 tsCenter;
+patch in float tsRadius;
+patch in  vec4 tsSceneColor;
+
+out vec3 TS_GS_POSITION;
+out vec3 TS_GS_NORMAL;
+out vec4 TS_GS_SCENE_COLOR;
+out vec2 TS_GS_TEX_COORDS;
+#if APPLY_NORMALS_GEOMETRY_CONDITION
+    out vec4 TS_GS_VERTEX_NORMAL_POSITION;
+#endif
+
+uniform bool pointSpheresLodTexturing;
+uniform bool pointSpheresLodSphericalMapping;
+uniform float pointSpheresLodMorphing;
+// uniform bool pointSpheresLodUserClipping;
+uniform float pointSpheresLodTimer;
+
+const float PI = 3.14159265;
+
+vec3 applyMorphing(in vec3, in float, in float);
+vec2 applySphericalCoordinates(in vec3, in vec3);
+
+layout (quads, equal_spacing, ccw) in;
+
+void main()
+{    
+    float u = gl_TessCoord.x;
+    float v = gl_TessCoord.y;
+
+    // -pi / 2.0 <= phi   <= pi / 2.0
+    // -pi       <= theta <= pi
+    float phi   =       PI * (u - 0.5); // spherical coordinates
+    float theta = 2.0 * PI * (v - 0.5); // spherical coordinates
+
+    float cosphi = cos(phi);
+    vec3 xyz = vec3( cosphi * cos(theta), sin(phi), cosphi * sin(theta) );
+        
+    TS_GS_NORMAL = gl_NormalMatrix * xyz;
+    TS_GS_SCENE_COLOR = tsSceneColor;
+    
+    if (pointSpheresLodMorphing != 0.0)    
+        xyz = applyMorphing(xyz, pointSpheresLodMorphing, pointSpheresLodTimer);
+
+    #if APPLY_NORMALS_GEOMETRY_CONDITION
+        TS_GS_VERTEX_NORMAL_POSITION = vec4(xyz, 1.0);
+        float intensity = length(xyz) / 10.0;
+        TS_GS_VERTEX_NORMAL_POSITION.xyz *= (1.0 + intensity) * tsRadius; // scale sphere with extra offset based on normal intensity
+        TS_GS_VERTEX_NORMAL_POSITION.xyz += tsCenter;                     // transform sphere to view position
+    #endif   
+
+    xyz *= tsRadius; // scale sphere
+    xyz += tsCenter; // transform sphere to current view position
+
+    #if GPU_GEOMETRY_SHADER4_COMPATIBILITY_CONDITION    
+        gl_Position = vec4(xyz, 1.0);
+    #else    
+        gl_Position = gl_ModelViewProjectionMatrix * vec4(xyz, 1.0);
+    #endif
+
+    // if (pointSpheresLodUserClipping) // disabled due to GL error generation
+    // {
+        // used with the glClipPlane() command for user defined clipping planes mimicking OpenGL's fixed functionality
+        // gl_ClipVertex = gl_ModelViewMatrix * vec4(xyz, 1.0);
+    // }
+
+    TS_GS_POSITION = vec3( gl_ModelViewMatrix * vec4(xyz, 1.0) );
+    if (pointSpheresLodTexturing)
+        TS_GS_TEX_COORDS = (pointSpheresLodSphericalMapping) ? applySphericalCoordinates(TS_GS_POSITION, TS_GS_NORMAL) : vec2(0.75 - v, 1.0 - u); // so as to create same texturing effects as the original BL pipeline
+}
