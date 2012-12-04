@@ -1355,9 +1355,8 @@ public class Graph extends GLCanvas implements GraphInterface
                 // make sure GLSL 330 and above is present: Geometry Shaders need high-end hardware to efficiently execute. Tested to work ok on Nvidia hardware, AMD/ATI ones are creating color artifacts
                 if ( USE_330_SHADERS_PROCESS && GL_IS_NVIDIA && ( USE_GL_ARB_GEOMETRY_SHADER4 = gl.isExtensionAvailable("GL_ARB_geometry_shader4") ) )
                 {
-                  //FIXME needs GL3
-/*                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, OPENGL_INT_VALUE);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);*/
+                    gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB, OPENGL_INT_VALUE);
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
                     GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = 0;
                 }
                 USE_GL_EXT_GPU_SHADER4 = gl.isExtensionAvailable("GL_EXT_gpu_shader4");

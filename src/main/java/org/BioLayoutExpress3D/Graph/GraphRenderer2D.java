@@ -3519,6 +3519,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     @Override
     public void dispose(GLAutoDrawable glAutoDrawable)
     {
-      //FIXME
+      //FIXME this was added during the move to JOGL 2
+      //TODO check if resources need to be freed here
     }
 }
