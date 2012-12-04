@@ -43,47 +43,18 @@
     </dependencies>
 
     <build>
-        <finalName>${project.name}-${project.version}</finalName>
+        <!-- The name for the jar that doesn't include the dependencies -->
+        <finalName>${project.name}-${project.version}-no-deps</finalName>
 
         <plugins>
-
             <!-- This unpacks the jars we depend on into the final jar -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <filter> 
-                            </filter>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-                                    <resource>.SF</resource>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-                                    <resource>.DSA</resource>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-                                    <resource>.RSA</resource>
-                                </transformer>
-                            </transformers>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Set the main class -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
+                    <descriptors>
+                        <descriptor>jar-with-dependencies.xml</descriptor>
+                    </descriptors>
                     <archive>
                         <manifest>
                             <mainClass>org.BioLayoutExpress3D.Layout</mainClass>
@@ -93,7 +64,23 @@
                             <url>${project.url}</url>
                         </manifestEntries>
                     </archive>
+
+                    <!-- The name for the jar that includes the dependencies -->
+                    <finalName>${project.name}-${project.version}</finalName>
+
+                    <!-- Stop the plugin appending jar-with-dependencies to the name -->
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Extract the native libraries we depend on into the resources tree -->
@@ -105,7 +92,7 @@
 
                     <execution>
                         <id>unpack</id>
-                        <phase>generate-sources</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
@@ -138,16 +125,6 @@
                                     <excludes>*newt.*,*_mobile.*</excludes>
                                 </artifactItem>
 
-                                <!-- jocl native windows-i586 -->
-                                <artifactItem>
-                                    <groupId>org.jocl</groupId>
-                                    <artifactId>jocl</artifactId>
-                                    <version>${joclVersion}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win32</outputDirectory>
-                                    <includes>**/*x86.dll</includes>
-                                </artifactItem>
 
                                 <!-- jogl-all native windows-amd64 -->
                                 <artifactItem>
@@ -175,16 +152,6 @@
                                     <excludes>*newt.*,*_mobile.*</excludes>
                                 </artifactItem>
 
-                                <!-- jocl native windows-amd64 -->
-                                <artifactItem>
-                                    <groupId>org.jocl</groupId>
-                                    <artifactId>jocl</artifactId>
-                                    <version>${joclVersion}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win64</outputDirectory>
-                                    <includes>**/*x86_64.dll</includes>
-                                </artifactItem>
 
                                 <!-- jogl-all native linux-i586 -->
                                 <artifactItem>
@@ -212,16 +179,6 @@
                                     <excludes>*newt.*,*_mobile.*</excludes>
                                 </artifactItem>
 
-                                <!-- jocl native linux-i586 -->
-                                <artifactItem>
-                                    <groupId>org.jocl</groupId>
-                                    <artifactId>jocl</artifactId>
-                                    <version>${joclVersion}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux32</outputDirectory>
-                                    <includes>**/*x86.so</includes>
-                                </artifactItem>
 
                                 <!-- jogl-all native linux-amd64 -->
                                 <artifactItem>
@@ -249,16 +206,6 @@
                                     <excludes>*newt.*,*_mobile.*</excludes>
                                 </artifactItem>
 
-                                <!-- jocl native linux-amd64 -->
-                                <artifactItem>
-                                    <groupId>org.jocl</groupId>
-                                    <artifactId>jocl</artifactId>
-                                    <version>${joclVersion}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux64</outputDirectory>
-                                    <includes>**/*x86_64.so</includes>
-                                </artifactItem>
 
                                 <!-- jogl-all native macosx-universal -->
                                 <artifactItem>
@@ -286,15 +233,17 @@
                                     <excludes>*newt.*,*_mobile.*</excludes>
                                 </artifactItem>
 
-                                <!-- jocl native macosx-amd64 -->
+
+                                <!-- Note that the jocl libs aren't extracted directly into the resource tree as
+                                     they must be renamed by a set of antrun tasks below -->
                                 <artifactItem>
                                     <groupId>org.jocl</groupId>
                                     <artifactId>jocl</artifactId>
                                     <version>${joclVersion}</version>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Mac</outputDirectory>
-                                    <includes>**/*.jnilib</includes>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <includes>lib/*</includes>
                                 </artifactItem>
 
                             </artifactItems>
@@ -311,18 +260,18 @@
                 <version>1.7</version>
                 <executions>
                     <execution>
-                        <phase>prepare-package</phase>
+                        <phase>generate-resources</phase>
                         <configuration>
                             <target>
-                                <move file="${project.build.directory}/classes/Resources/Libraries/Win32/lib/JOCL_0_1_7-windows-x86.dll"
+                                <copy file="${project.build.directory}/lib/JOCL_0_1_7-windows-x86.dll"
                                     tofile="${project.build.directory}/classes/Resources/Libraries/Win32/jocl.dll" />
-                                <move file="${project.build.directory}/classes/Resources/Libraries/Win64/lib/JOCL_0_1_7-windows-x86_64.dll"
+                                <copy file="${project.build.directory}/lib/JOCL_0_1_7-windows-x86_64.dll"
                                     tofile="${project.build.directory}/classes/Resources/Libraries/Win64/jocl.dll" />
-                                <move file="${project.build.directory}/classes/Resources/Libraries/Linux32/lib/libJOCL_0_1_7-linux-x86.so"
+                                <copy file="${project.build.directory}/lib/libJOCL_0_1_7-linux-x86.so"
                                     tofile="${project.build.directory}/classes/Resources/Libraries/Linux32/libjocl.so" />
-                                <move file="${project.build.directory}/classes/Resources/Libraries/Linux64/lib/libJOCL_0_1_7-linux-x86_64.so"
+                                <copy file="${project.build.directory}/lib/libJOCL_0_1_7-linux-x86_64.so"
                                     tofile="${project.build.directory}/classes/Resources/Libraries/Linux64/libjocl.so" />
-                                <move file="${project.build.directory}/classes/Resources/Libraries/Mac/lib/libJOCL_0_1_7-apple-x86_64.jnilib"
+                                <copy file="${project.build.directory}/lib/libJOCL_0_1_7-apple-x86_64.jnilib"
                                     tofile="${project.build.directory}/classes/Resources/Libraries/Mac/libjocl.jnilib" />
                             </target>
                         </configuration>
@@ -335,5 +284,4 @@
 
         </plugins>
     </build>
-
 </project>
