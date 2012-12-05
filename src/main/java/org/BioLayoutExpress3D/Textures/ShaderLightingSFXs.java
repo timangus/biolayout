@@ -816,7 +816,7 @@ public class ShaderLightingSFXs
     */
     private void loadAndCompileAllShaderPrograms(GL2 gl)
     {        
-        int NUMBER_OF_OUTPUT_GS_VERTICES = GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER;
+        int NUMBER_OF_OUTPUT_GS_VERTICES = GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER;
         if (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders)
         {
             NUMBER_OF_OUTPUT_GS_VERTICES = (applyNormalsGeometry) ? 4 * 3 : 3; // up to 32 output vertices, for sphere subdivision for up to level 2, then even NVidia Fermi-based cards fail to viz properly

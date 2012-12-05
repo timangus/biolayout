@@ -106,7 +106,7 @@ public final class GlobalEnvironment
     public static int GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB_INTEGER = 0;
     public static int GL_MAX_TEXTURE_SIZE_INTEGER = 0;
     public static int GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER = 0;
-    public static int GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = 0;
+    public static int GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER = 0;
 
     // OpenCL specific variables
     public static boolean OPENCL_GPU_COMPUTING_ENABLED = false;

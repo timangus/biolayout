@@ -1355,8 +1355,7 @@ public class Graph extends GLCanvas implements GraphInterface
                 if ( USE_330_SHADERS_PROCESS && GL_IS_NVIDIA && ( USE_GL_ARB_GEOMETRY_SHADER4 = gl.isExtensionAvailable("GL_ARB_geometry_shader4") ) )
                 {
                     gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB, OPENGL_INT_VALUE);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = 0;
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER = OPENGL_INT_VALUE.get(0);
                 }
                 USE_GL_EXT_GPU_SHADER4 = gl.isExtensionAvailable("GL_EXT_gpu_shader4");
                 USE_GL_ARB_GPU_SHADER5 = gl.isExtensionAvailable("GL_ARB_gpu_shader5");
@@ -1386,7 +1385,7 @@ public class Graph extends GLCanvas implements GraphInterface
                     if (USE_GL_EXT_FRAMEBUFFER_OBJECT)
                         output.append("GL_MAX_RENDERBUFFER_SIZE_EXT:\t\t").append(GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER).append("\n");
                     if (USE_GL_ARB_GEOMETRY_SHADER4)
-                        output.append("GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT:\t").append(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER).append("\n");
+                        output.append("GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB:\t").append(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER).append("\n");
                     output.append("GL GPU SHADER MODEL 4 SUPPORT:\t\t").append(USE_GL_EXT_GPU_SHADER4 ? "YES" : "NO").append("\n");
                     output.append("GL GPU SHADER MODEL 5 SUPPORT:\t\t").append(USE_GL_ARB_GPU_SHADER5 ? "YES" : "NO").append("\n");
                     output.append("GL GPU SHADER FP64 SUPPORT:\t\t").append(USE_GL_ARB_GPU_SHADER_FP64 ? "YES" : "NO").append("\n\n");

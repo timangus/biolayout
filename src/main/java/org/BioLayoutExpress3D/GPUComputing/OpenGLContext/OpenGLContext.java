@@ -77,7 +77,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Reference for the GLU class.
     */
-    protected final GLU glu = new GLU();
+    protected final static GLU glu = new GLU();
 
     /**
     *  Value needed for the OpenGL GPU Computations.
@@ -493,8 +493,7 @@ public abstract class OpenGLContext extends Canvas
                 if ( USE_330_SHADERS_PROCESS && GL_IS_NVIDIA && ( USE_GL_ARB_GEOMETRY_SHADER4 = gl.isExtensionAvailable("GL_ARB_geometry_shader4") ) )
                 {
                     gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB, OPENGL_INT_VALUE);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = OPENGL_INT_VALUE.get(0);
-                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER = 0;
+                    GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER = OPENGL_INT_VALUE.get(0);
                 }             
                 USE_GL_EXT_GPU_SHADER4 = gl.isExtensionAvailable("GL_EXT_gpu_shader4");
                 USE_GL_ARB_GPU_SHADER5 = gl.isExtensionAvailable("GL_ARB_gpu_shader5");
@@ -524,7 +523,7 @@ public abstract class OpenGLContext extends Canvas
                     if (USE_GL_EXT_FRAMEBUFFER_OBJECT)
                         output.append("GL_MAX_RENDERBUFFER_SIZE_EXT:\t\t").append(GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER).append("\n");
                     if (USE_GL_ARB_GEOMETRY_SHADER4)
-                        output.append("GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT:\t").append(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER).append("\n");
+                        output.append("GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB:\t").append(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER).append("\n");
                     output.append("GL GPU SHADER MODEL 4 SUPPORT:\t\t").append(USE_GL_EXT_GPU_SHADER4 ? "YES" : "NO").append("\n");
                     output.append("GL GPU SHADER MODEL 5 SUPPORT:\t\t").append(USE_GL_ARB_GPU_SHADER5 ? "YES" : "NO").append("\n");
                     output.append("GL GPU SHADER FP64 SUPPORT:\t\t").append(USE_GL_ARB_GPU_SHADER_FP64 ? "YES" : "NO").append("\n\n");
@@ -685,6 +684,28 @@ public abstract class OpenGLContext extends Canvas
             if (DEBUG_BUILD) println("OpenGL reported an error: " + error + "!\nPoint of error: " + label);
 
             GPUErrorOccured = true;
+        }
+    }
+
+    public static void checkGLErrors(GL2 gl)
+    {
+        int error = gl.glGetError();
+        if (error != GL_NO_ERROR)
+        {
+            String stringError = glu.gluErrorString(error);
+
+            if (DEBUG_BUILD)
+            {
+                StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+                StackTraceElement ste = stes[2]; // The index here is probably java implementation dependendent
+
+                String fullClassName = ste.getClassName();
+                String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
+                String methodName = ste.getMethodName();
+                int lineNumber = ste.getLineNumber();
+
+                println(className + "." + methodName + "():" + lineNumber + " OpenGL error '" + stringError + "'");
+            }
         }
     }
 

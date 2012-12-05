@@ -256,9 +256,9 @@ public final class ShaderUtils
                 if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                 return;
             }        
-            if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER)
+            if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
             {
-                if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER + "\nShader loading process now aborted.");
+                if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
                 return;                
             }
             geometryShaders[index] = gl.glCreateShader(GL_GEOMETRY_SHADER);
@@ -373,9 +373,9 @@ public final class ShaderUtils
                 if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                 return;
             }        
-            if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER)
+            if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
             {
-                if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER + "\nShader loading process now aborted.");
+                if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
                 return;                
             }
             geometryShaders[index] = gl.glCreateShader(GL_GEOMETRY_SHADER);
@@ -610,9 +610,9 @@ public final class ShaderUtils
                     if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                     return;
                 }        
-                if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER)
+                if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
                 {
-                    if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER + "\nShader loading process now aborted.");
+                    if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
                     return;                
                 }                
                 geometryShaders[index][i] = gl.glCreateShader(GL_GEOMETRY_SHADER);
@@ -742,9 +742,9 @@ public final class ShaderUtils
                     if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                     return;
                 }        
-                if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER)
+                if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
                 {
-                    if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER + "\nShader loading process now aborted.");
+                    if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
                     return;                
                 }                
                 geometryShaders[index][i] = gl.glCreateShader(GL_GEOMETRY_SHADER);
