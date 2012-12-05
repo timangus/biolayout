@@ -481,7 +481,7 @@ public final class GlobalEnvironment
                                                        "Have you tried your graph with the Glyphbombing Shader?",
                                                        "A graph a day keeps the reviewers away.",
                                                        "A graph a day keeps the supervisors away.",
-                                                       "For full effects please visit the Trippy ® Experience.",
+                                                       "For full effects please visit the Trippy Â® Experience.",
                                                        "Fancy some breakfast? Try our torus shape.",
                                                        "Where are the donuts? Try all of our shapes.",
                                                        "Cancer research needs your help."
