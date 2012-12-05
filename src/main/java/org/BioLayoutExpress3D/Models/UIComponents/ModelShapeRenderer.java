@@ -751,16 +751,16 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
             int NUMBER_OF_OUTPUT_GS_VERTICES = GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT_INTEGER;
             if (USE_GL_ARB_GEOMETRY_SHADER4)
                 NUMBER_OF_OUTPUT_GS_VERTICES = 4 * 3;
-            String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );
+            String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;
             String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
-                                              "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                                           + "\n" + 
-                                              "#define GPU_GEOMETRY_SHADER4_COMPATIBILITY_CONDITION " + ( USE_GL_ARB_GEOMETRY_SHADER4 ? 1 : 0 )                                      + "\n" + 
-                                              "#define GPU_SHADER_FP64_COMPATIBILITY_CONDITION "      + ( USE_GL_ARB_GPU_SHADER_FP64 ? 1 : 0 )                                       + "\n" +                     
-                                              "#define MAX_LIGHTS "                                   + MAX_LIGHTS                                                                   + "\n" +             
-                                              "#define USE_SPOT_LIGHTS "                              + ( (USE_SPOT_LIGHTS) ? 1 : 0 )                                                + "\n" +
-                                              "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? "out" : "varying" ) + "\n" +  
-                                              "#define GS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? ""    : "varying" ) + "\n" +  
-                                              "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? "in"  : "varying" ) + "\n" +  
+                                              "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                + "\n" + 
+                                              "#define GPU_GEOMETRY_SHADER4_COMPATIBILITY_CONDITION " + ( USE_GL_ARB_GEOMETRY_SHADER4 ? 1 : 0 )           + "\n" + 
+                                              "#define GPU_SHADER_FP64_COMPATIBILITY_CONDITION "      + ( USE_GL_ARB_GPU_SHADER_FP64 ? 1 : 0 )            + "\n" +                     
+                                              "#define MAX_LIGHTS "                                   + MAX_LIGHTS                                        + "\n" +             
+                                              "#define USE_SPOT_LIGHTS "                              + ( (USE_SPOT_LIGHTS) ? 1 : 0 )                     + "\n" +
+                                              "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "out" : "varying" ) + "\n" +  
+                                              "#define GS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? ""    : "varying" ) + "\n" +  
+                                              "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "in"  : "varying" ) + "\n" +  
                                               "#define VS_EYE_VECTOR "   + ( (USE_GL_ARB_GEOMETRY_SHADER4) ? "vs" : "" ) + "EyeVector" + "\n" + 
                                               "#define VS_NORMAL "       + ( (USE_GL_ARB_GEOMETRY_SHADER4) ? "vs" : "" ) + "Normal"    + "\n" +
                                               ( (USE_GL_ARB_GEOMETRY_SHADER4) ?  "#define GS_VS_EYE_VECTOR " + "vsEyeVector" + "\n" : "") +
@@ -1336,7 +1336,6 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
             if ( USE_SHADERS_PROCESS = ( (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_QUALITY_RENDERING_AND_SHADERS) || LoadNativeLibrary.isMacLionAndAbove() ) )
             {
                 USE_330_SHADERS_PROCESS = (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_330_SHADERS);
-                USE_400_SHADERS_PROCESS = USE_NATIVE_CODE && (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_400_SHADERS); // GL4 library is natively connected manually
                 
                 GL_SHADING_LANGUAGE_VERSION_STRING = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);
                 gl.glGetIntegerv(GL_MAX_DRAW_BUFFERS, OPENGL_INT_VALUE);

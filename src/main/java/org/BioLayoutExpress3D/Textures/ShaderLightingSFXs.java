@@ -829,16 +829,16 @@ public class ShaderLightingSFXs
             }
         }
 
-        String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );
+        String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;
         String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
                                           "#define GPU_SHADER_FP64_COMPATIBILITY_CONDITION "      + ( (USE_GL_ARB_GPU_SHADER_FP64 && GL_IS_NVIDIA) ? 1 : 0 )                                             + "\n" +
                                           "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                                                                   + "\n" + 
                                           "#define GPU_GEOMETRY_SHADER4_COMPATIBILITY_CONDITION " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? 1 : 0 )                                      + "\n" +
                                           "#define APPLY_NORMALS_GEOMETRY_CONDITION "             + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders && applyNormalsGeometry) ? 1 : 0 )              + "\n" +
                                           "#define ANIMATION_COMPATIBILITY_CONDITION "            + ( (GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_INTEGER <= MINIMUM_GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS) ? 1 : 0 ) + "\n" +
-                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? "out" : "varying" )                         + "\n" +  
-                                          "#define GS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? ""    : "varying" )                         + "\n" +  
-                                          "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? "in"  : "varying" )                         + "\n" +  
+                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "out" : "varying" )                                                    + "\n" +  
+                                          "#define GS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? ""    : "varying" )                                                    + "\n" +  
+                                          "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "in"  : "varying" )                                                    + "\n" +  
                                           "#define VS_POSITION "    + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "Position"   + "\n" + 
                                           "#define VS_MC_POSITION " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "MCPosition" + "\n" +
                                           "#define VS_NORMAL "      + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "Normal"     + "\n" + 

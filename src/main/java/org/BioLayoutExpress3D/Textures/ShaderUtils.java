@@ -7,7 +7,6 @@ import com.jogamp.opengl.util.*;
 import com.jogamp.common.nio.Buffers;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.GL3.*;
-import static org.BioLayoutExpress3D.GPUComputing.GL4.GL4.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 

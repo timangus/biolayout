@@ -32,7 +32,6 @@ import org.BioLayoutExpress3D.StaticLibraries.*;
 import org.BioLayoutExpress3D.Textures.*;
 import org.BioLayoutExpress3D.Utils.*;
 import static org.BioLayoutExpress3D.Network.NetworkContainer.*;
-import static org.BioLayoutExpress3D.GPUComputing.GL4.GL4.*;
 import static org.BioLayoutExpress3D.Graph.Graph.*;
 import static org.BioLayoutExpress3D.Graph.GraphRendererCommonVariables.*;
 import static org.BioLayoutExpress3D.Graph.GraphRendererCommonFinalVariables.*;
@@ -75,9 +74,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     private ShaderLightingSFXs shaderLightingSFXsNodes = null;
     private ShaderLightingSFXs shaderLightingSFXsSelectedNodes = null;
     private ShaderLightingSFXs shaderLightingSFXsSelectedNodesNormalsGeometry = null;
-    private ShaderLODSFXs shaderLODSFXsNodes = null;
-    private ShaderLODSFXs shaderLODSFXsSelectedNodes = null;
-    private ShaderLODSFXs shaderLODSFXsSelectedNodesNormalsGeometry = null;
     // private ShaderLinesSFXs shaderLinesSFXs = null;
     private boolean enableDisableNodeTexture = false;
 
@@ -159,51 +155,31 @@ final class GraphRenderer3D implements GraphInterface // package access
             float px = checkForNodeTexturing() ? ( ( !SHOW_3D_ENVIRONMENT_MAPPING.get() ) ? nodeTexture.getImageWidth() : renderToTexture.getWidth() ) : 1.0f;
             float py = checkForNodeTexturing() ? ( ( !SHOW_3D_ENVIRONMENT_MAPPING.get() ) ? nodeTexture.getImageHeight() : renderToTexture.getHeight() ) : 1.0f;
                 
-            if ( ( MATERIAL_POINT_SPHERES_LOD.get() || MATERIAL_PHONG_TESSELLATION_LOD.get() ) && USE_400_SHADERS_PROCESS )
+            shaderSFXsCurrentReference = (isNodesShading || !USE_GL_ARB_GEOMETRY_SHADER4) ? shaderLightingSFXsNodes : ( WIREFRAME_SELECTION_MODE.get() ) ? shaderLightingSFXsSelectedNodesNormalsGeometry : shaderLightingSFXsSelectedNodes;
+            if (!isAutoRendering)
             {
-                shaderSFXsCurrentReference = (isNodesShading || !USE_GL_ARB_GEOMETRY_SHADER4) ? shaderLODSFXsNodes : ( WIREFRAME_SELECTION_MODE.get() ) ? shaderLODSFXsSelectedNodesNormalsGeometry : shaderLODSFXsSelectedNodes;                        
-                if (!isAutoRendering)
-                {
-                    if ( MATERIAL_ANIMATED_SHADING.get() )
-                        shaderSFXsCurrentReference.timerEffect();
-                    else
-                        shaderSFXsCurrentReference.resetTimerEffect();
-                }
-                
-                ShaderLODSFXs.ShaderTypes shaderType = MATERIAL_POINT_SPHERES_LOD.get() ? ShaderLODSFXs.ShaderTypes.POINT_SPHERES_LOD : ShaderLODSFXs.ShaderTypes.PHONG_TESSELLATION_LOD;
-                if (!enableAnimationGPUComputing)
-                    ( (ShaderLODSFXs)shaderSFXsCurrentReference ).useShaderLODSFX(gl, shaderType, checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), MATERIAL_STATE_SHADING.get(), MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py, NODE_TESSELATION.get());
+                if ( MATERIAL_ANIMATED_SHADING.get() )
+                    shaderSFXsCurrentReference.timerEffect( ALL_SHADING_SFXS[ShaderLightingSFXs.ShaderTypes.WATER.ordinal()].get() );
                 else
-                    ( (ShaderLODSFXs)shaderSFXsCurrentReference ).useShaderLODSFX(gl, shaderType, checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), MATERIAL_STATE_SHADING.get(), MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py, NODE_TESSELATION.get(), nodeValue, processNextNodeValue, nextNodeValue, animationFrameCount);
+                    shaderSFXsCurrentReference.resetTimerEffect();
             }
-            else
-            {
-                shaderSFXsCurrentReference = (isNodesShading || !USE_GL_ARB_GEOMETRY_SHADER4) ? shaderLightingSFXsNodes : ( WIREFRAME_SELECTION_MODE.get() ) ? shaderLightingSFXsSelectedNodesNormalsGeometry : shaderLightingSFXsSelectedNodes;
-                if (!isAutoRendering)
-                {
-                    if ( MATERIAL_ANIMATED_SHADING.get() )
-                        shaderSFXsCurrentReference.timerEffect( ALL_SHADING_SFXS[ShaderLightingSFXs.ShaderTypes.WATER.ordinal()].get() );
-                    else
-                        shaderSFXsCurrentReference.resetTimerEffect();
-                }
 
-                if (!enforceVoronoiBlobsShader)
+            if (!enforceVoronoiBlobsShader)
+            {
+                ShaderLightingSFXs.ShaderTypes[] shaderTypes = ShaderLightingSFXs.ShaderTypes.values();
+                for (int i = 0; i < ShaderLightingSFXs.NUMBER_OF_AVAILABLE_SHADERS; i++)
                 {
-                    ShaderLightingSFXs.ShaderTypes[] shaderTypes = ShaderLightingSFXs.ShaderTypes.values();
-                    for (int i = 0; i < ShaderLightingSFXs.NUMBER_OF_AVAILABLE_SHADERS; i++)
+                    if ( ALL_SHADING_SFXS[i].get() )
                     {
-                        if ( ALL_SHADING_SFXS[i].get() )
-                        {
-                            if (!enableAnimationGPUComputing)
-                                shaderSFXsCurrentReference.useShaderLightingSFX(gl, shaderTypes[i], checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), MATERIAL_STATE_SHADING.get(), MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), MATERIAL_EROSION_SHADING.get() && isNodesShading, !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py);
-                            else
-                                shaderSFXsCurrentReference.useShaderLightingSFX(gl, shaderTypes[i], checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), MATERIAL_STATE_SHADING.get(), MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), MATERIAL_EROSION_SHADING.get() && isNodesShading, !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py, nodeValue, processNextNodeValue, nextNodeValue, animationFrameCount);
-                        }
+                        if (!enableAnimationGPUComputing)
+                            shaderSFXsCurrentReference.useShaderLightingSFX(gl, shaderTypes[i], checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), MATERIAL_STATE_SHADING.get(), MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), MATERIAL_EROSION_SHADING.get() && isNodesShading, !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py);
+                        else
+                            shaderSFXsCurrentReference.useShaderLightingSFX(gl, shaderTypes[i], checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), MATERIAL_STATE_SHADING.get(), MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), MATERIAL_EROSION_SHADING.get() && isNodesShading, !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py, nodeValue, processNextNodeValue, nextNodeValue, animationFrameCount);
                     }
                 }
-                else
-                    shaderSFXsCurrentReference.useShaderLightingSFX(gl, ShaderLightingSFXs.ShaderTypes.VORONOI, checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), true, MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), MATERIAL_EROSION_SHADING.get() && isNodesShading, !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py);
             }
+            else
+                shaderSFXsCurrentReference.useShaderLightingSFX(gl, ShaderLightingSFXs.ShaderTypes.VORONOI, checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), true, MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), MATERIAL_EROSION_SHADING.get() && isNodesShading, !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py);
         }
     }
     
@@ -464,17 +440,6 @@ final class GraphRenderer3D implements GraphInterface // package access
             if (shaderLightingSFXsSelectedNodes == null) shaderLightingSFXsSelectedNodes = new ShaderLightingSFXs(gl, true);
             if (shaderLightingSFXsSelectedNodesNormalsGeometry == null) shaderLightingSFXsSelectedNodesNormalsGeometry = new ShaderLightingSFXs(gl, true, true);
         }
-        if (USE_400_SHADERS_PROCESS)
-        {
-            if (shaderLODSFXsNodes == null) shaderLODSFXsNodes = new ShaderLODSFXs(gl);
-            if (USE_GL_ARB_GEOMETRY_SHADER4)
-            {
-                if (shaderLODSFXsSelectedNodes == null) shaderLODSFXsSelectedNodes = new ShaderLODSFXs(gl, true);
-                if (shaderLODSFXsSelectedNodesNormalsGeometry == null) shaderLODSFXsSelectedNodesNormalsGeometry = new ShaderLODSFXs(gl, true, true);
-            }
-        }
-        // if (USE_400_SHADERS_PROCESS)
-        //    if (shaderLinesSFXs == null) shaderLinesSFXs = new ShaderLinesSFXs(gl);
     }
 
     /**
@@ -575,7 +540,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         int shapeIndex = SPHERE.ordinal();
          // don't use a display list here, as it will create problems with the disposeAllModelShapeResources() method where the display list is being disposed and the last diplay list will take its place. Use Immediate Mode, Vertex Arrays or VBO instead
         ModelRenderingStates modelRenderingState = USE_SHADERS_PROCESS ? VBO : (USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER ? VERTEX_ARRAY : IMMEDIATE_MODE);
-        ModelSettings modelSettings = new ModelSettings(true, true, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS, modelRenderingState);
+        ModelSettings modelSettings = new ModelSettings(true, true, false, modelRenderingState);
         for ( Shapes3D shape3D : Shapes3D.values() )
         {
             if ( shape3D.equals(SPHERE) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -613,8 +578,6 @@ final class GraphRenderer3D implements GraphInterface // package access
 
                     gl.glPushMatrix();
                     gl.glScalef(1.0f, 1.0f, 0.005f);
-                    /*GLUT.glutSolidCubeWithTriangles(0.2f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                    //FIXME
                     GLUT.glutSolidCube(0.2f);
                     gl.glPopMatrix();
 
@@ -627,8 +590,6 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
                 
-                /*GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                //FIXME
                 GLUT.glutSolidCube(1.0f);
                 
                 gl.glEndList();
@@ -639,8 +600,6 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
-                /*GLUT.glutSolidTetrahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                //FIXME
                 GLUT.glutSolidTetrahedron();
                 
                 gl.glEndList();
@@ -651,8 +610,6 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
                 
-                /*GLUT.glutSolidOctahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                //FIXME
                 GLUT.glutSolidOctahedron();
                 
                 gl.glEndList();
@@ -663,8 +620,6 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
      
-                /*GLUT.glutSolidDodecahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                //FIXME
                 GLUT.glutSolidDodecahedron();
                 
                 gl.glEndList();
@@ -675,8 +630,6 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);                
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
                 
-                /*GLUT.glutSolidIcosahedronWithTriangles(MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                //FIXME
                 GLUT.glutSolidIcosahedron();
                 
                 gl.glEndList();
@@ -825,8 +778,6 @@ final class GraphRenderer3D implements GraphInterface // package access
                 
                 gl.glPushMatrix();
                 gl.glScalef(0.3f, 1.7f, 1.0f);
-                /*GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                //FIXME
                 GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
                 
@@ -840,8 +791,6 @@ final class GraphRenderer3D implements GraphInterface // package access
                 
                 gl.glPushMatrix();
                 gl.glScalef(1.7f, 0.3f, 1.0f);
-                /*GLUT.glutSolidCubeWithTriangles(1.0f, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);*/
-                //FIXME
                 GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
                 
@@ -960,16 +909,8 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = DOUBLE_PYRAMID_THIN.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 ModelShape superQuadricShape = null;
-                if (MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS)
-                {
-                    SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_COMPATIBLE_WITH_LOD_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_COMPATIBLE_WITH_LOD_SETTINGS.vSegments = tesselation;
-                    superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_COMPATIBLE_WITH_LOD_SETTINGS, modelSettings);
-                }
-                else
-                {
-                    SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.vSegments = tesselation;
-                    superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS, modelSettings);
-                }                    
+                SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.vSegments = tesselation;
+                superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS, modelSettings);                  
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
                 
@@ -1084,7 +1025,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 if ( !( (geneShape != null) && !changeAllShapes && changeSphericalCoordsRelatedShapes ) )
                 {
                     if (geneShape != null) geneShape.disposeAllModelShapeResources(gl);
-                    geneShape = new OBJModelLoader(gl, graph, MODEL_FILES_PATH, capitalizeFirstCharacter(OBJModelShapes.GENE) + ".obj", OBJ_MODEL_SHAPE_SIZES[OBJModelShapes.GENE.ordinal()], modelRenderingState, false, false, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                    geneShape = new OBJModelLoader(gl, graph, MODEL_FILES_PATH, capitalizeFirstCharacter(OBJModelShapes.GENE) + ".obj", OBJ_MODEL_SHAPE_SIZES[OBJModelShapes.GENE.ordinal()], modelRenderingState, false, false, false);
                 }
                 
                 shapeIndex = GENE_MODEL.ordinal();
@@ -1172,7 +1113,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 if ( !( (objModelLoaderShape != null) && !changeAllShapes && changeSphericalCoordsRelatedShapes ) )
                 {
                     if (objModelLoaderShape != null) objModelLoaderShape.disposeAllModelShapeResources(gl);
-                    objModelLoaderShape = new OBJModelLoader(gl, graph, EXTERNAL_OBJ_MODEL_FILE_PATH, EXTERNAL_OBJ_MODEL_FILE_NAME + ".obj", OBJ_MODEL_LOADER_SHAPE_SIZE.get(), modelRenderingState, USE_EXTERNAL_OBJ_MODEL_FILE, false, MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);
+                    objModelLoaderShape = new OBJModelLoader(gl, graph, EXTERNAL_OBJ_MODEL_FILE_PATH, EXTERNAL_OBJ_MODEL_FILE_NAME + ".obj", OBJ_MODEL_LOADER_SHAPE_SIZE.get(), modelRenderingState, USE_EXTERNAL_OBJ_MODEL_FILE, false, false);
                 }
                 
                 shapeIndex = OBJ_MODEL_LOADER.ordinal();
@@ -1779,12 +1720,6 @@ final class GraphRenderer3D implements GraphInterface // package access
             
             CHANGE_GRAPHML_COMPONENT_CONTAINERS = false;
         }
-
-        // if LOD turned on, run only once
-        if (MATERIAL_POINT_SPHERES_LOD.get() && USE_400_SHADERS_PROCESS)
-            glPatchParameteri(GL_PATCH_VERTICES, 1);
-        else if (MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS)
-            glPatchParameteri(GL_PATCH_VERTICES, 3);
         
         if (updateEdgesDisplayList)
         {            
@@ -2469,197 +2404,183 @@ final class GraphRenderer3D implements GraphInterface // package access
     */
     private void drawNode3DShape(GL2 gl, float coordX, float coordY, float coordZ, Shapes3D shape3D, float size, boolean isFastSelectionNode)
     {
-        if (MATERIAL_POINT_SPHERES_LOD.get() && USE_400_SHADERS_PROCESS)
+        switch (shape3D)
         {
-            if (!isFastSelectionNode)
-            {                    
-                gl.glBegin(GL_PATCHES);
-                    gl.glVertex4f(coordX, coordY, coordZ, size / 1.225f);
-                gl.glEnd();
-            }       
-            else
+            case SPHERE:
+
                 draw3DShape(gl, coordX, coordY, coordZ, SPHERE, size / 1.5f, 1.0f, isFastSelectionNode);
-        }
-        else
-        {
-            switch (shape3D)
-            {
-                case SPHERE:
 
-                    draw3DShape(gl, coordX, coordY, coordZ, SPHERE, size / 1.5f, 1.0f, isFastSelectionNode);
+                break;
 
-                    break;
+            case POINT:
 
-                case POINT:
+                if (!USE_GL_ARB_GEOMETRY_SHADER4)
+                {
+                    gl.glPointSize(200 * size);
+                    gl.glBegin(GL_POINTS);
+                    gl.glVertex3f(coordX, coordY, coordZ);
+                    gl.glEnd();
+                }
+                else
+                    draw3DShape(gl, coordX, coordY, coordZ, POINT, size, 0.6f, isFastSelectionNode);
 
-                    if (!USE_GL_ARB_GEOMETRY_SHADER4)
-                    {
-                        gl.glPointSize(200 * size);
-                        gl.glBegin(GL_POINTS);
-                        gl.glVertex3f(coordX, coordY, coordZ);
-                        gl.glEnd();
-                    }
-                    else
-                        draw3DShape(gl, coordX, coordY, coordZ, POINT, size, 0.6f, isFastSelectionNode);
+                break;
 
-                    break;
+            case CUBE:
 
-                case CUBE:
+                draw3DShape(gl, coordX, coordY, coordZ, CUBE, size, 0.6f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, CUBE, size, 0.6f, isFastSelectionNode);
+                break;
 
-                    break;
+            case TETRAHEDRON:
 
-                case TETRAHEDRON:
+                draw3DShape(gl, coordX, coordY, coordZ, TETRAHEDRON, size, 0.6f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, TETRAHEDRON, size, 0.6f, isFastSelectionNode);
+                break;
 
-                    break;
+            case OCTAHEDRON:
 
-                case OCTAHEDRON:
+                draw3DShape(gl, coordX, coordY, coordZ, OCTAHEDRON, size, 0.6f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, OCTAHEDRON, size, 0.6f, isFastSelectionNode);
+                break;
 
-                    break;
+            case DODECAHEDRON:
 
-                case DODECAHEDRON:
+                draw3DShape(gl, coordX, coordY, coordZ, DODECAHEDRON, size, 0.3f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, DODECAHEDRON, size, 0.3f, isFastSelectionNode);
+                break;
 
-                    break;
+            case ICOSAHEDRON:
 
-                case ICOSAHEDRON:
+                draw3DShape(gl, coordX, coordY, coordZ, ICOSAHEDRON, size, 0.6f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, ICOSAHEDRON, size, 0.6f, isFastSelectionNode);
+                break;
 
-                    break;
+            case CONE_LEFT:
 
-                case CONE_LEFT:
+                draw3DShape(gl, coordX, coordY, coordZ, CONE_LEFT, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, CONE_LEFT, size / 1.5f, 1.0f, isFastSelectionNode);
+                break;
 
-                    break;
+            case CONE_RIGHT:
 
-                case CONE_RIGHT:
+                draw3DShape(gl, coordX, coordY, coordZ, CONE_RIGHT, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, CONE_RIGHT, size / 1.5f, 1.0f, isFastSelectionNode);
+                break;
 
-                    break;
+            case TRAPEZOID_UP:
 
-                case TRAPEZOID_UP:
+                draw3DShape(gl, coordX, coordY, coordZ, TRAPEZOID_UP, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, TRAPEZOID_UP, size / 1.5f, 1.0f, isFastSelectionNode);
+                break;
 
-                    break;
+            case TRAPEZOID_DOWN:
 
-                case TRAPEZOID_DOWN:
+                draw3DShape(gl, coordX, coordY, coordZ, TRAPEZOID_DOWN, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, TRAPEZOID_DOWN, size / 1.5f, 1.0f, isFastSelectionNode);
+                break;                
 
-                    break;                
+            case CYLINDER:
 
-                case CYLINDER:
+                draw3DShape(gl, coordX, coordY, coordZ, CYLINDER, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, CYLINDER, size / 1.5f, 1.0f, isFastSelectionNode);
+                break;
 
-                    break;
+            case TORUS:
 
-                case TORUS:
+                draw3DShape(gl, coordX, coordY, coordZ, TORUS, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, TORUS, size / 1.5f, 1.0f, isFastSelectionNode);
+                break;
 
-                    break;
+            case RECTANGLE_VERTICAL:
 
-                case RECTANGLE_VERTICAL:
+                draw3DShape(gl, coordX, coordY, coordZ, RECTANGLE_VERTICAL, size, 0.6f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, RECTANGLE_VERTICAL, size, 0.6f, isFastSelectionNode);
+                break;
 
-                    break;
+            case RECTANGLE_HORIZONTAL:
 
-                case RECTANGLE_HORIZONTAL:
+                draw3DShape(gl, coordX, coordY, coordZ, RECTANGLE_HORIZONTAL, size, 0.6f, isFastSelectionNode);
 
-                    draw3DShape(gl, coordX, coordY, coordZ, RECTANGLE_HORIZONTAL, size, 0.6f, isFastSelectionNode);
+                break;
 
-                    break;
+            case ROUND_CUBE_THIN:
 
-                case ROUND_CUBE_THIN:
+                draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_THIN, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_THIN, size / 1.5f, 1.0f, isFastSelectionNode);                
+                break;                
 
-                    break;                
+            case ROUND_CUBE_LARGE:
 
-                case ROUND_CUBE_LARGE:
+                draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);                
+                break;
 
-                    break;
+            case PINEAPPLE_SLICE_TOROID:
 
-                case PINEAPPLE_SLICE_TOROID:
+                draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_TOROID, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_TOROID, size / 1.5f, 1.0f, isFastSelectionNode);                
+                break;
 
-                    break;
+            case PINEAPPLE_SLICE_ELLIPSOID:
 
-                case PINEAPPLE_SLICE_ELLIPSOID:
+                draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_ELLIPSOID, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_ELLIPSOID, size / 1.5f, 1.0f, isFastSelectionNode);                
+                break;
 
-                    break;
+            case DOUBLE_PYRAMID_THIN:
 
-                case DOUBLE_PYRAMID_THIN:
+                draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_THIN, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_THIN, size / 1.5f, 1.0f, isFastSelectionNode);                
+                break;
 
-                    break;
+            case DOUBLE_PYRAMID_LARGE:
 
-                case DOUBLE_PYRAMID_LARGE:
+                draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);                
+                break;                    
 
-                    break;                    
-                    
-                case TORUS_8_PETALS:
+            case TORUS_8_PETALS:
 
-                    draw3DShape(gl, coordX, coordY, coordZ, TORUS_8_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, TORUS_8_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    break;
+                break;
 
-                case SAUCER_4_PETALS:
+            case SAUCER_4_PETALS:
 
-                    draw3DShape(gl, coordX, coordY, coordZ, SAUCER_4_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, SAUCER_4_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    break;
+                break;
 
-                case GENE_MODEL:
+            case GENE_MODEL:
 
-                    draw3DShape(gl, coordX, coordY, coordZ, GENE_MODEL, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, GENE_MODEL, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    break;                
+                break;                
 
-                case LATHE_3D:
+            case LATHE_3D:
 
-                    draw3DShape(gl, coordX, coordY, coordZ, LATHE_3D, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, LATHE_3D, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    break;
+                break;
 
-                case SUPER_QUADRIC:
+            case SUPER_QUADRIC:
 
-                    draw3DShape(gl, coordX, coordY, coordZ, SUPER_QUADRIC, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, SUPER_QUADRIC, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    break;                               
+                break;                               
 
-                case OBJ_MODEL_LOADER:
+            case OBJ_MODEL_LOADER:
 
-                    draw3DShape(gl, coordX, coordY, coordZ, OBJ_MODEL_LOADER, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, OBJ_MODEL_LOADER, size / 1.5f, 1.0f, isFastSelectionNode);                
 
-                    break;                 
+                break;                 
 
-                default: // default case draw the sphere
+            default: // default case draw the sphere
 
-                    draw3DShape(gl, coordX, coordY, coordZ, SPHERE, size / 1.5f, 1.0f, isFastSelectionNode);
+                draw3DShape(gl, coordX, coordY, coordZ, SPHERE, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                    break;
-            }
+                break;
         }
     }
 
@@ -4480,16 +4401,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     {
                         shaderLightingSFXsSelectedNodes.timerEffect( ALL_SHADING_SFXS[ShaderLightingSFXs.ShaderTypes.WATER.ordinal()].get() );
                         shaderLightingSFXsSelectedNodesNormalsGeometry.timerEffect( ALL_SHADING_SFXS[ShaderLightingSFXs.ShaderTypes.WATER.ordinal()].get() );
-                    }
-                    if (USE_400_SHADERS_PROCESS)
-                    {
-                        shaderLODSFXsNodes.timerEffect();
-                        if (USE_GL_ARB_GEOMETRY_SHADER4)
-                        {
-                            shaderLODSFXsSelectedNodes.timerEffect();
-                            shaderLODSFXsSelectedNodesNormalsGeometry.timerEffect();
-                        }
-                    }                    
+                    }                
                 }
             }
         }

@@ -204,7 +204,7 @@ public class ExpressionDataComputingShaders
     */
     private void loadAndCompileAllShaderPrograms(GL2 gl, boolean isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo)
     {
-        String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );
+        String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;
         String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
                                           "#define TWO_DIMENSIONAL_EXPRESSION_DATA_POWER_OF_TWO " + ( (isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo) ? 1 : 0 ) + "\n";
         ShaderTypes[] allShaderTypes = ShaderTypes.values();

@@ -1311,7 +1311,6 @@ public class Graph extends GLCanvas implements GraphInterface
             if ( USE_SHADERS_PROCESS = ( (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_QUALITY_RENDERING_AND_SHADERS) || LoadNativeLibrary.isMacLionAndAbove() ) )
             {
                 USE_330_SHADERS_PROCESS = (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_330_SHADERS);
-                USE_400_SHADERS_PROCESS = USE_NATIVE_CODE && (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_400_SHADERS); // GL4 library is natively connected manually
 
                 GL_SHADING_LANGUAGE_VERSION_STRING = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);
                 gl.glGetIntegerv(GL_MAX_DRAW_BUFFERS, OPENGL_INT_VALUE);

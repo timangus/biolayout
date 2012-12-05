@@ -991,13 +991,13 @@ public class ShaderTextureSFXs
     */
     private void loadAndCompileAllShaderPrograms(GL2 gl)
     {
-        String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );        
+        String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;        
         String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
                                           "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                                                                   + "\n" + 
                                           "#define ANIMATION_COMPATIBILITY_CONDITION "            + ( (GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_INTEGER <= MINIMUM_GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS) ? 1 : 0 ) + "\n" +
                                           "#define USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE_CONDITION "  + ( (USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE) ? 1 : 0 )                                                      + "\n" +
-                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? "out" : "varying" )                         + "\n" +  
-                                          "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS || USE_400_SHADERS_PROCESS) ? "in"  : "varying" )                         + "\n"
+                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "out" : "varying" )                                                    + "\n" +  
+                                          "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "in"  : "varying" )                                                    + "\n"
                                           ;  
         ShaderTypes[] allShaderTypes = ShaderTypes.values();
         String shaderEffectName = "";

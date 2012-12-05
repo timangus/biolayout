@@ -51,19 +51,13 @@ public final class GlobalEnvironment
     // Order for native libraries file sizes: Win32, Win64, Linux32, Linux64, MacOSX
     public static enum NativeLibrariesTypes { EXPRESSION_DATA, FR_LAYOUT,           SIGNALING_PETRI_NET_SIMULATION, 
                                               IMAGE_SFXS,      SHADER_TEXTURE_SFXS, TEXTURE_SFXS, 
-                                              LATHE3D_SHAPE,   SUPER_QUADRIC_SHAPE, SUPER_QUADRIC_SHAPE_OOP,        SUPER_QUADRIC_SHAPE_COMPATIBLE_OOP,
-                                              GL4
-                                            }
+                                              LATHE3D_SHAPE,   SUPER_QUADRIC_SHAPE, SUPER_QUADRIC_SHAPE_OOP,        SUPER_QUADRIC_SHAPE_COMPATIBLE_OOP }
     public static final String[] NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { "ExpressionData", "FRLayout",          "SignalingPetriNetSimulation",
                                                                                    "ImageSFXs",      "ShaderTextureSFXs", "TextureSFXs", 
-                                                                                   "Lathe3DShape",   "SuperQuadricShape", "SuperQuadricShapeOOP",        "SuperQuadricShapeOOPCompatible",
-                                                                                   "GL4"
-                                                                                 };    
+                                                                                   "Lathe3DShape",   "SuperQuadricShape", "SuperQuadricShapeOOP",        "SuperQuadricShapeOOPCompatible"};    
     public static final long[][] FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { {  95244, 121237, 0, 0, 0 }, { 103928, 129376, 0, 0, 0 }, {  97327, 124458, 0, 0, 0 },
                                                                                          { 115602, 142155, 0, 0, 0 }, {  90163, 114121, 0, 0, 0 }, {  81357, 104742, 0, 0, 0 },
-                                                                                         {  80649, 104547, 0, 0, 0 }, { 115565, 143530, 0, 0, 0 }, {  12288,  15360, 0, 0, 0 }, { 437771, 559586, 0, 0, 0 },
-                                                                                         { 275456, 339968, 0, 0, 0 }
-                                                                                       };    
+                                                                                         {  80649, 104547, 0, 0, 0 }, { 115565, 143530, 0, 0, 0 }, {  12288,  15360, 0, 0, 0 }, { 437771, 559586, 0, 0, 0 } };    
 
     public static final String NAME_OF_JOCL_NATIVE_LIBRARY = "jocl";
     public static final long[] FILE_SIZES_OF_JOCL_NATIVE_LIBRARIES = { 236032, 280576, 112823, 106231, 90632 };
@@ -83,7 +77,6 @@ public final class GlobalEnvironment
     public static boolean USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER = true;    
     public static boolean USE_SHADERS_PROCESS = !IS_MAC || LoadNativeLibrary.isMacLionAndAbove(); // do not use shader processes for MacOSX before the Lion release due to OpenGL GLSL compilation driver issues
     public static boolean USE_330_SHADERS_PROCESS = false;
-    public static boolean USE_400_SHADERS_PROCESS = false;
     public static boolean USE_GL_ARB_TEXTURE_RECTANGLE = false;
     public static boolean USE_GL_EXT_FRAMEBUFFER_OBJECT = false;
     public static boolean USE_GL_EXT_GPU_SHADER4 = false;
@@ -297,8 +290,6 @@ public final class GlobalEnvironment
     public static final PrefBool MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING = new PrefBool(false, "material_old_lcd_style_transparency_shading", true);
     public static final PrefBool MATERIAL_EROSION_SHADING = new PrefBool(false, "material_erosion_shading", true);
     public static final PrefBool MATERIAL_NORMALS_SELECTION_MODE = new PrefBool(false, "material_normals_selection_mode", true);
-    public static final PrefBool MATERIAL_POINT_SPHERES_LOD = new PrefBool(false, "material_point_spheres_lod", true);
-    public static final PrefBool MATERIAL_PHONG_TESSELLATION_LOD = new PrefBool(false, "material_phong_tessellation_lod", true);
     public static final PrefBool[] ALL_SHADING_SFXS = new PrefBool[ShaderLightingSFXs.ShaderTypes.values().length];
 
     // Model Shape Editor variables

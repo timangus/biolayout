@@ -165,8 +165,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox materialOldLCDStyleTransparencyShading = null;
     private JCheckBox materialErosionShading = null;
     private JCheckBox materialNormalsSelectionMode = null;
-    private JCheckBox materialPointSheresLOD = null;
-    private JCheckBox materialPhongTessellationLODStateLOD = null;
     private JCheckBox nodeSurfaceImageTextureCheckBox = null;
     private JComboBox nodeSurfaceImageTextureComboBox = null;
     private JTextField nodeSurfaceImageTextureFileTextField = null;
@@ -265,8 +263,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private ModelTypes modelType = ModelTypes.LATHE3D_SHAPE;
     private boolean originalFastSelectionModeState = false;
     private boolean original3DShadowsState = false;
-    private boolean originalPointSpheresLODState = false;
-    private boolean originalPhongTessellationLODState = false;
 
     public LayoutGraphPropertiesDialog(LayoutFrame layoutFrame, LayoutClassSetsManager layoutClassSetsManager, NetworkContainer nc)
     {
@@ -1308,16 +1304,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialNormalsSelectionMode.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         materialNormalsSelectionMode.addActionListener(this);
         materialNormalsSelectionMode.setToolTipText("Normals Selection Mode (Using Geometry Shaders Technology utilizing OpenGL 3.0 capable hardware & needs the WireFrame Selection Mode turned on)");
-
-        materialPointSheresLOD = new JCheckBox("Point Sheres LOD");
-        materialPointSheresLOD.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
-        materialPointSheresLOD.addActionListener(this);
-        materialPointSheresLOD.setToolTipText("Point Shere Level-Of-Detail (Real-time LOD Using Tessellation & Geometry Shaders Technologies utilizing OpenGL 4.0 capable hardware)");
-
-        materialPhongTessellationLODStateLOD = new JCheckBox("Phong Tessellation LOD");
-        materialPhongTessellationLODStateLOD.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
-        materialPhongTessellationLODStateLOD.addActionListener(this);
-        materialPhongTessellationLODStateLOD.setToolTipText("Phong Tessellation Level-Of-Detail (Real-time LOD Using Tessellation & Geometry Shaders Technologies utilizing OpenGL 4.0 capable hardware)");        
         
         JPanel materialOptionsAndShading1Panel = new JPanel(true);
         materialOptionsAndShading1Panel.setLayout( new BoxLayout(materialOptionsAndShading1Panel, BoxLayout.Y_AXIS) );
@@ -1337,8 +1323,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialOptionsAndShading3Panel.setLayout( new BoxLayout(materialOptionsAndShading3Panel, BoxLayout.Y_AXIS) );        
         materialOptionsAndShading3Panel.add(materialErosionShading); 
         materialOptionsAndShading3Panel.add(materialNormalsSelectionMode); 
-        materialOptionsAndShading3Panel.add(materialPointSheresLOD);
-        materialOptionsAndShading3Panel.add(materialPhongTessellationLODStateLOD);
         
         materialOptionsAndShadingPanel.add(materialOptionsAndShading1Panel);
         materialOptionsAndShadingPanel.add( Box.createRigidArea( new Dimension(30, 10) ) );
@@ -2357,8 +2341,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                     materialOldLCDStyleTransparencyShading.setEnabled(flag); // disable all shadings if specular turned off
                     materialErosionShading.setEnabled(flag); // disable all shadings if specular turned off
                     materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4 && flag); // disable all shadings if specular turned off
-                    materialPointSheresLOD.setEnabled(!materialPhongTessellationLODStateLOD.isSelected() && USE_400_SHADERS_PROCESS && flag); // disable all shadings if specular turned off
-                    materialPhongTessellationLODStateLOD.setEnabled(!materialPointSheresLOD.isSelected() && USE_400_SHADERS_PROCESS && flag); // disable all shadings if specular turned off
                 }
             }
         }
@@ -2557,71 +2539,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 wireframeSelectionMode.setEnabled(true);
             }            
         }
-        else if ( e.getSource().equals(materialPointSheresLOD) )
-        {
-            originalFastSelectionModeState = FAST_SELECTION_MODE.get();
-            original3DShadowsState = SHOW_3D_SHADOWS.get();
-            originalPhongTessellationLODState = MATERIAL_PHONG_TESSELLATION_LOD.get();
-            if ( materialPointSheresLOD.isSelected() )
-            {
-                fastSelectionMode.setSelected(true);
-                show3DShadows.setSelected(false);
-                materialPhongTessellationLODStateLOD.setSelected(false);
-                JOptionPane.showMessageDialog(this, "The Point Spheres Level-Of-Detail renders only spheres.\n" +
-                                                    "All other supported shapes will also be rendered as spheres.\n" +
-                                                    "This feature has been mainly designed for extremely efficient\n" +
-                                                    "rendering of Expression graphs and not for mEPN 3D pathways.\n" +
-                                                    "You are advised to use the Phong Tessellation LOD for\n" +
-                                                    "non-Expression Graphs.", 
-                                                    "Point Spheres LOD Information", 
-                                                    JOptionPane.INFORMATION_MESSAGE);
-            }
-            else
-            {
-                fastSelectionMode.setSelected(originalFastSelectionModeState);
-                show3DShadows.setSelected(original3DShadowsState);
-                materialPhongTessellationLODStateLOD.setSelected(originalPhongTessellationLODState);
-            }
-            
-            boolean flag = materialPointSheresLOD.isSelected();
-            fastSelectionMode.setEnabled(!flag);
-            show3DShadows.setEnabled(!flag);
-            materialSpecular.setEnabled(!flag);
-            materialPhongTessellationLODStateLOD.setEnabled(!flag);
-            setEnabledAllShadingSFXsUIs(!flag);
-        }    
-        else if ( e.getSource().equals(materialPhongTessellationLODStateLOD) )
-        {
-            originalFastSelectionModeState = FAST_SELECTION_MODE.get();
-            original3DShadowsState = SHOW_3D_SHADOWS.get();
-            originalPointSpheresLODState = MATERIAL_POINT_SPHERES_LOD.get();
-            if ( materialPhongTessellationLODStateLOD.isSelected() )
-            {
-                fastSelectionMode.setSelected(true);
-                show3DShadows.setSelected(false);
-                materialPointSheresLOD.setSelected(false);
-                JOptionPane.showMessageDialog(this, "The Phong Tessellation Level-Of-Detail renders any shape.\n" +
-                                                    "Polygonal shapes will appear rounded due to the Bezier Surface algorithm applied.\n" +
-                                                    "This feature has been mainly designed for extremely efficient\n" +
-                                                    "rendering of mEPN 3D pathways and not for Expression Pathways.\n" +
-                                                    "You are advised to use the Point Spheres LOD for Expression Graphs.",
-                                                    "Phong Tessellation LOD Information", 
-                                                    JOptionPane.INFORMATION_MESSAGE);                
-            }
-            else
-            {
-                fastSelectionMode.setSelected(originalFastSelectionModeState); 
-                show3DShadows.setSelected(original3DShadowsState);
-                materialPointSheresLOD.setSelected(originalPointSpheresLODState);
-            }
-            
-            boolean flag = materialPhongTessellationLODStateLOD.isSelected();
-            fastSelectionMode.setEnabled(!flag);
-            show3DShadows.setEnabled(!flag);            
-            materialSpecular.setEnabled(!flag);
-            materialPointSheresLOD.setEnabled(!flag);
-            setEnabledAllShadingSFXsUIs(!flag);           
-        }        
         else if ( e.getSource().equals(nodeSurfaceImageTextureCheckBox) )
         {
             if ( nodeSurfaceImageTextureCheckBox.isSelected() )
@@ -2675,8 +2592,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             materialOldLCDStyleTransparencyShading.setEnabled(value);
             materialErosionShading.setEnabled(value);
             materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4 && value);
-            materialPointSheresLOD.setEnabled(!materialPhongTessellationLODStateLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
-            materialPhongTessellationLODStateLOD.setEnabled(!materialPointSheresLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
         }
         else if ( e.getSource().equals(parallelismUseExpressionCorrelationCalculationNCoreParallelism) )
         {
@@ -3075,11 +2990,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialOldLCDStyleTransparencyShading.setSelected( MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
         materialErosionShading.setSelected( MATERIAL_EROSION_SHADING.get() );
         materialNormalsSelectionMode.setSelected( MATERIAL_NORMALS_SELECTION_MODE.get() );
-        materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4);        
-        materialPointSheresLOD.setSelected( MATERIAL_POINT_SPHERES_LOD.get() );
-        materialPointSheresLOD.setEnabled(!MATERIAL_PHONG_TESSELLATION_LOD.get() && USE_400_SHADERS_PROCESS);        
-        materialPhongTessellationLODStateLOD.setSelected( MATERIAL_PHONG_TESSELLATION_LOD.get() );
-        materialPhongTessellationLODStateLOD.setEnabled(!MATERIAL_POINT_SPHERES_LOD.get() && USE_400_SHADERS_PROCESS);                
+        materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4);                       
         lightingPositionXSlider.setValue( LIGHT_POSITION[0].get() );
         lightingPositionYSlider.setValue( LIGHT_POSITION[1].get() );
         lightingPositionZSlider.setValue( LIGHT_POSITION[2].get() );
@@ -3092,11 +3003,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         showNodes.setSelected( SHOW_NODES.get() );
         show3DFrustum.setSelected( SHOW_3D_FRUSTUM.get() );
         show3DShadows.setSelected( SHOW_3D_SHADOWS.get() );
-        show3DShadows.setEnabled( !(MATERIAL_POINT_SPHERES_LOD.get() && USE_400_SHADERS_PROCESS) );
         show3DEnvironmentMapping.setSelected( USE_GL_EXT_FRAMEBUFFER_OBJECT && SHOW_3D_ENVIRONMENT_MAPPING.get() );
         highResImageRenderScaleSlider.setValue( TILE_SCREEN_FACTOR.get() );
         fastSelectionMode.setSelected( FAST_SELECTION_MODE.get() );
-        fastSelectionMode.setEnabled( !(MATERIAL_POINT_SPHERES_LOD.get() && USE_400_SHADERS_PROCESS) );
         wireframeSelectionMode.setSelected( WIREFRAME_SELECTION_MODE.get() );
         materialNormalsSelectionMode.setEnabled( USE_GL_ARB_GEOMETRY_SHADER4 && WIREFRAME_SELECTION_MODE.get() );
         advancedKeyboardRenderingControl.setSelected( ADVANCED_KEYBOARD_RENDERING_CONTROL.get() );
@@ -3118,13 +3027,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             materialOldLCDStyleTransparencyShading.setEnabled(value);
             materialErosionShading.setEnabled(value);
             materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4 && value);
-            materialPointSheresLOD.setEnabled(!materialPhongTessellationLODStateLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
-            materialPhongTessellationLODStateLOD.setEnabled(!materialPointSheresLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
-            if (MATERIAL_POINT_SPHERES_LOD.get() && USE_400_SHADERS_PROCESS)
-            {
-                materialSpecular.setEnabled(false);
-                setEnabledAllShadingSFXsUIs(false);                
-            }
         }
         else
         {
@@ -3136,8 +3038,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             materialOldLCDStyleTransparencyShading.setEnabled(false);
             materialErosionShading.setEnabled(false);
             materialNormalsSelectionMode.setEnabled(false);
-            materialPointSheresLOD.setEnabled(false);
-            materialPhongTessellationLODStateLOD.setEnabled(false);
         }
 
         show3DEnvironmentMapping.setEnabled(USE_GL_EXT_FRAMEBUFFER_OBJECT);
@@ -3468,9 +3368,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.set( materialOldLCDStyleTransparencyShading.isSelected() );
             MATERIAL_EROSION_SHADING.set( materialErosionShading.isSelected() );
             MATERIAL_NORMALS_SELECTION_MODE.set( materialNormalsSelectionMode.isSelected() );
-            MATERIAL_POINT_SPHERES_LOD.set( materialPointSheresLOD.isSelected() );
-            CHANGE_ALL_SHAPES = ( MATERIAL_PHONG_TESSELLATION_LOD.get() != materialPhongTessellationLODStateLOD.isSelected() );
-            MATERIAL_PHONG_TESSELLATION_LOD.set( materialPhongTessellationLODStateLOD.isSelected() );
 
             if (USE_SHADERS_PROCESS)
             {
@@ -3486,8 +3383,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 materialOldLCDStyleTransparencyShading.setEnabled(value);
                 materialErosionShading.setEnabled(value);
                 materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4 && value);
-                materialPointSheresLOD.setEnabled(!materialPhongTessellationLODStateLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
-                materialPhongTessellationLODStateLOD.setEnabled(!materialPointSheresLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
             }
 
             TRANSPARENT.set( nodeTransparency.isSelected() );
@@ -3753,8 +3648,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             materialOldLCDStyleTransparencyShading.setEnabled(value);
             materialErosionShading.setEnabled(value);
             materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4 && value);
-            materialPointSheresLOD.setEnabled(!materialPhongTessellationLODStateLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
-            materialPhongTessellationLODStateLOD.setEnabled(!materialPointSheresLOD.isSelected() && USE_400_SHADERS_PROCESS && value);
         }
     }
     

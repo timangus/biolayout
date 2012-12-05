@@ -448,7 +448,6 @@ public abstract class OpenGLContext extends Canvas
             if ( USE_SHADERS_PROCESS = ( (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_QUALITY_RENDERING_AND_SHADERS) || LoadNativeLibrary.isMacLionAndAbove() ) )
             {
                 USE_330_SHADERS_PROCESS = (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_330_SHADERS);
-                USE_400_SHADERS_PROCESS = USE_NATIVE_CODE && (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_400_SHADERS); // GL4 library is natively connected manually
                 
                 IntBuffer OPENGL_INT_VALUE = Buffers.newDirectIntBuffer(1);
                 GL_SHADING_LANGUAGE_VERSION_STRING = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);

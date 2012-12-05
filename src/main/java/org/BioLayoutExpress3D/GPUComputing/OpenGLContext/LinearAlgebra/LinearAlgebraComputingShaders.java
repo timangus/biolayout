@@ -94,7 +94,7 @@ public class LinearAlgebraComputingShaders
     */
     private void loadAndCompileAllShaderPrograms(GL2 gl)
     {
-        String versionString = (USE_400_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_400_SHADERS + " " + GLSL_LANGUAGE_MODE : ( (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS );
+        String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;
         String GLSLPreprocessorCommands = "#version " + versionString + "\n";
         ShaderTypes[] allShaderTypes = ShaderTypes.values();
         String shaderEffectName = "";
