@@ -3,6 +3,7 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.io.*;
 import java.lang.reflect.*;
 import com.jogamp.gluegen.runtime.*;
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -635,7 +636,14 @@ public final class LoadNativeLibrary
     */
     public static boolean is64bit()
     {
-        return System.getProperty("sun.arch.data.model") == "64";
+        String sunArchDataModel = System.getProperty("sun.arch.data.model");
+        String osArch = System.getProperty("os.arch");
+        
+        return sunArchDataModel.equals("64") ||
+                osArch.equals("amd64") ||
+                osArch.equals("x86_64") ||
+                osArch.equals("x64") ||
+                osArch.equals("ia64");
     }
 
     /** 
