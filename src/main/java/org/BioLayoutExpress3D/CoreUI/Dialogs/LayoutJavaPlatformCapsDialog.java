@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import org.BioLayoutExpress3D.Layout;
 
 /**
 *
@@ -66,7 +67,6 @@ public final class LayoutJavaPlatformCapsDialog extends JDialog implements Actio
         okButton.addActionListener(this);
         okButton.setToolTipText("OK");
 
-        scrollPane.setBorder( BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Java Platform Capabilities") );
         topPanel.add(scrollPane, BorderLayout.CENTER);
         topPanel.add(okButton, BorderLayout.SOUTH);
 
@@ -78,79 +78,9 @@ public final class LayoutJavaPlatformCapsDialog extends JDialog implements Actio
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
-    private void appendPropertiesToTextArea(Properties properties, JTextArea textArea)
-    {
-        Set<String> keySet = properties.stringPropertyNames();
-        ArrayList keyList = new ArrayList(keySet);
-        Collections.sort(keyList);
-        int longestKey = 0;
-
-        for (Object keyObject : keyList)
-        {
-            String key = (String)keyObject;
-            if (key.length() > longestKey)
-                longestKey = key.length();
-        }
-
-        String pathSeparator = System.getProperty("path.separator");
-
-        for (Object keyObject : keyList)
-        {
-            String key = (String)keyObject;
-            int keyLength = key.length();
-            int padding = 1 + longestKey - keyLength;
-
-            String value = properties.getProperty(key);
-            value = value.replace("\n", "\\n");
-            value = value.replace("\r", "\\r");
-            value = value.replace("\t", "\\t");
-
-            textArea.append(key + ":");
-            for( int i = 0; i < padding; i++)
-                textArea.append(" ");
-
-            if (key.matches("(?i).*(path|dirs)$"))
-            {
-                // Property is probably a list of paths, so split it up
-                String[] paths = value.split(pathSeparator);
-                textArea.append(paths[0] + "\n");
-
-                padding = 2 + longestKey;
-                for( int i = 1; i < paths.length; i++)
-                {
-                    for( int j = 0; j < padding; j++)
-                        textArea.append(" ");
-
-                    textArea.append(paths[i] + "\n");
-                }
-            }
-            else
-                textArea.append(value + "\n");
-        }
-    }
-
     private void setJavaPlatformCaps(JTextArea textArea)
     {
-        int ONE_MB = 1 << 20; // (1024 * 1024);
-
-        Properties properties = new Properties();
-        properties.put("Detected JVM bitness", (IS_64BIT ? "64 bit" : "32 bit"));
-        properties.put("Number or cores", RUNTIME.availableProcessors());
-        properties.put("Maximum JVM memory usage", (RUNTIME.maxMemory() / ONE_MB) + " MB");
-        properties.put("Total JVM memory usage", (RUNTIME.totalMemory() / ONE_MB) + " MB");
-        appendPropertiesToTextArea(properties, textArea);
-
-        // Java properties
-        textArea.append("\n");
-        appendPropertiesToTextArea(System.getProperties(), textArea);
-
-        // Environment variables
-        properties.clear();
-        for ( Map.Entry entry : System.getenv().entrySet() )
-            properties.put( entry.getKey(), entry.getValue() );
-
-        textArea.append("\n");
-        appendPropertiesToTextArea(properties, textArea);
+        textArea.append(Layout.getJavaPlatformCaps());
     }
 
     @Override
