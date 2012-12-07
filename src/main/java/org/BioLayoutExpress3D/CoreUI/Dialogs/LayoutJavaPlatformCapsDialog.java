@@ -109,7 +109,7 @@ public final class LayoutJavaPlatformCapsDialog extends JDialog implements Actio
             for( int i = 0; i < padding; i++)
                 textArea.append(" ");
 
-            if (key.matches(".*(path|dirs)$"))
+            if (key.matches("(?i).*(path|dirs)$"))
             {
                 // Property is probably a list of paths, so split it up
                 String[] paths = value.split(pathSeparator);
@@ -138,8 +138,18 @@ public final class LayoutJavaPlatformCapsDialog extends JDialog implements Actio
         properties.put("Number or cores", RUNTIME.availableProcessors());
         properties.put("Maximum JVM memory usage", (RUNTIME.maxMemory() / ONE_MB) + " MB");
         properties.put("Total JVM memory usage", (RUNTIME.totalMemory() / ONE_MB) + " MB");
+        appendPropertiesToTextArea(properties, textArea);
 
-        properties.putAll(System.getProperties());
+        // Java properties
+        textArea.append("\n");
+        appendPropertiesToTextArea(System.getProperties(), textArea);
+
+        // Environment variables
+        properties.clear();
+        for ( Map.Entry entry : System.getenv().entrySet() )
+            properties.put( entry.getKey(), entry.getValue() );
+
+        textArea.append("\n");
         appendPropertiesToTextArea(properties, textArea);
     }
 
