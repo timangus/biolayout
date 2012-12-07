@@ -402,6 +402,8 @@ public final class Layout
             usage("Argument at position " + i + " missing:\n" + e.getMessage());
         }
 
+        System.out.println(getJavaPlatformCaps());
+
         // to solve a  flicker bug with some hardware configurations and JOGL in Windows platforms
         // caution, it has to be enabled through command-line for the webstart version!
         if ( LoadNativeLibrary.isWin() )
