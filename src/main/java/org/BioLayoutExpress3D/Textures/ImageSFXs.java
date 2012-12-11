@@ -9,7 +9,7 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
-* 
+*
 *  Pixel effects (bitmap manipulation effects by altering pixels):
 *    * produces a plasma effect by changing RGB values through time: plasmaEffect()
 *    * produces a water distortion effect by using an image as a texture: waterEffect()
@@ -23,327 +23,327 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public class ImageSFXs 
+public class ImageSFXs
 {
-   /** 
+   /**
     *  Variable used for the plasma effect.
-    */   
-    private BufferedImage plasmaBitmapImage = null;     
-    
-    /** 
+    */
+    private BufferedImage plasmaBitmapImage = null;
+
+    /**
     *  Variable used as the buffer for the plasma effect.
-    */   
-    private int[] plasmaBuffer = null;    
-    
-    /** 
-    *  Variable used for the plasma effect.
-    */   
-    private byte[] fSin1 = null; 
+    */
+    private int[] plasmaBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the plasma effect.
-    */   
-    private byte[] fSin2 = null; 
+    */
+    private byte[] fSin1 = null;
 
-    /** 
+    /**
     *  Variable used for the plasma effect.
-    */   
-    private byte[] fSin3 = null; 
+    */
+    private byte[] fSin2 = null;
 
-    /** 
+    /**
     *  Variable used for the plasma effect.
-    */   
+    */
+    private byte[] fSin3 = null;
+
+    /**
+    *  Variable used for the plasma effect.
+    */
     private int inc1 = 0;
 
-    /** 
+    /**
     *  Variable used for the plasma effect.
-    */   
+    */
     private int inc2 = 0;
 
-    /** 
+    /**
     *  Variable used for the plasma effect.
-    */   
-    private int inc3 = 0;  
+    */
+    private int inc3 = 0;
 
-    /** 
+    /**
     *  Variable used for the plasma effect.
-    */   
-    private int plasmaWidth = 0;  
+    */
+    private int plasmaWidth = 0;
 
-    /** 
+    /**
     *  Variable used for the plasma effect.
-    */   
+    */
     private int plasmaHeight = 0;
-    
-    /** 
+
+    /**
     *  BufferedImage variable used to store the water effect source bitmap image.
-    */  
+    */
     private BufferedImage waterBitmapImage = null;
 
-    /** 
+    /**
     *  Variable used as the buffer for the water effect.
-    */   
-    private int[] waterBuffer = null;   
-    
-    /** 
+    */
+    private int[] waterBuffer = null;
+
+    /**
     *  Variable used as the buffer for the water effect bitmap image.
-    */   
+    */
     private int[] waterBitmapBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the water effect.
-    */     
+    */
     private int[] waterPreCalcRandomNumbers = null;
-    
-    /** 
+
+    /**
     *  Variable used for the water effect.
-    */   
+    */
     private short[] waterBuffer1 = null;
 
-    /** 
+    /**
     *  Variable used for the water effect.
-    */   
+    */
     private short[] waterBuffer2 = null;
 
-    /** 
+    /**
     *  Variable used for the water effect.
-    */    
+    */
     private static final int waterPreCalcMAXRandomNumbers = 65536;
 
-    /** 
+    /**
     *  Variable used for the water effect.
-    */        
+    */
     private int waterPreCalcRandomNumbersK = 0;
-    
-    /** 
+
+    /**
     *  Variable used for the water effect.
-    */   
+    */
     private int waterWidth = 0;
 
-    /** 
+    /**
     *  Variable used for the water effect.
-    */   
-    private int waterHeight = 0;  
+    */
+    private int waterHeight = 0;
 
-    /** 
+    /**
     *  Variable used for the water effect.
-    */   
-    private int waterBufferSize = 0;    
-    
-    /** 
+    */
+    private int waterBufferSize = 0;
+
+    /**
     *  Variable used for the water effect.
-    */   
-    private int waterK = 0;    
-    
-    /** 
+    */
+    private int waterK = 0;
+
+    /**
     *  BufferedImage variable used to store the bump effect source bitmap image.
-    */  
+    */
     private BufferedImage bumpBitmapImage = null, bumpBitmapImageToReturn = null;
 
-    /** 
+    /**
     *  Variable used as a buffer for the bump effect.
-    */   
+    */
     private int[] bumpBuffer = null;
 
-    /** 
+    /**
     *  Variable used as a buffer for the bump effect.
-    */   
+    */
     private int[] bumpBitmapBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
+    */
     private int[] A_bumpBitmapBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
-    private int[] R_bumpBitmapBuffer = null;  
+    */
+    private int[] R_bumpBitmapBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */  
+    */
     private int[] G_bumpBitmapBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */  
+    */
     private int[] B_bumpBitmapBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
-    private int[] bumpLightmapBuffer = null;  
+    */
+    private int[] bumpLightmapBuffer = null;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */     
+    */
     private int[] divPrecalc1 = null;
-    
-    /** 
+
+    /**
     *  Variable used for the bump effect.
-    */     
+    */
     private int[] divPrecalc2 = null;
-    
-    /** 
+
+    /**
     *  Variable used for the bump effect.
-    */     
+    */
     private static final int BUMP_PRECALC_VALUES = 256;
-    
-    /** 
+
+    /**
     *  Variable used for the bump effect.
-    */   
+    */
     private int bumpWidth = 0;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
-    private int bumpHeight = 0;  
+    */
+    private int bumpHeight = 0;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
+    */
     private int bumpBufferSize = 0;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
+    */
     private int bumpLightWidth = 0;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
-    private int bumpLightHeight = 0;  
+    */
+    private int bumpLightHeight = 0;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
-    private long bumpFrames = 0;    
+    */
+    private long bumpFrames = 0;
 
-    /** 
+    /**
     *  Variable used for the bump effect.
-    */   
+    */
     private int darkValue = 0;
-    
-    /** 
+
+    /**
     *  BufferedImage variable used to store the radial blur effect source bitmap image.
-    */  
+    */
     private BufferedImage radialBlurBitmapImage = null, radialBlurBitmapImageToReturn = null;
 
-    /** 
+    /**
     *  Variable used as a buffer for the radial blur effect.
-    */   
-    private int[] radialBlurBuffer = null;  
+    */
+    private int[] radialBlurBuffer = null;
 
-    /** 
+    /**
     *  Variable used as a buffer for the radial blur effect.
-    */   
-    private int[] radialBlurBitmapBuffer = null;  
+    */
+    private int[] radialBlurBitmapBuffer = null;
 
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private int radialBlurWidth = 0;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private int radialBlurHeight = 0;    
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private int radialBlurBufferWidth = 0;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private int radialBlurBufferHeight = 0;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private int radialBlurBsize = 0;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private int radialBlurRsize = 0;
-
-    /** 
-    *  Variable used for the radial effect.
-    */   
-    private long radialBlurFrames = 0;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] A_radialBlurBitmapBuffer = null;      
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] R_radialBlurBitmapBuffer = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] G_radialBlurBitmapBuffer = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] B_radialBlurBitmapBuffer = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] A_radialBlurBuffer = null;      
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] R_radialBlurBuffer = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] G_radialBlurBuffer = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] B_radialBlurBuffer = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] radialBlurArray0 = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] radialBlurArray1 = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */  
-    private short[] radialBlurArray2 = null;  
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] radialBlurArray3 = null;
-
-    /** 
-    *  Variable used for the radial blur effect.
-    */   
-    private short[] radialBlurArray4 = null;
-
-    /** 
+    /**
     *  Variable used for the radial blur effect.
     */
-    private short[] radialDivN = null;    
+    private int radialBlurWidth = 0;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private int radialBlurHeight = 0;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private int radialBlurBufferWidth = 0;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private int radialBlurBufferHeight = 0;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private int radialBlurBsize = 0;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private int radialBlurRsize = 0;
+
+    /**
+    *  Variable used for the radial effect.
+    */
+    private long radialBlurFrames = 0;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] A_radialBlurBitmapBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] R_radialBlurBitmapBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] G_radialBlurBitmapBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] B_radialBlurBitmapBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] A_radialBlurBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] R_radialBlurBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] G_radialBlurBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] B_radialBlurBuffer = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] radialBlurArray0 = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] radialBlurArray1 = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] radialBlurArray2 = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] radialBlurArray3 = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] radialBlurArray4 = null;
+
+    /**
+    *  Variable used for the radial blur effect.
+    */
+    private short[] radialDivN = null;
 
     /**
     *  Variable used for the spot circle effect.
@@ -409,31 +409,6 @@ public class ImageSFXs
     *  Variable used for the spot circle effect.
     */
     private boolean spotCircleEffectFinished = false;
-
-    /**
-    *  Variable used for loading the native library only once (no use of re-loading the library).
-    */
-    private static boolean hasOnceLoadedNativeLibrary = false;
-
-    /**
-    *  The constructor of the ImageSFXs class.
-    */
-    public ImageSFXs()
-    {
-        if (USE_NATIVE_CODE) initNativeLibrary();
-    }
-
-    /**
-    *  Native library initializer to make sure to load all relevant native libraries (if being used).
-    */
-    private void initNativeLibrary()
-    {
-        if (!hasOnceLoadedNativeLibrary)
-        {
-            int index = NativeLibrariesTypes.IMAGE_SFXS.ordinal();
-            hasOnceLoadedNativeLibrary = LoadNativeLibrary.loadNativeLibrary(NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index], FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index]);
-        }
-    }
 
     /**
     *  Collates two images with a given orientation defined by the ImageSFXsCollateStates enumeration class (drawImage() based effect.
@@ -569,20 +544,20 @@ public class ImageSFXs
 
     // Similar bit manipulation in reverse
     // int pixelBuffer[i] = (alphaValue << 24) | (redValue << 16) | (greenValue << 8) | blueValue;
-    // (No need to set it, when using DataBufferInt)   
+    // (No need to set it, when using DataBufferInt)
     // A texture creation method is provided in case a null image is inserted to the real-time effects.
 
-    /** 
+    /**
     *  Creates an algorithmic based texture for the real time per pixel effects in case no source image is provided.
     *  This method produces two types of textures, a XOR texture & a RGB texture.
-    */ 
+    */
     public static int[] textureGenerate(int type, int genTextureWidth, int genTextureHeight)
     {
         int[] generatedTexture = new int[genTextureWidth * genTextureHeight];
 
         int generatedTextureC = genTextureWidth * genTextureHeight;
         int generatedTextureI = genTextureWidth * genTextureHeight;
-      
+
         switch (type)
         {
             case 1:
@@ -595,7 +570,7 @@ public class ImageSFXs
                 while (--genTextureX >= 0)
                 {
                     int genTextureY = genTextureHeight;
-                    while (--genTextureY >= 0)                  
+                    while (--genTextureY >= 0)
                     {
                         generatedTextureC = ( (genTextureX * 256) / genTextureWidth) ^ ((genTextureY * 256) / genTextureHeight );
                         generatedTexture[--generatedTextureI] = (255 << 24) | (generatedTextureC << 16) | (generatedTextureC << 8) | generatedTextureC;
@@ -613,15 +588,15 @@ public class ImageSFXs
                 while (--genTextureX >= 0)
                 {
                     int genTextureY = genTextureHeight;
-                    while (--genTextureY >= 0)    
+                    while (--genTextureY >= 0)
                     {
                       generatedTexture[--generatedTextureI] = (255 << 24) | ((int)(sin((double)genTextureX / 35.0) * 127 + 128) << 16) |
                                     ((int)(sin((double)genTextureY / 45.0) * 127 + 128) << 8)  |
-                                     (int)(sin((double)(genTextureX + genTextureY) / 75.0) * 127 + 128);                    
+                                     (int)(sin((double)(genTextureX + genTextureY) / 75.0) * 127 + 128);
                     }
                 }
             }
-            break;          
+            break;
             default:
                 // type 2 texture generation as default
                 generatedTexture = textureGenerate(2, genTextureWidth, genTextureHeight);
@@ -631,30 +606,10 @@ public class ImageSFXs
         return generatedTexture;
     }
 
-     /** 
+    /**
     *  Initializes the plasma effect.
-    */    
+    */
     public void plasmaEffectInit(int plasmaEffectWidth, int plasmaEffectHeight)
-    {       
-        if (USE_NATIVE_CODE)
-            plasmaEffectInitNative(plasmaEffectWidth, plasmaEffectHeight);
-        else
-            plasmaEffectInitJava(plasmaEffectWidth, plasmaEffectHeight);
-
-        plasmaBitmapImage = new BufferedImage(plasmaEffectWidth, plasmaEffectHeight, BufferedImage.TYPE_INT_ARGB);
-        plasmaBitmapImage = org.BioLayoutExpress3D.StaticLibraries.ImageProducer.cloneAndBufferImage(plasmaBitmapImage); // somehow, the Java API does a faster acceleration after using this method (using a predefined transparency and copying it)
-        plasmaBuffer = ( (DataBufferInt)plasmaBitmapImage.getRaster().getDataBuffer() ).getData();  // connect it to the returning image buffer
-    }
-
-    /**
-    *  Initializes the plasma effect (native method).
-    */
-    private native void plasmaEffectInitNative(int plasmaEffectWidth, int plasmaEffectHeight);
-
-    /**
-    *  Initializes the plasma effect (Java method).
-    */
-    private void plasmaEffectInitJava(int plasmaEffectWidth, int plasmaEffectHeight)
     {
         plasmaWidth = plasmaEffectWidth;
         plasmaHeight = plasmaEffectHeight;
@@ -675,28 +630,16 @@ public class ImageSFXs
                   fSin3[i] = (byte)(sin((double)i / 35.0) * 48 + 48);
             }
         }
+
+        plasmaBitmapImage = new BufferedImage(plasmaEffectWidth, plasmaEffectHeight, BufferedImage.TYPE_INT_ARGB);
+        plasmaBitmapImage = org.BioLayoutExpress3D.StaticLibraries.ImageProducer.cloneAndBufferImage(plasmaBitmapImage); // somehow, the Java API does a faster acceleration after using this method (using a predefined transparency and copying it)
+        plasmaBuffer = ( (DataBufferInt)plasmaBitmapImage.getRaster().getDataBuffer() ).getData();  // connect it to the returning image buffer
     }
 
     /**
-    *  Processes the plasma effect (wrapper method for selecting between native and Java versions of the effect).
+    *  Processes the plasma effect.
     */
     public void plasmaEffect()
-    {
-        if (USE_NATIVE_CODE)
-            plasmaEffectNative(plasmaBuffer);
-        else
-            plasmaEffectJava();
-    }
-
-    /**
-    *  Processes the plasma effect (native method).
-    */
-    private native void plasmaEffectNative(int[] plasmaBuffer);
-
-    /** 
-    *  Processes the plasma effect (Java method).
-    */   
-    private void plasmaEffectJava()
     {
         int i = 0, r = 0, g = 0, b = 0;
 
@@ -718,24 +661,24 @@ public class ImageSFXs
         if (inc3++ == 220) inc3 = 0;
     }
 
-    /** 
+    /**
     *  Returns the plasma effect image.
-    */   
+    */
     public BufferedImage plasmaEffectImage()
-    { 
+    {
         return plasmaBitmapImage;
-    } 
-    
-    /** 
+    }
+
+    /**
     *  Sets the water effect image.
-    */  
+    */
     public void setWaterEffectImage(BufferedImage waterBitmapImage)
     {
         if (waterBitmapImage == null)
         {
             if (DEBUG_BUILD) println("Null waterBitmapImage supplied, now creating a randomly textured image");
             this.waterWidth = 64;
-            this.waterHeight = 64;          
+            this.waterHeight = 64;
             waterEffectInit(null);
         }
         else
@@ -746,9 +689,9 @@ public class ImageSFXs
         }
     }
 
-    /** 
+    /**
     *  Initializes the water effect image (wrapper method for selecting between native and Java versions of the effect).
-    */   
+    */
     private void waterEffectInit(BufferedImage waterEffectBitmapImage)
     {
         if (waterEffectBitmapImage == null)
@@ -756,33 +699,15 @@ public class ImageSFXs
             waterBitmapBuffer = textureGenerate(Random.getRandomRange(1, 2), 64, 64); // generate the random texture
             waterBitmapImage = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
             waterBitmapImage = org.BioLayoutExpress3D.StaticLibraries.ImageProducer.cloneImage(waterBitmapImage);
-            waterBitmapImage.setRGB(0, 0, 64, 64, waterBitmapBuffer, 0, 64);   
+            waterBitmapImage.setRGB(0, 0, 64, 64, waterBitmapBuffer, 0, 64);
         }
         else
         {
-            waterBitmapBuffer = new int[waterWidth * waterHeight]; 
+            waterBitmapBuffer = new int[waterWidth * waterHeight];
             waterBitmapImage = org.BioLayoutExpress3D.StaticLibraries.ImageProducer.cloneImage(waterEffectBitmapImage);
             waterBitmapImage.getRGB(0, 0, waterWidth, waterHeight, waterBitmapBuffer, 0, waterWidth); // just get the initial bitmap buffer
-        }              
+        }
 
-        if (USE_NATIVE_CODE)
-            waterEffectInitNative(waterWidth, waterHeight, waterBitmapBuffer);
-        else
-            waterEffectInitJava();
-
-        waterBuffer = ( (DataBufferInt)waterBitmapImage.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
-    }
-
-    /**
-    *  Initializes the water effect (native method).
-    */
-    private native void waterEffectInitNative(int waterWidth, int waterHeight, int[] waterBitmapBuffer);
-
-    /**
-    *  Initializes the water effect (Java method).
-    */
-    private void waterEffectInitJava()
-    {
         waterBufferSize = waterWidth * waterHeight;
 
         waterPreCalcRandomNumbers = new int[2 * waterPreCalcMAXRandomNumbers];
@@ -796,23 +721,9 @@ public class ImageSFXs
 
         waterBuffer1 = new short[waterBufferSize];
         waterBuffer2 = new short[waterBufferSize];
-    }
 
-    /**
-    *  Processes the water effect image (wrapper method for selecting between native and Java versions of the effect).
-    */
-    public void waterEffect()
-    {
-        if (USE_NATIVE_CODE)
-            waterEffectNative(waterBuffer);
-        else
-            waterEffectJava();
+        waterBuffer = ( (DataBufferInt)waterBitmapImage.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
     }
-
-    /**
-    *  Processes the water effect (native method).
-    */
-    private native void waterEffectNative(int[] waterBuffer);
 
     /**
     *  Writes a water drop for the water effect.
@@ -842,10 +753,10 @@ public class ImageSFXs
         }
     }
 
-    /** 
-    *  Processes the water effect image (Java method).
-    */   
-    private void waterEffectJava()
+    /**
+    *  Processes the water effect image.
+    */
+    public void waterEffect()
     {
         int xp = 0, yp = 0;
         int tx = 0, ty = 0;
@@ -920,26 +831,26 @@ public class ImageSFXs
 
             waterI += 4;
         }
-    }     
+    }
 
-    /** 
+    /**
     *  Returns the water effect image.
-    */   
+    */
     public BufferedImage waterEffectImage()
     {
         return waterBitmapImage;
-    }    
-    
-    /** 
+    }
+
+    /**
     *  Sets the bump effect image.
-    */  
+    */
     public void setBumpEffectImage(int bumpLightWidth, int bumpLightHeight, int bumpLightValue, int lightValue, int darkValue, BufferedImage bumpBitmapImage)
     {
         if (bumpBitmapImage == null)
         {
           if (DEBUG_BUILD) println("Null bumpBitmapImage supplied, now creating a randomly textured image");
           this.bumpWidth = 64;
-          this.bumpHeight = 64;          
+          this.bumpHeight = 64;
           bumpEffectInit(32, 32, 100, 200, 300, null);
         }
         else
@@ -949,9 +860,9 @@ public class ImageSFXs
 
           if ( !(bumpLightWidth * bumpLightHeight < bumpWidth * bumpHeight) )
           {
-              if ( bumpWidth > bumpHeight ) 
+              if ( bumpWidth > bumpHeight )
                   bumpLightWidth = bumpLightHeight = bumpHeight;
-              else 
+              else
                   bumpLightWidth = bumpLightHeight = bumpWidth;
           }
 
@@ -959,9 +870,9 @@ public class ImageSFXs
         }
     }
 
-    /** 
+    /**
     *  Initializes the bump effect image.
-    */   
+    */
     private void bumpEffectInit(int bumpLightWidth, int bumpLightHeight, int bumpLightValue, int lightValue, int darkValue, BufferedImage bumpBitmapEffectImage)
     {
         if (bumpBitmapEffectImage == null)
@@ -981,24 +892,6 @@ public class ImageSFXs
         if (USE_MULTICORE_PROCESS)
             bumpBitmapImageToReturn = org.BioLayoutExpress3D.StaticLibraries.ImageProducer.cloneImage(bumpBitmapImage);
 
-        if (USE_NATIVE_CODE)
-            bumpEffectInitNative(bumpLightWidth, bumpLightHeight, bumpLightValue, lightValue, darkValue, bumpWidth, bumpHeight, bumpBitmapBuffer);
-        else
-            bumpEffectInitJava(bumpLightWidth, bumpLightHeight, bumpLightValue, lightValue, darkValue);
-
-        bumpBuffer = ( (DataBufferInt)bumpBitmapImage.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
-    }
-
-    /**
-    *  Initializes the bump effect (native method).
-    */
-    private native void bumpEffectInitNative(int bumpLightWidth, int bumpLightHeight, int bumpLightValue, int lightValue, int darkValue, int bumpWidth, int bumpHeight, int[] bumpBitmapBuffer);
-
-    /**
-    *  Initializes the bump effect (Java method).
-    */
-    private void bumpEffectInitJava(int bumpLightWidth, int bumpLightHeight, int bumpLightValue, int lightValue, int darkValue)
-    {
         this.bumpLightWidth = bumpLightWidth;
         this.bumpLightHeight = bumpLightHeight;
         this.darkValue = darkValue;
@@ -1074,31 +967,14 @@ public class ImageSFXs
             if ( (divPrecalc1[i] = abs((int)((float)i * (float)darkValue / 255.0f))) > 255 ) divPrecalc1[i] = 255;
             if ( (divPrecalc2[i] = abs((int)((float)i * (float)lightRange / 255.0f))) > 255 ) divPrecalc2[i] = 255;
         }
-    }
-        
-    /** 
-    *  Processes the bump effect (wrapper method for selecting between native and Java versions of the effect).
-    */   
-    public void bumpEffect()     
-    {
-        if (USE_NATIVE_CODE)
-            bumpEffectNative(bumpBuffer);
-        else
-            bumpEffectJava();
 
-        if (USE_MULTICORE_PROCESS)
-            bumpBitmapImageToReturn.setRGB(0, 0, bumpWidth, bumpHeight, bumpBuffer, 0, bumpWidth);
+        bumpBuffer = ( (DataBufferInt)bumpBitmapImage.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
     }
 
     /**
-    *  Processes the bump effect (native method).
+    *  Processes the bump effect.
     */
-    private native void bumpEffectNative(int[] bumpBuffer);
-
-    /**
-    *  Processes the bump effect (Java method).
-    */
-    private void bumpEffectJava()
+    public void bumpEffect()
     {
         int c = 0, i = 0;
         int r = 0, g = 0, b = 0;
@@ -1162,19 +1038,22 @@ public class ImageSFXs
 
             i += (bumpWidth + lx0 - lx1);
         }
+
+        if (USE_MULTICORE_PROCESS)
+            bumpBitmapImageToReturn.setRGB(0, 0, bumpWidth, bumpHeight, bumpBuffer, 0, bumpWidth);
     }
 
-    /** 
+    /**
     *  Returns the bump effect image.
-    */   
+    */
     public BufferedImage bumpEffectImage()
     {
         return ( (USE_MULTICORE_PROCESS) ? bumpBitmapImageToReturn : bumpBitmapImage );
     }
 
-    /** 
+    /**
     *  Sets the radial effect image.
-    */  
+    */
     public void setRadialBlurEffectImage(double radialBlurShortness, BufferedImage radialBlurBitmapImage)
     {
         if (radialBlurBitmapImage == null)
@@ -1183,7 +1062,7 @@ public class ImageSFXs
             this.radialBlurBufferWidth = 64;
             this.radialBlurBufferHeight = 64;
             this.radialBlurWidth = 2 * radialBlurBufferWidth;
-            this.radialBlurHeight = 2 * radialBlurBufferHeight;       
+            this.radialBlurHeight = 2 * radialBlurBufferHeight;
             radialBlurEffectInit(4, null);
         }
         else
@@ -1191,14 +1070,14 @@ public class ImageSFXs
             this.radialBlurBufferWidth = radialBlurBitmapImage.getWidth();
             this.radialBlurBufferHeight = radialBlurBitmapImage.getHeight();
             this.radialBlurWidth = 2 * radialBlurBufferWidth;
-            this.radialBlurHeight = 2 * radialBlurBufferHeight;          
+            this.radialBlurHeight = 2 * radialBlurBufferHeight;
             radialBlurEffectInit(radialBlurShortness, radialBlurBitmapImage);
         }
-    }    
+    }
 
-    /** 
+    /**
     *  Initializes the radial blur effect.
-    */   
+    */
     private void radialBlurEffectInit(double radialBlurShortness, BufferedImage radialBlurEffectBitmapImage)
     {
         //Generate the texture
@@ -1211,32 +1090,14 @@ public class ImageSFXs
         }
         else
         {
-            radialBlurBitmapBuffer = new int [radialBlurBufferWidth * radialBlurBufferHeight];            
+            radialBlurBitmapBuffer = new int [radialBlurBufferWidth * radialBlurBufferHeight];
             radialBlurBitmapImage = org.BioLayoutExpress3D.StaticLibraries.ImageProducer.cloneImage(radialBlurEffectBitmapImage); // somehow, the Java API does a faster acceleration after using this method (using a predefined transparency and copying it)
             radialBlurBitmapImage.getRGB(0, 0, radialBlurBufferWidth, radialBlurBufferHeight, radialBlurBitmapBuffer, 0, radialBlurBufferWidth); // just get the initial bitmap buffer
-        }        
+        }
 
         if (USE_MULTICORE_PROCESS)
             radialBlurBitmapImageToReturn = org.BioLayoutExpress3D.StaticLibraries.ImageProducer.cloneImage(radialBlurBitmapImage);
 
-        if (USE_NATIVE_CODE)
-            radialBlurEffectInitNative(radialBlurShortness, radialBlurWidth, radialBlurHeight, radialBlurBufferWidth, radialBlurBufferHeight, radialBlurBitmapBuffer);
-        else
-            radialBlurEffectInitJava(radialBlurShortness);
-
-        radialBlurBuffer = ( (DataBufferInt)radialBlurBitmapImage.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
-    }
-
-    /**
-    *  Initializes the radial blur effect (native method).
-    */
-    private native void radialBlurEffectInitNative(double radialBlurShortness, int radialBlurWidth, int radialBlurHeight, int radialBlurBufferWidth, int radialBlurBufferHeight, int[] radialBlurBitmapBuffer);
-
-    /**
-    *  Initializes the radial blur effect (Java method).
-    */
-    private void radialBlurEffectInitJava(double radialBlurShortness)
-    {
         radialBlurBsize = radialBlurBufferWidth * radialBlurBufferHeight;
         radialBlurRsize = radialBlurWidth * radialBlurHeight;
         radialBlurFrames = 0;
@@ -1296,31 +1157,14 @@ public class ImageSFXs
             G_radialBlurBitmapBuffer[i] = (short)((radialBlurBitmapBuffer[i] & 0x0000FF00) >>> 8);
             B_radialBlurBitmapBuffer[i] = (short)(radialBlurBitmapBuffer[i] & 0x000000FF);
         }
+
+        radialBlurBuffer = ( (DataBufferInt)radialBlurBitmapImage.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
     }
 
     /**
-    *  Processes the radial blur effect (wrapper method for selecting between native and Java versions of the effect).
+    *  Processes the radial blur effect.
     */
     public void radialBlurEffect(int positionY, boolean borderFade, int borderFadeX, int borderFadeY)
-    {
-        if (USE_NATIVE_CODE)
-            radialBlurEffectNative(positionY, borderFade, borderFadeX, borderFadeY, radialBlurBuffer);
-        else
-            radialBlurEffectJava(positionY, borderFade, borderFadeX, borderFadeY);
-
-        if (USE_MULTICORE_PROCESS)
-            radialBlurBitmapImageToReturn.setRGB(0, 0, radialBlurBufferWidth, radialBlurBufferHeight, radialBlurBuffer, 0, radialBlurBufferWidth);
-    }
-
-    /**
-    *  Processes the radial blur effect (native method).
-    */
-    private native void radialBlurEffectNative(int positionY, boolean borderFade, int borderFadeX, int borderFadeY, int[] radialBlurBuffer);
-
-    /** 
-    *  Processes the radial blur effect (Java method).
-    */   
-    private void radialBlurEffectJava(int positionY, boolean borderFade, int borderFadeX, int borderFadeY)
     {
         int i = radialBlurBsize;
         while (--i >= 0)
@@ -1513,41 +1357,23 @@ public class ImageSFXs
                 }
             }
         }
-    }  
 
-    /** 
+        if (USE_MULTICORE_PROCESS)
+            radialBlurBitmapImageToReturn.setRGB(0, 0, radialBlurBufferWidth, radialBlurBufferHeight, radialBlurBuffer, 0, radialBlurBufferWidth);
+    }
+
+    /**
     *  Returns the radialBlur effect image.
-    */   
+    */
     public BufferedImage radialBlurEffectImage()
     {
         return ( (USE_MULTICORE_PROCESS) ? radialBlurBitmapImageToReturn : radialBlurBitmapImage );
-    }    
+    }
 
     /**
     *  Initializes the spot circle effect (wrapper method for selecting between native and Java versions of the effect).
     */
     public void spotCircleEffectInit(int spotCircleWidth, int spotCircleHeight, int spotCircleCenterX, int spotCircleCenterY, int distStep, boolean withNoiseEffect, int distRatio)
-    {
-        if (USE_NATIVE_CODE)
-            spotCircleEffectInitNative(spotCircleWidth, spotCircleHeight, spotCircleCenterX, spotCircleCenterY, distStep, withNoiseEffect, distRatio);
-        else
-            spotCircleEffectInitJava(spotCircleWidth, spotCircleHeight, spotCircleCenterX, spotCircleCenterY, distStep, withNoiseEffect, distRatio);
-
-        spotCircleImage = new BufferedImage(spotCircleWidth, spotCircleHeight, BufferedImage.TYPE_INT_ARGB);
-        // the below Java API trick somehow screws up the effect bigtime when random noise is involved!
-        // spotCircleImage = GameImageProducer.cloneAndBufferImage(spotCircleImage); // somehow, the Java API does a faster acceleration after using this method (using a predefined transparency and copying it)
-        spotCircleBuffer = ( (DataBufferInt) spotCircleImage.getRaster().getDataBuffer() ).getData();
-    }
-
-    /**
-    *  Initializes the spot circle effect (native method).
-    */
-    private native void spotCircleEffectInitNative(int spotCircleWidth, int spotCircleHeight, int spotCircleCenterX, int spotCircleCenterY, int distStep, boolean withNoiseEffect, int distRatio);
-
-    /**
-    *  Initializes the spot circle effect (Java method).
-    */
-    private void spotCircleEffectInitJava(int spotCircleWidth, int spotCircleHeight, int spotCircleCenterX, int spotCircleCenterY, int distStep, boolean withNoiseEffect, int distRatio)
     {
         this.distStep = distStep;
         this.withNoiseEffect = withNoiseEffect;
@@ -1609,28 +1435,17 @@ public class ImageSFXs
         }
 
         spotCircleEffectFinished = false;
+
+        spotCircleImage = new BufferedImage(spotCircleWidth, spotCircleHeight, BufferedImage.TYPE_INT_ARGB);
+        // the below Java API trick somehow screws up the effect bigtime when random noise is involved!
+        // spotCircleImage = GameImageProducer.cloneAndBufferImage(spotCircleImage); // somehow, the Java API does a faster acceleration after using this method (using a predefined transparency and copying it)
+        spotCircleBuffer = ( (DataBufferInt) spotCircleImage.getRaster().getDataBuffer() ).getData();
     }
 
     /**
     *  Processes the spot circle effect (wrapper method for selecting between native and Java versions of the effect).
     */
     public void spotCircleEffect()
-    {
-        if (USE_NATIVE_CODE)
-            spotCircleEffectNative(spotCircleBuffer);
-       else
-            spotCircleEffectJava();
-    }
-
-    /**
-    *  Processes the spot circle effect (native method).
-    */
-    private native void spotCircleEffectNative(int[] spotCircleBuffer);
-
-    /**
-    *  Processes the spot circle effect (Java method).
-    */
-    private void spotCircleEffectJava()
     {
         if ( (radius > (-2 * distStep) && distStep > 0) || (radius < (distMAX - distStep) && distStep < 0) )
         {
@@ -1694,9 +1509,9 @@ public class ImageSFXs
         return spotCircleEffectFinished;
     }
 
-    /** 
+    /**
     *  Returns if an image has an alpha channel (support method).
-    */  
+    */
     public static boolean hasAlpha(BufferedImage image)
     {
         if (image == null)
@@ -1712,24 +1527,16 @@ public class ImageSFXs
     }
 
     /**
-    *  Destroys (de-initalizes) the effects (native method).
+    *  Destroys (de-initializes) the effects.
     */
-    private native void effectsDestructor();
-
-    /** 
-    *  Destroys (de-initializes) the effects (Java method).
-    */      
     public void destructor()
     {
-        if (USE_NATIVE_CODE)
-            effectsDestructor();
-        
         if (plasmaBitmapImage != null) plasmaBitmapImage.flush();
-        plasmaBitmapImage = null;     
-        plasmaBuffer = null;        
-        fSin1 = null;   
-        fSin2 = null; 
-        fSin3 = null;   
+        plasmaBitmapImage = null;
+        plasmaBuffer = null;
+        fSin1 = null;
+        fSin2 = null;
+        fSin3 = null;
         if (waterBitmapImage != null) waterBitmapImage.flush();
         waterBitmapImage = null;
         waterBuffer = null;
@@ -1741,7 +1548,7 @@ public class ImageSFXs
         bumpBuffer = null;
         bumpBitmapBuffer = null;
         A_bumpBitmapBuffer = null;
-        R_bumpBitmapBuffer = null;  
+        R_bumpBitmapBuffer = null;
         G_bumpBitmapBuffer = null;
         B_bumpBitmapBuffer = null;
         bumpLightmapBuffer = null;
@@ -1750,6 +1557,6 @@ public class ImageSFXs
         spotCircleBuffer = null;
         spotCirclePreCalcDist = null;
         spotCirclePreCalcRandomNumbers = null;
-    }     
-   
+    }
+
 }

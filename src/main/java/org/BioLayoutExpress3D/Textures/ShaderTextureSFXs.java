@@ -15,7 +15,7 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
 *
-*  Various GLSL shader texture operations used as special effects. 
+*  Various GLSL shader texture operations used as special effects.
 *  This class is responsible for producing textures using various effects using the GLSL specification.
 *
 *
@@ -66,13 +66,13 @@ public class ShaderTextureSFXs
     /**
     *  File name of Animation shader files.
     */
-    private static final String SHADER_FILE_NAME_3 = "Animation";        
-    
+    private static final String SHADER_FILE_NAME_3 = "Animation";
+
     /**
     *  Constant value needed for the spot circle random 2D texture.
-    */    
+    */
     private static final boolean USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE = false;
-    
+
     /**
     *  Constant value needed for the spot circle random 2D texture.
     */
@@ -92,12 +92,12 @@ public class ShaderTextureSFXs
     *  Active texture unit to be used for the bump emboss 2D texture.
     */
     private static final int ACTIVE_TEXTURE_UNIT_FOR_BUMP2D_EMBOSS_2D_TEXTURE = ACTIVE_TEXTURE_UNIT_FOR_ANIMATION_SPECTRUM_2D_TEXTURE + 3;
-    
+
     /**
     *  Variable to store the support for the GL_EXT_framebuffer_object extension.
     */
-    private boolean isGLExtFramebufferObjectSupported = false;     
-    
+    private boolean isGLExtFramebufferObjectSupported = false;
+
     /**
     *  Vertex shader storage.
     *  2 sets of shader files per shader program.
@@ -293,8 +293,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program py storage.
     */
-    private final int[] SHADER_PROGRAM_PYS = new int[NUMBER_OF_AVAILABLE_SHADERS];    
-    
+    private final int[] SHADER_PROGRAM_PYS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program power name.
     */
@@ -303,8 +303,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program power storage.
     */
-    private final int[] SHADER_PROGRAM_POWERS = new int[NUMBER_OF_AVAILABLE_SHADERS];    
-        
+    private final int[] SHADER_PROGRAM_POWERS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program mouse move name.
     */
@@ -313,8 +313,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program mouse move storage.
     */
-    private final int[] SHADER_PROGRAM_MOUSE_MOVES = new int[NUMBER_OF_AVAILABLE_SHADERS];        
-    
+    private final int[] SHADER_PROGRAM_MOUSE_MOVES = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program blob width name.
     */
@@ -323,8 +323,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program blob width storage.
     */
-    private final int[] SHADER_PROGRAM_BLOB_WIDTHS = new int[NUMBER_OF_AVAILABLE_SHADERS];        
-    
+    private final int[] SHADER_PROGRAM_BLOB_WIDTHS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program blob height name.
     */
@@ -333,8 +333,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program blob height storage.
     */
-    private final int[] SHADER_PROGRAM_BLOB_HEIGHTS = new int[NUMBER_OF_AVAILABLE_SHADERS];            
-    
+    private final int[] SHADER_PROGRAM_BLOB_HEIGHTS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program blob scale size name.
     */
@@ -343,8 +343,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program blob scale size storage.
     */
-    private final int[] SHADER_PROGRAM_BLOB_SCALE_SIZES = new int[NUMBER_OF_AVAILABLE_SHADERS];          
-    
+    private final int[] SHADER_PROGRAM_BLOB_SCALE_SIZES = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program blob halo exponent name.
     */
@@ -353,8 +353,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program blob halo exponent storage.
     */
-    private final int[] SHADER_PROGRAM_BLOB_HALO_EXPONENTS = new int[NUMBER_OF_AVAILABLE_SHADERS];        
-    
+    private final int[] SHADER_PROGRAM_BLOB_HALO_EXPONENTS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program scSize name.
     */
@@ -363,8 +363,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program scSize storage.
     */
-    private final int[] SHADER_PROGRAM_SC_SIZES = new int[NUMBER_OF_AVAILABLE_SHADERS];       
-    
+    private final int[] SHADER_PROGRAM_SC_SIZES = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program star distance Z name.
     */
@@ -373,7 +373,7 @@ public class ShaderTextureSFXs
     /**
     *  Shader program star distance Z storage.
     */
-    private final int[] SHADER_PROGRAM_STAR_DISTANCE_ZS = new int[NUMBER_OF_AVAILABLE_SHADERS];     
+    private final int[] SHADER_PROGRAM_STAR_DISTANCE_ZS = new int[NUMBER_OF_AVAILABLE_SHADERS];
 
     /**
     *  Shader program number of 3D stars name.
@@ -383,8 +383,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program number of 3D stars storage.
     */
-    private final int[] SHADER_PROGRAM_NUMBER_OF_3D_STARS = new int[NUMBER_OF_AVAILABLE_SHADERS];        
-    
+    private final int[] SHADER_PROGRAM_NUMBER_OF_3D_STARS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program blob color name.
     */
@@ -393,8 +393,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program blob color storage.
     */
-    private final int[] SHADER_PROGRAM_BLOB_COLORS = new int[NUMBER_OF_AVAILABLE_SHADERS];       
-    
+    private final int[] SHADER_PROGRAM_BLOB_COLORS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program blob motion blur name.
     */
@@ -403,8 +403,8 @@ public class ShaderTextureSFXs
     /**
     *  Shader program blob motion blur storage.
     */
-    private final int[] SHADER_PROGRAM_BLOB_MOTION_BLURS = new int[NUMBER_OF_AVAILABLE_SHADERS];         
-    
+    private final int[] SHADER_PROGRAM_BLOB_MOTION_BLURS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program animationGPUComputingMode name.
     */
@@ -648,8 +648,8 @@ public class ShaderTextureSFXs
     /**
     *  Variable to store the blob stars 3D scroller timer update step.
     */
-    private float blobStars3DScrollerTimerUpdateStep = 0.0f;        
-    
+    private float blobStars3DScrollerTimerUpdateStep = 0.0f;
+
     /**
     *  Variable used for the spot circle effect.
     */
@@ -874,89 +874,62 @@ public class ShaderTextureSFXs
     *  Variable to enable the render to blur texture support.
     */
     private RenderToTexture renderToBlurTexture = null;
-    
-    /** 
+
+    /**
     *  Variable used for the blob stars 3D scroller effect.
-    */      
-    private BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer = null;    
-    
-    /** 
+    */
+    private BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer = null;
+
+    /**
     *  Variable used for the blob stars 3D scroller effect.
-    */      
+    */
     private static final int NUMBER_OF_PING_PONG_FBOS = 2;
-    
+
     /**
     *  Variable to enable the render to motion blur blob stars 3D scroller effect.
     */
-    private RenderToTexture[] renderToMotionBlurForBlob3DStarsTextures = null; 
+    private RenderToTexture[] renderToMotionBlurForBlob3DStarsTextures = null;
 
-    /** 
-    *  Variable used for the blob stars 3D scroller effect.
-    */    
-    private int currentFBOIndex = 0;
-    
-    /** 
-    *  Variable used for the blob stars 3D scroller effect.
-    */     
-    private float[] blobStars3DScrollerMouseMove = new float[2];
-
-    /** 
-    *  Variable used for the blob stars 3D scroller effect.
-    */     
-    private float[] blobStars3DScrollerMouseMovePrevious = new float[2];
-    
-    /** 
-    *  Variable used for the blob stars 3D scroller effect.
-    */    
-    private float blobMoveStep = 1.5f;    
-    
     /**
     *  Variable used for the blob stars 3D scroller effect.
     */
-    private static final int BLOB_MOVE_RESET_VALUE = 70;    
-    
+    private int currentFBOIndex = 0;
+
+    /**
+    *  Variable used for the blob stars 3D scroller effect.
+    */
+    private float[] blobStars3DScrollerMouseMove = new float[2];
+
+    /**
+    *  Variable used for the blob stars 3D scroller effect.
+    */
+    private float[] blobStars3DScrollerMouseMovePrevious = new float[2];
+
+    /**
+    *  Variable used for the blob stars 3D scroller effect.
+    */
+    private float blobMoveStep = 1.5f;
+
+    /**
+    *  Variable used for the blob stars 3D scroller effect.
+    */
+    private static final int BLOB_MOVE_RESET_VALUE = 70;
+
     /**
     *  Constant value needed for the blob stars 3D scroller effect.
     */
-    private static final float[] BLOB_COLORS_COLOR_ARRAY = new float[4];    
-    
-    /**
-    *  Variable used for loading the native library only once (no use of re-loading the library).
-    */
-    private static boolean hasOnceLoadedNativeLibrary = false;
+    private static final float[] BLOB_COLORS_COLOR_ARRAY = new float[4];
 
-    /**
-    *  Static initializer for the native library.
-    *  It's used from ShaderLightingSFXs as well, so it has to be initialized in advance for the 3D renderer.
-    *  Will remove the 'static' side when the 2D/3D renderers are merged.
-    */
-    static
-    {
-        initNativeLibrary();
-    }   
-    
     /**
     *  The constructor of the ShaderTextureSFXs class.
     */
     public ShaderTextureSFXs(GL2 gl, int width, int height, boolean isGLExtFramebufferObjectSupported)
     {
         this.isGLExtFramebufferObjectSupported = isGLExtFramebufferObjectSupported;
-                
+
         if (USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE)
             initSpotCircle2DTextures(gl, width, height, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE, ACTIVE_TEXTURE_UNIT_FOR_SPOT_CIRCLE_RANDOM_2D_TEXTURE);
         loadAndCompileAllShaderPrograms(gl);
-    }
-
-    /**
-    *  Native library initializer to make sure to load all relevant native libraries (if being used).
-    */
-    private static void initNativeLibrary()
-    {
-        if (!hasOnceLoadedNativeLibrary && USE_NATIVE_CODE)
-        {
-            int index = NativeLibrariesTypes.SHADER_TEXTURE_SFXS.ordinal();
-            hasOnceLoadedNativeLibrary = LoadNativeLibrary.loadNativeLibrary(NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index], FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index]);
-        }
     }
 
     /**
@@ -991,14 +964,14 @@ public class ShaderTextureSFXs
     */
     private void loadAndCompileAllShaderPrograms(GL2 gl)
     {
-        String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;        
+        String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;
         String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
-                                          "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                                                                   + "\n" + 
+                                          "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                                                                   + "\n" +
                                           "#define ANIMATION_COMPATIBILITY_CONDITION "            + ( (GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_INTEGER <= MINIMUM_GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS) ? 1 : 0 ) + "\n" +
                                           "#define USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE_CONDITION "  + ( (USE_SPOT_CIRCLE_RANDOM_2D_TEXTURE) ? 1 : 0 )                                                      + "\n" +
-                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "out" : "varying" )                                                    + "\n" +  
+                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "out" : "varying" )                                                    + "\n" +
                                           "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "in"  : "varying" )                                                    + "\n"
-                                          ;  
+                                          ;
         ShaderTypes[] allShaderTypes = ShaderTypes.values();
         String shaderEffectName = "";
         String shaderEffectFileName = "";
@@ -1014,7 +987,7 @@ public class ShaderTextureSFXs
             else
                 ShaderUtils.loadShaderFileCompileAndLinkProgram(gl, new String[] { SHADER_FILES_DIRECTORY_1, SHADER_FILES_DIRECTORY_2 }, new String[]{ shaderEffectFileName, SHADER_FILE_NAME_2 },
                                                                 LOAD_SHADER_PROGRAMS_FROM_EXTERNAL_SOURCE, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i, GLSLPreprocessorCommands, DEBUG_BUILD);
-            SHADER_PROGRAM_2D_TEXTURES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_2D_TEXTURE_NAME);            
+            SHADER_PROGRAM_2D_TEXTURES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_2D_TEXTURE_NAME);
             SHADER_PROGRAM_SPOT_CIRCLE_RANDOM_2D_TEXTURES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_SPOT_CIRCLE_RANDOM_2D_TEXTURE_NAME);
             SHADER_PROGRAM_WATER_BUFFER_2D_TEXTURES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_WATER_BUFFER_2D_TEXTURE_NAME);
             SHADER_PROGRAM_BUMP2D_EMBOSS_2D_TEXTURES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_BUMP2D_EMBOSS_2D_TEXTURE_NAME);
@@ -1033,7 +1006,7 @@ public class ShaderTextureSFXs
             SHADER_PROGRAM_PYS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_PY_NAME);
             SHADER_PROGRAM_POWERS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_POWER_NAME);
             SHADER_PROGRAM_MOUSE_MOVES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_MOUSE_MOVE_NAME);
-            
+
             // blob stars 3d scroller uniform variables
             SHADER_PROGRAM_BLOB_WIDTHS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_BLOB_WIDTH_NAME);
             SHADER_PROGRAM_BLOB_HEIGHTS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_BLOB_HEIGHT_NAME);
@@ -1105,7 +1078,7 @@ public class ShaderTextureSFXs
             gl.glUniform3fv(SHADER_PROGRAM_BLOB_COLORS[effectIndex], 1, BLOB_COLORS_COLOR_ARRAY, 0);
             gl.glUniform1f(SHADER_PROGRAM_BLOB_MOTION_BLURS[effectIndex], blobStars3DScrollerEffectInitializer.blobMotionBlur);
         }
-        
+
         // animation is off
         gl.glUniform1i(SHADER_PROGRAM_ANIMATION_GPU_COMPUTING_MODES[effectIndex], 0);
     }
@@ -1169,7 +1142,7 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Renders the texture displacement effect.    
+    *  Renders the texture displacement effect.
     */
     public void textureDisplacementEffectRender(GL2 gl, Texture textureDisplacementEffectTexture, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
@@ -1188,7 +1161,7 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Renders the texture displacement effect with an added rotozoom effect.    
+    *  Renders the texture displacement effect with an added rotozoom effect.
     */
     public void textureDisplacementEffectRotoZoomRender(GL2 gl, Texture textureDisplacementEffectTexture, double x1, double y1, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
@@ -1224,7 +1197,7 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Renders the plasma effect.    
+    *  Renders the plasma effect.
     */
     public void plasmaEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
@@ -1243,7 +1216,7 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Renders the plasma effect with an added rotozoom effect.    
+    *  Renders the plasma effect with an added rotozoom effect.
     */
     public void plasmaEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
@@ -1274,7 +1247,7 @@ public class ShaderTextureSFXs
 
         this.spotCircleEffectUpdateFrame = 0;
         this.arrayIndexPreCalcAlphaValues = 0;
-        this.spotCircleEffectFinished = false;        
+        this.spotCircleEffectFinished = false;
 
         float distMaxCornerTopLeft = (float)sqrt( pow( (spotCircleCenterX - 0.0f), 2.0) + pow( (spotCircleCenterY - 0.0f), 2.0) );
         float distMaxCornerTopRight = (float)sqrt( pow( (spotCircleCenterX - spotCircleWidth), 2.0) + pow( (spotCircleCenterY - 0.0f), 2.0) );
@@ -1302,7 +1275,7 @@ public class ShaderTextureSFXs
             int i = spotCirclePreCalcAlphaValues.length;
             while (--i >= 0)
                 spotCirclePreCalcAlphaValues[i] = (float)i / (distMAX / (distRatio * distStep) ) + ( (distStep < 0.0f) ? 1.0f : 0.0f );
-        }        
+        }
     }
 
     /**
@@ -1332,7 +1305,7 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Renders the spot circle effect.    
+    *  Renders the spot circle effect.
     */
     public void spotCircleEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
@@ -1354,7 +1327,7 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Renders the spot circle effect with an added rotozoom effect.    
+    *  Renders the spot circle effect with an added rotozoom effect.
     */
     public void spotCircleEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
@@ -1416,7 +1389,7 @@ public class ShaderTextureSFXs
             waterMul1[i] = waterBufferWidth / 4 + org.BioLayoutExpress3D.StaticLibraries.Random.getRandomRange(0, waterBufferWidth / 4);
             waterMul2[i] = waterBufferHeight / 4 + org.BioLayoutExpress3D.StaticLibraries.Random.getRandomRange(0, waterBufferHeight / 4);
 	}
-        
+
         waterBufferImage = new BufferedImage(waterBufferWidth, waterBufferHeight, BufferedImage.TYPE_INT_ARGB);
         waterBuffer = ( (DataBufferInt)waterBufferImage.getRaster().getDataBuffer() ).getData(); // connect it to the returning image buffer
     }
@@ -1464,35 +1437,11 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Calculates all the water drops for the water effects (wrapper method for selecting between native and Java versions of the water effect). Using package access.
+    *  Calculates all the water drops for the water effects.
     */
     static boolean calculateAllWaterDrops(boolean logarithmicDropAnimation, int minNumberOfWaterDrops, int MAX_NUMBER_OF_WATER_DROPS, float waterTimerUpdate, float waterDropTimerUpdate, boolean invertStep,
-                                          int waterBufferWidth, int waterBufferHeight, int waterBufferSize, int waterDropSize, float[] waterDiv1, float[] waterDiv2, int[] waterMul1, int[] waterMul2,
-                                          int[] waterBuffer, int[] waterBuffer1, int[] waterBuffer2)
-    {
-        if (USE_NATIVE_CODE)
-            return calculateAllWaterDropsNative(logarithmicDropAnimation, minNumberOfWaterDrops, MAX_NUMBER_OF_WATER_DROPS, waterTimerUpdate, waterDropTimerUpdate, invertStep,
-                                                waterBufferWidth, waterBufferHeight, waterBufferSize, waterDropSize, waterDiv1, waterDiv2, waterMul1, waterMul2,
-                                                waterBuffer, waterBuffer1, waterBuffer2);
-        else
-            return calculateAllWaterDropsJava(logarithmicDropAnimation, minNumberOfWaterDrops, MAX_NUMBER_OF_WATER_DROPS, waterTimerUpdate, waterDropTimerUpdate, invertStep,
-                                              waterBufferWidth, waterBufferHeight, waterBufferSize, waterDropSize, waterDiv1, waterDiv2, waterMul1, waterMul2,
-                                              waterBuffer, waterBuffer1, waterBuffer2);
-    }
-
-    /**
-    *  Calculates all the water drops for the water effects (native method).
-    */
-    private native static boolean calculateAllWaterDropsNative(boolean logarithmicDropAnimation, int minNumberOfWaterDrops, int MAX_NUMBER_OF_WATER_DROPS, float waterTimerUpdate, float waterDropTimerUpdate, boolean invertStep,
-                                                               int waterBufferWidth, int waterBufferHeight, int waterBufferSize, int waterDropSize, float[] waterDiv1, float[] waterDiv2, int[] waterMul1, int[] waterMul2,
-                                                               int[] waterBuffer, int[] waterBuffer1, int[] waterBuffer2);
-
-    /**
-    *  Calculates all the water drops for the water effects (Java method).
-    */
-    private static boolean calculateAllWaterDropsJava(boolean logarithmicDropAnimation, int minNumberOfWaterDrops, int MAX_NUMBER_OF_WATER_DROPS, float waterTimerUpdate, float waterDropTimerUpdate, boolean invertStep,
-                                                      int waterBufferWidth, int waterBufferHeight, int waterBufferSize, int waterDropSize, float[] waterDiv1, float[] waterDiv2, int[] waterMul1, int[] waterMul2,
-                                                      int[] waterBuffer, int[] waterBuffer1, int[] waterBuffer2)
+            int waterBufferWidth, int waterBufferHeight, int waterBufferSize, int waterDropSize, float[] waterDiv1, float[] waterDiv2, int[] waterMul1, int[] waterMul2,
+            int[] waterBuffer, int[] waterBuffer1, int[] waterBuffer2)
     {
         boolean hasReachedRange = false;
 
@@ -1583,7 +1532,7 @@ public class ShaderTextureSFXs
         useProgramAndUniforms(gl, ShaderTypes.WATER.ordinal(), waterTimerUpdate / 1000.0f, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, specularWaterSize, (float)waterWidth, (float)waterHeight, 0.0f);
         drawTexture(gl, waterTexture, x1, y1, x2, y2);
         gl.glUseProgram(0);
-    }    
+    }
 
     /**
     *  Renders the water effect with an added rotozoom effect.
@@ -1644,7 +1593,7 @@ public class ShaderTextureSFXs
             while (--j >= 0)
               for (i = bumpWidth + 1; i < bumpBufferSize - bumpWidth - 1; i++)
                   randomBuffer[i] = (randomBuffer[i - 1] + randomBuffer[i + 1] + randomBuffer[i - bumpWidth] + randomBuffer[i + bumpWidth]) >> 2;
-            
+
             int[] R_bumpBitmapBuffer = new int[bumpBufferSize];
             int[] G_bumpBitmapBuffer = new int[bumpBufferSize];
             int[] B_bumpBitmapBuffer = new int[bumpBufferSize];
@@ -1778,7 +1727,7 @@ public class ShaderTextureSFXs
             if (renderToBlurTexture == null)
                 renderToBlurTexture = new RenderToTexture(gl);
             else
-                renderToBlurTexture.disposeAllRenderToTextureResources(gl);            
+                renderToBlurTexture.disposeAllRenderToTextureResources(gl);
             renderToBlurTexture.initAllRenderToTextureResources( gl, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE, blurEffectTexture.getWidth(), blurEffectTexture.getHeight() );
         }
     }
@@ -1794,10 +1743,10 @@ public class ShaderTextureSFXs
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         gl.glClear(GL_COLOR_BUFFER_BIT);
         useProgramAndUniforms(gl, ShaderTypes.BLUR.ordinal(), 0.0f, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, blurInterpolation, blurSize, 0.0f, 0.0f, 0.0f);
-        drawTexture(gl, blurEffectTexture, 0, 0, renderToBlurWidth, renderToBlurHeight);        
+        drawTexture(gl, blurEffectTexture, 0, 0, renderToBlurWidth, renderToBlurHeight);
         gl.glUseProgram(0);
         if ( NORMAL_QUALITY_ANTIALIASING.get() || HIGH_QUALITY_ANTIALIASING.get() )
-            renderToBlurTexture.prepareHighQualityRendering(gl);        
+            renderToBlurTexture.prepareHighQualityRendering(gl);
         renderToBlurTexture.finishRender(gl);
     }
 
@@ -1916,8 +1865,8 @@ public class ShaderTextureSFXs
         drawRotoZoomTexture(gl, radialBlurEffectTexture, x1, y1, theta, zoomFactorX, zoomFactorY);
         gl.glUseProgram(0);
     }
-    
-    /** 
+
+    /**
     *  Moves the blob stars 3D scroller field according to the mouse move values.
     */
     public void blobStars3DScrollerEffectMouseMove(int x, int y)
@@ -1929,7 +1878,7 @@ public class ShaderTextureSFXs
             else
                 blobStars3DScrollerMouseMove[0] -= blobMoveStep;
         }
-        
+
         if (blobStars3DScrollerMouseMovePrevious[1] != y)
         {
             if (blobStars3DScrollerMouseMovePrevious[1] < y)
@@ -1937,16 +1886,16 @@ public class ShaderTextureSFXs
             else
                 blobStars3DScrollerMouseMove[1] -= blobMoveStep;
         }
-        
+
         if ( blobStars3DScrollerMouseMove[0] > BLOB_MOVE_RESET_VALUE || blobStars3DScrollerMouseMove[0] < -BLOB_MOVE_RESET_VALUE ||
              blobStars3DScrollerMouseMove[1] > BLOB_MOVE_RESET_VALUE || blobStars3DScrollerMouseMove[1] < -BLOB_MOVE_RESET_VALUE )
         {
             blobMoveStep = -blobMoveStep;
         }
 
-        blobStars3DScrollerMouseMove[0] = x;        
-        blobStars3DScrollerMouseMove[1] = y;        
-    }    
+        blobStars3DScrollerMouseMove[0] = x;
+        blobStars3DScrollerMouseMove[1] = y;
+    }
 
     /**
     *  Initializes the blob stars 3D scroller effect.
@@ -1956,10 +1905,10 @@ public class ShaderTextureSFXs
         this.blobStars3DScrollerEffectInitializer = blobStars3DScrollerEffectInitializer;
         this.blobStars3DScrollerTimerUpdateStep = blobStars3DScrollerTimerUpdateStep;
         blobStars3DScrollerTimerUpdate = 0.0f;
-        
+
         blobStars3DScrollerMouseMove[0] = 0;
         blobStars3DScrollerMouseMove[1] = 0;
-        blobMoveStep = abs(blobMoveStep);      
+        blobMoveStep = abs(blobMoveStep);
 
         if (blobStars3DScrollerEffectInitializer.useBlobMotionBlur && isGLExtFramebufferObjectSupported)
         {
@@ -1967,17 +1916,17 @@ public class ShaderTextureSFXs
             {
                 renderToMotionBlurForBlob3DStarsTextures = new RenderToTexture[NUMBER_OF_PING_PONG_FBOS];
                 for (int i = 0; i < NUMBER_OF_PING_PONG_FBOS; i++)
-                    renderToMotionBlurForBlob3DStarsTextures[i] = new RenderToTexture(gl);                    
+                    renderToMotionBlurForBlob3DStarsTextures[i] = new RenderToTexture(gl);
             }
             else
             {
                 for (int i = 0; i < NUMBER_OF_PING_PONG_FBOS; i++)
                     renderToMotionBlurForBlob3DStarsTextures[i].disposeAllRenderToTextureResources(gl);
             }
-            
+
             for (int i = 0; i < NUMBER_OF_PING_PONG_FBOS; i++)
                 renderToMotionBlurForBlob3DStarsTextures[i].initAllRenderToTextureResources(gl, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE, width, height);
-        }        
+        }
     }
 
     /**
@@ -1985,7 +1934,7 @@ public class ShaderTextureSFXs
     */
     public void blobStars3DScrollerEffect()
     {
-        blobStars3DScrollerTimerUpdate += blobStars3DScrollerTimerUpdateStep;        
+        blobStars3DScrollerTimerUpdate += blobStars3DScrollerTimerUpdateStep;
     }
 
     /**
@@ -1994,10 +1943,10 @@ public class ShaderTextureSFXs
     private void blob3DStarsPingPongFBOsMotionBlurRenderToTexture(GL2 gl, float alpha, boolean oldLCDStyleTransparency, double x1, double y1, int x2, int y2)
     {
         // bind first FBO texture
-        renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].bind(gl, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE);        
+        renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].bind(gl, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE);
         // switch FBO order (ping-pong FBOs effect)
         currentFBOIndex = (++currentFBOIndex & 1);
-        
+
         // bind second FBO framebuffer
         renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].startRender(gl);
         if ( NORMAL_QUALITY_ANTIALIASING.get() || HIGH_QUALITY_ANTIALIASING.get() )
@@ -2008,12 +1957,12 @@ public class ShaderTextureSFXs
         drawQuadWithTextureCoords(gl, x1, y1, x2, y2);
         gl.glUseProgram(0);
         if ( NORMAL_QUALITY_ANTIALIASING.get() || HIGH_QUALITY_ANTIALIASING.get() )
-            renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].prepareHighQualityRendering(gl);        
-        renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].finishRender(gl);   
-    }    
-    
+            renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].prepareHighQualityRendering(gl);
+        renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].finishRender(gl);
+    }
+
     /**
-    *  Renders the blob stars 3D scroller effect.    
+    *  Renders the blob stars 3D scroller effect.
     */
     public void blobStars3DScrollerEffectRender(GL2 gl, double x1, double y1, int x2, int y2, boolean oldLCDStyleTransparency)
     {
@@ -2028,7 +1977,7 @@ public class ShaderTextureSFXs
     {
         if (blobStars3DScrollerEffectInitializer.useBlobMotionBlur && isGLExtFramebufferObjectSupported)
         {
-            blob3DStarsPingPongFBOsMotionBlurRenderToTexture(gl, alpha, oldLCDStyleTransparency, x1, y1, x2, y2);            
+            blob3DStarsPingPongFBOsMotionBlurRenderToTexture(gl, alpha, oldLCDStyleTransparency, x1, y1, x2, y2);
             drawRenderToTexture(gl, renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex], x1, y1, x2, y2, 1.0f, null, true, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE);
         }
         else
@@ -2040,7 +1989,7 @@ public class ShaderTextureSFXs
     }
 
     /**
-    *  Renders the blob stars 3D scroller effect with an added rotozoom effect.    
+    *  Renders the blob stars 3D scroller effect with an added rotozoom effect.
     */
     public void blobStars3DScrollerEffectRotoZoomRender(GL2 gl, double x1, double y1, int x2, int y2, double theta, double zoomFactorX, double zoomFactorY, boolean oldLCDStyleTransparency)
     {
@@ -2055,17 +2004,17 @@ public class ShaderTextureSFXs
     {
         if (blobStars3DScrollerEffectInitializer.useBlobMotionBlur && isGLExtFramebufferObjectSupported)
         {
-            blob3DStarsPingPongFBOsMotionBlurRenderToTexture(gl, alpha, oldLCDStyleTransparency, x1, y1, x2, y2);            
+            blob3DStarsPingPongFBOsMotionBlurRenderToTexture(gl, alpha, oldLCDStyleTransparency, x1, y1, x2, y2);
             drawRotoZoomRenderToTexture(gl, renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex], x1, y1, theta, zoomFactorX, zoomFactorY, 1.0f, null, true, ACTIVE_TEXTURE_UNIT_FOR_2D_TEXTURE);
         }
         else
-        {        
+        {
             useProgramAndUniforms(gl, ShaderTypes.BLOB_STARS_3D_SCROLLER.ordinal(), blobStars3DScrollerTimerUpdate, alpha, oldLCDStyleTransparency, 0.0f, 0.0f, 0.0f, 0.0f, false, 0, false, 0.0f, (float)(renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].getWidth() - x1), (float)(renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].getHeight() - y1), 0.0f);
             drawRotoZoomQuadWithTextureCoords(gl, x1, y1, renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].getWidth(), renderToMotionBlurForBlob3DStarsTextures[currentFBOIndex].getHeight(), theta, zoomFactorX, zoomFactorY);
             gl.glUseProgram(0);
         }
     }
-    
+
     /**
     *  Uses the Shader animation GPU Computing.
     */
@@ -2109,13 +2058,13 @@ public class ShaderTextureSFXs
         if (waterBufferTexture != null) waterBufferTexture.dispose(gl);
         if (bumpEmbossTexture != null) bumpEmbossTexture.dispose(gl);
         if (isGLExtFramebufferObjectSupported && renderToBlurTexture != null) renderToBlurTexture.disposeAllRenderToTextureResources(gl);
-        if (isGLExtFramebufferObjectSupported && renderToMotionBlurForBlob3DStarsTextures != null) 
+        if (isGLExtFramebufferObjectSupported && renderToMotionBlurForBlob3DStarsTextures != null)
         {
             for (int i = 0; i < NUMBER_OF_PING_PONG_FBOS; i++)
             {
-                renderToMotionBlurForBlob3DStarsTextures[i].disposeAllRenderToTextureResources(gl);         
+                renderToMotionBlurForBlob3DStarsTextures[i].disposeAllRenderToTextureResources(gl);
                 renderToMotionBlurForBlob3DStarsTextures[i] = null;
-            }            
+            }
             renderToMotionBlurForBlob3DStarsTextures = null;
         }
     }

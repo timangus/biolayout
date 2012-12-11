@@ -20,7 +20,7 @@ import static org.BioLayoutExpress3D.StaticLibraries.ImageProducer.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class GlobalEnvironment
@@ -31,11 +31,11 @@ public final class GlobalEnvironment
     public static final boolean DEBUG_BUILD = true;
     public static final String VERSION = TITLE + TITLE_VERSION + TITLE_VERSION_NUMBER + ( (DEBUG_BUILD) ? " (debug version). Created at " + Utils.compileTimeStamp() : "" );
     public static final String BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL = "http://www.biolayout.org";
-    public static final String BIOLAYOUT_EXPRESS_3D_DOMAIN_URL = (DEBUG_BUILD) ? "http://127.0.0.1/BioLayoutExpress3D/" : BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL;    
+    public static final String BIOLAYOUT_EXPRESS_3D_DOMAIN_URL = (DEBUG_BUILD) ? "http://127.0.0.1/BioLayoutExpress3D/" : BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL;
     public static final String BIOLAYOUT_SERVER_DATASETS_DIRECTORY = "/datasets/";
     public static final String BIOLAYOUT_DATASETS_CONTROL_FILE = "ListOfDataSets.ctr";
-    public static final String BIOLAYOUT_APPLICATION_USAGE_URL = BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL + "/biolayout_log/index.php";    
-    
+    public static final String BIOLAYOUT_APPLICATION_USAGE_URL = BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL + "/biolayout_log/index.php";
+
     public static final Runtime RUNTIME = Runtime.getRuntime();
     public static final boolean IS_WIN = LoadNativeLibrary.isWin();
     public static final boolean IS_LINUX = LoadNativeLibrary.isLinux();
@@ -44,20 +44,14 @@ public final class GlobalEnvironment
     public static final int NUMBER_OF_AVAILABLE_PROCESSORS = RUNTIME.availableProcessors();
     public static final boolean USE_MULTICORE_PROCESS = (NUMBER_OF_AVAILABLE_PROCESSORS > 1);
     public static final char DECIMAL_SEPARATOR_CHARACTER = DecimalFormatSymbols.getInstance().getDecimalSeparator();
-    public static final String DECIMAL_SEPARATOR_STRING = Character.valueOf(DECIMAL_SEPARATOR_CHARACTER).toString();    
+    public static final String DECIMAL_SEPARATOR_STRING = Character.valueOf(DECIMAL_SEPARATOR_CHARACTER).toString();
     public static boolean USE_NATIVE_CODE = IS_WIN;
     public static boolean WEBSTART = false;
 
     // Order for native libraries file sizes: Win32, Win64, Linux32, Linux64, MacOSX
-    public static enum NativeLibrariesTypes { EXPRESSION_DATA, FR_LAYOUT,           SIGNALING_PETRI_NET_SIMULATION, 
-                                              IMAGE_SFXS,      SHADER_TEXTURE_SFXS, TEXTURE_SFXS, 
-                                              LATHE3D_SHAPE,   SUPER_QUADRIC_SHAPE, SUPER_QUADRIC_SHAPE_OOP,        SUPER_QUADRIC_SHAPE_COMPATIBLE_OOP }
-    public static final String[] NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { "ExpressionData", "FRLayout",          "SignalingPetriNetSimulation",
-                                                                                   "ImageSFXs",      "ShaderTextureSFXs", "TextureSFXs", 
-                                                                                   "Lathe3DShape",   "SuperQuadricShape", "SuperQuadricShapeOOP",        "SuperQuadricShapeOOPCompatible"};    
-    public static final long[][] FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { {  95244, 121237, 0, 0, 0 }, { 103928, 129376, 0, 0, 0 }, {  97327, 124458, 0, 0, 0 },
-                                                                                         { 115602, 142155, 0, 0, 0 }, {  90163, 114121, 0, 0, 0 }, {  81357, 104742, 0, 0, 0 },
-                                                                                         {  80649, 104547, 0, 0, 0 }, { 115565, 143530, 0, 0, 0 }, {  12288,  15360, 0, 0, 0 }, { 437771, 559586, 0, 0, 0 } };    
+    public static enum NativeLibrariesTypes { EXPRESSION_DATA, FR_LAYOUT }
+    public static final String[] NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { "ExpressionData", "FRLayout" };
+    public static final long[][] FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { {  95244, 121237, 0, 0, 0 }, { 103928, 129376, 0, 0, 0 } };
 
     public static final String NAME_OF_JOCL_NATIVE_LIBRARY = "jocl";
     public static final long[] FILE_SIZES_OF_JOCL_NATIVE_LIBRARIES = { 236032, 280576, 112823, 106231, 90632 };
@@ -74,7 +68,7 @@ public final class GlobalEnvironment
     public static final String MINIMUM_GLSL_VERSION_FOR_400_SHADERS = "400";
     public static final String GLSL_LANGUAGE_MODE = "compatibility";
     public static final int MINIMUM_GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS = 8;
-    public static boolean USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER = true;    
+    public static boolean USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER = true;
     public static boolean USE_SHADERS_PROCESS = !IS_MAC || LoadNativeLibrary.isMacLionAndAbove(); // do not use shader processes for MacOSX before the Lion release due to OpenGL GLSL compilation driver issues
     public static boolean USE_330_SHADERS_PROCESS = false;
     public static boolean USE_GL_ARB_TEXTURE_RECTANGLE = false;
@@ -134,11 +128,11 @@ public final class GlobalEnvironment
     public static int[][] CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_TYPES = null;
     public static long[][] CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_SIZES = null;
     public static long[][] CL_ALL_PLATFORM_DEVICES_MAX_CONSTANT_BUFFER_SIZES = null;
-    public static String[][][] CL_ALL_PLATFORM_DEVICES_QUEUES_PROPERTIES = null;    
+    public static String[][][] CL_ALL_PLATFORM_DEVICES_QUEUES_PROPERTIES = null;
     public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGES_SUPPORT = null;
     public static int[][] CL_ALL_PLATFORM_DEVICES_CL_DEVICE_MAX_SAMPLERS = null;
     public static int[][] CL_ALL_PLATFORM_DEVICES_MAX_READ_IMAGES_ARGS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS = null;    
+    public static int[][] CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS = null;
     public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_WIDTHS = null;
     public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_HEIGHTS = null;
     public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_3D_MAX_WIDTHS = null;
@@ -163,7 +157,7 @@ public final class GlobalEnvironment
     public static enum SupportedInputFileTypes { BLAST, OWL, EXPRESSION, GRAPHML, MEPN, LAYOUT, SIF, TGF, TXT, MATRIX, XML }
     public static enum SupportedOutputFileTypes { LAYOUT, TGF }
     public static enum SupportedImportExportFileTypes { CLASSSETS, TXT }
-    public static enum SupportedSimulationFileTypes { SPN, TXT }    
+    public static enum SupportedSimulationFileTypes { SPN, TXT }
     public static enum LicensesFiles { LICENSE_BLE3D, LICENSE_GPLV3, LICENSE_JOGL, LICENSE_JOCL }
     public static final String LICENSES_FILES_PATH = "/Resources/Licenses/";
     public static final String LICENSES_SEPARATOR = "\n\n\n\n\n";
@@ -176,12 +170,12 @@ public final class GlobalEnvironment
     public static final String MODEL_FILES_PATH = "/Resources/Models/";
     public static final String SCREENSHOTS_DIRECTORY = "Screenshots/";
     public static boolean INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
-    
+
     public static final PrefInt MAX_HTML_TIPS = new PrefInt(5, "max_html_tips", false);
     public static final PrefString FILE_CHOOSER_PATH = new PrefString("", "file_chooser_path", true);
 
     public static enum DataTypes { BLAST, OWL, EXPRESSION, GRAPHML, LAYOUT, MATRIX, ONDEX, NONE };
-    public static DataTypes DATA_TYPE = DataTypes.NONE;    
+    public static DataTypes DATA_TYPE = DataTypes.NONE;
     public static final PrefBool RENDERER_MODE_START_3D = new PrefBool(true, "renderer_mode_start_3d", true);
     public static boolean RENDERER_MODE_3D = false;
     public static boolean IS_RENDERER_MODE_FIRST_SWITCH = true;
@@ -189,11 +183,11 @@ public final class GlobalEnvironment
     public static final Dimension APPLICATION_SCREEN_DIMENSION = new Dimension( (int)( 0.9 * SCREEN_DIMENSION.width ), (int)( 0.9 * SCREEN_DIMENSION.height ) );
     public static final BufferedImage BIOLAYOUT_ICON_IMAGE = loadImageFromURL( GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "BioLayoutExpress3DIcon.png") );
     public static final ImageIcon BIOLAYOUT_MENU_ITEM_ICON = new ImageIcon( resizeImageByGivenRatio(BIOLAYOUT_ICON_IMAGE, 0.125f, true) );
-    public static final float MENUBAR_IMAGE_ICON_RESIZE_RATIO = 0.4f;    
-    public static final boolean USE_NEW_DESKTOP_PRINTING_FEATURE = LoadNativeLibrary.isWinVista() || LoadNativeLibrary.isWin7();    
+    public static final float MENUBAR_IMAGE_ICON_RESIZE_RATIO = 0.4f;
+    public static final boolean USE_NEW_DESKTOP_PRINTING_FEATURE = LoadNativeLibrary.isWinVista() || LoadNativeLibrary.isWin7();
     public static final PrefInt PRINT_COPIES = new PrefInt(0, "print_copies", false);
-    
-    public static boolean TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING = false;  
+
+    public static boolean TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING = false;
     public static final PrefColor BACKGROUND_COLOR = new PrefColor(Color.WHITE, "background_color", true);
     public static final PrefColor SELECTION_COLOR = new PrefColor(Color.GREEN, "selection_color", true);
     public static final PrefColor PLOT_BACKGROUND_COLOR = new PrefColor(new Color(204, 204, 204), "plot_background_color", true);
@@ -228,7 +222,7 @@ public final class GlobalEnvironment
     public static final PrefFloat KVALUE_MODIFIER = new PrefFloat(1.0f, "kvalue_modifier", true);
     public static final PrefInt BURST_LAYOUT_ITERATIONS = new PrefInt(20, "burst_layout_iterations", true);
     public static final PrefInt MINIMUM_COMPONENT_SIZE = new PrefInt(3, "minimum_component_size", true);
-    
+
     public static final String DEFAULT_SURFACE_IMAGE_FILES_PATH = IMAGE_FILES_PATH + "SurfaceImages/";
     private static final String DEFAULT_SURFACE_IMAGE_FILE_NAME = "SurfaceImagesData.txt";
     public static final String[] DEFAULT_SURFACE_IMAGE_FILES = { "BioLayoutExpress3DLogo",
@@ -240,16 +234,16 @@ public final class GlobalEnvironment
                                                                };
     public static final TexturesLoader DEFAULT_SURFACE_IMAGES; // initialized in the static initializer of this class
     private static final String BIOLAYOUT_EXDPRESS_3D_LOGO_NAME = IMAGE_FILES_PATH + DEFAULT_SURFACE_IMAGE_FILES[0] + ".png";
-    public static final BufferedImage BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE = loadImageFromURL( GlobalEnvironment.class.getResource(BIOLAYOUT_EXDPRESS_3D_LOGO_NAME) );    
+    public static final BufferedImage BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE = loadImageFromURL( GlobalEnvironment.class.getResource(BIOLAYOUT_EXDPRESS_3D_LOGO_NAME) );
     public static String USER_SURFACE_IMAGE_FILE = "";
     public static final PrefInt TEXTURE_CHOSEN = new PrefInt(0, "texture_chosen", true);
-    public static final PrefBool TEXTURE_ENABLED = new PrefBool(false, "texture_enabled", true);    
+    public static final PrefBool TEXTURE_ENABLED = new PrefBool(false, "texture_enabled", true);
     public static boolean CHANGE_TEXTURE_ENABLED = false;
     public static boolean CHANGE_SPHERICAL_MAPPING_ENABLED = false;
     public static boolean CHANGE_ALL_SHAPES = false;
     public static boolean CHANGE_ALL_FAST_SELECTION_SHAPES = false;
     public static boolean CHANGE_NODE_TESSELATION = false;
-    public static boolean CHANGE_GRAPHML_COMPONENT_CONTAINERS = false;    
+    public static boolean CHANGE_GRAPHML_COMPONENT_CONTAINERS = false;
     public static enum Shapes2D { CIRCLE, RECTANGLE, ROUND_RECTANGLE, TRIANGLE, DIAMOND, PARALLELOGRAM, HEXAGON, OCTAGON, TRAPEZOID1, TRAPEZOID2, RECTANGLE_VERTICAL, RECTANGLE_HORIZONTAL }
     public static final int NUMBER_OF_2D_SHAPES = Shapes2D.values().length;
     public static enum Shapes3D { SPHERE, POINT, CUBE, TETRAHEDRON, OCTAHEDRON, DODECAHEDRON, ICOSAHEDRON, CONE_LEFT, CONE_RIGHT, TRAPEZOID_UP, TRAPEZOID_DOWN, CYLINDER, TORUS, RECTANGLE_VERTICAL, RECTANGLE_HORIZONTAL, ROUND_CUBE_LARGE, ROUND_CUBE_THIN, GENE_MODEL, PINEAPPLE_SLICE_TOROID, PINEAPPLE_SLICE_ELLIPSOID, DOUBLE_PYRAMID_THIN, DOUBLE_PYRAMID_LARGE, TORUS_8_PETALS, SAUCER_4_PETALS, LATHE_3D, SUPER_QUADRIC, OBJ_MODEL_LOADER }
@@ -278,7 +272,7 @@ public final class GlobalEnvironment
     public static final PrefFloat[] LIGHT_POSITION = { new PrefFloat(0.0f, "light_position_x", true), new PrefFloat(4.0f, "light_position_y", true), new PrefFloat(1.0f, "light_position_z", true) };
     public static final PrefBool DEPTH_FOG = new PrefBool(true, "depth_fog", true);
     public static final PrefBool USE_MOTION_BLUR_FOR_SCENE = new PrefBool(false, "use_motion_blur_for_scene", true);
-    public static final PrefFloat MOTION_BLUR_SIZE = new PrefFloat(0.6f, "motion_blur_size", true);    
+    public static final PrefFloat MOTION_BLUR_SIZE = new PrefFloat(0.6f, "motion_blur_size", true);
     public static final PrefBool MATERIAL_SPECULAR = new PrefBool(true, "material_specular", true);
     public static final PrefFloat MATERIAL_SPECULAR_SHINE = new PrefFloat(25.0f, "material_specular_shine", true);
     public static final PrefBool MATERIAL_SMOOTH_SHADING = new PrefBool(true, "material_smooth_shading", true);
@@ -294,31 +288,31 @@ public final class GlobalEnvironment
 
     // Model Shape Editor variables
     public static enum Lathe3DShapes { CYLINDER, CONE, TRAPEZOID, EGG, DRIP, CUP, LIMB, ROUND_R, OVAL_R, FLOWER, CHESS_PIECE, BRANCH, TORUS, DUMB_BELL, DOME, ARMOUR, SAUCER }
-    public static enum SuperQuadricShapes { SPHERE, CYLINDER, STAR, DOUBLE_PYRAMID, TORUS, PINEAPPLE_SLICE, PILLOW, SQUARE_TORUS, PINCHED_TORUS, ROUND_CUBE, HYPERBOLOID_ONE_SHEET, HYPERBOLOID_TWO_SHEETS }    
-    public static enum OBJModelShapes { PIG, COW, CALF, HORSE, DINO, GENE, LEAVES, APHRODITE, HELICOPTER, PENGUIN }     
+    public static enum SuperQuadricShapes { SPHERE, CYLINDER, STAR, DOUBLE_PYRAMID, TORUS, PINEAPPLE_SLICE, PILLOW, SQUARE_TORUS, PINCHED_TORUS, ROUND_CUBE, HYPERBOLOID_ONE_SHEET, HYPERBOLOID_TWO_SHEETS }
+    public static enum OBJModelShapes { PIG, COW, CALF, HORSE, DINO, GENE, LEAVES, APHRODITE, HELICOPTER, PENGUIN }
     public static final float[] OBJ_MODEL_SHAPE_SIZES  = { 3.0f, 3.0f, 2.5f, 3.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.8f, 2.0f };
     public static final String DEFAULT_OBJ_MODEL_SHAPE_NAME = "RoundCube";
     public static final float DEFAULT_OBJ_MODEL_SHAPE_SIZE = 2.0f;
     public static final PrefBool MODEL_SHAPE_EDITOR_AUTOROTATE_VIEW = new PrefBool(true, "model_shape_editor_autorotate_view", true);
-    
+
     private static final Lathe3DShapes LATHE3D_PRESET_SHAPE = Lathe3DShapes.CYLINDER;
-    public static final Lathe3DSettings LATHE3D_SETTINGS = Lathe3DShapesProducer.createLathe3DSettings( LATHE3D_PRESET_SHAPE, NODE_TESSELATION.get() );    
-    public static final PrefString LATHE3D_CHOSEN_PRESET_SHAPE = new PrefString(LATHE3D_PRESET_SHAPE.toString(), "lathe3D_chosen_preset_shape", true);    
+    public static final Lathe3DSettings LATHE3D_SETTINGS = Lathe3DShapesProducer.createLathe3DSettings( LATHE3D_PRESET_SHAPE, NODE_TESSELATION.get() );
+    public static final PrefString LATHE3D_CHOSEN_PRESET_SHAPE = new PrefString(LATHE3D_PRESET_SHAPE.toString(), "lathe3D_chosen_preset_shape", true);
     public static final PrefString LATHE3D_SETTINGS_XSIN = new PrefString(LayoutPreferences.createPreferenceFloatArrayString(LATHE3D_SETTINGS.xsIn), "lathe3D_settings_xsin", true);
     public static final PrefString LATHE3D_SETTINGS_YSIN = new PrefString(LayoutPreferences.createPreferenceFloatArrayString(LATHE3D_SETTINGS.ysIn), "lathe3D_settings_ysin", true);
     public static final PrefInt LATHE3D_SETTINGS_SPLINE_STEP = new PrefInt(LATHE3D_SETTINGS.splineStep, "lathe3D_settings_spline_step", true);
     public static final PrefFloat LATHE3D_SETTINGS_K = new PrefFloat(LATHE3D_SETTINGS.k, "lathe3D_settings_k", true);
-    public static final PrefInt LATHE3D_SETTINGS_LATHE3D_SHAPE_TYPE = new PrefInt(LATHE3D_SETTINGS.lathe3DShapeType.ordinal(), "lathe3D_settings_lathe3d_shape_type", true);    
+    public static final PrefInt LATHE3D_SETTINGS_LATHE3D_SHAPE_TYPE = new PrefInt(LATHE3D_SETTINGS.lathe3DShapeType.ordinal(), "lathe3D_settings_lathe3d_shape_type", true);
     public static final PrefFloat LATHE3D_SCALE_X = new PrefFloat(0.0f, "lathe3D_scale_x", true);
     public static final PrefFloat LATHE3D_SCALE_Y = new PrefFloat(0.0f, "lathe3D_scale_y", true);
     public static final PrefFloat LATHE3D_SCALE_Z = new PrefFloat(0.0f, "lathe3D_scale_z", true);
     public static final PrefFloat LATHE3D_ROTATE_X = new PrefFloat(0.0f, "lathe3D_rotate_x", true);
     public static final PrefFloat LATHE3D_ROTATE_Y = new PrefFloat(0.0f, "lathe3D_rotate_y", true);
     public static final PrefFloat LATHE3D_ROTATE_Z = new PrefFloat(0.0f, "lathe3D_rotate_z", true);
-    
+
     private static final SuperQuadricShapes SUPER_QUADRIC_PRESET_SHAPE = SuperQuadricShapes.SPHERE;
     public static final SuperQuadricSettings SUPER_QUADRIC_SETTINGS = SuperQuadricShapesProducer.createSuperQuadricSettings( SUPER_QUADRIC_PRESET_SHAPE, NODE_TESSELATION.get(), NODE_TESSELATION.get() );
-    public static final PrefString SUPER_QUADRIC_CHOSEN_PRESET_SHAPE = new PrefString(SUPER_QUADRIC_PRESET_SHAPE.toString(), "super_quadric_chosen_preset_shape", true);   
+    public static final PrefString SUPER_QUADRIC_CHOSEN_PRESET_SHAPE = new PrefString(SUPER_QUADRIC_PRESET_SHAPE.toString(), "super_quadric_chosen_preset_shape", true);
     public static final PrefFloat SUPER_QUADRIC_SETTINGS_E = new PrefFloat(SUPER_QUADRIC_SETTINGS.e, "super_quadric_settings_e", true);
     public static final PrefFloat SUPER_QUADRIC_SETTINGS_N = new PrefFloat(SUPER_QUADRIC_SETTINGS.n, "super_quadric_settings_n", true);
     public static final PrefFloat SUPER_QUADRIC_SETTINGS_V1 = new PrefFloat(SUPER_QUADRIC_SETTINGS.v1, "super_quadric_settings_v1", true);
@@ -329,8 +323,8 @@ public final class GlobalEnvironment
     public static final PrefFloat SUPER_QUADRIC_SCALE_Z = new PrefFloat(0.0f, "super_quadric_scale_z", true);
     public static final PrefFloat SUPER_QUADRIC_ROTATE_X = new PrefFloat(0.0f, "super_quadric_rotate_x", true);
     public static final PrefFloat SUPER_QUADRIC_ROTATE_Y = new PrefFloat(0.0f, "super_quadric_rotate_y", true);
-    public static final PrefFloat SUPER_QUADRIC_ROTATE_Z = new PrefFloat(0.0f, "super_quadric_rotate_z", true);    
-    
+    public static final PrefFloat SUPER_QUADRIC_ROTATE_Z = new PrefFloat(0.0f, "super_quadric_rotate_z", true);
+
     private static final OBJModelShapes OBJ_MODEL_LOADER_PRESET_SHAPE = OBJModelShapes.PIG;
     public static final PrefString OBJ_MODEL_LOADER_CHOSEN_PRESET_SHAPE = new PrefString(OBJ_MODEL_LOADER_PRESET_SHAPE.toString(), "obj_model_loader_chosen_preset_shape", true);
     public static final PrefFloat OBJ_MODEL_LOADER_SHAPE_SIZE = new PrefFloat(OBJ_MODEL_SHAPE_SIZES[OBJ_MODEL_LOADER_PRESET_SHAPE.ordinal()], "obj_model_loader_shape_size", true);
@@ -342,8 +336,8 @@ public final class GlobalEnvironment
     public static final PrefFloat OBJ_MODEL_LOADER_SCALE_Z = new PrefFloat(0.0f, "obj_model_loader_scale_z", true);
     public static final PrefFloat OBJ_MODEL_LOADER_ROTATE_X = new PrefFloat(0.0f, "obj_model_loader_rotate_x", true);
     public static final PrefFloat OBJ_MODEL_LOADER_ROTATE_Y = new PrefFloat(0.0f, "obj_model_loader_rotate_y", true);
-    public static final PrefFloat OBJ_MODEL_LOADER_ROTATE_Z = new PrefFloat(0.0f, "obj_model_loader_rotate_z", true);       
-    
+    public static final PrefFloat OBJ_MODEL_LOADER_ROTATE_Z = new PrefFloat(0.0f, "obj_model_loader_rotate_z", true);
+
     public static final PrefFloat MCL_INFLATION_VALUE = new PrefFloat(3.0f, "mcl_inflation_value", true);
     public static final PrefFloat MCL_PRE_INFLATION_VALUE = new PrefFloat(3.0f, "mcl_pre_inflation_value", true);
     public static final PrefInt MCL_SCHEME = new PrefInt(6, "mcl_scheme", true);
@@ -359,7 +353,7 @@ public final class GlobalEnvironment
     public static final PrefString USE_SPN_TRANSITION_TYPE = new PrefString(SPN_DEFAULT_TRANSITION_TYPE.toString(), "use_spn_transition_type", true);
     public static final PrefBool SAVE_SPN_RESULTS = new PrefBool(false, "save_spn_results", true);
     public static final PrefString SAVE_SPN_RESULTS_FILE_NAME = new PrefString("", "save_spn_results_file_name", true);
-    public static final PrefBool AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER = new PrefBool(false, "automatically_save_spn_results_to_prechosen_folder", true);    
+    public static final PrefBool AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER = new PrefBool(false, "automatically_save_spn_results_to_prechosen_folder", true);
     public static final PrefBool USE_SPN_ANIMATED_TRANSITIONS_SHADING = new PrefBool(false, "use_spn_animated_transitions_shading", true);
 
     public static final int[] OPENCL_GPU_COMPUTING_ITERATION_SIZES = { 1 << 20, 1 << 21, 1 << 22, 1 << 23, 1 << 24, 1 << 25, 1 << 26, 1 << 27 };
@@ -385,7 +379,7 @@ public final class GlobalEnvironment
     public static final PrefBool USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM = new PrefBool(true, "use_expression_correlation_calculation_n_core_parallelism", true);
     public static final PrefBool USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION = new PrefBool(false, "use_opencl_gpu_computing_expression_correlation_calculation", true);
     public static final PrefInt OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_ITERATION_SIZE = new PrefInt(OPENCL_DEFAULT_EXPRESSION_CORRELATION_ITERATION_SIZE, "opencl_gpu_computing_expression_correlation_iteration_size", true);
-    public static final PrefBool USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION = new PrefBool(false, "use_glsl_gpgpu_computing_expression_correlation_calculation", true);    
+    public static final PrefBool USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION = new PrefBool(false, "use_glsl_gpgpu_computing_expression_correlation_calculation", true);
     public static final PrefInt GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_SIZE = new PrefInt(GLSL_DEFAULT_TEXTURE_SIZE, "glsl_gpgpu_computing_expression_correlation_calculation_texture_size", true);
     public static final PrefString GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_TYPE = new PrefString(GLSL_DEFAULT_TEXTURE_TYPE.toString(), "glsl_gpgpu_computing_expression_correlation_calculation_texture_type", true);
     public static final PrefBool COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU = new PrefBool(false, "compare_gpu_computing_expression_correlation_calculation_with_cpu", true);
@@ -399,7 +393,7 @@ public final class GlobalEnvironment
     public static final PrefBool USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM = new PrefBool(true, "use_atomic_synchronization_for_layout_n_core_parallelism", true);
     public static final PrefBool USE_MCL_N_CORE_PARALLELISM = new PrefBool(true, "use_mcl_n_core_parallelism", true);
     public static final PrefBool USE_SPN_N_CORE_PARALLELISM = new PrefBool(true, "use_spn_n_core_parallelism", true);
-        
+
     private static final SearchURL GOOGLE_URL = new SearchURL("http://www.google.com/search?hl=en&ie=ISO-8859-1&q=", "google", "search for words at Google");
     private static final SearchURL SWISS_PROT_URL = new SearchURL("http://www.expasy.org/cgi-bin/niceprot.pl?", "swissprot", "search for proteins at SWISSPROT");
     private static final SearchURL NCBI_URL = new SearchURL("http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=search&db=protein&doptcmdl=GenPept&term=", "NCBI", "Seach proteins at NCBI");
@@ -461,7 +455,7 @@ public final class GlobalEnvironment
     public static OpenGLFontTypes NODE_NAMES_OPENGL_FONT_TYPE = OpenGLFontTypes.BITMAP_HELVETICA_12;
     public static final PrefString CUSTOMIZE_NODE_NAMES_OPENGL_NAME_FONT_TYPE = new PrefString(OpenGLFontTypes.BITMAP_HELVETICA_12.toString(), "customize_node_names_opengl_name_font_type", SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS);
     public static final PrefInt CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE = new PrefInt(0, "customize_node_names_name_rendering_type", SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS);
-    
+
     public static final double MESSAGE_APPEARANCE_PROBABILITY = 0.75;
     public static final Calendar CALENDAR = Calendar.getInstance();
     public static final String[] ALL_EXIT_MESSAGES = {
@@ -477,7 +471,7 @@ public final class GlobalEnvironment
                                                        "Have you seen your graph pulsate today?",
                                                        "Have you tried your graph with the Gooch Shader?",
                                                        "Have you tried your graph with the Lava Shader?",
-                                                       "Have you tried your graph with the Marble Shader?",                                                       
+                                                       "Have you tried your graph with the Marble Shader?",
                                                        "Have you tried your graph with the Glyphbombing Shader?",
                                                        "A graph a day keeps the reviewers away.",
                                                        "A graph a day keeps the supervisors away.",
@@ -494,8 +488,8 @@ public final class GlobalEnvironment
             ALL_SHADING_SFXS[i] = new PrefBool( (i == 0), "" + allShaderTypes[i].toString().toLowerCase() + "_shading", true );
 
         DEFAULT_SURFACE_IMAGES = new TexturesLoader(DEFAULT_SURFACE_IMAGE_FILES_PATH, DEFAULT_SURFACE_IMAGE_FILE_NAME, false, true, true, false);
-        AnimationEnvironment.ANIMATION_PER_NODE_MAX_VALUE.get(); // so as to enforce the static loading of all the AnimationEnvironment global variables        
-    }   
-    
-    
+        AnimationEnvironment.ANIMATION_PER_NODE_MAX_VALUE.get(); // so as to enforce the static loading of all the AnimationEnvironment global variables
+    }
+
+
 }

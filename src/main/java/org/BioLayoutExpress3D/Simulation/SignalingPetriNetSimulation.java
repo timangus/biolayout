@@ -52,7 +52,7 @@ public class SignalingPetriNetSimulation
     private SPNDistributionTypes SPNDistributionType = SPNDistributionTypes.UNIFORM;
     private SPNTransitionTypes SPNTransitionType = SPNTransitionTypes.CONSUMPTIVE;
     private java.util.Random random = null;
-    
+
     private int[] transitionIDs = null;
     private int[][] parentsIDs = null;
     private int[][] childrenIDs = null;
@@ -84,20 +84,6 @@ public class SignalingPetriNetSimulation
 
         random = new java.util.Random();
         layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
-        
-        if (USE_NATIVE_CODE) initNativeLibrary();
-    }
-
-    /**
-    *  Native library initializer to make sure to load all relevant native libraries (if being used).
-    */
-    private void initNativeLibrary()
-    {
-        if (!hasOnceLoadedNativeLibrary)
-        {
-            int index = NativeLibrariesTypes.SIGNALING_PETRI_NET_SIMULATION.ordinal();
-            hasOnceLoadedNativeLibrary = LoadNativeLibrary.loadNativeLibrary(NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index], FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index]);
-        }
     }
 
     /**
@@ -140,9 +126,6 @@ public class SignalingPetriNetSimulation
         totalInhibitorsIDs = new int[numberOfVertices][0];
         partialInhibitorsIDs = new int[numberOfVertices][0];
 
-        if (USE_NATIVE_CODE)
-            allArraysLengths = new int[numberOfVertices][4];
-
         results = ( !( USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) || (totalRuns < MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION) )
                   ? new float[1][totalTimeBlocks][numberOfVertices]
                   : new float[NUMBER_OF_AVAILABLE_PROCESSORS][totalTimeBlocks][numberOfVertices];
@@ -160,9 +143,6 @@ public class SignalingPetriNetSimulation
                 childrenWeights[vertex.getVertexID()] = familyTuple5.third;
                 totalInhibitorsIDs[vertex.getVertexID()] = familyTuple5.fourth;
                 partialInhibitorsIDs[vertex.getVertexID()] = familyTuple5.fifth;
-
-                if (USE_NATIVE_CODE)
-                    allArraysLengths[vertex.getVertexID()] = new int[] { familyTuple5.first.length, familyTuple5.second.length, familyTuple5.third.length, familyTuple5.fourth.length, familyTuple5.fifth.length };
             }
         }
 
@@ -178,9 +158,6 @@ public class SignalingPetriNetSimulation
         layoutProgressBarDialog.prepareProgressBar(totalRuns, "Now Processing SPN Simulation For " + totalTimeBlocks + " Time Blocks & " + totalRuns + " Runs" + progressBarParallelismTitle + "...");
         layoutProgressBarDialog.startProgressBar();
 
-        if (USE_NATIVE_CODE) allocateNativeResources(parentsIDs, childrenIDs, childrenWeights, totalInhibitorsIDs, partialInhibitorsIDs, allArraysLengths, numberOfVertices, transitionIDs.length,
-                                                     SPNDistributionType.ordinal(), SPNTransitionType.ordinal(), STANDARD_NORMAL_DISTRIBUTION_HALF_RANGE, STANDARD_NORMAL_DISTRIBUTION_RANGE, STANDARD_NORMAL_DISTRIBUTION_MIN_VALUE, STANDARD_NORMAL_DISTRIBUTION_MAX_VALUE, DETERMINISTIC_PROCESS_CONSTANT_PROBABILITY);        
-        
         if ( !( USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) || (totalRuns < MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION) )
         {
             allIterationsSPNSimulation(totalTimeBlocks, totalRuns, totalRuns, transitionIDs, results[0]);
@@ -219,11 +196,9 @@ public class SignalingPetriNetSimulation
             aggregateResultsFromAllProcesses(results, totalTimeBlocks);
         }
 
-        if (USE_NATIVE_CODE) releaseNativeResources();
-        
         layoutProgressBarDialog.endProgressBar();
-        layoutProgressBarDialog.stopProgressBar();        
-        
+        layoutProgressBarDialog.stopProgressBar();
+
         if ( SAVE_SPN_RESULTS.get() && AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER.get() && !SAVE_SPN_RESULTS_FILE_NAME.get().isEmpty() )
             SPNSimulationResultsWriteToFile(totalTimeBlocks, totalRuns);
 
@@ -235,33 +210,6 @@ public class SignalingPetriNetSimulation
     *  Performs all iterations of the SPN simulation (wrapper method for selecting between native and Java versions of the SPN simulation).
     */
     private void allIterationsSPNSimulation(int totalTimeBlocks, int totalRuns, int runs, int[] transitionIDs, float[][] results)
-    {
-        if (USE_NATIVE_CODE)
-            allIterationsSPNSimulationNative(totalTimeBlocks, totalRuns, runs, transitionIDs, results);
-        else
-            allIterationsSPNSimulationJava(totalTimeBlocks, totalRuns, runs, transitionIDs, results);
-    }
-
-    /*
-    *  Allocates all native resources (native method).
-    */    
-    private native void allocateNativeResources(int[][] parentsIDs, int[][] childrenIDs, float[][] childrenWeights, int[][] totalInhibitorsIDs, int[][] partialInhibitorsIDs, int[][] allArraysLengths, int numberOfVertices, int transitionIDsLength,
-                                                int SPNDistributionType, int SPNTransitionType, double STANDARD_NORMAL_DISTRIBUTION_HALF_RANGE, double STANDARD_NORMAL_DISTRIBUTION_RANGE, double STANDARD_NORMAL_DISTRIBUTION_MIN_VALUE, double STANDARD_NORMAL_DISTRIBUTION_MAX_VALUE, double DETERMINISTIC_PROCESS_CONSTANT_PROBABILITY);
-    
-    /**
-    *  Performs all iterations of the SPN simulation (native method).
-    */
-    private native void allIterationsSPNSimulationNative(int totalTimeBlocks, int totalRuns, int runs, int[] transitionIDs, float[][] results);
-
-    /*
-    *  Releases all native resources (native method).
-    */     
-    private native void releaseNativeResources();
-
-    /**
-    *  Performs all iterations of the SPN simulation (Java method).
-    */
-    private void allIterationsSPNSimulationJava(int totalTimeBlocks, int totalRuns, int runs, int[] transitionIDs, float[][] results)
     {
         float[] places = new float[numberOfVertices];
         int placesIndex = 0;
@@ -582,7 +530,7 @@ public class SignalingPetriNetSimulation
     *  Gets the weight for every timeblock.
     */
     private float[] getWeigth(int vertexID, String edgeName, int totalTimeBlocks)
-    {        
+    {
         float[] floatArray = new float[totalTimeBlocks];
         if ( (edgeName == null) || edgeName.isEmpty() )
             return initFloatArrayAllTimeBlocksToValue(1.0f, floatArray);
@@ -625,7 +573,7 @@ public class SignalingPetriNetSimulation
     {
         // make sure to first init the Float array with a value of 1.0f, in case some of the time block ranges are not specified
         initFloatArrayAllTimeBlocksToValue(1.0f, floatArray);
-        
+
         float value = 0.0f;
         int startingTimeBlock = 0;
         int endingTimeBlock = 0;
@@ -636,7 +584,7 @@ public class SignalingPetriNetSimulation
         {
             timeBlocksAndWeights = timeBlockWeight.split(WEIGHTS_VALUE_DELIMITER);
             timeBlockRanges = timeBlocksAndWeights[0].split(WEIGHTS_TIMEBLOCK_DELIMITER);
-            if ( (startingTimeBlock = Integer.parseInt(timeBlockRanges[0]) - 1) < 0 ) 
+            if ( (startingTimeBlock = Integer.parseInt(timeBlockRanges[0]) - 1) < 0 )
                 startingTimeBlock = 0;
             if ( (endingTimeBlock = Integer.parseInt(timeBlockRanges[1])) > totalTimeBlocks )
                 endingTimeBlock = totalTimeBlocks;
@@ -652,7 +600,7 @@ public class SignalingPetriNetSimulation
     *  Cleans (deletes) all data structures.
     */
     private void clean(int totalRuns)
-    {        
+    {
         transitionIDs = null;
         parentsIDs = null;
         childrenIDs = null;
