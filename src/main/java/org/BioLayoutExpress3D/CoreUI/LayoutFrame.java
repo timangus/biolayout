@@ -541,7 +541,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                InitDesktop.browse(BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL);
+                InitDesktop.browse(BIOLAYOUT_EXPRESS_3D_DOMAIN_URL);
             }
         };
 

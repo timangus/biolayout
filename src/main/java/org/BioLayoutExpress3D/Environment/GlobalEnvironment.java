@@ -14,6 +14,7 @@ import org.BioLayoutExpress3D.Utils.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import org.BioLayoutExpress3D.Textures.*;
 import static java.lang.Math.*;
+import org.BioLayoutExpress3D.BuildConfig;
 import static org.BioLayoutExpress3D.StaticLibraries.ImageProducer.*;
 
 /**
@@ -25,16 +26,15 @@ import static org.BioLayoutExpress3D.StaticLibraries.ImageProducer.*;
 
 public final class GlobalEnvironment
 {
-    public static final String TITLE = "BioLayout Express 3D";
+    public static final String TITLE = BuildConfig.NAME;
     public static final String TITLE_VERSION = " Version ";
-    public static final String TITLE_VERSION_NUMBER = "2.3";
+    public static final String TITLE_VERSION_NUMBER = BuildConfig.VERSION;
     public static final boolean DEBUG_BUILD = true;
-    public static final String VERSION = TITLE + TITLE_VERSION + TITLE_VERSION_NUMBER + ( (DEBUG_BUILD) ? " (debug version). Created at " + Utils.compileTimeStamp() : "" );
-    public static final String BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL = "http://www.biolayout.org";
-    public static final String BIOLAYOUT_EXPRESS_3D_DOMAIN_URL = (DEBUG_BUILD) ? "http://127.0.0.1/BioLayoutExpress3D/" : BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL;
+    public static final String VERSION = TITLE + TITLE_VERSION + TITLE_VERSION_NUMBER + ( (DEBUG_BUILD) ? " (debug " + BuildConfig.BUILD_TIME + ")" : "" );
+    public static final String BIOLAYOUT_EXPRESS_3D_DOMAIN_URL = BuildConfig.URL;
     public static final String BIOLAYOUT_SERVER_DATASETS_DIRECTORY = "/datasets/";
     public static final String BIOLAYOUT_DATASETS_CONTROL_FILE = "ListOfDataSets.ctr";
-    public static final String BIOLAYOUT_APPLICATION_USAGE_URL = BIOLAYOUT_EXPRESS_3D_DOMAIN_FORMAL_URL + "/biolayout_log/index.php";
+    public static final String BIOLAYOUT_APPLICATION_USAGE_URL = BIOLAYOUT_EXPRESS_3D_DOMAIN_URL + "/biolayout_log/index.php";
 
     public static final Runtime RUNTIME = Runtime.getRuntime();
     public static final boolean IS_WIN = LoadNativeLibrary.isWin();
