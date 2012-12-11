@@ -5,7 +5,7 @@ import javax.swing.table.*;
 import org.BioLayoutExpress3D.Analysis.Utils.*;
 
 /**
-* 
+*
 * @author Markus Brosch (mb8[at]sanger[dot]ac[dot]uk)
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
@@ -13,12 +13,12 @@ import org.BioLayoutExpress3D.Analysis.Utils.*;
 */
 
 public final class ClassViewerTableModelDetail extends AbstractTableModel
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ClassViewerTableModelDetail class.
-    */      
-    public static final long serialVersionUID = 111222333444555789L; 
-    
+    */
+    public static final long serialVersionUID = 111222333444555789L;
+
     public static final String[] COLUMN_NAMES = { "Term", "Type", "Observed" , "Expected" , "Expected Trial", "Fobs", "Fexp" , "OverRep", "Zscore", "Entropy", "Fisher's P","Adj. Fisher's P", "Members", "Score" };
     private static final Class[]  COLUMN_CLASSES = {
                                                       String.class,  //Term
@@ -56,17 +56,17 @@ public final class ClassViewerTableModelDetail extends AbstractTableModel
     private  Double[] score = null;
 
     private int overallEntropies = 0;
-    
+
     @Override
-    public int getColumnCount() 
+    public int getColumnCount()
     {
         return COLUMN_NAMES.length;
     }
 
     @Override
-    public int getRowCount() 
+    public int getRowCount()
     {
-        return (annotationType != null) ? annotationType.length : 0;            
+        return (annotationType != null) ? annotationType.length : 0;
     }
 
     @Override
@@ -76,15 +76,15 @@ public final class ClassViewerTableModelDetail extends AbstractTableModel
     }
 
     @Override
-    public String getColumnName(int col) 
+    public String getColumnName(int col)
     {
         return COLUMN_NAMES[col];
     }
 
     @Override
-    public Object getValueAt(int row, int col) 
+    public Object getValueAt(int row, int col)
     {
-        switch(col) 
+        switch(col)
         {
             case(0): return annotationTerm[row];
             case(1): return annotationType[row];
@@ -109,9 +109,9 @@ public final class ClassViewerTableModelDetail extends AbstractTableModel
         }
     }
 
-    public void setTerm2Entropy(Map<String, String> Observed, Map<String, String> Expected, Map<String, String> ExpectedTrial, Map<String, String> Fobs, Map<String, String> Fexp, Map<String, String> OverRep, Map<String, String> Zscore, Map<String, Double> Term2Entropy, Map<String, Double> Fishers, Map<String, Integer> Members, String AnnotationType) 
+    public void setTerm2Entropy(Map<String, String> Observed, Map<String, String> Expected, Map<String, String> ExpectedTrial, Map<String, String> Fobs, Map<String, String> Fexp, Map<String, String> OverRep, Map<String, String> Zscore, Map<String, Double> Term2Entropy, Map<String, Double> Fishers, Map<String, Integer> Members, String AnnotationType)
     {
-        if (Term2Entropy == null || AnnotationType == null) 
+        if (Term2Entropy == null || AnnotationType == null)
         {
             annotationTerm  = new String[0];
             annotationType  = new String[0];
@@ -126,7 +126,7 @@ public final class ClassViewerTableModelDetail extends AbstractTableModel
             fishersPvalue   = new Double[0];
             clusterMembers  = new Integer[0];
             score           = new Double[0];
-            
+
             return;
         }
 
@@ -134,7 +134,7 @@ public final class ClassViewerTableModelDetail extends AbstractTableModel
 
         int i = 0;
         Set<String> terms = Term2Entropy.keySet();
-        for (String term : terms) 
+        for (String term : terms)
         {
             annotationTerm[i]  = term;
             annotationType[i]  = AnnotationType;
@@ -150,16 +150,16 @@ public final class ClassViewerTableModelDetail extends AbstractTableModel
             relativeEntropy[i] = Term2Entropy.get(annotationTerm[i]);
             fishersPvalue[i]   = Fishers.get(annotationTerm[i]);
             clusterMembers[i]  = Members.get(annotationTerm[i]);
-            
+
             score[i]           = new Double( MathUtil.calcScore( fishersPvalue[i].doubleValue(), clusterMembers[i].intValue(), relativeEntropy[i].doubleValue() ) );
-            
+
             i++;
         }
     }
 
     // VERY SPECIFIC USAGE to display over ALL values of ALL term types
 
-    public void setSize(int size) 
+    public void setSize(int size)
     {
         annotationTerm   = new String[size];
         annotationType   = new String[size];
@@ -177,12 +177,12 @@ public final class ClassViewerTableModelDetail extends AbstractTableModel
         overallEntropies = 0;
     }
 
-    public void addAnalysisValues(Map<String, String> Observed, Map<String, String> Expected, Map<String, String> ExpectedTrial, Map<String, String> Fobs, Map<String, String> Fexp, Map<String, String> OverRep, Map<String, String> Zscore, Map<String, Double> Term2Entropy, Map<String, Double> Term2FisherPVal, Map<String, Integer> Term2MembersCount, String AnnotationType) 
+    public void addAnalysisValues(Map<String, String> Observed, Map<String, String> Expected, Map<String, String> ExpectedTrial, Map<String, String> Fobs, Map<String, String> Fexp, Map<String, String> OverRep, Map<String, String> Zscore, Map<String, Double> Term2Entropy, Map<String, Double> Term2FisherPVal, Map<String, Integer> Term2MembersCount, String AnnotationType)
     {
         if (Term2Entropy == null || AnnotationType == null || Term2FisherPVal == null) return;
 
         Set<String> terms = Term2Entropy.keySet();
-        for (String term : terms) 
+        for (String term : terms)
         {
             annotationTerm[overallEntropies]  = term;
             annotationType[overallEntropies]  = AnnotationType;

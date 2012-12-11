@@ -12,9 +12,9 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
  * Parsing of OXL Ondex files based on Stax parsing principle. Uses CoreParser as the base class.
- * 
+ *
  * @author Jan Taubert, Thanos Theo 2008-2009-2010-2011
- * 
+ *
  */
 public class OXLParser extends CoreParser
 {
@@ -22,7 +22,7 @@ public class OXLParser extends CoreParser
     /**
     *  The constructor of the OXLParser class.
     */
-	public OXLParser(NetworkContainer nc, LayoutFrame layoutFrame) 
+	public OXLParser(NetworkContainer nc, LayoutFrame layoutFrame)
     {
         super(nc, layoutFrame);
     }
@@ -31,28 +31,28 @@ public class OXLParser extends CoreParser
     *  Checks if the file actually exists.
     */
     @Override
-    public boolean init(File file, String fileExtension) 
+    public boolean init(File file, String fileExtension)
     {
         this.file = file;
-        
-        try 
+
+        try
         {
             // OXL files might be .xml or .xml.gz
             if ( fileExtension.endsWith(".xml.gz") )
             {
                 fileReaderCounter  = new BufferedReader( new InputStreamReader(	new GZIPInputStream( new FileInputStream(file) ) ) );
-                fileReaderBuffered = new BufferedReader( new InputStreamReader(	new GZIPInputStream( new FileInputStream(file) ) ) );                
+                fileReaderBuffered = new BufferedReader( new InputStreamReader(	new GZIPInputStream( new FileInputStream(file) ) ) );
             }
             else
             {
                 fileReaderCounter  = new BufferedReader( new FileReader(file) );
-                fileReaderBuffered = new BufferedReader( new FileReader(file) );                
+                fileReaderBuffered = new BufferedReader( new FileReader(file) );
             }
-        	
+
             simpleFileName = file.getName();
 
             return true;
-        } 
+        }
         catch (IOException ioExc)
         {
             try
@@ -66,7 +66,7 @@ public class OXLParser extends CoreParser
             }
             finally
             {
-                
+
             }
 
             return false;
@@ -77,32 +77,32 @@ public class OXLParser extends CoreParser
     *  Parses the ondex xml file.
     */
     @Override
-    public boolean parse() 
-    {        
+    public boolean parse()
+    {
         int totalLines = 0;
         int counter = 0;
 
         isSuccessful = false;
         nc.setOptimized(false);
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
-        
-        try 
+
+        try
         {
-            while ( ( line = fileReaderCounter.readLine() ) != null )             
+            while ( ( line = fileReaderCounter.readLine() ) != null )
                 totalLines++;
-            
+
             layoutProgressBarDialog.prepareProgressBar(totalLines, "Parsing " + simpleFileName + " Map...");
-            
+
             // get all data structures involved with vertex
             HashMap<String, Vertex> verticesMap = nc.getVerticesMap();
-            
+
             // parsing of XML document via Stax
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader xmlStreamReader = inputFactory.createXMLStreamReader(fileReaderBuffered);
 
             // same state variables to simplify keeping track where we are in the OXL
             boolean inConcepts = false;
-            String conceptId = "";            
+            String conceptId = "";
             String local = "";
             String annotation = "";
             String conceptClass = "";
@@ -112,16 +112,16 @@ public class OXLParser extends CoreParser
             String to = "";
             String type = "";
 
-            while ( xmlStreamReader.hasNext() ) 
+            while ( xmlStreamReader.hasNext() )
             {
                 layoutProgressBarDialog.incrementProgress(++counter);
-                
+
                 // start of a new element
                 if (xmlStreamReader.next() == XMLStreamReader.START_ELEMENT)
                 {
                     // the local name of a QName
                     local = xmlStreamReader.getName().getLocalPart();
-                	
+
                     // now parsing list of concepts
                     // <concepts>
                     if ( local.equals("concepts") )
@@ -138,14 +138,14 @@ public class OXLParser extends CoreParser
                     // <concept>
                     else if ( inConcepts && local.equals("concept") )
                     {
-    	            	// <id>1</id> 
+    	            	// <id>1</id>
     	            	xmlStreamReader.next();
     	            	xmlStreamReader.next();
-    	            	               	
+
     	                conceptId = xmlStreamReader.getText();
 
     	                if (DEBUG_BUILD) println("Creating vertex with id " + conceptId);
-    	                
+
     	                // create BioLayout vertex
     	                verticesMap.put( conceptId, new Vertex(conceptId, nc) );
                     }
@@ -167,14 +167,14 @@ public class OXLParser extends CoreParser
                     // <ofType>
                     else if ( inConcepts && local.equals("ofType") )
                     {
-    	            	// <id>Thing</id> 
+    	            	// <id>Thing</id>
     	            	xmlStreamReader.next();
     	            	xmlStreamReader.next();
-    	            	
+
     	            	conceptClass = xmlStreamReader.getText();
 
     	            	if (DEBUG_BUILD) println("Class for vertex with id " + conceptId + " = " + conceptClass);
-    	            	
+
                     // TODO: how to handle classes?
                     }
                     // there could be multiple concept names
@@ -184,14 +184,14 @@ public class OXLParser extends CoreParser
                         // <name>A shorter</name>
                         xmlStreamReader.next();
     	            	xmlStreamReader.next();
-    	            	
+
     	            	name = xmlStreamReader.getText();
-    	            
-    	            	// <isPreferred>true</isPreferred> 
+
+    	            	// <isPreferred>true</isPreferred>
     	            	xmlStreamReader.next();
     	            	xmlStreamReader.next();
     	            	xmlStreamReader.next();
-    	            	
+
     	            	// only add preferred names as the vertex name for now
     	            	// if multiple preferred names, last one is chosen
     	            	preferred = xmlStreamReader.getText();
@@ -210,47 +210,47 @@ public class OXLParser extends CoreParser
                         // <fromConcept>5</fromConcept>
                         xmlStreamReader.next();
     	            	xmlStreamReader.next();
-    	            	
+
     	            	from = xmlStreamReader.getText();
-    	            	
-    	            	// <toConcept>3</toConcept> 
+
+    	            	// <toConcept>3</toConcept>
     	            	xmlStreamReader.next();
     	            	xmlStreamReader.next();
     	            	xmlStreamReader.next();
-    	            	
+
     	            	to = xmlStreamReader.getText();
-    	            	
-    	            	// search for next <ofType><id>is_a</id> 
+
+    	            	// search for next <ofType><id>is_a</id>
     	            	while (true)
                             if ( (xmlStreamReader.next() == XMLStreamReader.START_ELEMENT) && xmlStreamReader.getName().getLocalPart().equals("ofType") )
                                     break;
 
     	            	xmlStreamReader.next();
     	            	xmlStreamReader.next();
-                		    	            	
+
     	            	type = xmlStreamReader.getText();
 
     	            	if (DEBUG_BUILD) println("Relation for vertex from " + from + " to " + to + " of type " + type);
-    	            	
+
     	            	// TODO: How to handle different types of relations
     	            	nc.addNetworkConnection(from, to, 0.0f);
                     }
                 }
             }
-            
+
             isSuccessful = true;
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in OXLParser.parse():\n" + ioe.getMessage());
-        } 
+        }
         catch (XMLStreamException e)
         {
         	if (DEBUG_BUILD) println("XMLStreamException in OXLParser.parse():\n" + e.getMessage());
 	}
         finally
         {
-            try 
+            try
             {
                 fileReaderCounter.close();
                 fileReaderBuffered.close();
@@ -262,9 +262,9 @@ public class OXLParser extends CoreParser
             finally
             {
                 layoutProgressBarDialog.endProgressBar();
-            }                        
+            }
         }
-        
+
         return isSuccessful;
     }
 

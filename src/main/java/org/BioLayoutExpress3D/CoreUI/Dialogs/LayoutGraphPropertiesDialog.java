@@ -36,10 +36,10 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 */
 
 public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClassesTable.LayoutClassesTableListener, CaretListener, GraphAnaglyphGlasses3DOptionsDialogListener, ModelShapeEditorParentUIDialogListener, ActionListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the PropertiesDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555699L;
 
     public static enum LayoutGraphPropertiesTabTypes { GENERAL, LAYOUT, RENDERING, MCL, SIMULATION, PARALLELISM, SEARCH, NODES, EDGES, CLASSES }
@@ -71,8 +71,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private AbstractAction classesPropertiesAction = null;
 
     private static final Border ETCHED = BorderFactory.createEtchedBorder();
-    private static final Border EMPTY  = BorderFactory.createEmptyBorder();    
-    
+    private static final Border EMPTY  = BorderFactory.createEmptyBorder();
+
     private final static String CHANGE_ACTION_COMMAND       = "CHANGE_ACTION_COMMAND";
     private final static String CHANGE_ACTION_COMMAND_NODES = "CHANGE_ACTION_COMMAND_NODES";
     private final static String CHANGE_ACTION_COMMAND_EDGES = "CHANGE_ACTION_COMMAND_EDGES";
@@ -86,7 +86,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private boolean hasNewPreferencesBeenApplied = false;
 
     private boolean nodeClassChange = false;
-    private boolean nodeColorChange = false;    
+    private boolean nodeColorChange = false;
     private boolean nodeSizeChange = false;
     private boolean node2DShapeChange = false;
     private boolean node3DShapeChange = false;
@@ -102,19 +102,19 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private ColorButton generalColorSelection = null;
     private ColorButton generalColorPlotBackground = null;
     private JCheckBox generalTrippyBackground = null;
-            
+
     private JCheckBox generalDisableNodesRendering = null;
-    private JCheckBox generalDisableEdgesRendering = null;    
+    private JCheckBox generalDisableEdgesRendering = null;
     private JCheckBox generalDirectional = null;
     private JCheckBox generalDragShowEdgesWhileDraggingNodes = null;
-    private JCheckBox generalyEdStyleRenderingForGraphmlFiles = null;    
+    private JCheckBox generalyEdStyleRenderingForGraphmlFiles = null;
     private JCheckBox generalyEdStyleComponentContainersRenderingForGraphmlFiles = null;
 
     private JRadioButton generalHighQualityAntiAlias = null;
     private JRadioButton generalNormalQualityAntiAlias = null;
-    private JRadioButton generalNoAntiAlias = null;   
+    private JRadioButton generalNoAntiAlias = null;
     private JCheckBox useVSynch = null;
-    
+
     private JCheckBox generalShowNavigationWizardOnStartup = null;
     private JCheckBox generalShowLayoutIterations = null;
     private JCheckBox generalValidateXMLFiles = null;
@@ -129,7 +129,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
     private JCheckBox layoutResizeNodesAndArrowheadsToKvalue = null;
     private JCheckBox layoutUseEdgeWeightsForLayout = null;
-    private JCheckBox layoutTiledLayout = null;    
+    private JCheckBox layoutTiledLayout = null;
     private FloatNumberField layoutKvalueField = null;
     private FloatNumberField layoutStartingTemperatureField = null;
     private JTextField layoutIterationsField = null;
@@ -144,15 +144,15 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private SimpleSlider highResImageRenderScaleSlider = null;
     private JCheckBox fastSelectionMode = null;
     private JCheckBox wireframeSelectionMode = null;
-    private JCheckBox advancedKeyboardRenderingControl = null;    
-    private JCheckBox anaglyphStereoscopic3DView = null;    
+    private JCheckBox advancedKeyboardRenderingControl = null;
+    private JCheckBox anaglyphStereoscopic3DView = null;
     private GraphAnaglyphGlasses3DOptionsDialog graphAnaglyphGlasses3DOptionsDialog = null;
-    private JButton anaglyphStereoscopic3DViewOptions = null;    
+    private JButton anaglyphStereoscopic3DViewOptions = null;
     private SimpleSlider lightingPositionXSlider = null;
     private SimpleSlider lightingPositionYSlider = null;
     private SimpleSlider lightingPositionZSlider = null;
     private JCheckBox depthFog = null;
-    private JCheckBox useMotionBlurForScene = null;    
+    private JCheckBox useMotionBlurForScene = null;
     private SimpleSlider motionBlurSize = null;
     private JCheckBox  materialSpecular = null;
     private SimpleSlider materialShininess = null;
@@ -170,17 +170,17 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JTextField nodeSurfaceImageTextureFileTextField = null;
     private JButton nodeSurfaceImageTextureFileLoadButton = null;
     private JButton nodeSurfaceImageTextureFileClearButton = null;
-    private JFileChooser nodeSurfaceImageTextureFileChooser = null;    
+    private JFileChooser nodeSurfaceImageTextureFileChooser = null;
     private JCheckBox[] allShadings = null;
 
     private FloatNumberField MCL_inflationField = null;
-    private JSlider MCL_inflationSlider = null;    
+    private JSlider MCL_inflationSlider = null;
     private FloatNumberField MCL_preInflationField = null;
-    private JSlider MCL_pre_inflationSlider = null;    
+    private JSlider MCL_pre_inflationSlider = null;
     private JTextField MCL_schemeField = null;
     private JSlider MCL_SchemeSlider = null;
     private JTextField MCL_smallestClusterAllowedField = null;
-    private JCheckBox MCL_assignRandomClusterColorsCheckBox = null;    
+    private JCheckBox MCL_assignRandomClusterColorsCheckBox = null;
     private JTextField MCL_advancedOptionsTextField = null;
     private JButton MCL_clusterGraphUsingMCLButton = null;
 
@@ -220,8 +220,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JTextField customURLTextField = null;
     private JRadioButton presetRadioButton = null;
     private JRadioButton customRadioButton = null;
-    private JTextArea presetURLTextField = null;   
-        
+    private JTextArea presetURLTextField = null;
+
     private JTextField nodeNameTextField = null;
     private JComboBox node2DShape = null;
     private JComboBox node3DShape = null;
@@ -231,10 +231,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private ColorButton nodeColorButton = null;
     private ModelShapeEditorParentUIDialog modelShapeEditorParentUIDialog = null;
     private JComboBox nodeSizeComboBox = null;
-    private ClassComboBox nodeClassComboBox = null;    
+    private ClassComboBox nodeClassComboBox = null;
     private FloatNumberField graphmlViewNodeDepthPositioningTextField = null;
     private JLabel graphmlViewNodeDepthZPositioningLabel = null;
-    private JButton graphmlAllViewNodeDepthResetPositioningsButton = null;    
+    private JButton graphmlAllViewNodeDepthResetPositioningsButton = null;
     private JTextField nodeClassSetName = null;
     private JTextField nodeClassName = null;
     private JButton newClassInClassSetButton = null;
@@ -267,7 +267,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     public LayoutGraphPropertiesDialog(LayoutFrame layoutFrame, LayoutClassSetsManager layoutClassSetsManager, NetworkContainer nc)
     {
         super(layoutFrame, "Graph Properties", false);
-        
+
         this.layoutFrame = layoutFrame;
         this.layoutClassSetsManager = layoutClassSetsManager;
         this.nc = nc;
@@ -416,13 +416,13 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             {
                 showPropertiesDialog(CLASSES);
             }
-        };               
+        };
     }
 
     private void initComponents()
-    {        
+    {
         tabbedPane = new JTabbedPane();
-        
+
         generalPropertiesPanel = createPropertiesPanel();
         layoutPropertiesPanel = createPropertiesPanel();
         renderingPropertiesPanel = createPropertiesPanel();
@@ -439,8 +439,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         graphAnaglyphGlasses3DOptionsDialog = new GraphAnaglyphGlasses3DOptionsDialog(this);
         graphAnaglyphGlasses3DOptionsDialog.setListener(this);
         modelShapeEditorParentUIDialog = new ModelShapeEditorParentUIDialog( this, layoutFrame.getGraph() );
-        modelShapeEditorParentUIDialog.setListener(this); 
-        
+        modelShapeEditorParentUIDialog.setListener(this);
+
         createGeneralPropertiesTab( generalPropertiesPanel, tabbedPane, GENERAL.ordinal() );
         createLayoutPropertiesTab( layoutPropertiesPanel, tabbedPane, LAYOUT.ordinal() );
         createRenderingPropertiesTab( renderingPropertiesPanel, tabbedPane, RENDERING.ordinal() );
@@ -461,16 +461,16 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             stringIndexToCut = (i < MAX_EDGE_THICKNESS) ? 3 : 4;
             edgeThicknessComboBox.addItem( Double.toString( (double)i / 10.0 ).substring(0, stringIndexToCut) );
         }
-        
+
         for (int i = MIN_ARROWHEAD_SIZE; i <= MAX_ARROWHEAD_SIZE; i++)
             arrowHeadSizeComboBox.addItem( Integer.toString(i) );
 
         this.setResizable(false);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);        
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.pack();
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
     }
-    
+
     private void showPropertiesDialog(LayoutGraphPropertiesTabTypes layoutGraphPropertiesTabType)
     {
         if ( layoutGraphPropertiesTabType.equals(NODES) &&  (howManyNodesSelected <= 0) )
@@ -671,14 +671,14 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             tabbedPane.setSelectedComponent(classesPropertiesPanel);
     }
 
-    private void updateSearchPanel() 
+    private void updateSearchPanel()
     {
-        if (CUSTOM_SEARCH) 
+        if (CUSTOM_SEARCH)
         {
             customRadioButton.setSelected(true);
             customURLTextField.setText( SEARCH_URL.getUrl() );
-        } 
-        else 
+        }
+        else
         {
             presetRadioButton.setSelected(true);
             searchURLComboBox.setSelectedItem(SEARCH_URL);
@@ -697,19 +697,19 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         return newComponent;
     }
 
-    private void addTitledButtonBorder(TitledBorder border, JComponent component, String string, int justification, int position, Container container) 
+    private void addTitledButtonBorder(TitledBorder border, JComponent component, String string, int justification, int position, Container container)
     {
         border.setTitleJustification(justification);
         border.setTitlePosition(position);
-        
+
         addButtonBorder(border, component, string, container);
     }
 
-    private void addButtonBorder(Border border, JComponent component, String string, Container container) 
+    private void addButtonBorder(Border border, JComponent component, String string, Container container)
     {
         JPanel newComponent = new JPanel(new FlowLayout(FlowLayout.LEADING), true);
         JLabel label = new JLabel(string, JLabel.RIGHT);
-        
+
         newComponent.add(component);
         newComponent.add( Box.createRigidArea( new Dimension(10, 10) ) );
         newComponent.add(label);
@@ -719,15 +719,15 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         container.add(newComponent);
     }
 
-    private void addTitledButtonBorderLarge(TitledBorder border, JComponent component, int justification, int position, Container container) 
+    private void addTitledButtonBorderLarge(TitledBorder border, JComponent component, int justification, int position, Container container)
     {
         border.setTitleJustification(justification);
         border.setTitlePosition(position);
-        
+
         addButtonBorderLarge(border, component, container);
     }
 
-    private void addButtonBorderLarge(Border border, JComponent component, Container container) 
+    private void addButtonBorderLarge(Border border, JComponent component, Container container)
     {
         JPanel newComponent = new JPanel(new FlowLayout(FlowLayout.LEADING), true);
         newComponent.add(component);
@@ -749,12 +749,12 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 if ( j != (NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN - 1) ) advancedShadersPanelTemp.add( Box.createRigidArea( new Dimension(0, 15) ) );
             }
         }
-        
+
         component.add(advancedShadersPanelTemp);
         if (!isLastShaderColumnPanel) component.add( Box.createRigidArea( new Dimension(80, 0) ) );
     }
 
-    private JPanel createPropertiesPanel() 
+    private JPanel createPropertiesPanel()
     {
         JPanel propertiesPanel = new JPanel(true);
 
@@ -776,7 +776,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         cancelButton.setToolTipText("Cancel");
         JButton applyButton = new JButton("Apply");
         applyButton.setToolTipText("Apply");
-        
+
         applyButton.setEnabled(false);
         allApplyButtons[tabNumber] = applyButton;
 
@@ -800,7 +800,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private void createGeneralPropertiesTab(JPanel panel, JTabbedPane tabbedPane, int tabNumber)
     {
         TitledBorder generalPropertiesPanelBorder = null;
-        
+
         JPanel colorOptionsPanel = new JPanel(true);
         JPanel colorPanel1 = new JPanel(true);
         JPanel colorPanel2 = new JPanel(true);
@@ -810,9 +810,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         JPanel graphOptionsPanel1 = new JPanel(true);
         JPanel graphOptionsPanel2 = new JPanel(true);
         JPanel graphOptionsPanel3 = new JPanel(true);
-        JPanel graphicsRenderingOptionsPanel = new JPanel(true);        
+        JPanel graphicsRenderingOptionsPanel = new JPanel(true);
         JPanel generalOptionsPanel = new JPanel(true);
-        
+
         generalColor = new ColorButton(" ");
         generalColor.setActionCommand(CHANGE_ACTION_COMMAND);
         generalColor.addActionListener(this);
@@ -840,7 +840,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalDisableEdgesRendering = new JCheckBox("Disable Edges Rendering For Graph");
         generalDisableEdgesRendering.setActionCommand(CHANGE_ACTION_COMMAND_EDGES);
         generalDisableEdgesRendering.addActionListener(this);
-        generalDisableEdgesRendering.setToolTipText("Disable Edges Rendering For Graph (useful for very large graphs)");        
+        generalDisableEdgesRendering.setToolTipText("Disable Edges Rendering For Graph (useful for very large graphs)");
         generalDirectional = new JCheckBox("Directional Edges (2D graphs only)");
         generalDirectional.setActionCommand(CHANGE_ACTION_COMMAND_EDGES);
         generalDirectional.addActionListener(this);
@@ -849,17 +849,17 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalDragShowEdgesWhileDraggingNodes.setActionCommand(CHANGE_ACTION_COMMAND);
         generalDragShowEdgesWhileDraggingNodes.addActionListener(this);
         generalDragShowEdgesWhileDraggingNodes.setToolTipText("Show Edges when Dragging Nodes (2D graphs only)");
-        generalyEdStyleRenderingForGraphmlFiles = new JCheckBox("yEd-style Rendering for Graphml files");        
+        generalyEdStyleRenderingForGraphmlFiles = new JCheckBox("yEd-style Rendering for Graphml files");
         generalyEdStyleRenderingForGraphmlFiles.setActionCommand(CHANGE_ACTION_COMMAND_ALL);
         generalyEdStyleRenderingForGraphmlFiles.addActionListener(this);
         generalyEdStyleRenderingForGraphmlFiles.setEnabled(false);
         generalyEdStyleRenderingForGraphmlFiles.setToolTipText("yEd-style Rendering for Graphml files");
-        generalyEdStyleComponentContainersRenderingForGraphmlFiles = new JCheckBox("yEd-style Component Containers Rendering for Graphml files");        
+        generalyEdStyleComponentContainersRenderingForGraphmlFiles = new JCheckBox("yEd-style Component Containers Rendering for Graphml files");
         generalyEdStyleComponentContainersRenderingForGraphmlFiles.setActionCommand(CHANGE_ACTION_COMMAND);
         generalyEdStyleComponentContainersRenderingForGraphmlFiles.addActionListener(this);
         generalyEdStyleComponentContainersRenderingForGraphmlFiles.setEnabled(false);
         generalyEdStyleComponentContainersRenderingForGraphmlFiles.setToolTipText("yEd-style Component Containers Rendering for Graphml files");
-        
+
         generalHighQualityAntiAlias = new JRadioButton("Texture MipMapping & High Quality FullScreen Anti-Aliasing (FSAA 4x)");
         generalHighQualityAntiAlias.setActionCommand(CHANGE_ACTION_COMMAND);
         generalHighQualityAntiAlias.addActionListener(this);
@@ -896,7 +896,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalShowPopupOverlayPlot = new JCheckBox("Show Popup Overlay Plot");
         generalShowPopupOverlayPlot.setActionCommand(CHANGE_ACTION_COMMAND);
         generalShowPopupOverlayPlot.addActionListener(this);
-        generalShowPopupOverlayPlot.setToolTipText("Show Popup Overlay Plot");        
+        generalShowPopupOverlayPlot.setToolTipText("Show Popup Overlay Plot");
         generalShowNavigationWizardOnStartup = new JCheckBox("Show Navigation Wizard On Startup");
         generalShowNavigationWizardOnStartup.setActionCommand(CHANGE_ACTION_COMMAND);
         generalShowNavigationWizardOnStartup.addActionListener(this);
@@ -930,16 +930,16 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         antiAliasGroup.add(generalHighQualityAntiAlias);
         antiAliasGroup.add(generalNormalQualityAntiAlias);
         antiAliasGroup.add(generalNoAntiAlias);
-        
+
         colorPanel2.add(generalColor);
         colorPanel2.add( new JLabel("Background Color") );
         colorPanel3.add(generalColorSelection);
         colorPanel3.add( new JLabel("Selection Color") );
         colorPanel4.add(generalColorPlotBackground);
         colorPanel4.add( new JLabel("Plot Background Color") );
-        
+
         colorOptionsPanel.setBorder(paneEdge);
-        colorOptionsPanel.setLayout( new BoxLayout(colorOptionsPanel, BoxLayout.X_AXIS) );        
+        colorOptionsPanel.setLayout( new BoxLayout(colorOptionsPanel, BoxLayout.X_AXIS) );
         colorOptionsPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
         colorOptionsPanel.add(colorPanel1);
         colorOptionsPanel.add( Box.createRigidArea( new Dimension(15, 15) ) );
@@ -953,27 +953,27 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         graphOptionsPanel1.setLayout( new BoxLayout(graphOptionsPanel1, BoxLayout.Y_AXIS) );
         graphOptionsPanel1.add(generalDisableNodesRendering);
-        graphOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );        
+        graphOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
         graphOptionsPanel1.add(generalDisableEdgesRendering);
 
         graphOptionsPanel2.setLayout( new BoxLayout(graphOptionsPanel2, BoxLayout.Y_AXIS) );
         graphOptionsPanel2.add(generalDirectional);
-        graphOptionsPanel2.add( Box.createRigidArea( new Dimension(10, 10) ) );        
+        graphOptionsPanel2.add( Box.createRigidArea( new Dimension(10, 10) ) );
         graphOptionsPanel2.add(generalDragShowEdgesWhileDraggingNodes);
-        
+
         graphOptionsPanel3.setLayout( new BoxLayout(graphOptionsPanel3, BoxLayout.Y_AXIS) );
         graphOptionsPanel3.add(generalyEdStyleRenderingForGraphmlFiles);
         graphOptionsPanel3.add( Box.createRigidArea( new Dimension(10, 10) ) );
-        graphOptionsPanel3.add(generalyEdStyleComponentContainersRenderingForGraphmlFiles);        
-        
+        graphOptionsPanel3.add(generalyEdStyleComponentContainersRenderingForGraphmlFiles);
+
         graphOptionsPanel.setBorder(paneEdge);
         graphOptionsPanel.setLayout( new BoxLayout(graphOptionsPanel, BoxLayout.X_AXIS) );
         graphOptionsPanel.add(graphOptionsPanel1);
         graphOptionsPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
         graphOptionsPanel.add(graphOptionsPanel2);
-        graphOptionsPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );        
+        graphOptionsPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
         graphOptionsPanel.add(graphOptionsPanel3);
-        
+
         graphicsRenderingOptionsPanel.setBorder(paneEdge);
         graphicsRenderingOptionsPanel.setLayout( new BoxLayout(graphicsRenderingOptionsPanel, BoxLayout.Y_AXIS) );
         graphicsRenderingOptionsPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
@@ -984,8 +984,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         graphicsRenderingOptionsPanel.add(generalNoAntiAlias);
         graphicsRenderingOptionsPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
         graphicsRenderingOptionsPanel.add(useVSynch);
-        
-        generalOptionsPanel.setBorder(paneEdge); 
+
+        generalOptionsPanel.setBorder(paneEdge);
         generalOptionsPanel.setLayout( new BoxLayout(generalOptionsPanel, BoxLayout.Y_AXIS) );
 
         JPanel generalOptionsTopPanel = new JPanel(true);
@@ -1000,7 +1000,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
         generalOptionsPanel1.add(generalShowGraphPropertiesToolBar);
         generalOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
-        generalOptionsPanel1.add(generalShowNavigationToolBar);        
+        generalOptionsPanel1.add(generalShowNavigationToolBar);
         generalOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
         generalOptionsPanel1.add(generalShowPopupOverlayPlot);
         if (WEBSTART)
@@ -1024,10 +1024,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         generalOptionsTopPanel.add(generalOptionsPanel1);
         generalOptionsTopPanel.add( Box.createRigidArea( new Dimension(15, 15) ) );
-        generalOptionsTopPanel.add(generalOptionsPanel2); 
+        generalOptionsTopPanel.add(generalOptionsPanel2);
 
         JPanel generalOptionsBottomPanel = new JPanel(true);
-        generalOptionsPanel.add(generalOptionsTopPanel);        
+        generalOptionsPanel.add(generalOptionsTopPanel);
         generalOptionsPanel.add( Box.createRigidArea( new Dimension(15, 15) ) );
         generalOptionsPanel.add(generalOptionsBottomPanel);
 
@@ -1063,7 +1063,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         layoutUseEdgeWeightsForLayout.setActionCommand(CHANGE_ACTION_COMMAND);
         layoutTiledLayout.addActionListener(this);
         layoutTiledLayout.setActionCommand(CHANGE_ACTION_COMMAND);
-        
+
         layoutStartingTemperatureField = new FloatNumberField(0, 10);
         layoutStartingTemperatureField.addCaretListener(this);
         layoutStartingTemperatureField.setToolTipText("Starting Temperature");
@@ -1124,8 +1124,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     {
         TitledBorder renderingPropertiesPanelBorder = null;
 
-        JPanel nodeOptionsPanel = new JPanel(true);        
-        
+        JPanel nodeOptionsPanel = new JPanel(true);
+
         _3DNodeTesselationSlider = new SimpleSlider(7, 140, 75, 0.0f, NODE_TESSELATION_MIN_VALUE, NODE_TESSELATION_MAX_VALUE, NODE_TESSELATION_MAX_VALUE - NODE_TESSELATION_MIN_VALUE, "3D Nodes Tesselation", true);
         _3DNodeTesselationSlider.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         _3DNodeTesselationSlider.addActionListener(this);
@@ -1167,25 +1167,25 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         anaglyphStereoscopic3DView = new JCheckBox("Anaglyph Stereoscopic 3D View");
         anaglyphStereoscopic3DView.setActionCommand(CHANGE_ACTION_COMMAND_ALL);
         anaglyphStereoscopic3DView.addActionListener(this);
-        anaglyphStereoscopic3DView.setToolTipText("Anaglyph Stereoscopic 3D View");        
+        anaglyphStereoscopic3DView.setToolTipText("Anaglyph Stereoscopic 3D View");
         anaglyphStereoscopic3DViewOptions = new JButton( graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction() );
-        anaglyphStereoscopic3DViewOptions.setToolTipText("Anaglyph Stereoscopic 3D View Options"); 
+        anaglyphStereoscopic3DViewOptions.setToolTipText("Anaglyph Stereoscopic 3D View Options");
         graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction().setEnabled(false);
         anaglyphStereoscopic3DViewOptions.setEnabled(false);
-        
+
         JPanel showOptionsPanel = new JPanel(true);
         showOptionsPanel.setLayout( new BoxLayout(showOptionsPanel, BoxLayout.Y_AXIS) );
         showOptionsPanel.add(showNodes);
         showOptionsPanel.add(show3DFrustum);
         showOptionsPanel.add(show3DShadows);
-        showOptionsPanel.add(show3DEnvironmentMapping);        
+        showOptionsPanel.add(show3DEnvironmentMapping);
 
         JPanel anaglyphStereoscopicPanel = new JPanel(true);
-        anaglyphStereoscopicPanel.setLayout( new BoxLayout(anaglyphStereoscopicPanel, BoxLayout.X_AXIS) );     
+        anaglyphStereoscopicPanel.setLayout( new BoxLayout(anaglyphStereoscopicPanel, BoxLayout.X_AXIS) );
         anaglyphStereoscopicPanel.add(anaglyphStereoscopic3DView);
         anaglyphStereoscopicPanel.add( Box.createRigidArea( new Dimension(3, 3) ) );
         anaglyphStereoscopicPanel.add(anaglyphStereoscopic3DViewOptions);
-                
+
         JPanel set2OptionsPanel = new JPanel(true);
         set2OptionsPanel.setLayout( new GridLayout(4, 1) );
         set2OptionsPanel.add(fastSelectionMode);
@@ -1201,8 +1201,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeOptionsPanel.add( Box.createRigidArea( new Dimension(3, 3) ) );
         nodeOptionsPanel.add(set2OptionsPanel);
 
-        JPanel lightingFogMotionBlurSetup = new JPanel(true);            
-        
+        JPanel lightingFogMotionBlurSetup = new JPanel(true);
+
         lightingPositionXSlider = new SimpleSlider(7, 90, 75, 0.0f, -10.0f, 10.0f, 20, "Light Position X", false);
         lightingPositionYSlider = new SimpleSlider(7, 90, 75, 0.0f, -10.0f, 10.0f, 20, "Light Position Y", false);
         lightingPositionZSlider = new SimpleSlider(7, 90, 75, 0.0f, -10.0f, 10.0f, 20, "Light Position Z", false);
@@ -1227,18 +1227,18 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         useMotionBlurForScene = new JCheckBox("Use Motion Blur For Scene");
         useMotionBlurForScene.setActionCommand(CHANGE_ACTION_COMMAND_ALL);
         useMotionBlurForScene.addActionListener(this);
-        useMotionBlurForScene.setToolTipText("Use Motion Blur For Scene (Available only for non-ATI GPUs)");        
-        
+        useMotionBlurForScene.setToolTipText("Use Motion Blur For Scene (Available only for non-ATI GPUs)");
+
         motionBlurSize = new SimpleSlider(7, 100, 75, 0.0f, 0.0f, 100.0f, 100, "Motion Blur Size", true);
         motionBlurSize.setActionCommand(CHANGE_ACTION_COMMAND_ALL);
         motionBlurSize.addActionListener(this);
         motionBlurSize.setToolTipText("Motion Blur Size (Available only for non-ATI GPUs)");
-        
+
         JPanel motionBlurPanel = new JPanel(true);
         motionBlurPanel.setLayout( new GridLayout(4, 1) );
-        motionBlurPanel.add(useMotionBlurForScene);      
-        motionBlurPanel.add(motionBlurSize);          
-        
+        motionBlurPanel.add(useMotionBlurForScene);
+        motionBlurPanel.add(motionBlurSize);
+
         lightingFogMotionBlurSetup.add(lightingPositionXSlider);
         lightingFogMotionBlurSetup.add(lightingPositionYSlider);
         lightingFogMotionBlurSetup.add(lightingPositionZSlider);
@@ -1249,7 +1249,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         lightingFogMotionBlurSetup.add(motionBlurSize);
 
         JPanel materialOptionsAndShadingPanel = new JPanel(true);
-        
+
         materialSpecular = new JCheckBox("Specular");
         materialSpecular.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         materialSpecular.addActionListener(this);
@@ -1259,7 +1259,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialShininess.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         materialShininess.addActionListener(this);
         materialShininess.setToolTipText("Shininess");
-        
+
         materialGouraudLighting = new JCheckBox("Gouraud (Per-Vertex) Smooth Shading");
         materialGouraudLighting.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         materialGouraudLighting.addActionListener(this);
@@ -1293,18 +1293,18 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialOldLCDStyleTransparencyShading = new JCheckBox("Old LCD Style Transparency Advanced Shading");
         materialOldLCDStyleTransparencyShading.setActionCommand(CHANGE_ACTION_COMMAND);
         materialOldLCDStyleTransparencyShading.addActionListener(this);
-        materialOldLCDStyleTransparencyShading.setToolTipText("Old LCD Style Transparency Advanced Shading");     
-        
+        materialOldLCDStyleTransparencyShading.setToolTipText("Old LCD Style Transparency Advanced Shading");
+
         materialErosionShading = new JCheckBox("Erosion Shading");
         materialErosionShading.setActionCommand(CHANGE_ACTION_COMMAND);
         materialErosionShading.addActionListener(this);
-        materialErosionShading.setToolTipText("Erosion Shading (For Cloud, Lava, Marble, Granite & Wood Shaders)");         
-        
+        materialErosionShading.setToolTipText("Erosion Shading (For Cloud, Lava, Marble, Granite & Wood Shaders)");
+
         materialNormalsSelectionMode = new JCheckBox("Normals Selection Mode");
         materialNormalsSelectionMode.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         materialNormalsSelectionMode.addActionListener(this);
         materialNormalsSelectionMode.setToolTipText("Normals Selection Mode (Using Geometry Shaders Technology utilizing OpenGL 3.0 capable hardware & needs the WireFrame Selection Mode turned on)");
-        
+
         JPanel materialOptionsAndShading1Panel = new JPanel(true);
         materialOptionsAndShading1Panel.setLayout( new BoxLayout(materialOptionsAndShading1Panel, BoxLayout.Y_AXIS) );
         materialOptionsAndShading1Panel.add(materialSpecular);
@@ -1313,25 +1313,25 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialOptionsAndShading1Panel.add(materialEmbossNodeTexture);
 
         JPanel materialOptionsAndShading2Panel = new JPanel(true);
-        materialOptionsAndShading2Panel.setLayout( new BoxLayout(materialOptionsAndShading2Panel, BoxLayout.Y_AXIS) );        
+        materialOptionsAndShading2Panel.setLayout( new BoxLayout(materialOptionsAndShading2Panel, BoxLayout.Y_AXIS) );
         materialOptionsAndShading2Panel.add(materialAntiAliasShading);
         materialOptionsAndShading2Panel.add(materialAnimatedShading);
         materialOptionsAndShading2Panel.add(materialStateShading);
         materialOptionsAndShading2Panel.add(materialOldLCDStyleTransparencyShading);
-        
+
         JPanel materialOptionsAndShading3Panel = new JPanel(true);
-        materialOptionsAndShading3Panel.setLayout( new BoxLayout(materialOptionsAndShading3Panel, BoxLayout.Y_AXIS) );        
-        materialOptionsAndShading3Panel.add(materialErosionShading); 
-        materialOptionsAndShading3Panel.add(materialNormalsSelectionMode); 
-        
+        materialOptionsAndShading3Panel.setLayout( new BoxLayout(materialOptionsAndShading3Panel, BoxLayout.Y_AXIS) );
+        materialOptionsAndShading3Panel.add(materialErosionShading);
+        materialOptionsAndShading3Panel.add(materialNormalsSelectionMode);
+
         materialOptionsAndShadingPanel.add(materialOptionsAndShading1Panel);
         materialOptionsAndShadingPanel.add( Box.createRigidArea( new Dimension(30, 10) ) );
         materialOptionsAndShadingPanel.add(materialShininess);
-        materialOptionsAndShadingPanel.add( Box.createRigidArea( new Dimension(30, 10) ) );        
+        materialOptionsAndShadingPanel.add( Box.createRigidArea( new Dimension(30, 10) ) );
         materialOptionsAndShadingPanel.add(materialOptionsAndShading2Panel);
         materialOptionsAndShadingPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
         materialOptionsAndShadingPanel.add(materialOptionsAndShading3Panel);
-        
+
         JPanel textureOptionsPanel = new JPanel(true);
 
         nodeSurfaceImageTextureCheckBox = new JCheckBox("Node Surface Image Texture");
@@ -1361,7 +1361,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeSurfaceImageTextureFileClearButton.addActionListener(this);
         nodeSurfaceImageTextureFileClearButton.setEnabled(false);
         nodeSurfaceImageTextureFileClearButton.setToolTipText("Clear");
-        
+
         textureOptionsPanel.add(nodeSurfaceImageTextureCheckBox);
         textureOptionsPanel.add(nodeSurfaceImageTextureComboBox);
         textureOptionsPanel.add(nodeSurfaceImageTextureFileTextField);
@@ -1395,13 +1395,13 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             allShadings[i].setToolTipText(shaderEffectName + " " + SHADER_CHECKBOX_MESSAGE);
         }
 
-        int index = 0;        
+        int index = 0;
         int numberOfColumns = ShaderLightingSFXs.NUMBER_OF_AVAILABLE_SHADERS / NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN + ( ( (ShaderLightingSFXs.NUMBER_OF_AVAILABLE_SHADERS % NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN) != 0) ? 1 : 0 );
         for (int i = 0; i < numberOfColumns; i++)
         {
             addShaderColumnPanel( advancedShadersPanel, index, ( i == (numberOfColumns - 1) ) );
             index += NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN;
-        }        
+        }
 
         JPanel renderingLargePanel = new JPanel(true);
         renderingLargePanel.setLayout( new BoxLayout(renderingLargePanel, BoxLayout.Y_AXIS) );
@@ -1423,21 +1423,21 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         addCommandButtonsToTab(panel, tabNumber);
         tabbedPane.addTab("Rendering", null, panel, "Rendering Properties");
-    }    
-    
+    }
+
     private void createMCLPropertiesTab(JPanel panel, JTabbedPane tabbedPane, int tabNumber)
     {
         TitledBorder MCLPropertiesPanelBorder = null;
 
         MCL_inflationField = new FloatNumberField(0, 5);
         MCL_inflationField.setToolTipText("Inflation");
-        
+
         MCL_preInflationField = new FloatNumberField(0, 5);
         MCL_preInflationField.setToolTipText("Pre Inflation");
-        
+
         MCL_schemeField = new JTextField("", 10);
-        MCL_schemeField.setToolTipText("Scheme");       
-        
+        MCL_schemeField.setToolTipText("Scheme");
+
         MCL_smallestClusterAllowedField = new JTextField("", 10);
         MCL_smallestClusterAllowedField.setDocument( new TextFieldFilter(TextFieldFilter.NUMERIC) );
         MCL_smallestClusterAllowedField.addCaretListener(this);
@@ -1451,11 +1451,11 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         MCL_advancedOptionsTextField = new JTextField("", 20);
         MCL_advancedOptionsTextField.addCaretListener(this);
         MCL_advancedOptionsTextField.setToolTipText("MCL Advanced Options");
-        
+
         MCL_clusterGraphUsingMCLButton = new JButton( layoutFrame.getLayoutClusterMCL().getClusterMCLAction() );
         MCL_clusterGraphUsingMCLButton.addActionListener(this);
-        MCL_clusterGraphUsingMCLButton.setToolTipText("Cluster Graph Using MCL");        
-        
+        MCL_clusterGraphUsingMCLButton.setToolTipText("Cluster Graph Using MCL");
+
         JPanel MCL_largePanel = new JPanel(true);
         MCL_largePanel.setLayout( new BoxLayout(MCL_largePanel, BoxLayout.Y_AXIS) );
         MCL_inflationField.setEditable(false);
@@ -1491,7 +1491,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         MCL_SchemeSlider.setPaintTicks(true);
         MCL_SchemeSlider.addChangeListener( new SliderListener(MCL_schemeField) );
         MCL_SchemeSlider.setToolTipText("Scheme");
-        
+
         JPanel MCL_inflationPanel = new JPanel(true);
         MCL_inflationPanel.setLayout( new BoxLayout(MCL_inflationPanel, BoxLayout.Y_AXIS) );
         MCL_inflationPanel.add(MCL_inflationField);
@@ -1501,7 +1501,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         MCL_pre_inflationPanel.setLayout( new BoxLayout(MCL_pre_inflationPanel, BoxLayout.Y_AXIS) );
         MCL_pre_inflationPanel.add(MCL_preInflationField);
         MCL_pre_inflationPanel.add(MCL_pre_inflationSlider);
-        
+
         JPanel MCL_SchemePanel = new JPanel(true);
         MCL_SchemePanel.setLayout( new BoxLayout(MCL_SchemePanel, BoxLayout.Y_AXIS) );
         MCL_SchemePanel.add(MCL_schemeField);
@@ -1512,7 +1512,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Pre Inflation");
         addTitledButtonBorder(MCLPropertiesPanelBorder, MCL_pre_inflationPanel, "           (e.g. 3.0)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, MCL_largePanel);
-        
+
         MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Scheme");
         addTitledButtonBorder(MCLPropertiesPanelBorder, MCL_SchemePanel, "           (e.g. 6)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, MCL_largePanel);
 
@@ -1521,16 +1521,16 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Assign Random Cluster Colors");
         addTitledButtonBorder(MCLPropertiesPanelBorder, MCL_assignRandomClusterColorsCheckBox, "  (e.g. OFF)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, MCL_largePanel);
-        
+
         MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "MCL Advanced Options");
         addTitledButtonBorder(MCLPropertiesPanelBorder, MCL_advancedOptionsTextField, "(expert users only, else leave empty)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, MCL_largePanel);
 
         MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Cluster Graph Using MCL");
-        addTitledButtonBorder(MCLPropertiesPanelBorder, MCL_clusterGraphUsingMCLButton, "    (cluster graph using current MCL options)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, MCL_largePanel);        
-        
+        addTitledButtonBorder(MCLPropertiesPanelBorder, MCL_clusterGraphUsingMCLButton, "    (cluster graph using current MCL options)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, MCL_largePanel);
+
         MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Markov Clustering (MCL) Options");
         addTitledButtonBorderLarge(MCLPropertiesPanelBorder, MCL_largePanel, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
-        
+
         addCommandButtonsToTab(panel, tabNumber);
         tabbedPane.addTab("MCL", null, panel, "MCL Properties");
     }
@@ -1570,7 +1570,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         saveSPNResultsSubPanel1.add(saveSPNResultsTextField);
         saveSPNResultsSubPanel1.add(saveSPNResultsAtFolderButton);
         saveSPNResultsSubPanel1.add(saveSPNResultsClearButton);
-        
+
         JPanel saveSPNResultsSubPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT), true);
         automaticallySaveSPNResultsToPreChosenFolderCheckBox = new JCheckBox("Automatically save SPN Results to pre-chosen folder");
         automaticallySaveSPNResultsToPreChosenFolderCheckBox.setActionCommand(CHANGE_ACTION_COMMAND);
@@ -1602,8 +1602,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         runSPNSimulationButton = new JButton( layoutFrame.getSignalingPetriNetSimulationDialog().getSignalingPetriNetSimulationDialogAction() );
         runSPNSimulationButton.addActionListener(this);
-        runSPNSimulationButton.setToolTipText("Run SPN Simulation");            
-        
+        runSPNSimulationButton.setToolTipText("Run SPN Simulation");
+
         simulationPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Save SPN Results Options");
         addTitledButtonBorder(simulationPropertiesPanelBorder, saveSPNResultsPanel, "            (e.g. OFF)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, simulationSPNPanel);
 
@@ -1611,8 +1611,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         addTitledButtonBorder(simulationPropertiesPanelBorder, useSPNAnimatedTransitionsShadingCheckBox, "(e.g. OFF)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, simulationSPNPanel);
 
         simulationPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Run SPN Simulation");
-        addTitledButtonBorder(simulationPropertiesPanelBorder, runSPNSimulationButton, "(run SPN simulation using current options)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, simulationSPNPanel);        
-        
+        addTitledButtonBorder(simulationPropertiesPanelBorder, runSPNSimulationButton, "(run SPN simulation using current options)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, simulationSPNPanel);
+
         simulationPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Signaling Petri Net (SPN) Simulation Options");
         addTitledButtonBorderLarge(simulationPropertiesPanelBorder, simulationSPNPanel, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
@@ -1869,11 +1869,11 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         lowPanel.add(customURLTextField);
         searchPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Use Custom Search Sites Options");
         addTitledButtonBorderLarge(searchPropertiesPanelBorder, lowPanel, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
-        
+
         addCommandButtonsToTab(panel, tabNumber);
         tabbedPane.addTab("Search", null, panel, "Search Properties");
-    }    
-    
+    }
+
     private void createNodesPropertiesTab(JPanel panel, JTabbedPane tabbedPane, int tabNumber)
     {
         TitledBorder nodePropertiesPanelBorder = null;
@@ -1889,10 +1889,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         graphmlViewNodeDepthPositioningTextField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT, true) );
         graphmlViewNodeDepthPositioningTextField.setAutoscrolls(true);
         graphmlViewNodeDepthPositioningTextField.setColumns(15);
-        graphmlViewNodeDepthPositioningTextField.addCaretListener(this);        
+        graphmlViewNodeDepthPositioningTextField.addCaretListener(this);
         graphmlViewNodeDepthPositioningTextField.setText("0.0");
         graphmlViewNodeDepthPositioningTextField.setEnabled(false);
-        graphmlViewNodeDepthPositioningTextField.setToolTipText("Graphml View Node Depth Positioning");        
+        graphmlViewNodeDepthPositioningTextField.setToolTipText("Graphml View Node Depth Positioning");
         graphmlViewNodeDepthZPositioningLabel = new JLabel("Graphml View Node Depth Positioning");
         graphmlAllViewNodeDepthResetPositioningsButton = new JButton("Reset All Graphml View Node Depth Positionings");
         graphmlAllViewNodeDepthResetPositioningsButton.setActionCommand(CHANGE_ACTION_COMMAND_ALL);
@@ -1908,7 +1908,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeClassComboBox.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         nodeClassComboBox.addActionListener(this);
         nodeClassComboBox.setToolTipText("Containing Class");
-        
+
         node2DShape = new JComboBox();
         String node2DShapeName = "";
         for ( Shapes2D shape2D : Shapes2D.values() )
@@ -1920,11 +1920,11 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         node2DShape.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         node2DShape.addActionListener(this);
         node2DShape.setToolTipText("2D Shape");
-        
+
         node3DShape = new JComboBox();
         String node3DShapeName = "";
         for ( Shapes3D shape3D : Shapes3D.values() )
-        {            
+        {
             if ( shape3D.equals(Shapes3D.LATHE_3D) )
                     node3DShapeName = splitAndCapitalizeFirstCharactersForAllButLastName(shape3D);
             else if ( shape3D.equals(Shapes3D.SUPER_QUADRIC) )
@@ -1933,7 +1933,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 node3DShapeName = splitCapitalizeFirstCharactersForAllButFirstNameAndAddWhiteSpaceBetweenNames(shape3D);
             else
                 node3DShapeName = splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(shape3D);
-            
+
             node3DShape.addItem(node3DShapeName);
         }
         node3DShape.addItem(""); // dummy empty shape for the select-multiple-3D-nodes case
@@ -1959,11 +1959,11 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeSizeComboBox = new JComboBox();
         nodeSizeComboBox.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         nodeSizeComboBox.addActionListener(this);
-        nodeSizeComboBox.setToolTipText("Node Size");        
-        
+        nodeSizeComboBox.setToolTipText("Node Size");
+
         for (int i = MIN_NODE_SIZE; i <= MAX_NODE_SIZE; i++)
-            nodeSizeComboBox.addItem(i);       
-        
+            nodeSizeComboBox.addItem(i);
+
         JButton lathe3DViewer = new JButton("Lathe3D Shape Editor");
         lathe3DViewer.setAction( modelShapeEditorParentUIDialog.getModelShapeLathe3DAction() );
         lathe3DViewer.setToolTipText("Lathe3D Interactive Shape Editor");
@@ -1971,45 +1971,45 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         JButton superQuadricViewer = new JButton("SuperQuadric Shape Editor");
         superQuadricViewer.setAction( modelShapeEditorParentUIDialog.getModelShapeSuperQuadricAction() );
         superQuadricViewer.setToolTipText("SuperQuadric Interactive Shape Editor");
-        
+
         JButton objModelLoaderViewer = new JButton("OBJ Model Loader Shape Viewer");
         objModelLoaderViewer.setAction( modelShapeEditorParentUIDialog.getModelShapeOBJModelLoaderAction() );
-        objModelLoaderViewer.setToolTipText("OBJ Model Loader Interactive Shape Editor");        
-        
+        objModelLoaderViewer.setToolTipText("OBJ Model Loader Interactive Shape Editor");
+
         JPanel nodeSettingsPanel = new JPanel(true);
         nodeSettingsPanel.setLayout( new BoxLayout(nodeSettingsPanel, BoxLayout.Y_AXIS) );
-        
+
         JPanel nodeSettingsSubPanel1 = new JPanel(true);
-        nodeSettingsSubPanel1.add(node2DShape);        
-        nodeSettingsSubPanel1.add( new JLabel("2D Shape") );        
+        nodeSettingsSubPanel1.add(node2DShape);
+        nodeSettingsSubPanel1.add( new JLabel("2D Shape") );
         nodeSettingsSubPanel1.add( Box.createRigidArea( new Dimension(20, 10) ) );
-        nodeSettingsSubPanel1.add(node3DShape);        
+        nodeSettingsSubPanel1.add(node3DShape);
         nodeSettingsSubPanel1.add( new JLabel("3D Shape") );
         nodeSettingsSubPanel1.add( Box.createRigidArea( new Dimension(20, 10) ) );
         nodeSettingsSubPanel1.add(nodeTransparency);
         nodeSettingsSubPanel1.add( Box.createRigidArea( new Dimension(5, 10) ) );
         nodeSettingsSubPanel1.add(nodeTransparencyAlphaSlider);
         nodeSettingsSubPanel1.add( Box.createRigidArea( new Dimension(20, 10) ) );
-        nodeSettingsSubPanel1.add(nodeRevertOverride);        
+        nodeSettingsSubPanel1.add(nodeRevertOverride);
         nodeSettingsSubPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
         nodeSettingsSubPanel1.add(nodeColorButton);
         nodeSettingsSubPanel1.add( new JLabel("Color") );
-        
+
         // JPanel nodeSettingsSubPanel2 = new JPanel(new FlowLayout(FlowLayout.LEADING), true);
         JPanel nodeSettingsSubPanel2 = new JPanel(true);
-        nodeSettingsSubPanel2.add( new JLabel("Customize Shape:") );     
-        nodeSettingsSubPanel2.add(lathe3DViewer);                
-        nodeSettingsSubPanel2.add( Box.createRigidArea( new Dimension(20, 10) ) );        
-        nodeSettingsSubPanel2.add( new JLabel("Customize Shape:") );     
-        nodeSettingsSubPanel2.add(superQuadricViewer);        
-        nodeSettingsSubPanel2.add( Box.createRigidArea( new Dimension(20, 10) ) );        
-        nodeSettingsSubPanel2.add( new JLabel("Customize Shape:") );     
+        nodeSettingsSubPanel2.add( new JLabel("Customize Shape:") );
+        nodeSettingsSubPanel2.add(lathe3DViewer);
+        nodeSettingsSubPanel2.add( Box.createRigidArea( new Dimension(20, 10) ) );
+        nodeSettingsSubPanel2.add( new JLabel("Customize Shape:") );
+        nodeSettingsSubPanel2.add(superQuadricViewer);
+        nodeSettingsSubPanel2.add( Box.createRigidArea( new Dimension(20, 10) ) );
+        nodeSettingsSubPanel2.add( new JLabel("Customize Shape:") );
         nodeSettingsSubPanel2.add(objModelLoaderViewer);
-        
+
         nodeSettingsPanel.add(nodeSettingsSubPanel1);
         nodeSettingsPanel.add( Box.createRigidArea( new Dimension(10, 30) ) );
         nodeSettingsPanel.add(nodeSettingsSubPanel2);
-        
+
         JPanel nodeSizePanel = new JPanel(true);
         nodeSizePanel.add(nodeSizeComboBox);
         nodeSizePanel.add( new JLabel("Node Size") );
@@ -2020,8 +2020,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeSizePanel.add(graphmlAllViewNodeDepthResetPositioningsButton);
 
         nodePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Node Identifier");
-        addTitledButtonBorder(nodePropertiesPanelBorder, nodeNameTextField, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);        
-        
+        addTitledButtonBorder(nodePropertiesPanelBorder, nodeNameTextField, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
+
         nodePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "2D & 3D Node Shape, Transparency & Color (Overrides Class Colors)");
         addTitledButtonBorder(nodePropertiesPanelBorder, nodeSettingsPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
@@ -2036,8 +2036,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         addCommandButtonsToTab(panel, tabNumber);
         tabbedPane.addTab("Nodes", null, panel, "Nodes Properties");
-    }    
-    
+    }
+
     private void createEdgesPropertiesTab(JPanel panel, JTabbedPane tabbedPane, int tabNumber)
     {
         TitledBorder edgePropertiesPanelBorder = null;
@@ -2074,33 +2074,33 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         edgesColorByWeight.addActionListener(this);
 
         proportionalEdgesSizeToWeight.setEnabled(false);
-        
+
         JPanel edgeThicknessPanel = new JPanel(true);
         edgeThicknessPanel.setLayout( new BoxLayout(edgeThicknessPanel, BoxLayout.Y_AXIS) );
-        
+
         edgePropertiesPanelBorder = BorderFactory.createTitledBorder(EMPTY, "");
         addTitledButtonBorder(edgePropertiesPanelBorder, edgeThicknessComboBox, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, edgeThicknessPanel);
-        addTitledButtonBorder(edgePropertiesPanelBorder, proportionalEdgesSizeToWeight, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, edgeThicknessPanel);                
-                
+        addTitledButtonBorder(edgePropertiesPanelBorder, proportionalEdgesSizeToWeight, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, edgeThicknessPanel);
+
         JPanel edgesSmallPanel = new JPanel(true);
         edgesSmallPanel.setLayout( new BoxLayout(edgesSmallPanel, BoxLayout.Y_AXIS) );
-        
+
         edgePropertiesPanelBorder = BorderFactory.createTitledBorder(EMPTY, "");
         addTitledButtonBorder(edgePropertiesPanelBorder, edgesColorByColor, "Color", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, edgesSmallPanel);
-        addTitledButtonBorder(edgePropertiesPanelBorder, edgesColorByWeight, "Weight", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, edgesSmallPanel);        
-        
+        addTitledButtonBorder(edgePropertiesPanelBorder, edgesColorByWeight, "Weight", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, edgesSmallPanel);
+
         edgePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Edge Color");
         addTitledButtonBorder(edgePropertiesPanelBorder, edgesColor, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
         edgePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Edge Thickness");
         addTitledButtonBorder(edgePropertiesPanelBorder, edgeThicknessPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
-        
+
         edgePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Arrowhead Size (2D graphs only)");
         addTitledButtonBorder(edgePropertiesPanelBorder, arrowHeadSizeComboBox, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
         edgePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Color Edges By");
         addTitledButtonBorder(edgePropertiesPanelBorder, edgesSmallPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
-        
+
         JPanel spacer = new JPanel(true);
         spacer.add( Box.createRigidArea( new Dimension(10, 20) ) );
         edgePropertiesPanelBorder = BorderFactory.createTitledBorder(EMPTY, "");
@@ -2114,13 +2114,13 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     {
         TitledBorder classesPropertiesPanelBorder = null;
 
-        classesChooser = new JComboBox();     
+        classesChooser = new JComboBox();
         for ( LayoutClasses classes : layoutClassSetsManager.getClassSetNames() )
         {
             if (DEBUG_BUILD) println("Adding: " + classes.getClassSetName() );
             classesChooser.addItem( classes.getClassSetName() );
         }
-        
+
         classesChooser.setSelectedIndex( layoutClassSetsManager.getCurrentClassSetID() );
         classesChooser.addActionListener(this);
         classesChooser.setActionCommand(CHANGE_ACTION_COMMAND);
@@ -2131,15 +2131,15 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         newClassSetButton.setToolTipText("Add Class Set");
 
         JPanel nodeClassPanel = new JPanel(true);
-        nodeClassPanel.add( new JLabel("Select Current Class Set:") );        
+        nodeClassPanel.add( new JLabel("Select Current Class Set:") );
         nodeClassPanel.add(classesChooser);
-        nodeClassPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );  
+        nodeClassPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
         nodeClassSetName = new JTextField("", 10);
         nodeClassSetName.setToolTipText("Create Class Set");
         nodeClassPanel.add( new JLabel("Create Class Set:") );
         nodeClassPanel.add(nodeClassSetName);
         nodeClassPanel.add(newClassSetButton);
-        
+
         JPanel layoutClassesTablePanel = new JPanel(true);
         nodeClassName = new JTextField("", 10);
         nodeClassName.setToolTipText("Create Class");
@@ -2147,8 +2147,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         newClassInClassSetButton.addActionListener(this);
         newClassInClassSetButton.setToolTipText("Add Class");
 
-        layoutClassesTablePanel.setLayout( new BorderLayout() );        
-        
+        layoutClassesTablePanel.setLayout( new BorderLayout() );
+
         nodeClassPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
         nodeClassPanel.add( new JLabel("Create Class:") );
         nodeClassPanel.add(nodeClassName);
@@ -2198,17 +2198,17 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     {
         this.graphAnaglyphGlassesType = graphAnaglyphGlassesType;
         this.graphIntraOcularDistanceType = graphIntraOcularDistanceType;
-        
+
         generalChange = true;
         updateGraphAnaglyphGlasses3DOptionsDialogPreferencesCallBackChange = true;
         setEnabledAllApplyButtons(true);
-    }    
-    
+    }
+
     @Override
     public void updateModelShapeEditorParentUIDialogPreferencesCallBack(final ModelTypes modelType)
     {
-        this.modelType = modelType;       
-        
+        this.modelType = modelType;
+
         node3DShape.removeActionListener(this);
         if ( modelType.equals(LATHE3D_SHAPE) )
         {
@@ -2221,29 +2221,29 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         else // if ( modelType.equals(OBJ_MODEL_LOADER_SHAPE) )
         {
             node3DShape.setSelectedIndex( Shapes3D.OBJ_MODEL_LOADER.ordinal() );
-        }   
+        }
         node3DShape.addActionListener(this);
         node3DShapeChange = true;
-        MANUAL_SHAPE_3D = false;        
-        
+        MANUAL_SHAPE_3D = false;
+
         generalChange = true;
         _3DRebuildNodes = true;
         updateModelShapeEditorParentUIDialogPreferencesCallBackChange = true;
-        setEnabledAllApplyButtons(true);   
+        setEnabledAllApplyButtons(true);
     }
-    
+
     @Override
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
         if (DEBUG_BUILD) println("\nEvent:" + e.getActionCommand() + "\n" + e.getSource());
-        
-        if (watchForChanges) 
+
+        if (watchForChanges)
         {
             if ( e.getActionCommand().contains(CHANGE_ACTION_COMMAND) )
             {
                 generalChange = true;
                 setEnabledAllApplyButtons(true);
-                
+
                 if ( e.getActionCommand().equals(CHANGE_ACTION_COMMAND_NODES) )
                 {
                     _3DRebuildNodes = true;
@@ -2267,14 +2267,14 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                     {
                         isChangingClasses = true;
                         tabbedPane.setSelectedComponent(classesPropertiesPanel);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         nodeClassChange = true;
                     }
                 }
             }
-            
+
             if ( e.getSource().equals(nodeSizeComboBox) )
             {
                 nodeSizeChange = true;
@@ -2297,7 +2297,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                     modelShapeEditorParentUIDialog.getModelShapeSuperQuadricAction().actionPerformed( new ActionEvent( this, index, Shapes3D.SUPER_QUADRIC.toString() ) );
                 else if ( ( index == Shapes3D.OBJ_MODEL_LOADER.ordinal() ) )
                     modelShapeEditorParentUIDialog.getModelShapeOBJModelLoaderAction().actionPerformed( new ActionEvent( this, index, Shapes3D.OBJ_MODEL_LOADER.toString() ) );
-                
+
                 node3DShapeChange = true;
                 MANUAL_SHAPE_3D = false;
             }
@@ -2314,7 +2314,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             {
                 if ( e.getSource().equals(nodeTransparency) )
                     nodeTransparencyAlphaSlider.setEnabled( nodeTransparency.isSelected() ); // disable transparency alpha value if transparency turned off
-                
+
                 node3DTransparencyAlphaChange = true;
             }
             else if ( e.getSource().equals(anaglyphStereoscopic3DView) )
@@ -2322,7 +2322,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 boolean flag = anaglyphStereoscopic3DView.isSelected();
                 graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction().setEnabled(flag);
                 anaglyphStereoscopic3DViewOptions.setEnabled(flag);
-                
+
                 if ( nc.getIsGraphml() ) CHANGE_GRAPHML_COMPONENT_CONTAINERS = true; // to re-color the Component Containers to grayscale or back to normal colors
             }
             else if ( e.getSource().equals(materialSpecular) )
@@ -2332,7 +2332,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 if (USE_SHADERS_PROCESS)
                 {
                     boolean flag = materialSpecular.isSelected();
-                    
+
                     setEnabledAllShadingSFXsUIs(flag); // disable all shadings if specular turned off
                     materialEmbossNodeTexture.setEnabled(flag); // disable all shadings if specular turned off
                     materialAntiAliasShading.setEnabled(flag); // disable all shadings if specular turned off
@@ -2355,8 +2355,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         else if ( e.getSource().equals(newClassInClassSetButton) )
         {
             if (DEBUG_BUILD) println("New Class In Current Class Set");
-            
-            String className = nodeClassName.getText(); 
+
+            String className = nodeClassName.getText();
             String classSetName = nodeClassSetName.getText();
             if ( !className.isEmpty() )
             {
@@ -2372,14 +2372,14 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                         newClass = layoutClassSetsManager.getCurrentClassSetAllClasses().createClass(layoutClassSetsManager.getCurrentClassSetAllClasses().getTotalClasses() + 1, className);
                     }
                 }
-                
+
                 if (refresh)
                 {
                     nodeClassComboBox.updateClasses( layoutClassSetsManager.getCurrentClassSetAllClasses() );
 
                     refreshClasses();
 
-                    if (isChangingClasses) 
+                    if (isChangingClasses)
                     {
                         tabbedPane.setSelectedComponent(nodesPropertiesPanel);
                         nodeClassComboBox.setSelectedItem(newClass);
@@ -2400,22 +2400,22 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         else if ( e.getSource().equals(newClassSetButton) )
         {
             if (DEBUG_BUILD) println("Create New Class Set in Graph Properties");
-            
+
             // String classSetName = "Class Set " + (layoutClassSetsManager.getTotalSets() + 1); // old way of doing things
-            String className = nodeClassName.getText(); 
+            String className = nodeClassName.getText();
             String classSetName = nodeClassSetName.getText().replaceAll(",+", ""); // replace any commas
             if ( !classSetName.isEmpty() )
-            {                
+            {
                 boolean classSetIsNew = true;
                 for ( LayoutClasses classes : layoutClassSetsManager.getClassSetNames() )
-                {           
+                {
                     if ( classes.getClassSetName().equals(classSetName) )
                     {
                         classSetIsNew = false;
                         break;
                     }
                 }
-        
+
                 if (classSetIsNew)
                 {
                     layoutClassSetsManager.createNewClassSet(classSetName);
@@ -2424,46 +2424,46 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                     // inform user for Class Set addition
                     if (!isChangingClassSet)
                         setClassSetInComboBoxAndRefreshDisplay(classSetName);
-                    
+
                     // keep the Class Set / Class inserted names in textboxes
                    nodeClassName.setText(className);
                    // nodeClassSetName.setText(classSetName);
-                    
+
                     JOptionPane.showMessageDialog(this, " Class Set '" + classSetName + "' added.", "Class Set added!", JOptionPane.INFORMATION_MESSAGE);
                 }
                 else
-                    JOptionPane.showMessageDialog(this, " Class Set '" + classSetName + "' exists already and cannot be re-added.", "Class Set exists already!", JOptionPane.WARNING_MESSAGE);                                
+                    JOptionPane.showMessageDialog(this, " Class Set '" + classSetName + "' exists already and cannot be re-added.", "Class Set exists already!", JOptionPane.WARNING_MESSAGE);
             }
             else
-                JOptionPane.showMessageDialog(this, "Please provide a valid Class Set name to be added.", "No Class Set name provided!", JOptionPane.INFORMATION_MESSAGE);            
+                JOptionPane.showMessageDialog(this, "Please provide a valid Class Set name to be added.", "No Class Set name provided!", JOptionPane.INFORMATION_MESSAGE);
         }
         else if ( e.getSource().equals(classesChooser) )
         {
             if ( e.getActionCommand().equals(CHANGE_ACTION_COMMAND) )
             {
-                String className = nodeClassName.getText(); 
-                String classSetName = nodeClassSetName.getText();                
-                
+                String className = nodeClassName.getText();
+                String classSetName = nodeClassSetName.getText();
+
                 if (!isChangingClassSet)
                     setClassSetInComboBoxAndRefreshDisplay( (String)classesChooser.getSelectedItem() );
-                
+
                 // keep the Class Set / Class inserted names in textboxes
                 nodeClassName.setText(className);
-                nodeClassSetName.setText(classSetName);                
+                nodeClassSetName.setText(classSetName);
             }
         }
         else if ( e.getSource().equals(nodeRevertOverride) )
         {
-            for ( GraphNode graphNode : layoutFrame.getGraph().getSelectionManager().getSelectedNodes() ) 
+            for ( GraphNode graphNode : layoutFrame.getGraph().getSelectionManager().getSelectedNodes() )
             {
-                // if (graphNode.getVertexClass().getClassID() != 0) 
+                // if (graphNode.getVertexClass().getClassID() != 0)
                 // {
                 graphNode.removeColorOverride();
                 // }
             }
-            
+
             nodeColorButton.isBlank = true;
-            nodeColorButton.setBackground(null);            
+            nodeColorButton.setBackground(null);
         }
         else if ( e.getSource().equals(searchURLComboBox) )
         {
@@ -2471,9 +2471,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             presetURLTextField.setText( ( (SearchURL)searchURLComboBox.getSelectedItem() ).getUrl() );
         }
         else if ( e.getSource().equals(show3DEnvironmentMapping) )
-        {            
+        {
             if ( show3DEnvironmentMapping.isSelected() )
-            {                
+            {
                 if ( !materialSphericalMapping.isSelected() )
                 {
                     sphericalMappingWasNotSelected = true;
@@ -2506,7 +2506,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             }
 
             CHANGE_SPHERICAL_MAPPING_ENABLED = true;
-        }        
+        }
         else if ( e.getSource().equals(useMotionBlurForScene) )
         {
             motionBlurSize.setEnabled( useMotionBlurForScene.isSelected() );
@@ -2522,7 +2522,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         else if ( e.getSource().equals(materialNormalsSelectionMode) )
         {
             if ( materialNormalsSelectionMode.isSelected() )
-            {                
+            {
                 if ( !wireframeSelectionMode.isSelected() )
                 {
                     wireframeSelectionModeWasNotSelected = true;
@@ -2530,14 +2530,14 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 }
                 else
                     wireframeSelectionModeWasNotSelected = false;
-                
+
                 wireframeSelectionMode.setEnabled(false);
             }
             else
             {
                 wireframeSelectionMode.setSelected(!wireframeSelectionModeWasNotSelected);
                 wireframeSelectionMode.setEnabled(true);
-            }            
+            }
         }
         else if ( e.getSource().equals(nodeSurfaceImageTextureCheckBox) )
         {
@@ -2552,8 +2552,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 nodeSurfaceImageTextureFileTextField.setEnabled( !nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
                 nodeSurfaceImageTextureFileLoadButton.setEnabled(true);
                 nodeSurfaceImageTextureFileClearButton.setEnabled( !nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
-            } 
-            else 
+            }
+            else
             {
                 // make sure the spectrum texture is updated when the surface node texture is disabled
                 ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = true;
@@ -2561,7 +2561,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 nodeSurfaceImageTextureComboBox.setEnabled(false);
                 nodeSurfaceImageTextureFileTextField.setEnabled(false);
                 nodeSurfaceImageTextureFileLoadButton.setEnabled(false);
-                nodeSurfaceImageTextureFileClearButton.setEnabled(false);                
+                nodeSurfaceImageTextureFileClearButton.setEnabled(false);
             }
         }
         else if ( e.getSource().equals(nodeSurfaceImageTextureComboBox) )
@@ -2582,7 +2582,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             boolean value = allShadings[index].isSelected();
             for (int i = 0; i < allShadings.length; i++)
                 allShadings[i].setSelected(false);
-            
+
             allShadings[index].setSelected(value);
             materialGouraudLighting.setEnabled(!value);
             materialEmbossNodeTexture.setEnabled(value);
@@ -2699,14 +2699,14 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         else if ( e.getSource().equals(saveSPNResultsCheckBox) )
         {
             if ( saveSPNResultsCheckBox.isSelected() )
-            {                
+            {
                 saveSPNResultsTextField.setEnabled(true);
                 saveSPNResultsAtFolderButton.setEnabled(true);
                 saveSPNResultsClearButton.setEnabled(true);
                 automaticallySaveSPNResultsToPreChosenFolderCheckBox.setEnabled(true);
             }
             else
-            {                
+            {
                 saveSPNResultsTextField.setEnabled(false);
                 saveSPNResultsAtFolderButton.setEnabled(false);
                 saveSPNResultsClearButton.setEnabled(false);
@@ -2716,13 +2716,13 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         else if ( e.getSource().equals(customRadioButton) )
         {
             if (DEBUG_BUILD) println("Using custom URL");
-            
+
             customURLTextField.setEnabled(true);
         }
         else if ( e.getSource().equals(presetRadioButton) )
         {
             if (DEBUG_BUILD) println("Using preset URL");
-            
+
             customURLTextField.setEnabled(false);
         }
         else if ( e.getSource().equals(generalDisableNodesRendering) || e.getSource().equals(generalDisableEdgesRendering) )
@@ -2730,7 +2730,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             if ( generalDisableNodesRendering.isSelected() && generalDisableEdgesRendering.isSelected() )
                 JOptionPane.showMessageDialog(this, "Both Nodes And Edges Rendering are disabled for the main graph view.\n" +
                                                     "Please disable either option to have a graph being visibly rendered.",
-                                                    "Both Nodes And Edges Rendering Disabled", 
+                                                    "Both Nodes And Edges Rendering Disabled",
                                                     JOptionPane.INFORMATION_MESSAGE);
         }
         else if ( e.getSource().equals(generalClearOnlineGraphsCache) && WEBSTART )
@@ -2763,7 +2763,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             hasNewPreferencesBeenApplied = true;
             applyChanges();
         }
-    }    
+    }
 
     private void loadNodeSurfaceImageFile()
     {
@@ -2837,13 +2837,13 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         return false;
     }
 
-    private void applySearchProperties() 
+    private void applySearchProperties()
     {
         if ( presetRadioButton.isSelected() )
         {
             SEARCH_URL = (SearchURL) searchURLComboBox.getSelectedItem();
-        } 
-        else 
+        }
+        else
         {
             SearchURL customSearchURL = new SearchURL( customURLTextField.getText() );
             CUSTOM_SEARCH = true;
@@ -2857,7 +2857,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalColorSelection.setBackground( SELECTION_COLOR.get() );
         generalColorPlotBackground.setBackground( PLOT_BACKGROUND_COLOR.get() );
         generalTrippyBackground.setSelected( TRIPPY_BACKGROUND.get() );
-        
+
         generalDirectional.setSelected( DIRECTIONAL_EDGES.get() );
         generalDragShowEdgesWhileDraggingNodes.setSelected( SHOW_EDGES_WHEN_DRAGGING_NODES.get() );
         generalyEdStyleRenderingForGraphmlFiles.setSelected( YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() );
@@ -2870,22 +2870,22 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             generalHighQualityAntiAlias.setSelected(true);
             generalNormalQualityAntiAlias.setSelected(false);
             generalNoAntiAlias.setSelected(false);
-        }        
-        else if ( NORMAL_QUALITY_ANTIALIASING.get() )             
+        }
+        else if ( NORMAL_QUALITY_ANTIALIASING.get() )
         {
             generalHighQualityAntiAlias.setSelected(false);
             generalNormalQualityAntiAlias.setSelected(true);
             generalNoAntiAlias.setSelected(false);
-        } 
-        else 
+        }
+        else
         {
             generalHighQualityAntiAlias.setSelected(false);
-            generalNormalQualityAntiAlias.setSelected(false);            
+            generalNormalQualityAntiAlias.setSelected(false);
             generalNoAntiAlias.setSelected(true);
-        }        
-        
+        }
+
         useVSynch.setSelected( USE_VSYNCH.get() );
-                
+
         generalDisableNodesRendering.setSelected( DISABLE_NODES_RENDERING.get() );
         generalDisableEdgesRendering.setSelected( DISABLE_EDGES_RENDERING.get() );
         generalUseInstallDirForScreenshots.setSelected( USE_INSTALL_DIR_FOR_SCREENSHOTS.get() );
@@ -2923,7 +2923,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         parallelismUseLayoutOpenCLGPUComputing.setSelected( USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() );
         parallelismUseLayoutOpenCLGPUComputing.setEnabled(OPENCL_GPU_COMPUTING_ENABLED);
         parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setSelected( USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() );
-        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setEnabled(USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);               
+        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setEnabled(USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
         parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel.setEnabled(USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
         parallelismUseLayoutOpenCLGPUComputingIterationSize.setSelectedItem( OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION_ITERATION_SIZE.get() );
         parallelismUseLayoutOpenCLGPUComputingIterationSize.setEnabled(USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
@@ -2937,7 +2937,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         layoutResizeNodesAndArrowheadsToKvalue.setSelected( RESIZE_NODES_AND_ARROWHEADS_TO_KVALUE.get() );
         layoutUseEdgeWeightsForLayout.setSelected( USE_EDGE_WEIGHTS_FOR_LAYOUT.get() );
-        layoutTiledLayout.setSelected( TILED_LAYOUT.get() );        
+        layoutTiledLayout.setSelected( TILED_LAYOUT.get() );
         layoutStartingTemperatureField.setText( Float.toString( STARTING_TEMPERATURE.get() ) );
         layoutIterationsField.setText( Integer.toString( NUMBER_OF_LAYOUT_ITERATIONS.get() ) );
         layoutKvalueField.setText( Float.toString( KVALUE_MODIFIER.get() ) );
@@ -2959,7 +2959,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         saveSPNResultsCheckBox.setSelected( SAVE_SPN_RESULTS.get() );
         if ( SAVE_SPN_RESULTS.get() )
-        {            
+        {
             saveSPNResultsTextField.setEnabled(true);
             saveSPNResultsAtFolderButton.setEnabled(true);
             saveSPNResultsClearButton.setEnabled(true);
@@ -2990,7 +2990,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialOldLCDStyleTransparencyShading.setSelected( MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
         materialErosionShading.setSelected( MATERIAL_EROSION_SHADING.get() );
         materialNormalsSelectionMode.setSelected( MATERIAL_NORMALS_SELECTION_MODE.get() );
-        materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4);                       
+        materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4);
         lightingPositionXSlider.setValue( LIGHT_POSITION[0].get() );
         lightingPositionYSlider.setValue( LIGHT_POSITION[1].get() );
         lightingPositionZSlider.setValue( LIGHT_POSITION[2].get() );
@@ -3011,7 +3011,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         advancedKeyboardRenderingControl.setSelected( ADVANCED_KEYBOARD_RENDERING_CONTROL.get() );
         anaglyphStereoscopic3DView.setSelected( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() );
         graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction().setEnabled( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() );
-        anaglyphStereoscopic3DViewOptions.setEnabled( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ); // disable 3D options if anaglyphStereoscopic3DViewOptions turned off        
+        anaglyphStereoscopic3DViewOptions.setEnabled( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ); // disable 3D options if anaglyphStereoscopic3DViewOptions turned off
 
         if (USE_SHADERS_PROCESS)
         {
@@ -3053,7 +3053,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             nodeSurfaceImageTextureFileTextField.setEnabled( !nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
             nodeSurfaceImageTextureFileLoadButton.setEnabled(true);
             nodeSurfaceImageTextureFileClearButton.setEnabled( !nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
-        }        
+        }
         nodeSurfaceImageTextureComboBox.setSelectedIndex( TEXTURE_CHOSEN.get() );
         nodeSurfaceImageTextureFileTextField.setText(USER_SURFACE_IMAGE_FILE);
 
@@ -3062,12 +3062,12 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         proportionalEdgesSizeToWeight.setSelected( PROPORTIONAL_EDGES_SIZE_TO_WEIGHT.get() );
         arrowHeadSizeComboBox.setSelectedIndex(ARROW_HEAD_SIZE.get() - 1);
 
-        if ( COLOR_EDGES_BY_COLOR.get() ) 
+        if ( COLOR_EDGES_BY_COLOR.get() )
         {
             edgesColorByColor.setSelected(true);
             edgesColorByWeight.setSelected(false);
-        } 
-        else 
+        }
+        else
         {
             edgesColorByColor.setSelected(false);
             edgesColorByWeight.setSelected(true);
@@ -3084,7 +3084,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         return GLSL_DEFAULT_TEXTURE_TYPE;
     }
 
-    private class SliderListener implements ChangeListener 
+    private class SliderListener implements ChangeListener
     {
         private JTextField numberField = null;
         private float divideRatio = 0.0f;
@@ -3101,7 +3101,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         }
 
         @Override
-        public void stateChanged(ChangeEvent e) 
+        public void stateChanged(ChangeEvent e)
         {
             if (divideRatio != 1.0f)
             {
@@ -3124,45 +3124,45 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 }
             }
         }
-        
-        
+
+
     }
-   
-    private void applyChanges() 
-    {        
+
+    private void applyChanges()
+    {
         int proceedClassChange = 1;
         boolean alreadyWarned = false;
         boolean updateNodesDisplayList = false;
-        
+
         if (layoutClassesTable != null)
             updateNodesDisplayList = layoutClassesTable.updateClassData();
 
         applyGeneralProperties();
-        applySearchProperties();        
-        
+        applySearchProperties();
+
         HashSet<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
-        for (GraphNode graphNode : selectedNodes) 
+        for (GraphNode graphNode : selectedNodes)
         {
-            if (nodeColorChange) 
+            if (nodeColorChange)
             {
-                if (!nodeColorButton.isBlank) 
-                {                    
-                    if (!alreadyWarned) 
+                if (!nodeColorButton.isBlank)
+                {
+                    if (!alreadyWarned)
                     {
                         proceedClassChange = JOptionPane.showConfirmDialog(this,
                                                                            "Are you sure you want to Override Class Colors ?",
                                                                            "Override Class Colors",
                                                                            JOptionPane.YES_NO_OPTION);
-                        
+
                         alreadyWarned = true;
                     }
-                    
+
                     if (proceedClassChange == JOptionPane.YES_OPTION)
                         graphNode.setColor( nodeColorButton.getBackground() );
                 }
             }
 
-            if (nodeSizeChange) 
+            if (nodeSizeChange)
                 graphNode.setNodeSize(nodeSizeComboBox.getSelectedIndex() + 1);
 
             if (node2DShapeChange)
@@ -3171,8 +3171,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                     graphNode.setNode2DShape(Shapes2D.values()[node2DShape.getSelectedIndex()]);
                 else
                     graphNode.setNode2DShape(Shapes2D.CIRCLE);
-            }            
-            
+            }
+
             if (node3DShapeChange)
             {
                 if (node3DShape.getSelectedIndex() != NUMBER_OF_3D_SHAPES)
@@ -3185,7 +3185,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             {
                 graphNode.setTransparencyAlpha( TRANSPARENT_ALPHA.get() );
             }
-            
+
             if ( nodeNameTextField.isEnabled() )
             {
                 nc.setNodeName( graphNode, nodeNameTextField.getText().replace("\"", " ").trim() );
@@ -3197,27 +3197,27 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 nc.getGraphmlNetworkContainer().getAllGraphmlNodesMap().get( graphNode.getNodeName() ).first[4] = -graphmlViewNodeDepthPositioningTextField.getValue();
             }
 
-            if (nodeClassChange) 
+            if (nodeClassChange)
             {
                 if (nodeClassComboBox.getSelectedIndex() != 0)
                 {
                     if (DEBUG_BUILD) println("Applying a Class Change");
-                    
+
                     layoutClassSetsManager.getCurrentClassSetAllClasses().setClass( graphNode.getVertex(), (VertexClass)nodeClassComboBox.getSelectedItem() );
                     graphNode.removeColorOverride();
                 }
             }
         }
-        
+
         nodeClassChange = false;
         nodeColorChange = false;
         nodeSizeChange = false;
         node2DShapeChange = false;
         node3DShapeChange = false;
-        node3DTransparencyAlphaChange = false;        
+        node3DTransparencyAlphaChange = false;
 
         if (generalChange || updateNodesDisplayList)
-            layoutFrame.getGraph().updateDisplayLists(_3DRebuildNodes || updateNodesDisplayList, _3DRebuildEdges, _3DRebuildNodes);        
+            layoutFrame.getGraph().updateDisplayLists(_3DRebuildNodes || updateNodesDisplayList, _3DRebuildEdges, _3DRebuildNodes);
 
         if (refreshClassViewer)
         {
@@ -3236,8 +3236,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         refreshClassViewer = false;
         setEnabledAllApplyButtons(false);
     }
-    
-    private void applyGeneralProperties() 
+
+    private void applyGeneralProperties()
     {
         layoutFrame.getNetworkRootContainer().getFRLayout().setNumberOfIterations( NUMBER_OF_LAYOUT_ITERATIONS.get() );
         layoutFrame.getNetworkRootContainer().getFRLayout().setTemperature( STARTING_TEMPERATURE.get() );
@@ -3245,7 +3245,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         RESIZE_NODES_AND_ARROWHEADS_TO_KVALUE.set( layoutResizeNodesAndArrowheadsToKvalue.isSelected() );
         USE_EDGE_WEIGHTS_FOR_LAYOUT.set( layoutUseEdgeWeightsForLayout.isSelected() );
-        TILED_LAYOUT.set( layoutTiledLayout.isSelected() );        
+        TILED_LAYOUT.set( layoutTiledLayout.isSelected() );
         STARTING_TEMPERATURE.set( layoutStartingTemperatureField.getValue() );
         NUMBER_OF_LAYOUT_ITERATIONS.set( Integer.parseInt( layoutIterationsField.getText() ) );
         KVALUE_MODIFIER.set( layoutKvalueField.getValue() );
@@ -3264,7 +3264,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER.set( automaticallySaveSPNResultsToPreChosenFolderCheckBox.isSelected() );
         USE_SPN_ANIMATED_TRANSITIONS_SHADING.set( useSPNAnimatedTransitionsShadingCheckBox.isSelected() );
         USE_SPN_N_CORE_PARALLELISM.set( parallelismUseSPNNCoreParallelism.isSelected() );
-        
+
         COLOR_EDGES_BY_COLOR.set( edgesColorByColor.isSelected() );
         COLOR_EDGES_BY_WEIGHT.set( edgesColorByWeight.isSelected() );
         DEFAULT_EDGE_COLOR.set( edgesColor.getBackground() );
@@ -3272,14 +3272,14 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         PROPORTIONAL_EDGES_SIZE_TO_WEIGHT.set( proportionalEdgesSizeToWeight.isSelected() );
         ARROW_HEAD_SIZE.set(arrowHeadSizeComboBox.getSelectedIndex() + 1);
 
-        if (generalChange) 
+        if (generalChange)
         {
             BACKGROUND_COLOR.set( generalColor.getBackground() );
             BACKGROUND_COLOR.set( generalColor.getBackground() );
             SELECTION_COLOR.set( generalColorSelection.getBackground() );
             PLOT_BACKGROUND_COLOR.set( generalColorPlotBackground.getBackground() );
             TRIPPY_BACKGROUND.set( generalTrippyBackground.isSelected() );
-                                    
+
             DIRECTIONAL_EDGES.set( generalDirectional.isSelected() );
             SHOW_EDGES_WHEN_DRAGGING_NODES.set( generalDragShowEdgesWhileDraggingNodes.isSelected() );
             YED_STYLE_RENDERING_FOR_GPAPHML_FILES.set( generalyEdStyleRenderingForGraphmlFiles.isSelected() );
@@ -3287,27 +3287,27 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             if ( generalyEdStyleRenderingForGraphmlFiles.isEnabled() )
                 setEnabledGraphmlRenderingAndDepthRelatedOptions( generalyEdStyleRenderingForGraphmlFiles.isSelected() );
 
-            if ( generalHighQualityAntiAlias.isSelected() ) 
+            if ( generalHighQualityAntiAlias.isSelected() )
             {
                 HIGH_QUALITY_ANTIALIASING.set(true);
                 NORMAL_QUALITY_ANTIALIASING.set(true);
-            } 
-            else if ( generalNormalQualityAntiAlias.isSelected() ) 
+            }
+            else if ( generalNormalQualityAntiAlias.isSelected() )
             {
                 HIGH_QUALITY_ANTIALIASING.set(false);
                 NORMAL_QUALITY_ANTIALIASING.set(true);
-            } 
-            else 
+            }
+            else
             {
                 HIGH_QUALITY_ANTIALIASING.set(false);
                 NORMAL_QUALITY_ANTIALIASING.set(false);
             }
-            
+
             USE_VSYNCH.set( useVSynch.isSelected() );
-            layoutFrame.getGraph().setGraphRendererThreadUpdaterTargetFPS();            
-                        
+            layoutFrame.getGraph().setGraphRendererThreadUpdaterTargetFPS();
+
             DISABLE_NODES_RENDERING.set( generalDisableNodesRendering.isSelected() );
-            DISABLE_EDGES_RENDERING.set( generalDisableEdgesRendering.isSelected() );            
+            DISABLE_EDGES_RENDERING.set( generalDisableEdgesRendering.isSelected() );
             INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = ( generalUseInstallDirForScreenshots.isSelected() != USE_INSTALL_DIR_FOR_SCREENSHOTS.get() );
             USE_INSTALL_DIR_FOR_SCREENSHOTS.set( generalUseInstallDirForScreenshots.isSelected() );
             USE_INSTALL_DIR_FOR_MCL_TEMP_FILE.set( generalUseInstallDirForMCLTempFile.isSelected() );
@@ -3388,10 +3388,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             TRANSPARENT.set( nodeTransparency.isSelected() );
             TRANSPARENT_ALPHA.set( (float)nodeTransparencyAlphaSlider.getValue() );
 
-            TEXTURE_ENABLED.set( nodeSurfaceImageTextureCheckBox.isSelected() );            
+            TEXTURE_ENABLED.set( nodeSurfaceImageTextureCheckBox.isSelected() );
             TEXTURE_CHOSEN.set( nodeSurfaceImageTextureComboBox.getSelectedIndex() );
         }
-        
+
         if (updateGraphAnaglyphGlasses3DOptionsDialogPreferencesCallBackChange)
         {
             GRAPH_ANAGLYPH_GLASSES_TYPE = graphAnaglyphGlassesType;
@@ -3402,19 +3402,19 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             double intraOcularDistance = extractDouble(graphIntraOcularDistanceType);
             layoutFrame.getGraph().setCamerasIntraOcularDistanceAndFrustumShift(intraOcularDistance);
             modelShapeEditorParentUIDialog.setCamerasIntraOcularDistanceAndFrustumShift(intraOcularDistance);
-            
+
             updateGraphAnaglyphGlasses3DOptionsDialogPreferencesCallBackChange = false;
-        }                
-                
+        }
+
         if (updateModelShapeEditorParentUIDialogPreferencesCallBackChange)
         {
             if ( modelType.equals(LATHE3D_SHAPE) )
-            {        
+            {
                 LATHE3D_SETTINGS_XSIN.set( LayoutPreferences.createPreferenceFloatArrayString(LATHE3D_SETTINGS.xsIn) );
                 LATHE3D_SETTINGS_YSIN.set( LayoutPreferences.createPreferenceFloatArrayString(LATHE3D_SETTINGS.ysIn) );
                 LATHE3D_SETTINGS_SPLINE_STEP.set(LATHE3D_SETTINGS.splineStep);
                 LATHE3D_SETTINGS_K.set(LATHE3D_SETTINGS.k);
-                LATHE3D_SETTINGS_LATHE3D_SHAPE_TYPE.set( LATHE3D_SETTINGS.lathe3DShapeType.ordinal() );            
+                LATHE3D_SETTINGS_LATHE3D_SHAPE_TYPE.set( LATHE3D_SETTINGS.lathe3DShapeType.ordinal() );
             }
             else if ( modelType.equals(SUPER_QUADRIC_SHAPE) )
             {
@@ -3428,9 +3428,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             else // if ( modelType.equals(OBJ_MODEL_LOADER_SHAPE) )
             {
 
-            }   
+            }
             */
-            
+
             CHANGE_ALL_SHAPES = CHANGE_ALL_FAST_SELECTION_SHAPES = true; // to enforce update of the Model Editor Shapes (amongst the rest)
             updateModelShapeEditorParentUIDialogPreferencesCallBackChange = false;
         }
@@ -3606,7 +3606,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         return 0;
     }
-    
+
     private void setEnabledAllShadingSFXsUIs(boolean flag)
     {
         for (int i = 0; i < allShadings.length; i++)
@@ -3636,7 +3636,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 allShadings[i].setSelected(false);
                 ALL_SHADING_SFXS[i].set(false);
             }
-            
+
             allShadings[effectIndex].setSelected(value);
             ALL_SHADING_SFXS[effectIndex].set(value);
 
@@ -3650,7 +3650,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             materialNormalsSelectionMode.setEnabled(USE_GL_ARB_GEOMETRY_SHADER4 && value);
         }
     }
-    
+
     public void setEnabledProportionalEdgesSizeToWeight(boolean enabled)
     {
         proportionalEdgesSizeToWeight.setEnabled(enabled);
@@ -3658,7 +3658,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
     public void setEnabledGraphmlRelatedOptions(boolean enabled)
     {
-        generalyEdStyleRenderingForGraphmlFiles.setEnabled(enabled);        
+        generalyEdStyleRenderingForGraphmlFiles.setEnabled(enabled);
         setEnabledGraphmlRenderingAndDepthRelatedOptions(enabled);
     }
 
@@ -3669,7 +3669,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         graphmlViewNodeDepthZPositioningLabel.setEnabled(enabled);
         graphmlAllViewNodeDepthResetPositioningsButton.setEnabled(enabled);
     }
-    
+
     public void setEnabledNodeNameTextFieldAndSelectNodesTab(boolean enabled, GraphNode node, int howManyNodesSelected)
     {
         this.howManyNodesSelected = howManyNodesSelected;
@@ -3746,6 +3746,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     {
         return classesPropertiesAction;
     }
-    
-    
+
+
 }

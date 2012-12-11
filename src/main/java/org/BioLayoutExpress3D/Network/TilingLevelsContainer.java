@@ -11,7 +11,7 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public class TilingLevelsContainer 
+public class TilingLevelsContainer
 {
     // Has to be an arraylist for the tiling algorithm to work
     private ArrayList<LevelNetworkComponentContainer> allLevels = null;
@@ -20,13 +20,13 @@ public class TilingLevelsContainer
     private double sumAllLeveHeight = 0.0;
     private static final float RATIO = 1.0f;
 
-    public TilingLevelsContainer() 
+    public TilingLevelsContainer()
     {
         allLevels = new ArrayList<LevelNetworkComponentContainer>();
         allLevels.add( new LevelNetworkComponentContainer(currentLevelWidth) );
     }
 
-    public void addNetworkComponentContainer(NetworkComponentContainer ncc) 
+    public void addNetworkComponentContainer(NetworkComponentContainer ncc)
     {
         LevelNetworkComponentContainer leastUtilizedLevel = leastUtilizedLevel();
         if ( !leastUtilizedLevel.addNetworkComponentContainer(ncc) )
@@ -37,28 +37,28 @@ public class TilingLevelsContainer
             {
                 leastUtilizedLevel = expandLevelsWidth( ncc.getWidth() );
                 leastUtilizedLevel.addNetworkComponentContainer(ncc);
-            } 
-            else 
+            }
+            else
             {
                 addNetworkComponentContainerNewLevel(ncc);
             }
         }
     }
 
-    private LevelNetworkComponentContainer leastUtilizedLevel() 
+    private LevelNetworkComponentContainer leastUtilizedLevel()
     {
         LevelNetworkComponentContainer leastUtilizedLevel = null, currentLevel = null;
         Iterator<LevelNetworkComponentContainer> it = allLevels.iterator();
         leastUtilizedLevel = it.next();
-        
-        while ( it.hasNext() ) 
+
+        while ( it.hasNext() )
         {
             currentLevel = it.next();
-            
+
             if ( currentLevel.getFreeWidth() > leastUtilizedLevel.getFreeWidth() )
-                leastUtilizedLevel = currentLevel;            
+                leastUtilizedLevel = currentLevel;
         }
-        
+
         return leastUtilizedLevel;
     }
 
@@ -68,14 +68,14 @@ public class TilingLevelsContainer
         double freeWidth = levelNcc.getFreeWidth();
 
         currentLevelWidth += (width - freeWidth + 1);
-        
+
         for (LevelNetworkComponentContainer currentLevelNcc : allLevels)
             currentLevelNcc.setMaxWidth(currentLevelWidth);
 
         return levelNcc;
     }
 
-    private void addNetworkComponentContainerNewLevel(NetworkComponentContainer ncc) 
+    private void addNetworkComponentContainerNewLevel(NetworkComponentContainer ncc)
     {
         LevelNetworkComponentContainer levelNcc = new LevelNetworkComponentContainer(currentLevelWidth);
         levelNcc.addNetworkComponentContainer(ncc);
@@ -85,25 +85,25 @@ public class TilingLevelsContainer
     private void updateSumAllLevelHeight()
     {
         sumAllLeveHeight = 0;
-        
-        for (LevelNetworkComponentContainer levelNcc : allLevels) 
+
+        for (LevelNetworkComponentContainer levelNcc : allLevels)
             sumAllLeveHeight += levelNcc.getHeight();
     }
 
-    public void debug() 
+    public void debug()
     {
         sumAllLeveHeight = 0;
-        
-        int i = 0;      
-        for (LevelNetworkComponentContainer levelNcc : allLevels) 
+
+        int i = 0;
+        for (LevelNetworkComponentContainer levelNcc : allLevels)
         {
-            i++;            
-            if (DEBUG_BUILD) println("Level: " + i);            
+            i++;
+            if (DEBUG_BUILD) println("Level: " + i);
             levelNcc.debug();
         }
     }
 
-    public void optimize() 
+    public void optimize()
     {
         updateSumAllLevelHeight();
 
@@ -111,21 +111,21 @@ public class TilingLevelsContainer
         float yRatio = (float)sumAllLeveHeight / 1000.0f;
         float ratio = (xRatio > yRatio) ? xRatio : yRatio;
         double startHeight = 0;
-        
-        for (LevelNetworkComponentContainer levelNcc : allLevels) 
+
+        for (LevelNetworkComponentContainer levelNcc : allLevels)
         {
             levelNcc.optimize(ratio, startHeight);
             startHeight += levelNcc.getHeight();
         }
     }
 
-    public void clear() 
+    public void clear()
     {
         allLevels.clear();
         currentLevelWidth = 1000;
         sumAllLeveHeight = 0;
         allLevels.add( new LevelNetworkComponentContainer(currentLevelWidth) );
     }
-    
-    
+
+
 }

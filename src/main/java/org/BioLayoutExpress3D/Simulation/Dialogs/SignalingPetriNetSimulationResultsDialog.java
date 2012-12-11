@@ -44,7 +44,7 @@ class SignalingPetriNetSimulationResultsDialog extends JDialog implements Action
         super(layoutFrame, "SPN Simulation Results", true);
 
         this.layoutFrame = layoutFrame;
-        
+
         initComponents();
     }
 
@@ -226,7 +226,7 @@ class SignalingPetriNetSimulationResultsDialog extends JDialog implements Action
                 closeDialogWindow();
             }
         } );
-    }                                                             
+    }
 
     /**
     *  Sets the results labels' texts.
@@ -301,7 +301,7 @@ class SignalingPetriNetSimulationResultsDialog extends JDialog implements Action
             if ( JFileChooser.APPROVE_OPTION == saveSPNResultsFileChooser.showOpenDialog(this) )
             {
                 SAVE_SPN_RESULTS_FILE_NAME.set( saveSPNResultsFileChooser.getSelectedFile().getPath() );
-                
+
                 Thread runLightWeightThread = new Thread( new Runnable()
                 {
 

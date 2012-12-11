@@ -8,8 +8,8 @@ import static javax.media.opengl.GL2.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 *  This class provides fast render-to-texture support using the GL_EXT_framebuffer_object OpenGL extension.
 *
 * @author Thanos Theo, 2008-2009-2010-2011-2012
@@ -18,13 +18,13 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 */
 
 public final class RenderToTexture
-{ 
+{
 
     /**
     *  Frame buffer object reference.
     */
-    private final IntBuffer FBO = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();    
-    
+    private final IntBuffer FBO = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+
     /**
     *  Texture ID reference.
     */
@@ -153,7 +153,7 @@ public final class RenderToTexture
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (generateMipmap) ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);        
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         if (generateMipmap)
             gl.glGenerateMipmap(GL_TEXTURE_2D);
@@ -311,10 +311,10 @@ public final class RenderToTexture
         gl.glEnable(GL_POLYGON_SMOOTH);
 
         gl.glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-        gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);        
+        gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
         gl.glHint(GL_FOG_HINT, GL_NICEST);
-        gl.glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);        
+        gl.glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
         if (GL_IS_NVIDIA && USE_SHADERS_PROCESS) gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST); // warning, the AMD/ATI driver does not like this setting, and it's only for OpenGL 2.0 and above!
     }
 
@@ -330,13 +330,13 @@ public final class RenderToTexture
         gl.glDisable(GL_POLYGON_SMOOTH);
 
         gl.glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
-        gl.glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);        
+        gl.glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
         gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_FASTEST);
         gl.glHint(GL_FOG_HINT, GL_FASTEST);
         gl.glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
         if (GL_IS_NVIDIA && USE_SHADERS_PROCESS) gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_FASTEST); // warning, the AMD/ATI driver does not like this setting, and it's only for OpenGL 2.0 and above!
-    }    
-    
+    }
+
     /**
     *  Returns the render-to-texture width.
     */
@@ -360,10 +360,10 @@ public final class RenderToTexture
     {
         //  free the framebuffer
         gl.glDeleteFramebuffers(1, FBO);
-        
+
         //  free the render-to-texture texture
         gl.glDeleteTextures(1, TEXTURE_ID);
-        
+
         //  free the depth renderbuffer
         if (hasDepthRenderBuffer) gl.glDeleteRenderbuffers(1, DEPTH_RENDER_BUFFER);
     }

@@ -11,16 +11,16 @@ import org.BioLayoutExpress3D.Environment.Preferences.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
-public class FileOpenHistory extends StringHistory 
-{ 
-    /** 
+public class FileOpenHistory extends StringHistory
+{
+    /**
     *  Serial version UID variable for the FileOpenHistory class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555701L;
-        
+
     private ArrayList<PrefString> preferences = null;
 
     public FileOpenHistory(int maxHistory)
@@ -43,7 +43,7 @@ public class FileOpenHistory extends StringHistory
         }
     }
 
-    private void updateHistoryFromPreferences() 
+    private void updateHistoryFromPreferences()
     {
         for (PrefString value : preferences)
         {
@@ -54,7 +54,7 @@ public class FileOpenHistory extends StringHistory
         }
     }
 
-    public ArrayList<AbstractAction> getActionsList(final LayoutFrame layoutFrame) 
+    public ArrayList<AbstractAction> getActionsList(final LayoutFrame layoutFrame)
     {
         int counter = 0;
         ArrayList<AbstractAction> abstractActionsList = new ArrayList<AbstractAction>(maxHistory);
@@ -67,24 +67,24 @@ public class FileOpenHistory extends StringHistory
             fileHistoryPref.set(value);
             fileHistoryPref.savePref();
 
-            AbstractAction action = new AbstractAction(value) 
+            AbstractAction action = new AbstractAction(value)
             {
-                /** 
+                /**
                 *  Serial version UID variable for the AbstractAction class.
-                */        
+                */
                 public static final long serialVersionUID = 111222333444555702L;
-    
+
                 @Override
-                public void actionPerformed(ActionEvent e) 
+                public void actionPerformed(ActionEvent e)
                 {
                     layoutFrame.loadDataSet( new File(value) );
                 }
             };
-            
+
             abstractActionsList.add(action);
             counter++;
         }
-        
+
         return abstractActionsList;
     }
 

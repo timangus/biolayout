@@ -6,7 +6,7 @@ package org.BioLayoutExpress3D.Graph.Camera;
 *
 * @author Thanos Theo, Andrew Davison, 2007-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class GraphCameraFinalVariables
@@ -14,27 +14,27 @@ public final class GraphCameraFinalVariables
 
     /**
     *  Default IntraOcular Distance (eye separation distance).
-    */        
-    public static final double DEFAULT_INTRA_OCULAR_DISTANCE = 0.2;                  
-    
+    */
+    public static final double DEFAULT_INTRA_OCULAR_DISTANCE = 0.2;
+
     /**
     *  Camera frustum constant.
-    */            
+    */
     public static final double FOV_Y = 45.0;
-    
+
     /**
     *  Camera frustum constant.
-    */            
+    */
     public static final double NEAR_DISTANCE = 0.01;
-    
+
     /**
     *  Camera frustum constant.
-    */            
+    */
     public static final double SCREEN_DISTANCE = 5.0;
-    
+
     /**
     *  Camera frustum constant.
-    */            
+    */
     public static final double FAR_DISTANCE = 1000.0;
 
 

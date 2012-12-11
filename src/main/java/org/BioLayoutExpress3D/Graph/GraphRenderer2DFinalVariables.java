@@ -7,19 +7,19 @@ import static org.BioLayoutExpress3D.StaticLibraries.ImageProducer.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
 /**
-* 
+*
 * The GraphRenderer2DFinalVariables class is the class that holds all relevant GraphRenderer2D OpenGL variables.
 * All variables in this static class have package scope and are to be used within GraphRenderer2D.
-* 
+*
 * @see org.BioLayoutExpress3D.Graph.GraphRenderer2D
 * @author Thanos Theo, 2011
 * @version 3.0.0.0
-* 
+*
 */
 
 final class GraphRenderer2DFinalVariables // package access
-{ 
-    
+{
+
     /**
     *  Constant value needed for the 2D OpenGL renderer.
     */
@@ -39,7 +39,7 @@ final class GraphRenderer2DFinalVariables // package access
     *  Constant value needed for the 2D OpenGL renderer. Uses the Singleton Design Pattern with method createBackgroundImage().
     */
     static final BufferedImage BACKGROUND_IMAGE = createBackgroundImage();
-    
+
     /**
     *  Constant value needed for the 2D OpenGL renderer.
     */
@@ -48,13 +48,13 @@ final class GraphRenderer2DFinalVariables // package access
     /**
     *  Constant enumeration nested class to choose between available logo effects.
     */
-    static enum LogoEffects { WATER_EFFECT, TEXTUREDISPLACEMENT_EFFECT, BUMP_EFFECT, BLUR_EFFECT, RADIAL_BLUR_EFFECT, PLASMA_EFFECT }    
-    
+    static enum LogoEffects { WATER_EFFECT, TEXTUREDISPLACEMENT_EFFECT, BUMP_EFFECT, BLUR_EFFECT, RADIAL_BLUR_EFFECT, PLASMA_EFFECT }
+
     /**
     *  2D OpenGL renderer related variable.
     */
-    static final float[] PLASMA_COLOR = new float[3];    
-    
+    static final float[] PLASMA_COLOR = new float[3];
+
     /**
     *  OpenGL specific animation variable.
     */
@@ -63,13 +63,13 @@ final class GraphRenderer2DFinalVariables // package access
     /**
     *  OpenGL specific animation variable.
     */
-    static final float MORE_RESCALE_FACTOR = 3.0f;      
-    
+    static final float MORE_RESCALE_FACTOR = 3.0f;
+
     /**
     *  OpenGL specific animation variable.
     */
-    static final float DEFAULT_TRANSLATION = 20.0f;        
-    
+    static final float DEFAULT_TRANSLATION = 20.0f;
+
     /**
     *  Auxiliary variable to be used for nodes hierarchical modelling.
     */
@@ -78,8 +78,8 @@ final class GraphRenderer2DFinalVariables // package access
     /**
     *  Auxiliary variable to be used for focusing rotation/scaling to one particular node.
     */
-    static final Point2D.Float FOCUS_POSITION_2D = new Point2D.Float(0.0f, 0.0f);    
-    
+    static final Point2D.Float FOCUS_POSITION_2D = new Point2D.Float(0.0f, 0.0f);
+
     /**
     *  OpenGL specific animation variable.
     */
@@ -94,7 +94,7 @@ final class GraphRenderer2DFinalVariables // package access
     *  OpenGL specific animation variable.
     */
     static final float PARTICLE_RESIZE_VALUE = 0.075f;
-    
+
     /**
     *  Creates the background image. Uses the Singleton Design Pattern along with the static variable, BACKGROUND_IMAGE.
     */
@@ -105,6 +105,6 @@ final class GraphRenderer2DFinalVariables // package access
         backgroundImage.setRGB(0, 0, BACKGROUND_TEXTURE_SIZE, BACKGROUND_TEXTURE_SIZE, pixels, 0, BACKGROUND_TEXTURE_SIZE);
 
         return backgroundImage;
-    }    
-    
+    }
+
 }

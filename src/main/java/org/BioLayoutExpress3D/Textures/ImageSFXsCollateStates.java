@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Textures;
 
-/** 
-*   
+/**
+*
 * ImageSFXsCollateStates enumeration class which holds information for the collate orientation of two images.
 *
 * @see org.BioLayoutExpress3D.Textures.ImageSFXs

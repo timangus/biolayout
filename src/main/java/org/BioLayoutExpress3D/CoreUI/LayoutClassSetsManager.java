@@ -9,7 +9,7 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Anton Enright, full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutClassSetsManager
@@ -21,7 +21,7 @@ public final class LayoutClassSetsManager
     private String currentClassSetName = "";
     private int currentClassSetID = 0;
     private int totalclassSetNames = 0;
-    
+
     public LayoutClassSetsManager()
     {
         classSetNames = new ArrayList<LayoutClasses>();
@@ -29,28 +29,28 @@ public final class LayoutClassSetsManager
         classSetNameIDsMap = new HashMap<String, LayoutClasses>();
     }
 
-    public LayoutClasses createNewClassSet(String newName) 
+    public LayoutClasses createNewClassSet(String newName)
     {
         if ( classSetExists(newName) )
         {
             return getClassSet(newName);
-        } 
-        else 
+        }
+        else
         {
             LayoutClasses classes = new LayoutClasses(newName, totalclassSetNames);
 
             classSetNames.add(classes);
             classSetNamesMap.put(classes, newName);
             classSetNameIDsMap.put(newName, classes);
-            
+
             if (DEBUG_BUILD) println("Creating New Class Set: " + newName);
-            
+
             LayoutClasses rootclasses = classSetNames.get(0);
             for ( Vertex vertex : rootclasses.getClassesMembershipMap().keySet() )
                 classes.setClass(vertex, 0);
-            
+
             totalclassSetNames++;
-            
+
             return classes;
         }
     }
@@ -60,12 +60,12 @@ public final class LayoutClassSetsManager
         return classSetNameIDsMap.containsKey(name);
     }
 
-    public LayoutClasses getClassSet(String name) 
-    {        
+    public LayoutClasses getClassSet(String name)
+    {
         return ( classSetExists(name) ) ? getClassSetByName(name) : createNewClassSet(name);
     }
 
-    public LayoutClasses getClassSet(int classSetID) 
+    public LayoutClasses getClassSet(int classSetID)
     {
         return classSetNames.get(classSetID);
     }
@@ -117,11 +117,11 @@ public final class LayoutClassSetsManager
         currentClassSetName = "";
         currentClassSetID = 0;
         totalclassSetNames = 0;
-        
+
         classSetNames.clear();
         classSetNamesMap.clear();
         classSetNameIDsMap.clear();
-        
+
         createNewClassSet("Default Classes");
     }
 

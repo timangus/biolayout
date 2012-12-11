@@ -30,7 +30,7 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
     private boolean cancelParse = false;
     private AbstractAction signalingPetriNetLoadSimulationAction = null;
-    
+
     /**
     *  The constructor of the SignalingPetriNetLoadSimulation class.
     */
@@ -46,7 +46,7 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
 
     /**
     *  Initializes the actions.
-    */    
+    */
     private void initActions()
     {
         signalingPetriNetLoadSimulationAction = new AbstractAction("Load Simulation Data")
@@ -65,9 +65,9 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
                     layoutFrame.getLayoutAnimationControlDialog().getAnimationControlDialogAction().setEnabled(true);
             }
         };
-        signalingPetriNetLoadSimulationAction.setEnabled(false);        
+        signalingPetriNetLoadSimulationAction.setEnabled(false);
     }
-    
+
     /**
     *  This method is called from within the constructor to initialize the dialog.
     */
@@ -178,7 +178,7 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
                 stackTraceStringBuffer.append( stackTraceElement.toString() ).append("\n");
             JOptionPane.showMessageDialog(layoutFrame, "StackTrace Dump Report With " + typeOfError + " for parsing file " + fileName + ":\n\n" + stackTraceStringBuffer.toString() + "\n", "StackTrace Dump Report With " + typeOfError, JOptionPane.ERROR_MESSAGE);
         }
-    }   
+    }
 
     /**
     *  Opens the Simulation Animation Control Dialog Window.
@@ -304,10 +304,10 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
                                            Integer.parseInt( allDetails[4].substring( SAVE_DETAILS_DATA_COLUMN_NAME_RUNS.length(), allDetails[4].length() ) ) );
     }
 
-    public AbstractAction getSignalingPetriNetLoadSimulationAction() 
+    public AbstractAction getSignalingPetriNetLoadSimulationAction()
     {
         return signalingPetriNetLoadSimulationAction;
     }
-    
+
 
 }

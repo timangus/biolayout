@@ -241,7 +241,7 @@ public abstract class NetworkContainer
         layoutProgressBarDialog.endProgressBar();
         if (isRelayout) layoutProgressBarDialog.stopProgressBar();
     }
-    
+
     private void updateGUI(LayoutProgressBarDialog layoutProgressBarDialog)
     {
         if ( SHOW_LAYOUT_ITERATIONS.get() )
@@ -258,7 +258,7 @@ public abstract class NetworkContainer
     {
         verticesMap.clear();
         edges.clear();
-        
+
         layoutClassSetsManager.clearClassSets();
         WEIGHTED_EDGES = false;
         isOptimized = false;

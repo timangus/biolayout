@@ -6,11 +6,11 @@ import java.util.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
-public class StringHistory 
-{ 
+public class StringHistory
+{
     protected ArrayList<String> history = null;
     protected int maxHistory = 0;
 
@@ -20,13 +20,13 @@ public class StringHistory
         history = new ArrayList<String>(maxHistory);
     }
 
-    private void checkValueExists(String value) 
+    private void checkValueExists(String value)
     {
         for (String currentValue : history)
         {
             if ( currentValue.equals(value) )
             {
-                history.remove(value);                
+                history.remove(value);
                 break;
             }
         }

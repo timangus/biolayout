@@ -8,38 +8,38 @@ import java.util.prefs.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class PrefDouble  extends PrefType
-{ 
-    
-    /** 
+{
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private double currentValue = 0.0;
-    
-    /** 
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private double defaultValue = 0.0;
 
-    /** 
+    /**
     *  The constructor of the PrefDouble class.
-    */       
+    */
     public PrefDouble(double defaultValue, String prefName, boolean isSaved)
     {
         super(prefName, isSaved);
-        
+
         this.defaultValue = currentValue = defaultValue;
-        
+
         prefType = PrefTypes.PREF_DOUBLE;
         LayoutPreferences.getLayoutPreferencesSingleton().add(this);
     }
 
-    /** 
+    /**
     *  Returns this Double preference.
-    */     
+    */
     public double get()
     {
         return currentValue;
@@ -74,9 +74,9 @@ public class PrefDouble  extends PrefType
             currentValue = Preferences.userRoot().getDouble(prefName, defaultValue);
     }
 
-    /** 
+    /**
     *  Saves this Double preference. Overrides the parent class abstract method.
-    */     
+    */
     @Override
     public void savePref()
     {
@@ -86,14 +86,14 @@ public class PrefDouble  extends PrefType
             Preferences.userRoot().putDouble(prefName, currentValue);
     }
 
-    /** 
+    /**
     *  Restores this Double preference. Overrides the parent class abstract method.
-    */        
+    */
     @Override
     public void restorePref()
     {
         currentValue = defaultValue;
     }
-    
-    
+
+
 }

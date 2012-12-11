@@ -14,12 +14,12 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 */
 
 public final class LayoutOpenGLDriverCapsDialog extends JDialog implements ActionListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutOpenGLDriverCapsDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555696L;
-    
+
     private AbstractAction openGLDriverCapsAction = null;
     private JButton okButton = null;
     private boolean doneOneInit = false;
@@ -55,9 +55,9 @@ public final class LayoutOpenGLDriverCapsDialog extends JDialog implements Actio
     }
 
     private void initComponents()
-    {        
+    {
         JPanel topPanel = new JPanel(true);
-        topPanel.setLayout( new BorderLayout() );        
+        topPanel.setLayout( new BorderLayout() );
 
         JScrollPane scrollPane1 = null;
         if (USE_SHADERS_PROCESS)
@@ -66,7 +66,7 @@ public final class LayoutOpenGLDriverCapsDialog extends JDialog implements Actio
             textArea1.setFont( this.getFont() );
             setGLSLCaps(textArea1);
             textArea1.setEditable(false);
-            textArea1.setCaretPosition(0); // so as to have the vertical scrollbar resetted to position 0            
+            textArea1.setCaretPosition(0); // so as to have the vertical scrollbar resetted to position 0
             scrollPane1 = new JScrollPane(textArea1);
         }
 
@@ -88,7 +88,7 @@ public final class LayoutOpenGLDriverCapsDialog extends JDialog implements Actio
         }
         scrollPane2.setBorder( BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "OpenGL Driver Capabilities") );
         topPanel.add(scrollPane2, BorderLayout.CENTER);
-        topPanel.add(okButton, BorderLayout.SOUTH);         
+        topPanel.add(okButton, BorderLayout.SOUTH);
 
         int dialogSizeX = 500;
         int dialogSizeY = 380;
@@ -101,7 +101,7 @@ public final class LayoutOpenGLDriverCapsDialog extends JDialog implements Actio
             if (USE_GL_EXT_FRAMEBUFFER_OBJECT)
                 dialogSizeY += 20;
             if (USE_GL_ARB_GEOMETRY_SHADER4)
-                dialogSizeY += 20;            
+                dialogSizeY += 20;
         }
 
         this.getContentPane().add(topPanel);
@@ -110,8 +110,8 @@ public final class LayoutOpenGLDriverCapsDialog extends JDialog implements Actio
         this.setSize(dialogSizeX, dialogSizeY);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    }    
-    
+    }
+
     private void setGLSLCaps(JTextArea textArea)
     {
         textArea.append("\nGL_SHADING_LANGUAGE_VERSION:\t\t" + GL_SHADING_LANGUAGE_VERSION_STRING + "\n");
@@ -134,11 +134,11 @@ public final class LayoutOpenGLDriverCapsDialog extends JDialog implements Actio
         if (USE_GL_EXT_FRAMEBUFFER_OBJECT)
             textArea.append("GL_MAX_RENDERBUFFER_SIZE_EXT:\t\t" + GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER + "\n");
         if (USE_GL_ARB_GEOMETRY_SHADER4)
-            textArea.append("GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB:\t" + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\n");  
+            textArea.append("GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB:\t" + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\n");
         textArea.append("\n");
         textArea.append("GL GPU SHADER MODEL 4 SUPPORT:\t\t" + ( (USE_GL_EXT_GPU_SHADER4) ? "YES" : "NO" ) + "\n");
         textArea.append("GL GPU SHADER MODEL 5 SUPPORT:\t\t" + ( (USE_GL_ARB_GPU_SHADER5) ? "YES" : "NO" ) + "\n");
-        textArea.append("GL GPU SHADER FP64 SUPPORT:\t\t" + ( (USE_GL_ARB_GPU_SHADER_FP64) ? "YES" : "NO" ) + "\n");        
+        textArea.append("GL GPU SHADER FP64 SUPPORT:\t\t" + ( (USE_GL_ARB_GPU_SHADER_FP64) ? "YES" : "NO" ) + "\n");
     }
 
     private void setOpenGLDriverCaps(JTextArea textArea)
@@ -165,5 +165,5 @@ public final class LayoutOpenGLDriverCapsDialog extends JDialog implements Actio
         return openGLDriverCapsAction;
     }
 
-    
+
 }

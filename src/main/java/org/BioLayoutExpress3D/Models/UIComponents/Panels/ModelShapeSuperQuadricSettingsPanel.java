@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Models.UIComponents.Panels;
 
 import java.awt.*;
-import java.awt.event.*; 
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import org.BioLayoutExpress3D.Models.SuperQuadric.*;
@@ -12,19 +12,19 @@ import static org.BioLayoutExpress3D.Models.SuperQuadric.SuperQuadricShapeTypes.
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
 /**
-* 
+*
 * The ModelShapeSuperQuadricSettingsPanel class which is the UI placeholder for the SuperQuadric settings.
 *
 * @see org.BioLayoutExpress3D.Models.UIComponents.ModelShapeEditorParentUIDialog
 * @see org.BioLayoutExpress3D.Models.UIComponents.ModelShapeRenderer
 * @author Thanos Theo, 2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements ActionListener, ChangeListener
 {
-    
+
     private static final int LOWER_BOUND_RANGE_FOR_EXPONENTS = 0;
     private static final int UPPER_BOUND_RANGE_FOR_EXPONENTS = 60;
     private static final int EXPONENTS_STEPS_DELTA = 2;
@@ -35,33 +35,33 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
     private static final int V_STEPS_DELTA = 15;
     private static final int V_STEPS_FACTOR = 12;
     private static final int LOWER_BOUND_RANGE_FOR_TOROID_RADIUS = 0;
-    private static final int UPPER_BOUND_RANGE_FOR_TOROID_RADIUS = 200;    
+    private static final int UPPER_BOUND_RANGE_FOR_TOROID_RADIUS = 200;
     private static final int TOROID_RADIUS_STEPS_DELTA = 5;
     private static final int TOROID_RADIUS_STEPS_FACTOR = 10;
     private static final int TOROID_RADIUS_STEPS_RATIO = 10;
     private static final int TOROID_RADIUS_FAIL_SAFE_MIN_BOUND_RANGE = 3;
-    
+
     private JComboBox superQuadricPresetsComboBox = null;
     private JComboBox superQuadricShapeTypesComboBox = null;
     private JSlider scaleExponentESlider = null;
     private JSlider scaleExponentNSlider = null;
     private JSlider scaleValueVSlider = null;
     private JSlider scaleRadiusAlphaSlider = null;
-    
+
     /**
     *  The ModelShapeRenderer reference.
-    */    
-    private ModelShapeRenderer modelShapeRenderer = null;   
+    */
+    private ModelShapeRenderer modelShapeRenderer = null;
 
     /**
     *  The ModelShapeSuperQuadricSettingsPanel class constructor.
-    */     
-    public ModelShapeSuperQuadricSettingsPanel(ModelShapeRenderer modelShapeRenderer) 
+    */
+    public ModelShapeSuperQuadricSettingsPanel(ModelShapeRenderer modelShapeRenderer)
     {
         super(new BorderLayout(), true);
 
         this.modelShapeRenderer = modelShapeRenderer;
-        
+
         initComponents();
     }
 
@@ -69,41 +69,41 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
     *  Initializes the UI components for this panel.
     */
     private void initComponents()
-    {        
+    {
         superQuadricPresetsComboBox = new JComboBox();
-        for ( SuperQuadricShapes superQuadricShape : SuperQuadricShapes.values() )        
+        for ( SuperQuadricShapes superQuadricShape : SuperQuadricShapes.values() )
             superQuadricPresetsComboBox.addItem( splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(superQuadricShape) );
         superQuadricPresetsComboBox.setSelectedIndex( getEnumIndexForName( SuperQuadricShapes.class, SUPER_QUADRIC_CHOSEN_PRESET_SHAPE.get() ) );
         superQuadricPresetsComboBox.addActionListener(this);
         superQuadricPresetsComboBox.setToolTipText("SuperQuadric Preset");
-        
+
         superQuadricShapeTypesComboBox = new JComboBox();
         for ( SuperQuadricShapeTypes superQuadricShapeType : SuperQuadricShapeTypes.values() )
-            superQuadricShapeTypesComboBox.addItem( splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(superQuadricShapeType) );        
+            superQuadricShapeTypesComboBox.addItem( splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(superQuadricShapeType) );
         superQuadricShapeTypesComboBox.setSelectedIndex( SUPER_QUADRIC_SETTINGS.superQuadricShapeType.ordinal() );
         superQuadricShapeTypesComboBox.addActionListener(this);
         superQuadricShapeTypesComboBox.setToolTipText("SuperQuadric Type");
-        
+
         JPanel superQuadricPresetsPanel = new JPanel(true);
         superQuadricPresetsPanel.setLayout( new BoxLayout(superQuadricPresetsPanel, BoxLayout.X_AXIS) );
         superQuadricPresetsPanel.add( new JLabel("SuperQuadric Preset:  ") );
         superQuadricPresetsPanel.add(superQuadricPresetsComboBox);
-        
+
         JPanel superQuadricTypesPanel = new JPanel(true);
         superQuadricTypesPanel.setLayout( new BoxLayout(superQuadricTypesPanel, BoxLayout.X_AXIS) );
         superQuadricTypesPanel.add( new JLabel("SuperQuadric Type:    " + ( (UIManager.getLookAndFeel().getName().equals("Nimbus") || IS_MAC ) ? " " : "") ) );
         superQuadricTypesPanel.add(superQuadricShapeTypesComboBox);
-                
+
         JPanel upperUIPanel = new JPanel(true);
         upperUIPanel.setLayout( new BoxLayout(upperUIPanel, BoxLayout.Y_AXIS) );
         if ( !( UIManager.getLookAndFeel().getName().equals("Nimbus") || IS_MAC ) )
             upperUIPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
         upperUIPanel.add(superQuadricPresetsPanel);
         upperUIPanel.add(superQuadricTypesPanel);
-                             
+
         scaleExponentESlider = new JSlider(JSlider.HORIZONTAL);
         scaleExponentESlider.setMinimum(LOWER_BOUND_RANGE_FOR_EXPONENTS);
-        scaleExponentESlider.setMaximum(UPPER_BOUND_RANGE_FOR_EXPONENTS); 
+        scaleExponentESlider.setMaximum(UPPER_BOUND_RANGE_FOR_EXPONENTS);
         scaleExponentESlider.setValue( (int)(EXPONENTS_STEPS_RATIO * SUPER_QUADRIC_SETTINGS.e) );
         scaleExponentESlider.setMajorTickSpacing(EXPONENTS_STEPS_FACTOR * EXPONENTS_STEPS_DELTA);
         scaleExponentESlider.setMinorTickSpacing(EXPONENTS_STEPS_DELTA);
@@ -113,7 +113,7 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         scaleExponentESlider.setToolTipText("Exponent E");
         scaleExponentNSlider = new JSlider(JSlider.HORIZONTAL);
         scaleExponentNSlider.setMinimum(LOWER_BOUND_RANGE_FOR_EXPONENTS);
-        scaleExponentNSlider.setMaximum(UPPER_BOUND_RANGE_FOR_EXPONENTS); 
+        scaleExponentNSlider.setMaximum(UPPER_BOUND_RANGE_FOR_EXPONENTS);
         scaleExponentNSlider.setValue( (int)(EXPONENTS_STEPS_RATIO * SUPER_QUADRIC_SETTINGS.n) );
         scaleExponentNSlider.setMajorTickSpacing(EXPONENTS_STEPS_FACTOR * EXPONENTS_STEPS_DELTA);
         scaleExponentNSlider.setMinorTickSpacing(EXPONENTS_STEPS_DELTA);
@@ -123,7 +123,7 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         scaleExponentNSlider.setToolTipText("Exponent N");
         scaleValueVSlider = new JSlider(JSlider.HORIZONTAL);
         scaleValueVSlider.setMinimum(LOWER_BOUND_RANGE_FOR_V);
-        scaleValueVSlider.setMaximum(UPPER_BOUND_RANGE_FOR_V); 
+        scaleValueVSlider.setMaximum(UPPER_BOUND_RANGE_FOR_V);
         scaleValueVSlider.setValue( (int)Math.toDegrees(SUPER_QUADRIC_SETTINGS.v1) );
         scaleValueVSlider.setMajorTickSpacing(V_STEPS_FACTOR * V_STEPS_DELTA);
         scaleValueVSlider.setMinorTickSpacing(V_STEPS_DELTA);
@@ -133,7 +133,7 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         scaleValueVSlider.setToolTipText("Value V");
         scaleRadiusAlphaSlider = new JSlider(JSlider.HORIZONTAL);
         scaleRadiusAlphaSlider.setMinimum(LOWER_BOUND_RANGE_FOR_TOROID_RADIUS);
-        scaleRadiusAlphaSlider.setMaximum(UPPER_BOUND_RANGE_FOR_TOROID_RADIUS); 
+        scaleRadiusAlphaSlider.setMaximum(UPPER_BOUND_RANGE_FOR_TOROID_RADIUS);
         scaleRadiusAlphaSlider.setValue( (int)(TOROID_RADIUS_STEPS_RATIO * SUPER_QUADRIC_SETTINGS.alpha) );
         scaleRadiusAlphaSlider.setMajorTickSpacing(TOROID_RADIUS_STEPS_FACTOR * TOROID_RADIUS_STEPS_DELTA);
         scaleRadiusAlphaSlider.setMinorTickSpacing(TOROID_RADIUS_STEPS_DELTA);
@@ -142,21 +142,21 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         scaleRadiusAlphaSlider.addChangeListener(this);
         scaleRadiusAlphaSlider.setToolTipText("Radius Alpha");
         scaleRadiusAlphaSlider.setEnabled(false); // default SuperQuadricShapeType is the SuperEllipsoid
-                
+
         JPanel lowerUIExponentSlidersPanel = new JPanel(true);
         lowerUIExponentSlidersPanel.setLayout( new BoxLayout(lowerUIExponentSlidersPanel, BoxLayout.X_AXIS) );
         lowerUIExponentSlidersPanel.add( new JLabel("Exponents E / N: ") );
         lowerUIExponentSlidersPanel.add(scaleExponentESlider);
         lowerUIExponentSlidersPanel.add( Box.createRigidArea( new Dimension(3, 3) ) );
-        lowerUIExponentSlidersPanel.add(scaleExponentNSlider);        
+        lowerUIExponentSlidersPanel.add(scaleExponentNSlider);
 
         JPanel lowerUIValueVRadiusAlphaSlidersPanel = new JPanel(true);
         lowerUIValueVRadiusAlphaSlidersPanel.setLayout( new BoxLayout(lowerUIValueVRadiusAlphaSlidersPanel, BoxLayout.X_AXIS) );
         lowerUIValueVRadiusAlphaSlidersPanel.add( new JLabel("Values V / Alpha: ") );
         lowerUIValueVRadiusAlphaSlidersPanel.add(scaleValueVSlider);
         lowerUIValueVRadiusAlphaSlidersPanel.add( Box.createRigidArea( new Dimension(3, 3) ) );
-        lowerUIValueVRadiusAlphaSlidersPanel.add(scaleRadiusAlphaSlider);                
-        
+        lowerUIValueVRadiusAlphaSlidersPanel.add(scaleRadiusAlphaSlider);
+
         JPanel lowerUIPanel = new JPanel(true);
         lowerUIPanel.setLayout( new BoxLayout(lowerUIPanel, BoxLayout.Y_AXIS) );
         if ( UIManager.getLookAndFeel().getName().equals("Nimbus") || IS_MAC )
@@ -167,14 +167,14 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         if ( !( UIManager.getLookAndFeel().getName().equals("Nimbus") || IS_MAC ) )
             lowerUIPanel.add( Box.createRigidArea( new Dimension(3, 3) ) );
         lowerUIPanel.add(lowerUIValueVRadiusAlphaSlidersPanel);
-        
+
         this.add(upperUIPanel, BorderLayout.NORTH);
         this.add(lowerUIPanel, BorderLayout.CENTER);
-    }      
-    
+    }
+
     /**
     *  Loads the given SuperQuadric preset.
-    */    
+    */
     private void loadSuperQuadricPreset()
     {
         superQuadricShapeTypesComboBox.removeActionListener(this);
@@ -182,11 +182,11 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         scaleExponentNSlider.removeChangeListener(this);
         scaleValueVSlider.removeChangeListener(this);
         scaleRadiusAlphaSlider.removeChangeListener(this);
-        
+
         SuperQuadricShapes superQuadricShape = SuperQuadricShapes.values()[superQuadricPresetsComboBox.getSelectedIndex()];
         SUPER_QUADRIC_CHOSEN_PRESET_SHAPE.set( superQuadricShape.toString() );
         copySuperQuadricSettings( createSuperQuadricSettings( superQuadricShape, modelShapeRenderer.getTesselation(), modelShapeRenderer.getTesselation() ) );
-        superQuadricShapeTypesComboBox.setSelectedIndex( SUPER_QUADRIC_SETTINGS.superQuadricShapeType.ordinal() );   
+        superQuadricShapeTypesComboBox.setSelectedIndex( SUPER_QUADRIC_SETTINGS.superQuadricShapeType.ordinal() );
         scaleExponentESlider.setValue( (int)(EXPONENTS_STEPS_RATIO * SUPER_QUADRIC_SETTINGS.e) );
         scaleExponentNSlider.setValue( (int)(EXPONENTS_STEPS_RATIO * SUPER_QUADRIC_SETTINGS.n) );
         scaleValueVSlider.setValue( (int)Math.toDegrees(SUPER_QUADRIC_SETTINGS.v1) );
@@ -194,17 +194,17 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         scaleRadiusAlphaSlider.setEnabled( SUPER_QUADRIC_SETTINGS.superQuadricShapeType.equals(TOROID) );
         modelShapeRenderer.setShapeName( splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(superQuadricShape) );
         setSuperQuadricAndRefreshRendering(false);
-        
+
         superQuadricShapeTypesComboBox.addActionListener(this);
         scaleExponentESlider.addChangeListener(this);
         scaleExponentNSlider.addChangeListener(this);
         scaleValueVSlider.addChangeListener(this);
-        scaleRadiusAlphaSlider.addChangeListener(this);        
-    }    
+        scaleRadiusAlphaSlider.addChangeListener(this);
+    }
 
     /**
     *  Copies the SuperQuadric settings.
-    */        
+    */
     private void copySuperQuadricSettings(SuperQuadricSettings superQuadricSettings)
     {
         SUPER_QUADRIC_SETTINGS.e = superQuadricSettings.e;
@@ -225,12 +225,12 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         SUPER_QUADRIC_SETTINGS.s2 = superQuadricSettings.s2;
         SUPER_QUADRIC_SETTINGS.t1 = superQuadricSettings.t1;
         SUPER_QUADRIC_SETTINGS.t2 = superQuadricSettings.t2;
-        // finished copying rest of the SuperQuadric settings        
+        // finished copying rest of the SuperQuadric settings
     }
-    
+
     /**
     *  Sets the given SuperQuadric and refreshes the rendering.
-    */    
+    */
     private void setSuperQuadricAndRefreshRendering(boolean temporaryStopUI)
     {
         if (temporaryStopUI)
@@ -241,46 +241,46 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
             scaleValueVSlider.removeChangeListener(this);
             scaleRadiusAlphaSlider.removeChangeListener(this);
         }
-        
+
         modelShapeRenderer.setChangeDetected(true);
-        modelShapeRenderer.refreshDisplay();            
+        modelShapeRenderer.refreshDisplay();
         modelShapeRenderer.refreshDisplay(); // second refresh for correct SuperQuadric rendering
-        
+
         if (temporaryStopUI)
         {
-            superQuadricShapeTypesComboBox.addActionListener(this);        
+            superQuadricShapeTypesComboBox.addActionListener(this);
             scaleExponentESlider.addChangeListener(this);
             scaleExponentNSlider.addChangeListener(this);
             scaleValueVSlider.addChangeListener(this);
-            scaleRadiusAlphaSlider.addChangeListener(this);                    
+            scaleRadiusAlphaSlider.addChangeListener(this);
         }
-    }    
-    
+    }
+
     /**
     *  Implements all UI related actions.
-    */    
+    */
     @Override
     public void actionPerformed(ActionEvent e)
-    {        
+    {
         if ( e.getSource().equals(superQuadricPresetsComboBox) )
         {
             loadSuperQuadricPreset();
         }
         else if ( e.getSource().equals(superQuadricShapeTypesComboBox) )
-        {            
+        {
             int index = superQuadricShapeTypesComboBox.getSelectedIndex();
             SUPER_QUADRIC_SETTINGS.superQuadricShapeType = SuperQuadricShapeTypes.values()[index];
             scaleRadiusAlphaSlider.setEnabled( SUPER_QUADRIC_SETTINGS.superQuadricShapeType.equals(TOROID) );
             modelShapeRenderer.setChangeDetected(true);
             modelShapeRenderer.refreshDisplay();
-        }        
-    }    
-        
+        }
+    }
+
     /**
     *  Implements all UI related states.
-    */    
+    */
     @Override
-    public void stateChanged(ChangeEvent e) 
+    public void stateChanged(ChangeEvent e)
     {
         if ( e.getSource().equals(scaleExponentESlider) )
         {
@@ -291,7 +291,7 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
         {
             SUPER_QUADRIC_SETTINGS.n = scaleExponentNSlider.getValue() / (float)EXPONENTS_STEPS_RATIO;
             setSuperQuadricAndRefreshRendering(true);
-        }        
+        }
         else if ( e.getSource().equals(scaleValueVSlider) )
         {
             SUPER_QUADRIC_SETTINGS.v1 = (float)Math.toRadians( scaleValueVSlider.getValue() );
@@ -305,9 +305,9 @@ public class ModelShapeSuperQuadricSettingsPanel extends JPanel implements Actio
                 setSuperQuadricAndRefreshRendering(true);
             }
             else
-                scaleRadiusAlphaSlider.setValue(TOROID_RADIUS_FAIL_SAFE_MIN_BOUND_RANGE);            
-        }        
-    } 
-    
-    
+                scaleRadiusAlphaSlider.setValue(TOROID_RADIUS_FAIL_SAFE_MIN_BOUND_RANGE);
+        }
+    }
+
+
 }

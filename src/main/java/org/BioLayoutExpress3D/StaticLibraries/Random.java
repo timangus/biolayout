@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.concurrent.atomic.*;
 import static java.lang.Math.*;
 
-/** 
-*   
+/**
+*
 * Random is a final class containing mainly static random wrapper methods, used in many occasions in BioLayoutExpress3D.
 * It's using an optimal XORShiftRandom RNG engine courtesy of G. Marsaglia, published in 2003 inside a public static class.
 *
@@ -48,7 +48,7 @@ public final class Random
 	return XORShiftRandom.nextInt();
     }
 
-    /** 
+    /**
     *  nextLong() method of the XORShiftRandom RNG.
     *  Uses the XORShiftRandom static inner class.
     */
@@ -299,23 +299,23 @@ public final class Random
 
     /**
     *  Method to return an arraylist of integers from 0 to length - 1 with random positioned order in the arraylist.
-    */        
+    */
     public static ArrayList<Integer> createRandomIndexIntegerArrayList(int length)
     {
-        ArrayList<Integer> returnArrayList = new ArrayList<Integer>(length);        
-        ArrayList<Integer> secondayArrayList = new ArrayList<Integer>(length);        
-        
+        ArrayList<Integer> returnArrayList = new ArrayList<Integer>(length);
+        ArrayList<Integer> secondayArrayList = new ArrayList<Integer>(length);
+
         for (int i = 0; i < length; i++)
             secondayArrayList.add(i);
-            
+
         searchIntegerArrayListRandomlyAgain(secondayArrayList, returnArrayList);
-        
+
         return returnArrayList;
     }
 
     /**
     *  Recursive search method used in the method above.
-    */     
+    */
     private static void searchIntegerArrayListRandomlyAgain(ArrayList<Integer> secondayArrayList, ArrayList<Integer> returnArrayList)
     {
         if ( !secondayArrayList.isEmpty() )
@@ -329,14 +329,14 @@ public final class Random
         {
             return;
         }
-    }    
-    
+    }
+
     /**
     *  Gets an integer value according to a distribution.
     *  If the distribution is given by the argument vector
     *  <tt>[v0,v2,...vN-1]</tt>, value <tt>I</tt> from
-    *  <tt>[0,...N-1]</tt> will be 
-    *  returned with probability <tt>vI</tt> 
+    *  <tt>[0,...N-1]</tt> will be
+    *  returned with probability <tt>vI</tt>
     *  @param probabilities Vector of real-valued probabilities (should sum to 1).
     *  @return Index of value in the argument vector randomly chosen
     *  according to distribution given.
@@ -368,12 +368,12 @@ public final class Random
     *  @return Random integer value between bounds.
     *  @see Random#getDouble
     */
-    public static int getInteger(int lower, int upper) 
+    public static int getInteger(int lower, int upper)
     {
         XORShiftRandom localXORShiftRandom = new XORShiftRandom( Double.doubleToLongBits( random() ) );
         return ( lower + (int)round(localXORShiftRandom.nextDouble() * ( abs(upper + 1 - lower) ), 0) );
-    }    
-    
+    }
+
     /**
     *  Gets a random double value between two boundary double values
     *  with uniform distribution. The closed interval between these
@@ -384,16 +384,16 @@ public final class Random
     *  @return Random value between bounds.
     *  @see Random#getInteger
     */
-    public static double getDouble(double lower, double upper) 
+    public static double getDouble(double lower, double upper)
     {
         XORShiftRandom localXORShiftRandom = new XORShiftRandom( Double.doubleToLongBits( random() ) );
         return ( lower + localXORShiftRandom.nextDouble() * ( abs(upper - lower) ) );
-    }    
+    }
 
     /**
     *  Returns a random permutation of n elements (labeled 0 to n - 1)
     */
-    public static int[] randomPermutation(int n) 
+    public static int[] randomPermutation(int n)
     {
         int[] result = new int[n];
 
@@ -422,5 +422,5 @@ public final class Random
         return  ( (double)( (long)( number * pow(10.0, (double)digits) ) ) ) / pow(10.0, (double)digits);
     }
 
-    
+
 }

@@ -19,35 +19,35 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public final class LayoutPrintServices implements Printable 
-{     
-    
+public final class LayoutPrintServices implements Printable
+{
+
     private PrintRequestAttributeSet printAttributeSet = new HashPrintRequestAttributeSet();
     private PrinterJob printJob = null;
     private PageFormat pageFormat = null;
     private Paper paper = null;
-    
+
     private BufferedImage bufferedImage = null;
-    private Component componentToBePrinted = null;        
+    private Component componentToBePrinted = null;
     private AbstractAction printGraphPageSetupDialogAction = null;
-    
-    public LayoutPrintServices() 
-    {        
+
+    public LayoutPrintServices()
+    {
         initActions();
-        initComponents();    
-    } 
-    
+        initComponents();
+    }
+
     private void initActions()
     {
-        printGraphPageSetupDialogAction = new AbstractAction("Print Graph Page Setup") 
+        printGraphPageSetupDialogAction = new AbstractAction("Print Graph Page Setup")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */      
-            public static final long serialVersionUID = 111222333444555785L;             
-            
+            */
+            public static final long serialVersionUID = 111222333444555785L;
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 if (IS_MAC)
                 {
@@ -55,90 +55,90 @@ public final class LayoutPrintServices implements Printable
                     pageFormat.setOrientation(PageFormat.REVERSE_LANDSCAPE);
                     pageFormat.setPaper(paper);
                 }
-                pageFormat = (IS_MAC) ? printJob.pageDialog(pageFormat) : printJob.pageDialog(printAttributeSet);    
+                pageFormat = (IS_MAC) ? printJob.pageDialog(pageFormat) : printJob.pageDialog(printAttributeSet);
                 if (pageFormat == null)
                     pageFormat = PrinterJob.getPrinterJob().defaultPage();
             }
         };
-        printGraphPageSetupDialogAction.setEnabled(false);        
-    }    
-    
+        printGraphPageSetupDialogAction.setEnabled(false);
+    }
+
     private void initComponents()
     {
         if (!IS_MAC)
         {
             printAttributeSet = new HashPrintRequestAttributeSet();
-            printAttributeSet.add( new JobName("BioLayout Printing", Locale.getDefault() ) );        
+            printAttributeSet.add( new JobName("BioLayout Printing", Locale.getDefault() ) );
             printAttributeSet.add(OrientationRequested.LANDSCAPE);
             printAttributeSet.add(Chromaticity.COLOR);
             // printAttributeSet.add(MediaSize.ISO.A4);
         }
-        
+
         printJob = PrinterJob.getPrinterJob();
         pageFormat = printJob.defaultPage();
         paper = new Paper();
         paper.setSize(800, 1000);
-        paper.setImageableArea(0, 0, 800, 1000);           
-    }  
-    
-    public void setComponent(BufferedImage bufferedImage) 
-    {   
+        paper.setImageableArea(0, 0, 800, 1000);
+    }
+
+    public void setComponent(BufferedImage bufferedImage)
+    {
         this.bufferedImage = bufferedImage;
         componentToBePrinted = null;
-    }    
-    
-    public void setComponent(Component componentToBePrinted) 
+    }
+
+    public void setComponent(Component componentToBePrinted)
     {
         this.componentToBePrinted = componentToBePrinted;
         bufferedImage = null;
     }
-    
-    public void print() 
+
+    public void print()
     {
-        Book book = new Book();       
-        pageFormat.setPaper(paper); 
+        Book book = new Book();
+        pageFormat.setPaper(paper);
         printJob.setPageable(book);
         printJob.setPrintable(this, pageFormat);
         if ( ( (IS_MAC) ? printJob.printDialog() : printJob.printDialog(printAttributeSet) ) )
         {
-            try 
+            try
             {
                 PRINT_COPIES.set( printJob.getCopies() );
                 for (int i = 0; i < PRINT_COPIES.get(); i++)
-                    book.append(this, pageFormat);                
+                    book.append(this, pageFormat);
 
                 if (IS_MAC)
                     printJob.print();
                 else
                     printJob.print(printAttributeSet);
-            } 
-            catch (PrinterException pe) 
+            }
+            catch (PrinterException pe)
             {
                 if (DEBUG_BUILD) println("Error in LayoutPrintServices.print():\n" + pe.getMessage());
             }
         }
-    }    
+    }
 
     @Override
-    public int print(Graphics g, PageFormat pageFormat, int pageIndex) 
+    public int print(Graphics g, PageFormat pageFormat, int pageIndex)
     {
-        if ( pageIndex >= PRINT_COPIES.get() ) 
+        if ( pageIndex >= PRINT_COPIES.get() )
         {
             return NO_SUCH_PAGE;
-        } 
-        else 
+        }
+        else
         {
             Graphics2D g2d = (Graphics2D)g;
             g2d.translate( pageFormat.getImageableX(), pageFormat.getImageableY() );
-            
+
             double scaleX = 1.0;
-            double scaleY = 1.0;            
+            double scaleY = 1.0;
 
             double pageWidth = pageFormat.getImageableWidth();
             double pageHeight = pageFormat.getImageableHeight();
 
             double graphicsWidth = 0.0;
-            double graphicsHeight = 0.0;            
+            double graphicsHeight = 0.0;
             if (bufferedImage == null)
             {
                 graphicsWidth = componentToBePrinted.getWidth();
@@ -155,25 +155,25 @@ public final class LayoutPrintServices implements Printable
                 println("Graphic: " + graphicsWidth + " " + graphicsHeight);
                 println("Page: " + pageWidth + " " + pageHeight);
             }
-            
-            if (graphicsWidth > pageWidth)            
-                scaleX = (pageWidth / graphicsWidth);            
-            
-            if (graphicsHeight > pageHeight)             
-                scaleY = (pageHeight / graphicsHeight);            
 
-            if ( (scaleX < 1.0) || (scaleY < 1.0) ) 
+            if (graphicsWidth > pageWidth)
+                scaleX = (pageWidth / graphicsWidth);
+
+            if (graphicsHeight > pageHeight)
+                scaleY = (pageHeight / graphicsHeight);
+
+            if ( (scaleX < 1.0) || (scaleY < 1.0) )
             {
-                if (scaleX < scaleY) 
+                if (scaleX < scaleY)
                 {
                     if (DEBUG_BUILD) println("Recale Page: " + scaleX + " " + scaleX);
-                    
+
                     g2d.scale(scaleX, scaleX);
-                } 
-                else 
+                }
+                else
                 {
                     if (DEBUG_BUILD) println("Rescale Page: " + scaleY + " " + scaleY);
-                    
+
                     g2d.scale(scaleY, scaleY);
                 }
 
@@ -190,15 +190,15 @@ public final class LayoutPrintServices implements Printable
                 AffineTransform transform = AffineTransform.getScaleInstance(1, 1);
                 g2d.drawRenderedImage(bufferedImage, transform);
             }
-            
+
             return PAGE_EXISTS;
         }
     }
-    
+
     public AbstractAction getPrintGraphPageSetupDialogAction()
     {
         return printGraphPageSetupDialogAction;
-    }      
-    
-    
+    }
+
+
 }

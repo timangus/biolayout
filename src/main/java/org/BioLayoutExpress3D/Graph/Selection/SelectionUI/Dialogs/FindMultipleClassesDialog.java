@@ -20,11 +20,11 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 */
 
 public final class FindMultipleClassesDialog extends JDialog
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the FindClassDialog class.
-    */        
-    public static final long serialVersionUID = 111222333444555744L;                
+    */
+    public static final long serialVersionUID = 111222333444555744L;
 
     private static final int CLASS_SET_NAMES_COLUMN = 0;
 
@@ -35,13 +35,13 @@ public final class FindMultipleClassesDialog extends JDialog
     private FindMultipleClassesTableModel findMultipleClassesTableModel = null;
     private String prevClassSetName = "";
     private AbstractAction findMultipleClassesDialogAction = null;
-    
+
     public FindMultipleClassesDialog(LayoutFrame layoutFrame, JFrame jFrame)
     {
         super(jFrame, "Find By Multiple Classes", true);
-        
+
         this.layoutFrame = layoutFrame;
-        
+
         initActions();
         initComponents(jFrame);
     }
@@ -61,9 +61,9 @@ public final class FindMultipleClassesDialog extends JDialog
                 openDialogWindow();
             }
         };
-        findMultipleClassesDialogAction.setEnabled(false);        
+        findMultipleClassesDialogAction.setEnabled(false);
     }
-    
+
     private void initComponents(final JFrame jFrame)
     {
         findMultipleClassesTableModel = new FindMultipleClassesTableModel();
@@ -106,7 +106,7 @@ public final class FindMultipleClassesDialog extends JDialog
                 closeDialogWindow();
             }
         } );
-    }    
+    }
 
     private JButton createSelectDeselectAllButton()
     {
@@ -187,14 +187,14 @@ public final class FindMultipleClassesDialog extends JDialog
     }
 
     public void openDialogWindow()
-    {        
+    {
         // only reset enable/disable button state if a change of class sets have been detected
         String currentClassSetName = layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName();
         if ( !currentClassSetName.equals(prevClassSetName) )
         {
             findMultipleClassesTableModel.updateClassesTable( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassesNamesMap().keySet() );
             prevClassSetName = currentClassSetName;
-            resetSelectDeselectAllButton();            
+            resetSelectDeselectAllButton();
             selectCurrentClassName();
         }
         else
@@ -207,6 +207,6 @@ public final class FindMultipleClassesDialog extends JDialog
     {
         return findMultipleClassesDialogAction;
     }
-    
+
 
 }

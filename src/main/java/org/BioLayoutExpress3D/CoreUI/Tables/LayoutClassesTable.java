@@ -171,7 +171,7 @@ public final class LayoutClassesTable extends JPanel
         };
 
         table.setDefaultEditor(Integer.class, integerEditor);
-    }   
+    }
 
     public boolean updateClassData()
     {

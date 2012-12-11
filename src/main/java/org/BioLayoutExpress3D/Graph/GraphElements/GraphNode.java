@@ -16,18 +16,18 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
 public class GraphNode implements Comparable<GraphNode>
 {
-    private Vertex vertex = null;    
-    private Point3D originalPoint = null;    
+    private Vertex vertex = null;
+    private Point3D originalPoint = null;
 
     // stacks used for undo/redo node dragging in 2D mode
     private org.BioLayoutExpress3D.DataStructures.Stack<Point3D> undoPointStack = null;
     private org.BioLayoutExpress3D.DataStructures.Stack<Point3D> redoPointStack = null;
-    
+
     private HashSet<GraphNode> nodeChildren = null;
     private HashSet<GraphNode> nodeParents = null;
     protected HashSet<GraphEdge> nodeEdges = null;
 
-    public GraphNode(Vertex vertex) 
+    public GraphNode(Vertex vertex)
     {
         this.vertex = vertex;
         this.originalPoint = new Point3D( vertex.getVertexPoint() );
@@ -37,21 +37,21 @@ public class GraphNode implements Comparable<GraphNode>
         nodeChildren = new HashSet<GraphNode>(0); // so as to minimize memory usage as default load capacity is 16
     }
 
-    public void addNodeParent(GraphNode graphNode) 
+    public void addNodeParent(GraphNode graphNode)
     {
         nodeParents.add(graphNode);
     }
 
-    public void addNodeChild(GraphNode graphNode) 
+    public void addNodeChild(GraphNode graphNode)
     {
         nodeChildren.add(graphNode);
     }
 
-    public void addEdge(GraphEdge graphEdge) 
+    public void addEdge(GraphEdge graphEdge)
     {
         nodeEdges.add(graphEdge);
     }
-    
+
     public HashSet<GraphNode> getNodeChildren()
     {
         return nodeChildren;
@@ -67,15 +67,15 @@ public class GraphNode implements Comparable<GraphNode>
         HashSet<GraphNode> neighbours = new HashSet<GraphNode>( nodeChildren.size() + nodeParents.size() );
         neighbours.addAll(nodeChildren);
         neighbours.addAll(nodeParents);
-        
+
         return neighbours;
     }
 
     public Shapes2D getNode2DShape()
     {
         return vertex.getVertex2DShape();
-    }    
-    
+    }
+
     public Shapes3D getNode3DShape()
     {
         return vertex.getVertex3DShape();
@@ -85,17 +85,17 @@ public class GraphNode implements Comparable<GraphNode>
     {
         return vertex.getVertexTransparencyAlpha();
     }
-    
+
     public String getURLString()
     {
         return vertex.getVertexURLString();
-    }      
-    
+    }
+
     public void setNode2DShape(Shapes2D node2DShape)
     {
         vertex.setVertex2DShape(node2DShape);
-    }    
-    
+    }
+
     public void setNode3DShape(Shapes3D node3DShape)
     {
         vertex.setVertex3DShape(node3DShape);
@@ -103,21 +103,21 @@ public class GraphNode implements Comparable<GraphNode>
 
     public void setTransparencyAlpha(float transparencyAlpha)
     {
-        vertex.setVertexTransparencyAlpha(transparencyAlpha);    
-    }      
-    
+        vertex.setVertexTransparencyAlpha(transparencyAlpha);
+    }
+
     public void setURLString(String vertexURLString)
     {
         vertex.setVertexURLString(vertexURLString);
-    }       
-    
+    }
+
     public void setMinMaxNodeSize(float nodeSize, boolean isManualChange)
     {
         float minNodeSize = (isManualChange) ? MIN_MANUAL_NODE_SIZE : MIN_NODE_SIZE;
         setNodeSize( (nodeSize > MAX_NODE_SIZE) ? MAX_NODE_SIZE : ( (nodeSize < minNodeSize) ? minNodeSize : nodeSize) );
     }
 
-    public String getNodeName() 
+    public String getNodeName()
     {
         return vertex.getVertexName();
     }
@@ -127,13 +127,13 @@ public class GraphNode implements Comparable<GraphNode>
         return vertex.getVertexID();
     }
 
-    public void setNodeName(String nodeName) 
+    public void setNodeName(String nodeName)
     {
         vertex.setVertexName(nodeName);
     }
 
     public Color getColor()
-    {      
+    {
         return ( !vertex.getOverrideClassColor() ) ? ( (vertex.getVertexClass() != null) ? vertex.getVertexClass().getColor() : vertex.getVertexColor() ) : vertex.getVertexColor();
     }
 
@@ -141,25 +141,25 @@ public class GraphNode implements Comparable<GraphNode>
     {
        String s = Integer.toHexString( getColor().getRGB() & 0xffffff );
        if (s.length() < 6)
-       { 
+       {
            // pad on left with zeros
            s = "000000".substring( 0, 6 - s.length() ) + s;
        }
-       
+
        return '#' + s;
     }
 
-    public void removeColorOverride() 
-    {        
+    public void removeColorOverride()
+    {
         vertex.removeColorOverride();
     }
 
-    public void setColor(Color color) 
+    public void setColor(Color color)
     {
         vertex.setVertexColor(color);
     }
-    
-    public Point3D getPoint() 
+
+    public Point3D getPoint()
     {
         return vertex.getVertexPoint();
     }
@@ -206,7 +206,7 @@ public class GraphNode implements Comparable<GraphNode>
             vertex.setVertexPoint( redoPointStack.pop() );
     }
 
-    public void setLocation(Point3D point) 
+    public void setLocation(Point3D point)
     {
         vertex.getVertexPoint().setLocation(point);
     }
@@ -226,7 +226,7 @@ public class GraphNode implements Comparable<GraphNode>
         vertex.scaleLocation(scaleFactor);
     }
 
-    public void burstUpdate() 
+    public void burstUpdate()
     {
         vertex.getVertexPoint().setLocation(originalPoint);
     }
@@ -246,7 +246,7 @@ public class GraphNode implements Comparable<GraphNode>
         return vertex.getVertexPoint().getZ();
     }
 
-    public Vertex getVertex() 
+    public Vertex getVertex()
     {
         return vertex;
     }
@@ -261,7 +261,7 @@ public class GraphNode implements Comparable<GraphNode>
         vertex.setVertexLocation(locationX, locationY, locationZ);
     }
 
-    public VertexClass getVertexClass() 
+    public VertexClass getVertexClass()
     {
         return vertex.getVertexClass();
     }
@@ -281,7 +281,7 @@ public class GraphNode implements Comparable<GraphNode>
         return vertex.isShowVertexName();
     }
 
-    public HashSet<GraphEdge> getNodeEdges() 
+    public HashSet<GraphEdge> getNodeEdges()
     {
         return nodeEdges;
     }
@@ -303,12 +303,12 @@ public class GraphNode implements Comparable<GraphNode>
     {
         return vertex.getVertexSize();
     }
-    
+
     public void setNodeSize(float nodeSize)
     {
         vertex.setVertexSize(nodeSize);
-    }    
-    
+    }
+
     public String[] getNodeDescription()
     {
         return vertex.getRawDescription().split("--");
@@ -324,12 +324,12 @@ public class GraphNode implements Comparable<GraphNode>
         return vertex.ismEPNTransition();
     }
 
-    /** 
+    /**
     *  Overriden compareTo() method for GraphNode.
-    *  Note, it uses a comparison particularly tailored for saving Graphml files, omitting the first letter (the 'n') 
+    *  Note, it uses a comparison particularly tailored for saving Graphml files, omitting the first letter (the 'n')
     *  with the substring command and then do a Integer comparison with the rest of the name (the Graphml nodes have keys of 'nXXX' style, where XXX a number)
-    *  See the SimpleSaver.saveFile() for usage details. 
-    */   
+    *  See the SimpleSaver.saveFile() for usage details.
+    */
     @Override
     public int compareTo(GraphNode obj)
     {

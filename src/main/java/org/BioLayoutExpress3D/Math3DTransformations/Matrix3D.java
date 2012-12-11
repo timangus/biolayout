@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Math3DTransformations;
 
-/** 
-*   
+/**
+*
 * Matrix3D is a class encapsulating operations for a 3x3 3D matrix.
 *
 * @author Thanos Theo, Michael Kargas, 2010
@@ -9,7 +9,7 @@ package org.BioLayoutExpress3D.Math3DTransformations;
 */
 
 public class Matrix3D
-{       
+{
 
     /**
     *  The float 2D array variable of the matrix.

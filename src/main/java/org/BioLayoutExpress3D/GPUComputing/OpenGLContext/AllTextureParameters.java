@@ -165,8 +165,8 @@ public final class AllTextureParameters
         {
             return textureName;
         }
-        
-        
+
+
     }
 
 

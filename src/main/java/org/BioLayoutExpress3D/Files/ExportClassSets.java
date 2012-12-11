@@ -60,7 +60,7 @@ public final class ExportClassSets
             */
             public static final long serialVersionUID = 111222333444555715L;
 
-            @Override            
+            @Override
             public void actionPerformed(ActionEvent action)
             {
                 setFileChooser("Save Class Sets As File From Graph");
@@ -80,7 +80,7 @@ public final class ExportClassSets
             */
             public static final long serialVersionUID = 111222333444555715L;
 
-            @Override            
+            @Override
             public void actionPerformed(ActionEvent action)
             {
                 setFileChooser("Save Class Sets As File From Graph Selection");
@@ -100,7 +100,7 @@ public final class ExportClassSets
             */
             public static final long serialVersionUID = 111222333444555715L;
 
-            @Override            
+            @Override
             public void actionPerformed(ActionEvent action)
             {
                 setFileChooser("Save Class Sets As File From Visible Graph");

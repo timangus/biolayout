@@ -15,8 +15,8 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public final class NetworkRootContainer extends NetworkContainer 
-{ 
+public final class NetworkRootContainer extends NetworkContainer
+{
     private ArrayList<NetworkComponentContainer> componentCollection = null;
     private TilingLevelsContainer tilingLevelsContainer = null;
 
@@ -24,24 +24,24 @@ public final class NetworkRootContainer extends NetworkContainer
     {
         super(layoutClassSetsManager, layoutFrame);
 
-        componentCollection = new ArrayList<NetworkComponentContainer>();      
+        componentCollection = new ArrayList<NetworkComponentContainer>();
         tilingLevelsContainer = new TilingLevelsContainer();
     }
 
-    public void createNetworkComponentsContainer() 
+    public void createNetworkComponentsContainer()
     {
         componentCollection.clear();
         tilingLevelsContainer.clear();
 
         // REMOVE SINGLETONS HERE FASTEST METHOD == IF DESIRED
         if (MINIMUM_COMPONENT_SIZE.get() > 1)
-           removeSingletons();        
+           removeSingletons();
 
         // NOW REMOVE CONNECTED COMPONENTS SMALLER THAN A SPECIFIED SIZE BUT NOT SINGLETONS
         findOrRemovePolygons( MINIMUM_COMPONENT_SIZE.get() );
     }
 
-    private void findOrRemovePolygons(int size) 
+    private void findOrRemovePolygons(int size)
     {
         // This code partitions the graph into connected components, also removing those smaller than a certain threshold
         int counter = 0;
@@ -66,10 +66,10 @@ public final class NetworkRootContainer extends NetworkContainer
 
             // has to add the keyset in a new HashSet for the tiling algorithm to work
             addToNcc( vertexDone, ncc, vertex, new HashSet<Vertex>( vertex.getEdgeConnectionsMap().keySet() ) );
-            
+
             if (ncc.getNumberOfComponents() < size)
             {
-                removeComponents( ncc.getVertices() );                
+                removeComponents( ncc.getVertices() );
                 ncc.removeComponents();
             }
             else
@@ -79,27 +79,27 @@ public final class NetworkRootContainer extends NetworkContainer
 
             allVerticesCopy.removeAll(vertexDone);
         }
-        
+
         renumberVertices();
 
         layoutProgressBarDialog.endProgressBar();
     }
 
-    private void removeSingletons() 
+    private void removeSingletons()
     {
         HashSet<Vertex> singletons = new HashSet<Vertex>();
 
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
         layoutProgressBarDialog.prepareProgressBar(verticesMap.size(), "Finding Singletons");
         layoutProgressBarDialog.startProgressBar();
-        
+
         for ( Vertex vertex : getVertices() )
-        {            
+        {
             if ( vertex.getEdgeConnectionsMap().isEmpty() )
-               singletons.add(vertex);            
+               singletons.add(vertex);
             layoutProgressBarDialog.incrementProgress();
         }
-        
+
         layoutProgressBarDialog.setText("Removing " + singletons.size() + " Singletons...");
         layoutProgressBarDialog.endProgressBar();
 
@@ -135,24 +135,24 @@ public final class NetworkRootContainer extends NetworkContainer
         Iterator<Vertex> iterator = toDoVertices.iterator();
         while ( iterator.hasNext() )
         {
-            currentVertex = iterator.next();            
+            currentVertex = iterator.next();
             if ( !vertexDone.contains(currentVertex) )
             {
                 toDoVertices.addAll( currentVertex.getEdgeConnectionsMap().keySet() );
                 vertexDone.add(currentVertex);
                 ncc.addNetworkConnection(currentVertex);
-            } 
-            else 
+            }
+            else
             {
                 toDoVertices.remove(currentVertex);
             }
-            
+
             iterator = toDoVertices.iterator(); // so as to avoid a concurrent modification exception
         }
     }
 
     @Override
-    public void optimize() 
+    public void optimize()
     {
         if (WEIGHTED_EDGES)
         {
@@ -171,7 +171,7 @@ public final class NetworkRootContainer extends NetworkContainer
             int componentNumber = 0;
             for (NetworkComponentContainer ncc : componentCollection)
                 ncc.optimize(++componentNumber);
-            
+
             frLayout.clean();
 
             Collections.sort( componentCollection, new NetworkComponentSorter() );
@@ -179,8 +179,8 @@ public final class NetworkRootContainer extends NetworkContainer
             LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
             layoutProgressBarDialog.prepareProgressBar(componentCollection.size(), "Tiling Graph Components");
             layoutProgressBarDialog.startProgressBar();
-            
-            for (NetworkComponentContainer ncc :componentCollection) 
+
+            for (NetworkComponentContainer ncc :componentCollection)
             {
                 layoutProgressBarDialog.incrementProgress();
                 tilingLevelsContainer.addNetworkComponentContainer(ncc);
@@ -196,8 +196,8 @@ public final class NetworkRootContainer extends NetworkContainer
     public void optimize(int componentID) {}
 
     @Override
-    public void relayout() 
-    {        
+    public void relayout()
+    {
         isOptimized = false;
         isRelayout = true;
 
@@ -214,15 +214,15 @@ public final class NetworkRootContainer extends NetworkContainer
             tilingLevelsContainer.clear();
 
             if (DEBUG_BUILD) println("Number of groups: " + componentCollection.size());
-            
+
             Collections.sort( componentCollection, new NetworkComponentSorter() );
 
-            for (NetworkComponentContainer ncc : componentCollection) 
-            {                
+            for (NetworkComponentContainer ncc : componentCollection)
+            {
                 layoutProgressBarDialog.incrementProgress();
-                
+
                 if (DEBUG_BUILD) println("Adding Group Dimension with width: " + ncc.getWidth() + " and height: " + ncc.getHeight());
-                
+
                 tilingLevelsContainer.addNetworkComponentContainer(ncc);
             }
 
@@ -241,7 +241,7 @@ public final class NetworkRootContainer extends NetworkContainer
         frLayout.setKvalue( layoutFrame, getVertices() );
     }
 
-    public boolean isOptimized() 
+    public boolean isOptimized()
     {
         return isOptimized;
     }
@@ -250,9 +250,9 @@ public final class NetworkRootContainer extends NetworkContainer
     public void clear()
     {
         super.clear();
-        
+
         componentCollection.clear();
-        tilingLevelsContainer.clear();     
+        tilingLevelsContainer.clear();
     }
 
     public void clearRoot()
@@ -260,7 +260,7 @@ public final class NetworkRootContainer extends NetworkContainer
         componentCollection.clear();
         tilingLevelsContainer.clear();
     }
-    
+
     private static class NetworkComponentSorter implements Comparator<NetworkComponentContainer>, Serializable
     {
 
@@ -270,13 +270,13 @@ public final class NetworkRootContainer extends NetworkContainer
         public static final long serialVersionUID = 111222333444555624L;
 
         @Override
-        public int compare(NetworkComponentContainer ncc1, NetworkComponentContainer ncc2) 
+        public int compare(NetworkComponentContainer ncc1, NetworkComponentContainer ncc2)
         {
             return ( ncc1.getWidth() < ncc2.getWidth() ) ? 1 : ( ncc1.getWidth() > ncc2.getWidth() ) ? -1 : 0;
         }
-        
-        
+
+
     }
-    
-    
+
+
 }

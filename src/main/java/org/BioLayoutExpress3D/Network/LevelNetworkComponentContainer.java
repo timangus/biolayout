@@ -11,22 +11,22 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public class LevelNetworkComponentContainer 
+public class LevelNetworkComponentContainer
 {
     // Has to be an arraylist for the tiling algorithm to work
     private ArrayList<NetworkComponentContainer> componentNetworkContainer = null;
 
     private double maxWidth = 0.0;
     private double currentWidth = 0.0;
-    private double currentHeight = 0.0;        
+    private double currentHeight = 0.0;
 
     public LevelNetworkComponentContainer(double maxWidth)
     {
-        this.maxWidth = maxWidth;      
+        this.maxWidth = maxWidth;
         componentNetworkContainer = new ArrayList<NetworkComponentContainer>();
     }
 
-    public boolean addNetworkComponentContainer(NetworkComponentContainer ncc) 
+    public boolean addNetworkComponentContainer(NetworkComponentContainer ncc)
     {
         double componentWidth = ncc.getWidth();
         boolean isAdded = false;
@@ -36,13 +36,13 @@ public class LevelNetworkComponentContainer
             currentWidth += ncc.getWidth();
 
             double height = ncc.getHeight();
-            
+
             if (currentHeight < height)
                 currentHeight = height;
-            
+
             isAdded = true;
         }
-        
+
         return isAdded;
     }
 
@@ -71,12 +71,12 @@ public class LevelNetworkComponentContainer
         return maxWidth - currentWidth;
     }
 
-    public void debug() 
+    public void debug()
     {
         int i = 0;
         for (NetworkComponentContainer ncc : componentNetworkContainer)
         {
-            i++;            
+            i++;
             if (DEBUG_BUILD) println("Component: " + i + " with width: " + ncc.getWidth());
         }
     }

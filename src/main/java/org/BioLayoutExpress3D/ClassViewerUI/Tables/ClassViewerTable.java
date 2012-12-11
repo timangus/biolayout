@@ -17,14 +17,14 @@ import org.BioLayoutExpress3D.Network.*;
 *
 * @author Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class ClassViewerTable extends JTable
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ClassViewerTable class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555600L;
 
     /**
@@ -36,7 +36,7 @@ public final class ClassViewerTable extends JTable
     *  The constructor of the ClassViewerTable class.
     */
     public ClassViewerTable(TableModel tableModel, String[] columnNames)
-    {        
+    {
         super(tableModel);
 
         this.columnNames = columnNames;

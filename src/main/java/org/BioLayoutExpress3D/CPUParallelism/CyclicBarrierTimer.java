@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.CPUParallelism;
 
-/** 
-*   
+/**
+*
 * The CyclicBarrierTimer class is a helper class that is used to create a timer object for CyclicBarriers.
 *
 * @author Thanos Theo, 2008-2009-2010

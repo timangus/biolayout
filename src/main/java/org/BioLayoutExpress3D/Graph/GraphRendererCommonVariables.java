@@ -14,19 +14,19 @@ import org.BioLayoutExpress3D.Graph.Selection.*;
 import org.BioLayoutExpress3D.Network.*;
 
 /**
-* 
+*
 * The GraphRendererCommonVariables class is the class that holds all relevant Graph, GraphRenderer2D & GraphRenderer3D OpenGL variables.
 * All variables in GraphRendererCommonVariables static class have package scope and are to be used within Graph, GraphRenderer2D & GraphRenderer3D.
-* 
+*
 * @see org.BioLayoutExpress3D.Graph.GraphRenderer2D
 * @see org.BioLayoutExpress3D.Graph.GraphRenderer3D
 * @author Thanos Theo, 2011
 * @version 3.0.0.0
-* 
+*
 */
 
 final class GraphRendererCommonVariables // package access
-{    
+{
 
     /**
     *  Value needed for the OpenGL renderer.
@@ -61,8 +61,8 @@ final class GraphRendererCommonVariables // package access
     /**
     *  Value needed for the OpenGL renderer.
     */
-    static int pathwayComponentContainersDisplayList = 0;    
-    
+    static int pathwayComponentContainersDisplayList = 0;
+
     /**
     *  Value needed for the OpenGL renderer.
     */
@@ -110,38 +110,38 @@ final class GraphRendererCommonVariables // package access
 
     /**
     *  Constant value needed for the OpenGL renderer.
-    */    
+    */
     static GraphRendererThreadUpdater graphRendererThreadUpdater = null;
-    
+
     /**
     *  Constant value needed for the OpenGL renderer.
     */
-    static boolean frameskip = true;      
-    
+    static boolean frameskip = true;
+
     /**
     *  Constant value needed for the OpenGL renderer.
     */
-    static boolean fullscreen = false;   
-    
+    static boolean fullscreen = false;
+
     /**
     *  Constant value needed for the OpenGL renderer.
     */
-    static int targetFPS = 60;    
-    
+    static int targetFPS = 60;
+
     /**
     *  Constant value needed for the OpenGL renderer.
     */
     static int noVynchTargetFPS = 600;
-    
+
     /**
     *  Constant value needed for the OpenGL renderer.
     */
     static int rate = 60;
-    
+
     /**
     *  Constant value needed for the OpenGL renderer.
     */
-    static int depth = 32;     
+    static int depth = 32;
 
     /**
     *  Value needed for the OpenGL renderer.
@@ -182,11 +182,11 @@ final class GraphRendererCommonVariables // package access
     *  Value needed for the OpenGL renderer.
     */
     static String lastNodeNamePicked = "";
-    
+
     /**
     *  Value needed for the OpenGL renderer.
     */
-    static String lastNodeURLStringPicked = "";    
+    static String lastNodeURLStringPicked = "";
 
     /**
     *  Value needed for the OpenGL renderer.
@@ -255,9 +255,9 @@ final class GraphRendererCommonVariables // package access
 
     /**
     *  Value needed for the OpenGL renderer.
-    */    
+    */
     static boolean hasInitiated2DNodeDragging = false;
-    
+
     /**
     *  Value needed for the OpenGL renderer.
     */
@@ -285,64 +285,64 @@ final class GraphRendererCommonVariables // package access
 
     /**
     *  Value needed for the OpenGL renderer.
-    */    
+    */
     static boolean isFirstSwitchCheck = false;
 
     /**
     *  Value needed for the OpenGL renderer.
-    */    
+    */
     static boolean rendererModeCheck = false;
-    
-    /** 
+
+    /**
     *  Screenshot related variable.
-    */      
-    static File saveScreenshotFile = null;    
-    
+    */
+    static File saveScreenshotFile = null;
+
     /**
     *  Value needed for the OpenGL renderer.
-    */    
+    */
     static LayoutFrame layoutFrame = null;
-    
+
     /**
     *  Value needed for the OpenGL renderer.
-    */    
-    static LayoutProgressBarDialog layoutProgressBarDialog = null;    
-    
+    */
+    static LayoutProgressBarDialog layoutProgressBarDialog = null;
+
     /**
     *  Value needed for the OpenGL renderer.
-    */    
-    static NetworkContainer nc = null;        
-    
+    */
+    static NetworkContainer nc = null;
+
     /**
     *  Value needed for the OpenGL renderer.
-    */    
-    static SelectionManager selectionManager = null;    
- 
+    */
+    static SelectionManager selectionManager = null;
+
     /**
     *  Data structure that holds graph nodes information.
-    */      
+    */
     static HashMap<Integer, GraphNode> graphNodes = null;
-    
+
     /**
     *  Data structure that holds graph edges information.
-    */          
-    static HashSet<GraphEdge> graphEdges = null;    
-    
+    */
+    static HashSet<GraphEdge> graphEdges = null;
+
     /**
     *  Data structure that holds visible graph nodes information.
-    */          
+    */
     static HashSet<GraphNode> visibleNodes = null;
-    
+
     /**
     *  Data structure that holds visible graph edges information.
-    */          
-    static HashSet<GraphEdge> visibleEdges = null;        
-    
+    */
+    static HashSet<GraphEdge> visibleEdges = null;
+
     /**
     *  GraphListener listener to be used as a callback for the switchRenderer process.
     */
-    static GraphListener listener = null;    
-    
+    static GraphListener listener = null;
+
     /**
     *  Static initializer.
     */
@@ -353,6 +353,6 @@ final class GraphRendererCommonVariables // package access
         visibleNodes = new HashSet<GraphNode>();
         visibleEdges = new HashSet<GraphEdge>();
     }
-    
-    
+
+
 }

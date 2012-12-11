@@ -11,18 +11,18 @@ package org.BioLayoutExpress3D.Network;
 *
 */
 
-public final class Edge 
+public final class Edge
 {
     private String edgeName = null; // initialize the string edgeName to null so as to not use any RAM for expression analysis that uses many non-named edges
     private Vertex firstVertex = null;
     private Vertex secondVertex = null;
-    
+
     private float weight = 1.0f;
     private float normalisedWeight = 1.0f;
     private float scaledWeight = 0.0f;
     private byte packedBooleanFlags = 0; // packed boolean flags so as to not use 1 byte per boolean for the edge
 
-    public Edge(Vertex firstVertex, Vertex secondVertex, float weight) 
+    public Edge(Vertex firstVertex, Vertex secondVertex, float weight)
     {
         this.firstVertex = firstVertex;
         this.secondVertex = secondVertex;
@@ -51,41 +51,41 @@ public final class Edge
         return edgeName;
     }
 
-    public Vertex getFirstVertex() 
+    public Vertex getFirstVertex()
     {
         return firstVertex;
     }
-    
-    public Vertex getSecondVertex() 
+
+    public Vertex getSecondVertex()
     {
         return secondVertex;
     }
-    
+
     public void setWeight (float weight)
     {
         this.weight = weight;
-    }    
-    
+    }
+
     public float getWeight()
     {
         return weight;
-    }    
-    
+    }
+
     public void setNormalisedWeight(float normalisedWeight)
     {
         this.normalisedWeight = normalisedWeight;
-    }    
-    
+    }
+
     public float getNormalisedWeight()
     {
         return normalisedWeight;
     }
-    
+
     public void setScaledWeight(float scaledWeight)
     {
         this.scaledWeight = scaledWeight;
-    }    
-    
+    }
+
     public float getScaledWeight()
     {
         return scaledWeight;

@@ -12,17 +12,17 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
-* 
+*
 * @author Thanos Theo, 2008-2009-2010
 * @version 3.0.0.0
 *
 */
 
 public final class LayoutNavigationWizardDialog extends JDialog implements ActionListener, HyperlinkListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutNavigationWizardDialog class.
-    */      
+    */
     public static final long serialVersionUID = 111222333444555700L;
 
     private LayoutFrame layoutFrame = null;
@@ -88,11 +88,11 @@ public final class LayoutNavigationWizardDialog extends JDialog implements Actio
 
         URL url = LayoutTipOfTheDayDialog.class.getResource("/Resources/Html/NavigationWizard.html");
 
-        try 
+        try
         {
             editorPane.setPage(url);
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("Attempted to read a bad URL: " + url + "\n" + ioe.getMessage());
         }
@@ -135,7 +135,7 @@ public final class LayoutNavigationWizardDialog extends JDialog implements Actio
     *  Executes the actionPerformed() callback for the Navigation Wizard dialog window.
     */
     @Override
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
         if ( e.getSource().equals(closeButton) )
         {

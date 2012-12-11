@@ -37,7 +37,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
     private JRadioButton[] allDelimiterRadioButtons = null;
     private JCheckBox customDelimiterCheckBox = null;
     private JTextField customDelimiterTextField = null;
-    
+
     private JCheckBox matchFullNameCheckBox = null;
     private JCheckBox matchCaseCheckBox = null;
     private JCheckBox matchEntireNameCheckBox = null;
@@ -54,7 +54,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
 
     public ImportClassSetsDialog(LayoutFrame layoutFrame)
     {
-        super(layoutFrame, "Node Identifier Parsing Options", true);       
+        super(layoutFrame, "Node Identifier Parsing Options", true);
 
         initComponents();
 
@@ -66,7 +66,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
     *  Initializes the UI components for this dialog.
     */
     private void initComponents()
-    {        
+    {
         JPanel delimiterOptionsPanel = new JPanel(true);
         allDelimiterRadioButtons = new JRadioButton[ALL_DELIMITERS.length];
         for (int i = 0; i < ALL_DELIMITERS.length; i++)
@@ -75,14 +75,14 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
             allDelimiterRadioButtons[i].addActionListener(this);
             if (i == 4)
                 allDelimiterRadioButtons[4].setToolTipText("Delimiter:   None");
-            else    
-                allDelimiterRadioButtons[i].setToolTipText("Delimiter:   " + ALL_DELIMITERS[i]);            
+            else
+                allDelimiterRadioButtons[i].setToolTipText("Delimiter:   " + ALL_DELIMITERS[i]);
         }
         ButtonGroup allDelimiterRadioButtonsGroup = new ButtonGroup();
         customDelimiterTextField = new JTextField();
-        customDelimiterTextField.addCaretListener(this);        
+        customDelimiterTextField.addCaretListener(this);
         customDelimiterCheckBox = new JCheckBox();
-        customDelimiterCheckBox.addActionListener(this);        
+        customDelimiterCheckBox.addActionListener(this);
 
         JPanel matchNameOptionsPanel = new JPanel(true);
         matchFullNameCheckBox = new JCheckBox();
@@ -102,15 +102,15 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
         for (int i = 0; i < ALL_DELIMITERS.length; i++)
         {
             allDelimiterRadioButtonsGroup.add(allDelimiterRadioButtons[i]);
-            
+
             if (i == 4)
                 allDelimiterRadioButtons[4].setText("  None  ");
             else
                 allDelimiterRadioButtons[i].setText("  " + ALL_DELIMITERS[i] + "  ");
-        }        
+        }
         allDelimiterRadioButtons[0].setSelected(true);
-        allDelimiterRadioButtons[0].requestFocus();     
-                
+        allDelimiterRadioButtons[0].requestFocus();
+
         customDelimiterTextField.setText(" ");
         customDelimiterTextField.setToolTipText("Other (Custom Delimiter)");
         customDelimiterCheckBox.setText("Other (Custom Delimiter)");
@@ -145,7 +145,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
                 .addComponent(allDelimiterRadioButtons[2])
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(allDelimiterRadioButtons[3])
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)                
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(allDelimiterRadioButtons[4])
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(delimiterOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -227,7 +227,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
         // matchNameOptionsPanel.getAccessibleContext().setAccessibleName("Match Name Options");
 
         this.setResizable(false);
-        this.pack();        
+        this.pack();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
         this.addWindowListener( new WindowAdapter()
@@ -245,13 +245,13 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
         importSelectClassSetsDialog.closeDialogWindow();
         this.setVisible(false);
 
-        if (closeAndParse && listener != null) 
+        if (closeAndParse && listener != null)
             listener.getSelectedClassSets(importSelectClassSetsDialog.getSelectedClassSets(), selectedDelimiter, selectedMatchFullName, selectedMatchCase, selectedMatchEntireName);
     }
 
     public void openDialogWindows(Set<String> allClassSets)
     {
-        importSelectClassSetsDialog.updateImportSelectClassSetsTable(allClassSets);        
+        importSelectClassSetsDialog.updateImportSelectClassSetsTable(allClassSets);
         importSelectClassSetsDialog.openDialogWindow();
         // has to be last as this dialog is the modal one, the ImportSelectClassSetsDialog one is with APPLICATION_EXCLUDE turned on
         this.setVisible(true);
@@ -262,7 +262,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
         try
         {
             "testing".split(selectedDelimiter + "+");
-            
+
             return true;
         }
         catch (PatternSyntaxException exc)
@@ -271,16 +271,16 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
             JOptionPane.showMessageDialog(this, "The Custom Delimiter '" + selectedDelimiter + "' Cannot Be Accepted For Pattern Matching.\nPlease Use Another Custom Delimiter.", "Custom Delimiter Not Accepted!", JOptionPane.WARNING_MESSAGE);
             customDelimiterTextField.setText(" ");
             selectedDelimiter = " ";
-            
+
             return false;
-        }        
-    }    
-    
+        }
+    }
+
     public void doClickDelimiter1RadioButton()
     {
         allDelimiterRadioButtons[0].doClick();
         allDelimiterRadioButtons[0].requestFocus();
-        
+
         if ( customDelimiterCheckBox.isSelected() )
             customDelimiterCheckBox.setSelected(false);
 
@@ -298,7 +298,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
     {
         if ( customDelimiterCheckBox.isSelected() )
             customDelimiterCheckBox.setSelected(false);
-        
+
         matchFullNameCheckBox.setSelected(false);
         matchFullNameCheckBox.doClick();
         matchFullNameCheckBox.requestFocus();
@@ -316,8 +316,8 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
         customDelimiterCheckBox.setEnabled(!enabled);
 
         matchFullNameCheckBox.setSelected(enabled);
-    }    
-    
+    }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -326,9 +326,9 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
             boolean radioButtonState = !customDelimiterCheckBox.isSelected();
             for (int i = 0; i < ALL_DELIMITERS.length; i++)
                 allDelimiterRadioButtons[i].setEnabled(radioButtonState);
-            
+
             if (!radioButtonState)
-                selectedDelimiter = customDelimiterTextField.getText().trim();            
+                selectedDelimiter = customDelimiterTextField.getText().trim();
         }
         else if ( e.getSource().equals(matchFullNameCheckBox) )
         {
@@ -372,7 +372,7 @@ public final class ImportClassSetsDialog extends JDialog implements ActionListen
                     setEnabledMatchFullNameMode(i == 4);
                 }
             }
-        }        
+        }
     }
 
     @Override

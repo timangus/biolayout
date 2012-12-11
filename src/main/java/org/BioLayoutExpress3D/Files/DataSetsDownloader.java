@@ -18,9 +18,9 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtilsStreamingListener
 {
-    /** 
+    /**
     *  Constant variable used for downloading.
-    */        
+    */
     private static final String REGEX = "#";
 
     private ArrayList<String> dataSetsControlFileData = null;
@@ -31,8 +31,8 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
     /**
     *  String variable to be used for the repository.
     */
-    private String repository = "";    
-    
+    private String repository = "";
+
     /**
     *  Integer variable to be used by the loading dialog.
     */
@@ -46,8 +46,8 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
     /**
     *  LayoutProgressBarDialog reference (reference for the loading dialog).
     */
-    private LayoutProgressBarDialog layoutProgressBarDialog = null;    
-    
+    private LayoutProgressBarDialog layoutProgressBarDialog = null;
+
     /**
     *  The first constructor of the DataSetsDownloader class (without data sets names & without proxy related settings).
     */
@@ -56,10 +56,10 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
         super();
         this.layoutProgressBarDialog = layoutProgressBarDialog;
     }
-    
-    /** 
+
+    /**
     *  The second constructor of the DataSetsDownloader class (with data sets names & without proxy related settings).
-    */      
+    */
     public DataSetsDownloader(String repository, String dataSets, LayoutProgressBarDialog layoutProgressBarDialog)
     {
         super();
@@ -120,7 +120,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
         {
             String controlFileUrl = (repository.isEmpty() ? (BIOLAYOUT_EXPRESS_3D_DOMAIN_URL + BIOLAYOUT_SERVER_DATASETS_DIRECTORY) : repository) + BIOLAYOUT_DATASETS_CONTROL_FILE;
             dataSetsControlFileData = retrieveTextDataFromHttpConnection(controlFileUrl, true);
-            
+
             if ( getManagedToConnect() )
             {
                 int chooseRandomDataSetToLoad = org.BioLayoutExpress3D.StaticLibraries.Random.getRandomRange( 1, dataSetsControlFileData.size() );
@@ -203,11 +203,11 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
 
             return hasSucceeded;
         }
-    }        
+    }
 
     /**
     *  Loads a given dataset.
-    */    
+    */
     private boolean loadDataSet(String dataSetLength, String dataSetName, String dataSetUrl, String dataSetFileName) throws Exception
     {
         boolean hasSucceeded = true;
@@ -222,16 +222,16 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
         }
         else
             IOUtils.removeListener();
-        
+
         return hasSucceeded;
     }
-    
+
     /**
     *  This method is called as a callback event when starting a streaming process.
     */
     @Override
     public void initStreamingProcess(int availableDataInBytes)
-    {        
+    {
         layoutProgressBarDialog.prepareProgressBar(numberOfIterations, "Downloading " + currentDataSet + " Data Set...");
         layoutProgressBarDialog.startProgressBar();
         if (DEBUG_BUILD) println("initStreamingProcess(): " + numberOfIterations);
@@ -268,19 +268,19 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
 
     /**
     *  Sets the name of the data sets downloader http connection.
-    */     
+    */
     public void setDataSetsDownloaderName(String dataSetsDownloader)
     {
         this.nameOfHttpConnection = dataSetsDownloader;
-    }    
-    
+    }
+
     /**
     *  Gets the name of the data sets downloader http connection.
-    */     
+    */
     public String getDataSetsDownloaderName()
     {
         return nameOfHttpConnection;
     }
-    
-    
+
+
 }

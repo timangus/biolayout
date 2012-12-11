@@ -16,44 +16,44 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *     * it loads the material details from the MTL file, storing
 *       them as Material objects in the materialsMap HashMap.
 *
-*     * it sets up a specified material's colours or textures 
+*     * it sets up a specified material's colours or textures
 *       to be used when rendering -- see drawWithMaterial()
 *
 * @author Andrew Davison, 2007, rewrite for BioLayout Express3D by Thanos Theo, 2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class Materials
 {
-    
-    /** 
+
+    /**
     *  Stores the Material objects built from the MTL file data.
-    */      
-    private HashMap<String, Material> materialsMap = null;     
-    
-    /** 
+    */
+    private HashMap<String, Material> materialsMap = null;
+
+    /**
     *  Stores the current render material name.
-    */          
+    */
     private String drawnMaterialName = "";
 
-    /** 
+    /**
     *  The usingTexture variable.
-    */      
+    */
     private boolean usingTexture = false;
 
-    /** 
+    /**
     *  The Materials class constructor.
-    */  
+    */
     public Materials(Component component, String directoryFilename, String materialFilename, boolean loadFromFileOrFromJar)
-    {                      
-        materialsMap = new HashMap<String, Material>();        
+    {
+        materialsMap = new HashMap<String, Material>();
         parseMaterialFile(component, directoryFilename, materialFilename, loadFromFileOrFromJar);
     }
 
-    /* 
+    /*
     *  Parses the MTL file line-by-line, building Material
-    *  objects which are collected in the materialsMap ArrayList. 
+    *  objects which are collected in the materialsMap ArrayList.
     */
     private void parseMaterialFile(Component component, String directoryFilename, String materialFilename, boolean loadFromFileOrFromJar)
     {
@@ -61,14 +61,14 @@ public class Materials
         BufferedReader materialBufferedReader = null;
         String line = "";
         Material currentMaterial = null;
-        
-        try 
+
+        try
         {
             materialBufferedReader = (loadFromFileOrFromJar)
                                     ? new BufferedReader( new FileReader(fullMaterialPathAndFilename) )
-                                    : new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream(fullMaterialPathAndFilename) ) );                        
+                                    : new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream(fullMaterialPathAndFilename) ) );
 
-            while ( ( line = materialBufferedReader.readLine() ) != null) 
+            while ( ( line = materialBufferedReader.readLine() ) != null)
             {
                 line = line.trim();
                 if (line.length() == 0)
@@ -97,7 +97,7 @@ public class Materials
                     currentMaterial.setNs( Float.valueOf( line.substring(3) ).floatValue() );
                 else if ( line.charAt(0) == 'd' || line.startsWith("Tr ") ) // alpha
                     currentMaterial.setD( Float.valueOf( line.substring(2) ).floatValue() );
-                else if ( line.startsWith("illum ") )  // illumination model               
+                else if ( line.startsWith("illum ") )  // illumination model
                 {
                     // not implemented
                 }
@@ -106,18 +106,18 @@ public class Materials
                 else
                     if (DEBUG_BUILD) println("Ignoring MTL line: " + line);
           }
-            
+
             if (currentMaterial != null)
                 materialsMap.put(currentMaterial.getMaterialName(), currentMaterial);
         }
-        catch (IOException ioExc) 
+        catch (IOException ioExc)
         {
-            if (DEBUG_BUILD) println("IOException while parsing the material file " + materialFilename + " in Materials.parseMaterialFile(): " + ioExc.getMessage());  
+            if (DEBUG_BUILD) println("IOException while parsing the material file " + materialFilename + " in Materials.parseMaterialFile(): " + ioExc.getMessage());
             JOptionPane.showMessageDialog(component, "Material filename: " + ioExc.getMessage(), "Error while parsing the material file!", JOptionPane.ERROR_MESSAGE);
         }
         finally
         {
-            try 
+            try
             {
                 if (materialBufferedReader != null) materialBufferedReader.close();
             }
@@ -125,20 +125,20 @@ public class Materials
             {
                 if (DEBUG_BUILD) println("IOException while closing the stream in Materials.parseMaterialFile():\n" + ioe.getMessage());
             }
-        }        
+        }
     }
 
 
     // ----------------- using a material at render time -----------------
 
-    /* 
+    /*
     *  Checks drawing using the texture or colours associated with the
     *  material, faceMaterial. But only change things if faceMaterial is
     *  different from the current rendering material, whose name
     *  is stored in drawnMaterialName.
-    * 
+    *
     *  Returns the texture if needed to texturise the material.
-    */    
+    */
     public Texture checkDrawWithMaterial(String faceMaterial)
     {
         Texture texture = null;
@@ -146,23 +146,23 @@ public class Materials
         {
             // store current faceMaterial
             drawnMaterialName = faceMaterial;
-            
+
             // set up new rendering material
             texture = getTexture(drawnMaterialName);
             usingTexture = (texture != null);
         }
-        
+
         return texture;
-    }    
-    
-    /* 
+    }
+
+    /*
     *  Draws using the texture or colours associated with the
     *  material, faceMaterial. But only change things if faceMaterial is
     *  different from the current rendering material, whose name
     *  is stored in drawnMaterialName.
-    * 
+    *
     *  Returns the texture if needed to texturise the material.
-    */    
+    */
     public Texture drawWithMaterial(GL2 gl, String faceMaterial, boolean useMaterialColors)
     {
         Texture texture = null;
@@ -170,7 +170,7 @@ public class Materials
         {
             // store current faceMaterial
             drawnMaterialName = faceMaterial;
-            
+
             // set up new rendering material
             texture = getTexture(drawnMaterialName);
             if (texture != null) // switch on the material's texture
@@ -178,72 +178,72 @@ public class Materials
             else if (useMaterialColors) // use the material's colours
                 setMaterialColors(gl, drawnMaterialName);
         }
-        
+
         return texture;
-    }         
-    
-    /* 
-    *  Resets the drawnMaterialName. 
-    */ 
+    }
+
+    /*
+    *  Resets the drawnMaterialName.
+    */
     public void resetDrawnMaterialName(boolean resetMaterialValues)
     {
         drawnMaterialName = "";
         if (resetMaterialValues)
             Material.resetMaterialValues();
     }
-    
-    /* 
-    *  Switches the texturing on (binds the texture). 
-    */      
+
+    /*
+    *  Switches the texturing on (binds the texture).
+    */
     private void switchOnTexture(GL2 gl, Texture texture)
     {
         usingTexture = true;
         texture.bind(gl);
     }
 
-    /* 
-    *  Switches the texturing off. 
-    */      
+    /*
+    *  Switches the texturing off.
+    */
     public void switchOffTexture()
     {
         if (usingTexture)
             usingTexture = false;
-    }    
-    
-    /* 
-    *  Returns the texture associated with the material name. 
-    */      
-    private Texture getTexture(String materialName)     
+    }
+
+    /*
+    *  Returns the texture associated with the material name.
+    */
+    private Texture getTexture(String materialName)
     {
         Material material = materialsMap.get(materialName);
         return (material != null) ? material.getTexture() : null;
     }
 
-    /* 
+    /*
     *  Starts rendering using the colours specified by the named material.
-    */          
-    private void setMaterialColors(GL2 gl, String materialName)    
+    */
+    private void setMaterialColors(GL2 gl, String materialName)
     {
         Material material = materialsMap.get(materialName);
         if (material != null)
             material.setMaterialValues(gl);
     }
 
-    /* 
+    /*
     *  Checks for material textures availability.
-    */              
+    */
     public boolean hasMaterialTextures()
     {
         for ( Material material : materialsMap.values() )
             if (material.getTexture() != null)
                 return true;
-        
+
         return false;
     }
 
-    /* 
+    /*
     *  Disposes all material textures.
-    */                  
+    */
     private void disposeAllMaterialTextures(GL2 gl)
     {
         Texture materialTexture = null;
@@ -255,19 +255,19 @@ public class Materials
         }
     }
 
-    /** 
+    /**
     *  Clears all materials.
-    */       
+    */
     public void clearAllMaterials(GL2 gl)
     {
         disposeAllMaterialTextures(gl);
         materialsMap.clear();
     }
-    
-    /* 
-    *  Shows all the Material information. 
-    */    
-    public void showMaterials()    
+
+    /*
+    *  Shows all the Material information.
+    */
+    public void showMaterials()
     {
         if (DEBUG_BUILD)
         {
@@ -276,6 +276,6 @@ public class Materials
                 material.showMaterial();
         }
     }
-    
+
 
 }

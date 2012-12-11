@@ -14,14 +14,14 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutShowClassesLegendsDialog extends JDialog
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutLegend class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555690L;
 
     private LayoutFrame layoutFrame = null;
@@ -43,11 +43,11 @@ public final class LayoutShowClassesLegendsDialog extends JDialog
     {
         layoutShowClassesLegendsShowAction = new AbstractAction("Show Classes Legends")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555684L;
-            
+
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -59,20 +59,20 @@ public final class LayoutShowClassesLegendsDialog extends JDialog
 
         layoutShowClassesLegendsHideAction = new AbstractAction("Hide Classes Legends")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555685L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setVisible(false);
                 layoutFrame.toggleLegend(layoutShowClassesLegendsShowAction);
             }
-        };        
-    }    
-    
+        };
+    }
+
     private void initComponents()
     {
         layoutClassLegendTableModel = new LayoutClassLegendTableModel();
@@ -130,7 +130,7 @@ public final class LayoutShowClassesLegendsDialog extends JDialog
     }
 
     @Override
-    public void setVisible(boolean state) 
+    public void setVisible(boolean state)
     {
         layoutClassLegendTableModel.updateClassLegend( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses() );
         super.setVisible(state);
@@ -140,16 +140,16 @@ public final class LayoutShowClassesLegendsDialog extends JDialog
     {
         return layoutClassLegendTableModel;
     }
-    
-    public AbstractAction getShowClassesLegendsShowAction() 
+
+    public AbstractAction getShowClassesLegendsShowAction()
     {
         return layoutShowClassesLegendsShowAction;
     }
-    
-    public AbstractAction getShowClassesLegendsHideAction() 
+
+    public AbstractAction getShowClassesLegendsHideAction()
     {
         return layoutShowClassesLegendsHideAction;
     }
-    
-    
+
+
 }

@@ -31,7 +31,7 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
 
     private BioLayoutExpress3DFileFilter bioLayoutExpress3DFileFilter = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
-    private ImportClassSetsDialog importClassSetsDialog = null;  
+    private ImportClassSetsDialog importClassSetsDialog = null;
     private boolean cancelParse = false;
 
     private HashMap<String, HashMap<String, HashSet<String>>> allClassSetsVertexData = null;
@@ -106,7 +106,7 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
     *  Loads a given import file.
     */
     private void loadImportFile(File file)
-    {        
+    {
         if ( !file.exists() )
         {
             JOptionPane.showMessageDialog(layoutFrame, "File does not exist, please check the file!", "Error: File does not exist", JOptionPane.ERROR_MESSAGE);
@@ -134,12 +134,12 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
         {
             @Override
             public void run()
-            {                
+            {
                 try
                 {
                     initializeAllDataStructures();
                     if ( !(init(loadFile, "") && parse() ) )
-                        JOptionPane.showMessageDialog(layoutFrame, "Parse Error with import file " + file.getName() + ":\nPlease check the file format and retry loading!", "Parse Error", JOptionPane.ERROR_MESSAGE);                    
+                        JOptionPane.showMessageDialog(layoutFrame, "Parse Error with import file " + file.getName() + ":\nPlease check the file format and retry loading!", "Parse Error", JOptionPane.ERROR_MESSAGE);
                 }
                 catch (OutOfMemoryError memErr)
                 {
@@ -293,9 +293,9 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
                 cancelParse = !showConfirmationDialogForDifferentExpressionFile();
                 importClassSetsDialog.doClickDelimiter1RadioButton();
             }
-            else            
+            else
                 importClassSetsDialog.doClickMatchFullNameAndCase();
-        }        
+        }
         else if ( property.equals("//NODECLASS") )
         {
             vertex = getNext();
@@ -379,7 +379,7 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
         if ( !selectedClassSets.isEmpty() )
         {
             Set<Tuple2<String, Vertex>> allCachedNames = preCacheAllNames(!selectedDelimiter.isEmpty() && !selectedMatchFullName, !selectedMatchCase);
-            
+
             LayoutClasses lc = null;
             VertexClass vc = null;
             Set<Vertex> vertexSet = new HashSet<Vertex>();
@@ -500,7 +500,7 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
         {
             // Only one perfect match to be found, cache the lower cache name
             if (!selectedMatchCase)
-            {                
+            {
                 String vertexNameLowerCase = vertexName.toLowerCase();
                 if (!selectedMatchEntireName)
                 {

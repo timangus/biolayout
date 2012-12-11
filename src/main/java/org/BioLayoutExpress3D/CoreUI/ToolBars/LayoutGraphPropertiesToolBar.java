@@ -7,16 +7,16 @@ import static org.BioLayoutExpress3D.CoreUI.ToolBars.LayoutAbstractToolBar.Graph
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
 /**
-* 
+*
 * The LayoutGraphPropertiesToolBar is the BioLayout toolbar responsible for Graph Properties control.
 *
 * @author Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutGraphPropertiesToolBar extends LayoutAbstractToolBar
-{        
+{
 
     public LayoutGraphPropertiesToolBar()
     {
@@ -39,8 +39,8 @@ public final class LayoutGraphPropertiesToolBar extends LayoutAbstractToolBar
     protected final String getFirstButtonName()
     {
         return capitalizeFirstCharacter(GENERAL);
-    }    
-    
+    }
+
     public void setGeneralAction(AbstractAction action)
     {
         addPaddingSpace();
@@ -110,23 +110,23 @@ public final class LayoutGraphPropertiesToolBar extends LayoutAbstractToolBar
         String actionName = capitalizeFirstCharacter(CLASSES);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, CLASSES.ordinal() );
     }
-    
+
     @Override
     public void setEnabled(boolean enabled)
     {
         for (int i = 0; i < NUMBER_OF_GRAPH_PROPERTIES_TOOLBAR_BUTTONS; i++)
             allToolBarButtons[i].setEnabled(enabled);
     }
-    
+
     @Override
     public boolean isEnabled()
     {
         for (int i = 0; i < NUMBER_OF_GRAPH_PROPERTIES_TOOLBAR_BUTTONS; i++)
-            if ( constructorInitializationFinished && !allToolBarButtons[i].isEnabled() )        
+            if ( constructorInitializationFinished && !allToolBarButtons[i].isEnabled() )
                 return false;
-        
+
         return true;
     }
-    
-    
+
+
 }

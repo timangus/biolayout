@@ -39,7 +39,7 @@ public final class Vertex implements Comparable<Vertex>
     private String vertexURLString = "";
     private Edge selfEdge = null;
     private byte packedBooleanFlags = 0; // packed boolean flags so as to not use 1 byte per boolean for the vertex
-    
+
     public Vertex(String vertexName, NetworkContainer nc)
     {
         this.vertexName = vertexName;
@@ -103,11 +103,11 @@ public final class Vertex implements Comparable<Vertex>
     {
         return vertexTransparencyAlpha;
     }
-    
+
     public String getVertexURLString()
     {
         return vertexURLString;
-    }    
+    }
 
     public void setVertexID(int vertexID)
     {
@@ -132,8 +132,8 @@ public final class Vertex implements Comparable<Vertex>
     public void setVertexURLString(String vertexURLString)
     {
         this.vertexURLString = vertexURLString;
-    }       
-    
+    }
+
     public void setVertexLocation(float locationX, float locationY)
     {
         point.setLocation(locationX, locationY);

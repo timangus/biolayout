@@ -2,8 +2,8 @@ package org.BioLayoutExpress3D.CPUParallelism.Executors;
 
 import java.util.concurrent.*;
 
-/** 
-*   
+/**
+*
 * The LoggerThreadFactory class is used to create threads that is used within a thread pool in executors.
 *
 * @see org.BioLayoutExpress3D.CPUParallelism.Executors.LoggerThread
@@ -20,9 +20,9 @@ public class LoggerThreadFactory implements ThreadFactory
     */
     private String poolName = "";
 
-    /** 
+    /**
     *  The constructor of the LoggerThreadFactory class.
-    */      
+    */
     public LoggerThreadFactory(String poolName)
     {
         this.poolName = poolName;

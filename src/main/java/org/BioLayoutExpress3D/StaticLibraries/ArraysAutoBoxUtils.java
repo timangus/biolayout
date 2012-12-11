@@ -2,49 +2,49 @@ package org.BioLayoutExpress3D.StaticLibraries;
 
 import java.util.*;
 
-/** 
-*   
-* ArraysAutoBoxUtils is a final class containing only static methods to be used for 
+/**
+*
+* ArraysAutoBoxUtils is a final class containing only static methods to be used for
 * autoboxing & autounboxing arrays of primitives and their Object equivalents.
 *
 * @author Thanos Theo, 2008-2009-2010
 * @version 3.0.0.0
 */
 
-public final class ArraysAutoBoxUtils 
+public final class ArraysAutoBoxUtils
 {
 
-    /** 
+    /**
     *  Method to autobox a Boolean array.
-    */      
+    */
     public static Boolean[] toObjectArrayBoolean(boolean[] in)
     {
         Boolean[] out = new Boolean[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-    
+
         return out;
-    }  
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Boolean array.
-    */      
+    */
     public static boolean[] toPrimitiveArrayBoolean(Boolean[] in)
     {
         boolean[] out = new boolean[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-    
+
         return out;
-    }     
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Boolean list.
-    */      
+    */
     public static boolean[] toPrimitiveListBoolean(List<Boolean> in)
     {
         boolean[] out = new boolean[in.size()];
         for (int i = 0; i < in.size(); i++)
             out[i] = in.get(i); // Autounboxing
-    
+
         return out;
     }
 
@@ -64,23 +64,23 @@ public final class ArraysAutoBoxUtils
 
     /**
     *  Method to autobox a Character array. Overloaded version of the previous method(s).
-    */          
+    */
     public static Character[] toObjectArrayCharacter(char[] in)
     {
         Character[] out = new Character[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
-    }    
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Character array. Overloaded version of the previous method(s).
-    */          
+    */
     public static char[] toPrimitiveArrayCharacter(Character[] in)
     {
         char[] out = new char[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
     }
 
@@ -110,25 +110,25 @@ public final class ArraysAutoBoxUtils
         return out;
     }
 
-    /** 
+    /**
     *  Method to autobox a Byte array. Overloaded version of the previous method(s).
-    */          
+    */
     public static Byte[] toObjectArrayByte(byte[] in)
     {
         Byte[] out = new Byte[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
-    }     
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Byte array. Overloaded version of the previous method(s).
-    */              
+    */
     public static byte[] toPrimitiveArrayByte(Byte[] in)
     {
         byte[] out = new byte[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
     }
 
@@ -158,20 +158,20 @@ public final class ArraysAutoBoxUtils
         return out;
     }
 
-    /** 
+    /**
     *  Method to autobox a Short array. Overloaded version of the previous method(s).
-    */          
+    */
     public static Short[] toObjectArrayShort(short[] in)
     {
         Short[] out = new Short[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
-    }     
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Short array. Overloaded version of the previous method(s).
-    */              
+    */
     public static short[] toPrimitiveArrayShort(Short[] in)
     {
         short[] out = new short[in.length];
@@ -206,20 +206,20 @@ public final class ArraysAutoBoxUtils
         return out;
     }
 
-    /** 
+    /**
     *  Method to autobox a Integer array. Overloaded version of the previous method(s).
-    */          
+    */
     public static Integer[] toObjectArrayInteger(int[] in)
     {
         Integer[] out = new Integer[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
-    }     
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Integer array. Overloaded version of the previous method(s).
-    */              
+    */
     public static int[] toPrimitiveArrayInteger(Integer[] in)
     {
         int[] out = new int[in.length];
@@ -254,25 +254,25 @@ public final class ArraysAutoBoxUtils
         return out;
     }
 
-    /** 
+    /**
     *  Method to autobox a Long array. Overloaded version of the previous method(s).
-    */          
+    */
     public static Long[] toObjectArrayLong(long[] in)
     {
         Long[] out = new Long[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
-    }     
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Long array. Overloaded version of the previous method(s).
-    */              
+    */
     public static long[] toPrimitiveArrayLong(Long[] in)
     {
         long[] out = new long[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-    
+
         return out;
     }
 
@@ -302,25 +302,25 @@ public final class ArraysAutoBoxUtils
         return out;
     }
 
-    /** 
+    /**
     *  Method to autobox a Float array. Overloaded version of the previous method(s).
-    */          
+    */
     public static Float[] toObjectArrayFloat(float[] in)
     {
         Float[] out = new Float[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
-    }       
-    
-    /** 
+    }
+
+    /**
     *  Method to autounbox a Float array. Overloaded version of the previous method(s).
-    */              
+    */
     public static float[] toPrimitiveArrayFloat(Float[] in)
     {
         float[] out = new float[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
     }
 
@@ -350,26 +350,26 @@ public final class ArraysAutoBoxUtils
         return out;
     }
 
-    /** 
+    /**
     *  Method to autobox a Double array. Overloaded version of the previous method(s).
-    */          
+    */
     public static Double[] toObjectArrayDouble(double[] in)
     {
         Double[] out = new Double[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
     }
 
-    
-    /** 
+
+    /**
     *  Method to autounbox a Double array. Overloaded version of the previous method(s).
-    */              
+    */
     public static double[] toPrimitiveArrayDouble(Double[] in)
     {
         double[] out = new double[in.length];
         System.arraycopy(in, 0, out, 0, in.length);
-        
+
         return out;
     }
 
@@ -399,5 +399,5 @@ public final class ArraysAutoBoxUtils
         return out;
     }
 
-  
+
 }

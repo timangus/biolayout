@@ -11,16 +11,16 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutLicensesDialog extends JDialog implements ActionListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutLicensesDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555696L;
-    
+
     private AbstractAction licensesAction = null;
     private JButton okButton = null;
 
@@ -37,7 +37,7 @@ public final class LayoutLicensesDialog extends JDialog implements ActionListene
         JPanel topPanel = new JPanel(true);
         topPanel.setLayout( new BorderLayout() );
         this.getContentPane().add(topPanel);
-        
+
         JTextArea textArea1 = new JTextArea();
         textArea1.setFont( this.getFont() );
         setBioLayoutExpress3DGeneralLicense(textArea1);

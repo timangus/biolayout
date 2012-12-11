@@ -304,5 +304,5 @@ public class ExpressionDataComputingShaders
             ShaderUtils.detachAndDeleteShader(gl, new boolean[]{ false, true }, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i);
     }
 
-    
+
 }

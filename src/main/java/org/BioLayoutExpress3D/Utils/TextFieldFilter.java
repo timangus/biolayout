@@ -7,19 +7,19 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 *
 * User: cggebi
 * Date: Sep 2, 2002
-* 
+*
 * @author Full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
 *
 */
 
-public final class TextFieldFilter extends PlainDocument 
-{ 
-    /** 
+public final class TextFieldFilter extends PlainDocument
+{
+    /**
     *  Serial version UID variable for the TextFieldFilter class.
-    */      
-    public static final long serialVersionUID = 111222333444555798L; 
-        
+    */
+    public static final long serialVersionUID = 111222333444555798L;
+
     public static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
     public static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final String ALPHA = LOWERCASE + UPPERCASE;
@@ -30,7 +30,7 @@ public final class TextFieldFilter extends PlainDocument
     private String acceptedChars = null;
     private boolean negativeAccepted = false;
 
-    public TextFieldFilter(String acceptedChars) 
+    public TextFieldFilter(String acceptedChars)
     {
         this.acceptedChars = acceptedChars;
     }
@@ -38,11 +38,11 @@ public final class TextFieldFilter extends PlainDocument
     public TextFieldFilter(String acceptedChars, boolean negativeAccepted)
     {
         this.acceptedChars = acceptedChars;
-        
+
         setNegativeAccepted(negativeAccepted);
     }
 
-    public void setNegativeAccepted(boolean negativeAccepted) 
+    public void setNegativeAccepted(boolean negativeAccepted)
     {
         this.negativeAccepted = negativeAccepted;
 
@@ -51,8 +51,8 @@ public final class TextFieldFilter extends PlainDocument
                 acceptedChars += "-";
     }
 
-    @Override    
-    public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException 
+    @Override
+    public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException
     {
         if ( (str == null) || ( str.isEmpty() ) )
             return;
@@ -66,7 +66,7 @@ public final class TextFieldFilter extends PlainDocument
             if ( !DECIMAL_SEPARATOR_STRING.equals(".") )
                 str = str.replace(".", DECIMAL_SEPARATOR_STRING);
 
-        for (int i = 0; i < str.length(); i++)         
+        for (int i = 0; i < str.length(); i++)
             if ( !acceptedChars.contains( String.valueOf( str.charAt(i) ) ) )
                 return;
 
@@ -81,6 +81,6 @@ public final class TextFieldFilter extends PlainDocument
 
         super.insertString(offset, str, attr);
     }
-        
-              
+
+
 }

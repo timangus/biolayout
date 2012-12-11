@@ -15,7 +15,7 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.Shapes3D.*;
 *
 * @author Thanos Theo, 2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class GraphmlLookUpmEPNTables
@@ -83,10 +83,10 @@ public final class GraphmlLookUpmEPNTables
     /**
     *  GraphmlShapesGroup1 graphml shapes which will be functioning as transitions in the mSPN simulation.
     */
-    public static final GraphmlShapesGroup1[] GRAPHML_SHAPES_TO_TRANSITIONS = { 
+    public static final GraphmlShapesGroup1[] GRAPHML_SHAPES_TO_TRANSITIONS = {
                                                                                 // Boolean Logic Operators
                                                                                 AND,
-                                                                                                   
+
                                                                                 // Process Nodes
                                                                                 BINDING,
                                                                                 OLIGERMISATION,
@@ -120,10 +120,10 @@ public final class GraphmlLookUpmEPNTables
                                                                                 HYDROXYLATION,
                                                                                 SECRETION,
                                                                                 SINK_PROTEASOMAL_DEGRADATION
-                                                                              };    
-    
+                                                                              };
+
     /**
-    *  Look-up table 1, used to do a look-up for name & shape but also returning color. 
+    *  Look-up table 1, used to do a look-up for name & shape but also returning color.
     *  Type Tuple7<String, String, GraphmlShapesGroup1, Color, Float, Shapes2D, Shapes3D>.
     */
     public static final Tuple7[] GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1 = {
@@ -160,7 +160,7 @@ public final class GraphmlLookUpmEPNTables
                                                                           Tuples.tuple("Sp",  "ellipse", SULPHATION,                   decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("Pe",  "ellipse", PEGYLATION,                   decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("My",  "ellipse", MYRISTOYLATION,               decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
-                                                                          Tuples.tuple("ACL", "ellipse", OXIDISATION,                  decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),                                                                          
+                                                                          Tuples.tuple("ACL", "ellipse", OXIDISATION,                  decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("OH",  "ellipse", HYDROXYLATION,                decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("S",   "ellipse", SECRETION,                    decode("#CCFFCC"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("/",   "ellipse", SINK_PROTEASOMAL_DEGRADATION, decode("#FFFFFF"), 5.0f, CIRCLE, TORUS),
@@ -172,8 +172,8 @@ public final class GraphmlLookUpmEPNTables
 
                                                                           // Dummy Component
                                                                           Tuples.tuple("",    "ellipse", DUMMY_COMPONENT,              decode("#FFFFFF"), 3.0f, CIRCLE, SPHERE)
-                                                                        }; 
-    
+                                                                        };
+
     /**
     *  Shapes group 2 enumeration, used to do a look-up for shape & color.
     */
@@ -192,7 +192,7 @@ public final class GraphmlLookUpmEPNTables
                                            }
 
     /**
-    *  Look-up table 2, used to do a look-up for shape & color. 
+    *  Look-up table 2, used to do a look-up for shape & color.
     *  Type Tuple6<String, GraphmlShapesGroup2, Color, Float, Shapes2D, Shapes3D>.
     */
     public static final Tuple6[] GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2 = {
@@ -205,7 +205,7 @@ public final class GraphmlLookUpmEPNTables
                                                                           Tuples.tuple("rectangle", TRANSITION_HORIZONTAL, decode("#000000"), 5.0f, Shapes2D.RECTANGLE_HORIZONTAL, Shapes3D.RECTANGLE_HORIZONTAL), // distinguish by width/height sizes
                                                                           Tuples.tuple("diamond",   TRANSITION_DIAMOND,    decode("#000000"), 4.0f, DIAMOND,                       OCTAHEDRON),
                                                                        };
-    
+
     /**
     *  Shapes group 3 enumeration, used to do a look-up for shape only.
     */
@@ -229,7 +229,7 @@ public final class GraphmlLookUpmEPNTables
                                            }
 
     /**
-    *  Look-up table 3, used to do a look-up for shape only, color used for BL-side rendering colorization so as to avoid random node color assignment. 
+    *  Look-up table 3, used to do a look-up for shape only, color used for BL-side rendering colorization so as to avoid random node color assignment.
     *  Type Tuple6<String, GraphmlShapesGroup3, Color, Float, Shapes2D, Shapes3D>.
     */
     public static final Tuple6[] GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3 = {
@@ -253,5 +253,5 @@ public final class GraphmlLookUpmEPNTables
     */
     public static final String[] GRAPHML_PETRI_NET_INHIBITOR_ARROWHEAD_LOOK_UP_TABLE = { "diamond", "t_shape", "white_diamond", "none" };
 
-    
+
 }

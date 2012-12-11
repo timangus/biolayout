@@ -11,13 +11,13 @@ import org.BioLayoutExpress3D.CoreUI.Tables.*;
 *
 * @author Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutClassesTableModel extends AbstractTableModel
-{ 
+{
     public static final String[] COLUMN_NAMES = { "Class ID", "Class Color", "Class Description" };
-    
+
     private LayoutClassesTable layoutClassesTable = null;
     private Object[][] classesData = null;
 

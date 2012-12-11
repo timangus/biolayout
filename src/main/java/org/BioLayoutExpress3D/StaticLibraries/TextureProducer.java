@@ -19,9 +19,9 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 public final class TextureProducer
 {
 
-    /** 
+    /**
     *  Texture variable to store the null pointer texture.
-    */       
+    */
     private static Texture nullPointerTexture = null;
 
     /**
@@ -32,12 +32,12 @@ public final class TextureProducer
         return createTextureFromBufferedImage(image, false);
     }
 
-    /** 
+    /**
     *  Creates a texture from a given buffered image.
     *  Overloaded version of the above method so as to use auto mipmap texture generation.
-    */      
+    */
     public static Texture createTextureFromBufferedImage(BufferedImage image, boolean useAutoMipmapGeneration)
-    {	
+    {
         if (image == null)
         {
             if (DEBUG_BUILD) println("Null Image supplied to TextureProducer in method createTextureFromBufferedImage()!");
@@ -45,7 +45,7 @@ public final class TextureProducer
         }
 
         return AWTTextureIO.newTexture(OpenGLContext.getGLProfile(), image, useAutoMipmapGeneration);
-    } 
+    }
 
     /**
     *  Creates a texture from a given buffered image.
@@ -55,18 +55,18 @@ public final class TextureProducer
         return createTextureFromBufferedImage(image, false);
     }
 
-    /** 
+    /**
     *  Creates a texture from a given buffered image.
-    *  Overloaded version of the above method so as to use auto mipmap texture generation. 
-    */      
+    *  Overloaded version of the above method so as to use auto mipmap texture generation.
+    */
     public static Texture createTextureFromBufferedImageAndDeleteOrigContext(BufferedImage image, boolean useAutoMipmapGeneration)
-    {	
+    {
         Texture imageTexture = createTextureFromBufferedImage(image, useAutoMipmapGeneration);
         image.flush();
         image = null;
-        
+
         return imageTexture;
-    }         
+    }
 
     /**
     *  This method creates a white box with red text (?!?) in it (used for when supplying null textures).
@@ -88,17 +88,17 @@ public final class TextureProducer
         return nullPointerTexture;
     }
 
-    /** 
+    /**
     *  This method disposes the null pointer texture.
-    */    
-    public static void disposeNullPointerTexture(GL2 gl)    
+    */
+    public static void disposeNullPointerTexture(GL2 gl)
     {
         if (nullPointerTexture != null)
         {
             nullPointerTexture.dispose(gl);
             nullPointerTexture = null;
-        }        
-    }    
-    
-    
+        }
+    }
+
+
 }

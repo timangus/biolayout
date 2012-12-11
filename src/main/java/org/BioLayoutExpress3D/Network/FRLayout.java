@@ -69,7 +69,7 @@ public final class FRLayout
     private short[] cachedVertexNormalizedWeightMatrixArray = null;
     private IntBuffer cachedVertexNormalizedWeightIndicesToSkipBuffer = null;
     private int[] cachedVertexNormalizedWeightIndicesToSkipArray = null;
-    
+
     private Vertex[] vertexArray = null;
     private int numberOfVertices = 0;
     private LayoutFrame layoutFrame = null;
@@ -79,7 +79,7 @@ public final class FRLayout
 
     // variables needed for N-CP & OpenCL GPU Computing
     private static final int MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION = 1000;
-    private static final int MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION = 1000;    
+    private static final int MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION = 1000;
     private final CyclicBarrierTimer cyclicBarrierTimer = (USE_MULTICORE_PROCESS) ? new CyclicBarrierTimer() : null;
     private final CyclicBarrier threadBarrier = (USE_MULTICORE_PROCESS) ? new CyclicBarrier(NUMBER_OF_AVAILABLE_PROCESSORS + 1, cyclicBarrierTimer) : null;
     private volatile AtomicIntegerArray displacementValuesAtomic = null;
@@ -127,7 +127,7 @@ public final class FRLayout
         this.layoutFrame = layoutFrame;
 
         currentVertexCount = 0;
-        numberOfVertices = vertices.size();        
+        numberOfVertices = vertices.size();
         displacementMatrixDimensionality = (6000 * canvasXSize + 6 * canvasYSize);
         numberOfIterations = NUMBER_OF_LAYOUT_ITERATIONS.get();
         temperature = STARTING_TEMPERATURE.get();
@@ -201,7 +201,7 @@ public final class FRLayout
                 cachedVertexPointCoordsMatrixBuffer.put( vertexIDIndex + 2, vertex.getZ() );
             }
         }
-        
+
         int dimensionalityIndex = 0;
         int weightRowIndex = 0;
         ArrayList<Short> cachedVertexNormalizedWeightArrayList = (useEdgeWeights) ? new ArrayList<Short>() : null;
@@ -229,7 +229,7 @@ public final class FRLayout
                 }
             }
         }
-        
+
         if (useEdgeWeights)
         {
             cachedVertexNormalizedWeightMatrixBuffer = ShortBuffer.allocate( cachedVertexNormalizedWeightArrayList.size() );
@@ -262,7 +262,7 @@ public final class FRLayout
         }
         cachedVertexNormalizedWeightMatrixArray = cachedVertexNormalizedWeightMatrixBuffer.array();
 
-        if (USE_NATIVE_CODE)        
+        if (USE_NATIVE_CODE)
             setAllValuesNative(BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE, BOOLEAN_PACKED_DATA_BIT_SIZE, FIXED_POINT_DECIMAL_PART_LENGTH, TEMPERATURE_SCALING,
                                canvasXSize, canvasYSize, canvasZSize, displacementMatrixDimensionality,
                                temperature, kValue, kSquareValue, kDoubled, useEdgeWeights);
@@ -393,7 +393,7 @@ public final class FRLayout
                 cachedVertexNormalizedWeightIndicesToSkipArray = cachedVertexNormalizedWeightIndicesToSkipBuffer.array();
         }
 
-        if (USE_NATIVE_CODE)        
+        if (USE_NATIVE_CODE)
             setAllValuesNative(BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE, BOOLEAN_PACKED_DATA_BIT_SIZE, FIXED_POINT_DECIMAL_PART_LENGTH, TEMPERATURE_SCALING,
                                canvasXSize, canvasYSize, canvasZSize, displacementMatrixDimensionality,
                                temperature, kValue, kSquareValue, kDoubled, useEdgeWeights);
@@ -483,7 +483,7 @@ public final class FRLayout
                 String progressBarParallelismTitle = (USE_MULTICORE_PROCESS) ? "(Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
                 layoutProgressBarDialog.prepareProgressBar(numberOfIterations, "Now Processing Layout Iterations " + progressBarParallelismTitle + ( (componentID != 0) ? " for Graph Component: " + componentID : "" ) + "   (no utilization of OpenCL GPU Computing)");
             }
-            
+
             boolean isPowerOfTwo = org.BioLayoutExpress3D.StaticLibraries.Math.isPowerOfTwo(NUMBER_OF_AVAILABLE_PROCESSORS);
             while (--iterations >= 0)
             {
@@ -514,7 +514,7 @@ public final class FRLayout
                 }
 
                 if (DEBUG_BUILD) println("\nTotal allIterationsCalcBiDirForce2DJava N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
-                
+
                 setForceToVertex(true);
                 temperatureHandling();
                 updateGUI();
@@ -859,7 +859,7 @@ public final class FRLayout
         if ( ( ( cachedVertexConnectionMatrixArray[dimensionalityIndex >> BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE] >> (dimensionalityIndex & BOOLEAN_PACKED_DATA_BIT_SIZE) ) & 1 ) != 0 )
         {
             if (useEdgeWeights)
-            {                
+            {
                 float weight = convertFromFixedPointShortNumberToUnsignedFloat(cachedVertexNormalizedWeightMatrixArray[cachedVertexNormalizedWeightIndex[0]++], FIXED_POINT_DECIMAL_PART_LENGTH);
                 dispCalcX = (int)( ( ( (displacementMatrixArray[distanceCache    ] - displacementMatrixArray[distanceCache + 4]) * weight ) + displacementMatrixArray[distanceCache + 4] ) * signX );
                 dispCalcY = (int)( ( ( (displacementMatrixArray[distanceCache + 1] - displacementMatrixArray[distanceCache + 5]) * weight ) + displacementMatrixArray[distanceCache + 5] ) * signY );
@@ -1044,7 +1044,7 @@ public final class FRLayout
                     // for (int to = from + 1; to < numberOfVertices; to++)
                         calcBiDirForce3D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
                 }
-                
+
                 vertexID = numberOfVertices;
                 while (--vertexID >= 0)
                     set3DForceToVertex(vertexIndicesMatrixArray[vertexID]);
@@ -1123,7 +1123,7 @@ public final class FRLayout
     */
     private void iterateCalcBiDirForce3DJava()
     {
-        int vertexID = 0;        
+        int vertexID = 0;
         if ( !( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
         {
             // done this way so as to emulate copy by reference (pointer) for value of cachedWeightIndex
@@ -1176,7 +1176,7 @@ public final class FRLayout
 
             setForceToVertex(false);
         }
-        
+
         temperatureHandling();
     }
 
@@ -1364,10 +1364,10 @@ public final class FRLayout
             return;
 
         float squaredDistance = (distX * distX + distY * distY + distZ * distZ);
-        float distance = (float)sqrt(squaredDistance);        
+        float distance = (float)sqrt(squaredDistance);
 
         if (distance <= kDoubled)
-        {            
+        {
             if ( !( ( ( ( cachedPseudoVertexMatrixArray[vertexID1 >> BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE] >> (vertexID1 & BOOLEAN_PACKED_DATA_BIT_SIZE) ) & 1 ) != 0 ) && ( ( ( cachedPseudoVertexMatrixArray[vertexID2 >> BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE] >> (vertexID2 & BOOLEAN_PACKED_DATA_BIT_SIZE) ) & 1 ) != 0 ) ) )
             {
                 float kDist = kSquareValue / distance;
@@ -1447,7 +1447,7 @@ public final class FRLayout
         float distance = (float)sqrt(squaredDistance);
 
         if (distance <= kDoubled)
-        {            
+        {
             if ( !( ( ( ( cachedPseudoVertexMatrixArray[vertexID1 >> BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE] >> (vertexID1 & BOOLEAN_PACKED_DATA_BIT_SIZE) ) & 1 ) != 0 ) && ( ( ( cachedPseudoVertexMatrixArray[vertexID2 >> BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE] >> (vertexID2 & BOOLEAN_PACKED_DATA_BIT_SIZE) ) & 1 ) != 0 ) ) )
             {
                 float kDist = kSquareValue / distance;
@@ -1469,7 +1469,7 @@ public final class FRLayout
         {
             float kDist = squaredDistance / kValue;
             int dispCalcX = 0, dispCalcY = 0, dispCalcZ = 0;
-            
+
             if (useEdgeWeights)
             {
                 float kDistWeight = kDist * convertFromFixedPointShortNumberToUnsignedFloat(cachedVertexNormalizedWeightMatrixArray[cachedVertexNormalizedWeightIndex[0]++], FIXED_POINT_DECIMAL_PART_LENGTH);

@@ -9,7 +9,7 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
-* 
+*
 * A Material object holds colour and texture information
 * for a named material.
 *
@@ -19,48 +19,48 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Andrew Davison, 2006, rewrite for BioLayout Express3D by Thanos Theo, 2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class Material
 {
-    
-    /** 
+
+    /**
     *  Stores the material name.
-    */         
+    */
     private String materialName = "";
 
-    /** 
+    /**
     *  Colour info: ambient, diffuse & specular colours
-    */             
+    */
     private Point3D ka = null, kd = null, ks = null;
-    
-    /** 
+
+    /**
     *  Colour info: shininess & alpha
-    */                 
+    */
     private float ns = 0.0f, d = 1.0f;
 
-    /** 
+    /**
     *  Texture file name.
-    */      
+    */
     private String textureFileName = "";
-    
-    /** 
+
+    /**
     *  Texture reference.
-    */     
+    */
     private Texture texture = null;
 
-    /** 
+    /**
     *  The Material class constructor.
-    */    
+    */
     public Material(String materialName)
     {
         this.materialName = materialName;
     }
 
-    /** 
+    /**
     *  Gets the material name.
-    */        
+    */
     public String getMaterialName()
     {
         return materialName;
@@ -69,92 +69,92 @@ public class Material
 
     // --------- set/get methods for colour info --------------
 
-    /** 
+    /**
     *  Sets the alpha colour info.
-    */       
+    */
     public void setD(float d)
-    {  
+    {
         this.d = d;
     }
 
-    /** 
+    /**
     *  Gets the alpha colour info.
-    */           
+    */
     public float getD()
-    {  
-        return d;  
+    {
+        return d;
     }
 
-    /** 
+    /**
     *  Sets the shininess colour info.
-    */           
+    */
     public void setNs(float ns)
-    {  
-        this.ns = ns;  
+    {
+        this.ns = ns;
     }
 
-    /** 
+    /**
     *  Gets the shininess colour info.
-    */     
+    */
     public float getNs()
-    {  
-        return ns;  
+    {
+        return ns;
     }
 
-    /** 
+    /**
     *  Sets the ambient colour info.
-    */     
+    */
     public void setKa(Point3D ka)
-    {  
-        this.ka = ka;  
+    {
+        this.ka = ka;
     }
 
-    /** 
+    /**
     *  Gets the ambient colour info.
-    */      
+    */
     public Point3D getKa()
-    {  
-        return ka;  
+    {
+        return ka;
     }
 
-    /** 
+    /**
     *  Sets the diffuse colour info.
-    */      
+    */
     public void setKd(Point3D kd)
-    {  
-        this.kd = kd;  
+    {
+        this.kd = kd;
     }
 
-    /** 
+    /**
     *  Gets the diffuse colour info.
-    */     
+    */
     public Point3D getKd()
-    {  
-        return kd;  
+    {
+        return kd;
     }
 
-    /** 
+    /**
     *  Sets the specular colour info.
-    */        
+    */
     public void setKs(Point3D ks)
-    {  
+    {
         this.ks = ks;
     }
 
-    /** 
+    /**
     *  Gets the specular colour info.
-    */            
+    */
     public Point3D getKs()
-    {  
-        return ks;  
+    {
+        return ks;
     }
 
-    /** 
+    /**
     *  Resets all the materials' values.
-    */        
+    */
     public static void resetMaterialValues()
     {
-        GL2 gl = GLContext.getCurrent().getGL().getGL2();        
+        GL2 gl = GLContext.getCurrent().getGL().getGL2();
         float[] colorAmbient = { 0.2f, 0.2f, 0.2f, 1.0f };
         gl.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, colorAmbient, 0);
         float[] colorDiffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
@@ -162,27 +162,27 @@ public class Material
         float[] colorSpecular = { 0.0f, 0.0f, 0.0f, 1.0f };
         gl.glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, colorSpecular, 0);
         float[] colorEmission = { 0.0f, 0.0f, 0.0f, 1.0f };
-        gl.glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorEmission, 0);        
-        gl.glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0f);        
+        gl.glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, colorEmission, 0);
+        gl.glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0f);
     }
-    
-    /** 
+
+    /**
     *  Starts rendering using this material's values.
-    */     
-    public void setMaterialValues(GL2 gl)    
+    */
+    public void setMaterialValues(GL2 gl)
     {
         if (ka != null) // ambient color
         {
             float[] colorKa = { ka.getX(), ka.getY(), ka.getZ(), d };
             gl.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, colorKa, 0);
         }
-        
+
         if (kd != null) // diffuse color
         {
             float[] colorKd = { kd.getX(), kd.getY(), kd.getZ(), d };
             gl.glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, colorKd, 0);
         }
-        
+
         if (ks != null) // specular color
         {
             float[] colorKs = { ks.getX(), ks.getY(), ks.getZ(), d };
@@ -199,35 +199,35 @@ public class Material
             // implemented in the 3 glMaterialfv calls above
         }
     }
-    
+
 
     // --------- set/get methods for texture info --------------
 
-    /** 
+    /**
     *  Loads the texture.
-    */     
+    */
     public void loadTexture(String textureFileName)
     {
         texture = TextureProducer.createTextureFromBufferedImageAndDeleteOrigContext(org.BioLayoutExpress3D.StaticLibraries.ImageProducer.loadImageFromURL( getClass().getResource(textureFileName) ), true);
     }
 
-    /** 
+    /**
     *  Sets the texture.
-    */         
+    */
     public void setTexture(Texture texture)
-    {  
-        this.texture = texture;  
+    {
+        this.texture = texture;
     }
 
-    /** 
+    /**
     *  Gets the texture.
-    */         
+    */
     public Texture getTexture()
-    {  
-        return texture;  
+    {
+        return texture;
     }
 
-    /** 
+    /**
     *  Shows material details.
     */
     public void showMaterial()
@@ -249,6 +249,6 @@ public class Material
                 println("  Texture file: " + textureFileName);
         }
     }
-    
-  
+
+
 }

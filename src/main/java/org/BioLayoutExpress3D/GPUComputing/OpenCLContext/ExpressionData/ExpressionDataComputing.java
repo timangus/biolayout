@@ -267,7 +267,7 @@ public class ExpressionDataComputing extends OpenCLContext
         usePairIndices = (totalRows > MAX_INDEX_NUMBER_FOR_INT_INDICES);
         boolean useLocalCache = ( !CL_IS_PLATFORM_AMD_ATI[0] || (totalColumns > NUMBER_OF_COLUMNS_TO_USE_LOCAL_CACHE_FOR_AMD_ATI) ) && ( (localWorkSize & 15) == 0 ); // localWorkSize has to be a multiple of 16 for the localCache to work ok with Int6
         boolean useFMAFunctionInsteadOfMADFunction = false;
-        
+
         int vectorSize = 0;
         int localIndices = 0;
         if (useLocalCache)
@@ -316,7 +316,7 @@ public class ExpressionDataComputing extends OpenCLContext
                                             "#define USE_VECTOR16_TRANSFERS_IN_VECTORSUMS " + ( (USE_VECTOR16_TRANSFERS_IN_VECTORSUMS) ? 1 : 0 ) + "\n";
         KernelUtils.loadKernelFileCreateProgramAndKernel(context, "ExpressionData", "Expressiondata", "calculateCorrelation", LOAD_KERNEL_PROGRAMS_FROM_EXTERNAL_SOURCE, programs, kernels, 0, openCLPreprocessorCommands, "-cl-mad-enable");
 
-        // Set the arguments for the kernel                
+        // Set the arguments for the kernel
         clSetKernelArg(kernels[0], 0, Sizeof.cl_mem, Pointer.to(memoryObjects[0]));
         clSetKernelArg(kernels[0], 1, Sizeof.cl_mem, Pointer.to(memoryObjects[1]));
         clSetKernelArg(kernels[0], 2, Sizeof.cl_mem, Pointer.to(memoryObjects[2]));
@@ -378,9 +378,9 @@ public class ExpressionDataComputing extends OpenCLContext
                 initializeTaskParallelismForWriteIterationResultsToFile();
                 taskParallelismThreadBarrier.await(); // synchronized start of Task Parallelism
             }
-            
+
             for (int iteration = 0; iteration < numberOfIterations; iteration++)
-            {                
+            {
                 fillIndicesDataArray();
 
                 // Write the input indices data
@@ -432,7 +432,7 @@ public class ExpressionDataComputing extends OpenCLContext
                     double totalTimeGPUTransfers = ( (double)clEventExecutionStatistics.getDurationTime(writeEvents[0][0]) + (double)clEventExecutionStatistics.getDurationTime(readEvents[0][0]) ) / 1000000000.0; // for secs
                     totalTimeGPU = (double)clEventExecutionStatistics.getDurationTime(kernelEvents[0][0]) / 1000000000.0; // for secs
                     totalTimeGPUWithTransfers = totalTimeGPUTransfers + totalTimeGPU;
-                    if (DEBUG_BUILD) 
+                    if (DEBUG_BUILD)
                     {
                         println("\nTotal time taken for GPU calcs: " + totalTimeGPU + " secs.");
                         println("Total time taken for GPU calcs with transfers: " + totalTimeGPUWithTransfers + " secs.");
@@ -506,7 +506,7 @@ public class ExpressionDataComputing extends OpenCLContext
                 {
                     taskParallelismThreadBarrier.await(); // synchronized start of Task Parallelism
                     for (int iteration = 0; iteration < numberOfIterations; iteration++)
-                    {                        
+                    {
                         if (iteration > 0) // barrier point for previous writing to file iteration
                             taskParallelismThreadBarrier.await();
                         taskParallelismThreadBarrier.await();
@@ -518,7 +518,7 @@ public class ExpressionDataComputing extends OpenCLContext
                 {
                     if (DEBUG_BUILD) println("IOException in ExpressionDataComputing.initializeTaskParallelismForWriteIterationResultsToFile()\n" + ioe.getMessage());
                     JOptionPane.showMessageDialog(jFrame, "IOException in building the Correlation network with the GPU.\n" + ioe.getMessage(), "Error: IOException in building the Correlation network with the GPU", JOptionPane.ERROR_MESSAGE);
-                    
+
                     taskParallelismThreadBarrier.reset();
                 }
                 catch (BrokenBarrierException ex)
@@ -534,7 +534,7 @@ public class ExpressionDataComputing extends OpenCLContext
             }
 
         } );
-        
+
         taskParallelThread.setPriority(Thread.NORM_PRIORITY);
         taskParallelThread.start();
     }
@@ -570,7 +570,7 @@ public class ExpressionDataComputing extends OpenCLContext
         if (compareResults)
         {
             // calc on CPU
-            int[] indexXYArray = indexXY.array();            
+            int[] indexXYArray = indexXY.array();
             if (singleCoreOrNCPComparisonMethod)
             {
                 long startTime = 0, endTime = 0;
@@ -611,7 +611,7 @@ public class ExpressionDataComputing extends OpenCLContext
                 calculateNCPExpressionData(indexXYArray);
                 totalTimeCPU = ncpCyclicBarrierTimer.getTime() / 1000000000.0; // for secs
             }
-            
+
             if (DEBUG_BUILD) println("\nTotal time taken for CPU calcs: " + totalTimeCPU + " secs.");
 
             // and compare results
@@ -888,7 +888,7 @@ public class ExpressionDataComputing extends OpenCLContext
     *  Initializes GPU memory.
     */
     @Override
-    protected void initializeGPUMemory() throws CLException 
+    protected void initializeGPUMemory() throws CLException
     {
         createPermanentVRAMArrays();
         initializeKernelAndArguments();
@@ -898,7 +898,7 @@ public class ExpressionDataComputing extends OpenCLContext
     *  Performs the GPU Computing calculations.
     */
     @Override
-    protected void performGPUComputingCalculations() throws CLException 
+    protected void performGPUComputingCalculations() throws CLException
     {
         performComputation();
     }
@@ -923,5 +923,5 @@ public class ExpressionDataComputing extends OpenCLContext
         deleteVRAMArrays();
     }
 
-    
+
 }

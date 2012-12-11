@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.StaticLibraries;
 
-/** 
-*   
+/**
+*
 * PrimitiveArraysUtils is a final class containing only static methods for primitive arrays.
 *
 * @author Thanos Theo, 2008-2009
@@ -139,7 +139,7 @@ public final class PrimitiveArraysUtils
 
     /**
     *  Reverses the given float array.
-    */    
+    */
     public static void reverse(float[] array)
     {
         int left  = 0;

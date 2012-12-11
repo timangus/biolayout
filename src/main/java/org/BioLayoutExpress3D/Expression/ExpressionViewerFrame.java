@@ -11,16 +11,16 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 *
 * @author Anton Enright, full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class ExpressionViewerFrame extends JFrame
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ExpressionViewer class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555712L;
-            
+
     private ExpressionGraphPanel expressionGraphPanel = null;
     private AbstractAction expressionViewerDialogAction = null;
     private AbstractAction okAction = null;
@@ -28,15 +28,15 @@ public final class ExpressionViewerFrame extends JFrame
     // variables used for proper window event usage
     private boolean isWindowIconified = false;
     private boolean isWindowMaximized = false;
-    private boolean windowWasMaximizedBeforeIconification = false;    
-    
+    private boolean windowWasMaximizedBeforeIconification = false;
+
     public ExpressionViewerFrame(LayoutFrame layoutFrame, ExpressionData data)
     {
         super("Expression Viewer");
 
         initFrame();
         initActions();
-        initComponents(layoutFrame, data);             
+        initComponents(layoutFrame, data);
     }
 
     private void initFrame()
@@ -94,7 +94,7 @@ public final class ExpressionViewerFrame extends JFrame
         okButton.setToolTipText("OK");
         bottomPanel.add(okButton);
         expressionGraphPanel.add(bottomPanel, BorderLayout.SOUTH);
-        
+
         this.getContentPane().add(expressionGraphPanel);
 
         // this.pack();
@@ -105,20 +105,20 @@ public final class ExpressionViewerFrame extends JFrame
 
     private void initActions()
     {
-        expressionViewerDialogAction = new AbstractAction("Expression Viewer") 
+        expressionViewerDialogAction = new AbstractAction("Expression Viewer")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555713L;
-    
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 if ( !isVisible() )
-                {                  
+                {
                     if (getExtendedState() != JFrame.NORMAL)
-                        setExtendedState(JFrame.NORMAL);                
+                        setExtendedState(JFrame.NORMAL);
 
                     setSize(650, 600);
                     setLocation( ( SCREEN_DIMENSION.width - getWidth() ) / 2, ( SCREEN_DIMENSION.height - getHeight() ) / 2);
@@ -127,20 +127,20 @@ public final class ExpressionViewerFrame extends JFrame
                 else
                 {
                     processAndSetWindowState();
-                }              
+                }
             }
         };
         expressionViewerDialogAction.setEnabled(false);
 
-        okAction = new  AbstractAction("OK") 
+        okAction = new  AbstractAction("OK")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555714L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setVisible(false);
             }
@@ -155,7 +155,7 @@ public final class ExpressionViewerFrame extends JFrame
             int iconifyState = this.getExtendedState();
 
             // set the iconified bit, inverse process
-            // deIconifyState |= Frame.ICONIFIED;                        
+            // deIconifyState |= Frame.ICONIFIED;
 
             // clear the iconified bit
             iconifyState &= ~JFrame.ICONIFIED;
@@ -169,28 +169,28 @@ public final class ExpressionViewerFrame extends JFrame
                 int maximizeState = this.getExtendedState();
 
                 // clear the maximized bits, inverse process
-                // minimizeState &= ~Frame.MAXIMIZED_BOTH;                        
+                // minimizeState &= ~Frame.MAXIMIZED_BOTH;
 
                 // set the maximized bits
                 maximizeState |= JFrame.MAXIMIZED_BOTH;
 
                 // maximize the frame
-                this.setExtendedState(maximizeState);                            
-            }                           
-        }                                     
+                this.setExtendedState(maximizeState);
+            }
+        }
 
-        this.toFront();        
-    }    
-    
+        this.toFront();
+    }
+
     public AbstractAction getExpressionViewerAction()
     {
         return expressionViewerDialogAction;
     }
-    
+
     public void refreshExpressionViewer()
     {
         expressionGraphPanel.repaint();
     }
 
-    
+
 }

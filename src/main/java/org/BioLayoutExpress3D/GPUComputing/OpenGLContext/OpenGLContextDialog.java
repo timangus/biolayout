@@ -27,7 +27,7 @@ public class OpenGLContextDialog extends JDialog
 
         initComponents(openGLContext);
 
-        this.pack();        
+        this.pack();
         this.setResizable(false);
         this.setVisible(false);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -37,7 +37,7 @@ public class OpenGLContextDialog extends JDialog
     *  This method is called from within the constructor to initialize the OpenGL context dialog.
     */
     private void initComponents(OpenGLContext openGLContext)
-    {        
+    {
         this.getContentPane().add(openGLContext);
     }
 

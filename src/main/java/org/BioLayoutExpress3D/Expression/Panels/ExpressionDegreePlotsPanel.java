@@ -9,25 +9,25 @@ import static java.lang.Math.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class ExpressionDegreePlotsPanel extends JPanel
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ExpressionDegreePlotsPanel class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555703L;
-                
+
     private static final int POINT_SIZE = 4;
-    
+
     private int totalRows = 0;
     private int minThreshold = 0;
     private int threshold = 0;
-    private String thresholdString = "";    
+    private String thresholdString = "";
     private int[][] histoGram  = null;
     private int[] maxDegree = null;
-    private int[] maxCount = null;    
+    private int[] maxCount = null;
     private int[] allNodes = null;
     private int[] allEdges = null;
     private Font tickFont = null;
@@ -37,12 +37,12 @@ public final class ExpressionDegreePlotsPanel extends JPanel
     public ExpressionDegreePlotsPanel(int[][] counts, int totalRows, int minThreshold, int threshold, String thresholdString)
     {
         super(true);
-        
-        this.totalRows = totalRows;                
+
+        this.totalRows = totalRows;
         this.minThreshold = minThreshold;
         this.threshold = threshold;
         this.thresholdString = thresholdString;
-        
+
         allNodes = new int[101 - minThreshold];
         allEdges = new int[101 - minThreshold];
         maxDegree = new int[101 - minThreshold];
@@ -50,7 +50,7 @@ public final class ExpressionDegreePlotsPanel extends JPanel
         histoGram = new int[101 - minThreshold][totalRows];
 
         Font currentFont = this.getFont();
-        tickFont = currentFont.deriveFont(Font.PLAIN, 8);        
+        tickFont = currentFont.deriveFont(Font.PLAIN, 8);
         axisFont = currentFont.deriveFont(Font.BOLD, 12);
         legendFont = currentFont.deriveFont(Font.BOLD, 15);
 
@@ -70,8 +70,8 @@ public final class ExpressionDegreePlotsPanel extends JPanel
             edgesCounter = 0;
             for (int j = (minThreshold + threshold); j <= 100; j++)
                 if (counts[i][j] > 0)
-                      edgesCounter += counts[i][j];                
-            
+                      edgesCounter += counts[i][j];
+
             if (edgesCounter > 0)
             {
                 nodesCounter++;
@@ -81,14 +81,14 @@ public final class ExpressionDegreePlotsPanel extends JPanel
                     max = edgesCounter;
             }
         }
-        
+
         maxDegree[threshold] = max;
         max = 0;
 
         for (int i = 0; i < totalRows; i++)
             if (histoGram[threshold][i] > max)
-                max = histoGram[threshold][i];        
-        
+                max = histoGram[threshold][i];
+
         maxCount[threshold] = max;
         allNodes[threshold] = nodesCounter;
         allEdges[threshold] = totalEdges / 2;
@@ -167,7 +167,7 @@ public final class ExpressionDegreePlotsPanel extends JPanel
                 g2.fillOval(pointX, pointY, POINT_SIZE, POINT_SIZE);
                 g2.setPaint(Color.BLACK);
                 g2.drawOval(pointX, pointY, POINT_SIZE, POINT_SIZE);
-                
+
                 sumX += pointX;
                 sumY += pointY;
                 sumXX += (pointX * pointX);
@@ -194,7 +194,7 @@ public final class ExpressionDegreePlotsPanel extends JPanel
         g2.setFont(legendFont);
         drawPanelXCenteredText(g2, this.getHeight() - 6, legendFont, "Nodes: " + allNodes[threshold - minThreshold] + ", \t Edges: " + allEdges[threshold - minThreshold] + ", \t Correlation (R) = " + thresholdString);
     }
-    
+
     private void drawEdgesPlot(Graphics2D g2,int x, int y, int width, int height)
     {
         g2.setPaint(Color.WHITE);
@@ -271,7 +271,7 @@ public final class ExpressionDegreePlotsPanel extends JPanel
 
         double scalelineX = (double)(threshold - minThreshold) / (maxX - minThreshold);
         int pointlinex = (int)( x + rint(width * scalelineX) );
-        
+
         g2.setPaint(Color.RED);
         g2.drawLine(pointlinex, y, pointlinex, height + y);
 
@@ -280,7 +280,7 @@ public final class ExpressionDegreePlotsPanel extends JPanel
     private void drawXCenteredText(Graphics2D g2, int x, int y, Font font, String string)
     {
        int width = g2.getFontMetrics(font).stringWidth(string) + 2;
-       
+
        g2.setFont(font);
        g2.drawString(string, (int)( x - rint(width / 2.0) ), y);
     }
@@ -288,7 +288,7 @@ public final class ExpressionDegreePlotsPanel extends JPanel
     private void drawYCenteredText(Graphics2D g2, int x, int y, Font font, String string)
     {
        int height = g2.getFontMetrics(font).getHeight() + 2;
-       
+
        g2.setFont(font);
        g2.drawString(string, x, (int)( y + rint(height / 2.0) + 2) );
     }
@@ -296,10 +296,10 @@ public final class ExpressionDegreePlotsPanel extends JPanel
     private void drawPanelXCenteredText(Graphics2D g2, int y, Font font, String string)
     {
        int width = g2.getFontMetrics(font).stringWidth(string) + 2;
-       
+
        g2.setFont(font);
        g2.drawString(string, (this.getWidth() - width) / 2, y);
-    }   
+    }
 
     // Simple Fuction that generates a useful and readable Log Scale from 1 to some Max Number
     private ArrayList<Integer> logScale(int maxValue)
@@ -325,17 +325,17 @@ public final class ExpressionDegreePlotsPanel extends JPanel
 
         return logScale;
     }
-    
+
     public void updatePlots(int threshold, String thresholdString)
     {
         this.threshold = threshold;
         this.thresholdString = thresholdString;
-        
+
         this.repaint();
-    }    
-    
+    }
+
     @Override
-    public void paintComponent(Graphics g) 
+    public void paintComponent(Graphics g)
     {
         int padX = 10;
         int padY = 5;
@@ -354,6 +354,6 @@ public final class ExpressionDegreePlotsPanel extends JPanel
         padX += plotWidth + 20;
         drawDegreePlot(g2, padX, padY + topY, plotWidth, plotHeight);
     }
-    
-    
+
+
 }

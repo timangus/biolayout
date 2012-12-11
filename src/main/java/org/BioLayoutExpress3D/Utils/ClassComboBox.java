@@ -21,52 +21,52 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 */
 
 public final class ClassComboBox extends JComboBox
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ClassComboBox class.
-    */      
-    public static final long serialVersionUID = 111222333444555776L; 
-    
+    */
+    public static final long serialVersionUID = 111222333444555776L;
+
     private boolean newOption = false;
     private boolean multiOption = false;
-    
+
     private LayoutClasses layoutClasses = null;
     private ClassRenderer classRenderer = null;
     private ArrayList<VertexClass> sortedVertexClasses = null;
-            
-    public ClassComboBox(LayoutClasses layoutClasses, boolean newOption, boolean multiOption) 
+
+    public ClassComboBox(LayoutClasses layoutClasses, boolean newOption, boolean multiOption)
     {
         this.layoutClasses = layoutClasses;
         this.newOption = newOption;
-        this.multiOption = multiOption;        
-        
+        this.multiOption = multiOption;
+
         if (multiOption)
-            newOption = true;                
-                        
+            newOption = true;
+
         classRenderer = new ClassRenderer();
         this.setRenderer(classRenderer);
         this.setPreferredSize( new Dimension(200, 22) );
-        
+
         updateClasses(layoutClasses);
     }
-    
-    public ClassRenderer getClassRenderer() 
+
+    public ClassRenderer getClassRenderer()
     {
         return classRenderer;
     }
-    
-    public void updateClasses(LayoutClasses layoutClasses) 
+
+    public void updateClasses(LayoutClasses layoutClasses)
     {
         this.layoutClasses = layoutClasses;
         this.removeAllItems();
-        
-        if (multiOption) 
+
+        if (multiOption)
         {
             this.addItem( Integer.valueOf(0) );
             // addItem( new JLabel("Multiple") );
         }
 
-        if (newOption) 
+        if (newOption)
         {
             this.addItem( Integer.valueOf(-1) );
             // addItem( new JLabel("Multiple") );
@@ -77,7 +77,7 @@ public final class ClassComboBox extends JComboBox
 
         for (VertexClass sortedVertexClass : sortedVertexClasses)
         {
-            if (DEBUG_BUILD) println( "Adding: " + sortedVertexClass.getName() );            
+            if (DEBUG_BUILD) println( "Adding: " + sortedVertexClass.getName() );
             this.addItem(sortedVertexClass);
         }
     }
@@ -87,7 +87,7 @@ public final class ClassComboBox extends JComboBox
         this.multiOption = multiOption;
         if (multiOption)
             newOption = true;
-        
+
         updateClasses(layoutClasses);
     }
 
@@ -96,14 +96,14 @@ public final class ClassComboBox extends JComboBox
         return sortedVertexClasses;
     }
 
-    public static class ClassRenderer extends JLabel implements ListCellRenderer, TableCellRenderer 
+    public static class ClassRenderer extends JLabel implements ListCellRenderer, TableCellRenderer
     {
-        /** 
+        /**
         *  Serial version UID variable for the ClassRenderer class.
-        */      
-        public static final long serialVersionUID = 111222333444555777L; 
-    
-        private ClassRenderer() 
+        */
+        public static final long serialVersionUID = 111222333444555777L;
+
+        private ClassRenderer()
         {
             setOpaque(true);
             setHorizontalAlignment(LEFT);
@@ -111,42 +111,42 @@ public final class ClassComboBox extends JComboBox
         }
 
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) 
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
         {
             return getRenderer(isSelected, value, list.getBackground(), list.getForeground(), list.getSelectionBackground(), list.getSelectionForeground());
         }
 
-        private Component getRenderer(boolean isSelected, Object value, Color background, Color foreground, Color selectionBackground, Color selectionForeground) 
+        private Component getRenderer(boolean isSelected, Object value, Color background, Color foreground, Color selectionBackground, Color selectionForeground)
         {
-            if (isSelected) 
+            if (isSelected)
             {
                 setBackground(selectionBackground);
                 setForeground(selectionForeground);
             }
-            else 
+            else
             {
                 setBackground(background);
                 setForeground(foreground);
             }
-            
+
             if (value != null)
             {
                 if (value instanceof VertexClass)
                 {
                     VertexClass vertexClass = (VertexClass)value;
-                    this.setText( "  " +  vertexClass.getName() );                    
+                    this.setText( "  " +  vertexClass.getName() );
 
-                    if (vertexClass.getClassID() > 0) 
+                    if (vertexClass.getClassID() > 0)
                     {
                         this.setIcon( getClassIcon(vertexClass) );
                         this.setIconTextGap(3);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         this.setIcon(null);
                     }
-                } 
-                else 
+                }
+                else
                 {
                     if ( value.equals( Integer.valueOf(0) ) )
                         this.setText("  ");
@@ -157,7 +157,7 @@ public final class ClassComboBox extends JComboBox
                     this.setIcon(null);
                 }
             }
-            
+
             return this;
         }
 
@@ -169,12 +169,12 @@ public final class ClassComboBox extends JComboBox
             g.fillRect(1, 1, 10, 10);
             g.setColor(Color.BLACK);
             g.drawRect(1, 1, 9, 9);
-            
+
             return new ImageIcon(image);
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) 
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
         {
             if (value instanceof VertexClass)
             {
@@ -184,8 +184,8 @@ public final class ClassComboBox extends JComboBox
 
             return getRenderer( isSelected, value, table.getBackground(), table.getForeground(), table.getSelectionBackground(), table.getSelectionForeground() );
         }
-        
-        
+
+
     }
 
 

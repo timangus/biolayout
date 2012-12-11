@@ -3,8 +3,8 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.util.*;
 import static java.lang.Math.*;
 
-/** 
-*   
+/**
+*
 * Math is a final class containing only static methods for some mathematical calculations.
 *
 * @author Thanos Theo, 2008-2009-2010
@@ -12,26 +12,26 @@ import static java.lang.Math.*;
 */
 
 public final class Math
-{       
-    
-    /** 
+{
+
+    /**
     *  Returns an integer min/max number from 2 given ones.
-    */ 
+    */
     public static int findMinMaxFromNumbers(int number1, int number2, boolean chooseMinMax)
     {
         // Min case - Max case
         return (chooseMinMax) ? ( (number1 < number2) ? number1 : number2 ) : ( (number1 > number2) ? number1 : number2 );
     }
 
-    /** 
+    /**
     *  Returns a long min/max number from 2 given ones.
-    */ 
+    */
     public static long findMinMaxFromNumbers(long number1, long number2, boolean chooseMinMax)
     {
         // Min case - Max case
         return (chooseMinMax) ? ( (number1 < number2) ? number1 : number2 ) : ( (number1 > number2) ? number1 : number2 );
-    }    
-    
+    }
+
     /**
     *  Returns a float min/max number from 2 given ones.
     */
@@ -39,8 +39,8 @@ public final class Math
     {
         // Min case - Max case
         return (chooseMinMax) ? ( (number1 < number2) ? number1 : number2 ) : ( (number1 > number2) ? number1 : number2 );
-    }    
-    
+    }
+
     /**
     *  Returns a double min/max number from 2 given ones.
     */
@@ -50,78 +50,78 @@ public final class Math
         return (chooseMinMax) ? ( (number1 < number2) ? number1 : number2 ) : ( (number1 > number2) ? number1 : number2 );
     }
 
-    /** 
+    /**
     *  Returns an integer min/max number from 4 integer given ones.
-    */     
+    */
     public static int findMinMaxFromNumbers(int number1, int number2, int number3, int number4, boolean chooseMinMax)
     {
-        int[] allFourNumbers = { number1, number2, number3, number4 };        
+        int[] allFourNumbers = { number1, number2, number3, number4 };
         int minMax = allFourNumbers[0];
-        
+
         if (chooseMinMax)
         {
             for (int i = 1; i < 4; i++)
-                if (minMax > allFourNumbers[i]) 
+                if (minMax > allFourNumbers[i])
                     minMax = allFourNumbers[i]; // Min case
         }
         else
         {
             for (int i = 1; i < 4; i++)
-                if (minMax < allFourNumbers[i]) 
+                if (minMax < allFourNumbers[i])
                     minMax = allFourNumbers[i]; // Max case
         }
-            
-        return minMax;
-    }        
 
-    /** 
+        return minMax;
+    }
+
+    /**
     *  Returns a long min/max number from 4 integer given ones.
-    */     
+    */
     public static long findMinMaxFromNumbers(long number1, long number2, long number3, long number4, boolean chooseMinMax)
     {
-        long[] allFourNumbers = { number1, number2, number3, number4 };        
+        long[] allFourNumbers = { number1, number2, number3, number4 };
         long minMax = allFourNumbers[0];
-        
+
         if (chooseMinMax)
         {
             for (int i = 1; i < 4; i++)
-                if (minMax > allFourNumbers[i]) 
+                if (minMax > allFourNumbers[i])
                     minMax = allFourNumbers[i]; // Min case
         }
         else
         {
             for (int i = 1; i < 4; i++)
-                if (minMax < allFourNumbers[i]) 
+                if (minMax < allFourNumbers[i])
                     minMax = allFourNumbers[i]; // Max case
         }
-            
+
         return minMax;
-    }       
-    
-    /** 
+    }
+
+    /**
     *  Returns a float min/max number from 4 float given ones.
-    */     
+    */
     public static float findMinMaxFromNumbers(float number1, float number2, float number3, float number4, boolean chooseMinMax)
     {
-        float[] allFourNumbers = { number1, number2, number3, number4 };        
+        float[] allFourNumbers = { number1, number2, number3, number4 };
         float minMax = allFourNumbers[0];
-        
+
         if (chooseMinMax)
         {
             for (int i = 1; i < 4; i++)
-                if (minMax > allFourNumbers[i]) 
+                if (minMax > allFourNumbers[i])
                     minMax = allFourNumbers[i]; // Min case
         }
         else
         {
             for (int i = 1; i < 4; i++)
-                if (minMax < allFourNumbers[i]) 
+                if (minMax < allFourNumbers[i])
                     minMax = allFourNumbers[i]; // Max case
         }
-            
+
         return minMax;
-    }        
-    
+    }
+
     /**
     *  Returns a double min/max number from 4 double given ones.
     */
@@ -146,58 +146,58 @@ public final class Math
         return minMax;
     }
 
-    /** 
+    /**
     *  Returns the min/max number from a given arraylist of integers.
-    */     
+    */
     public static int findMinMaxNumberListInteger(List<Integer> list, boolean chooseMinMax)
     {
         if ( list.isEmpty() )
             return 0;
-                
-        int minMax = list.get(0);    
-        
+
+        int minMax = list.get(0);
+
         if (chooseMinMax)
         {
             for (Integer number : list)
-                if (minMax > number) 
+                if (minMax > number)
                     minMax = number; // Min case
         }
         else
         {
             for (Integer number : list)
-                if (minMax < number) 
+                if (minMax < number)
                     minMax = number; // Max case
         }
-        
-        return minMax;        
-    }      
 
-    /** 
+        return minMax;
+    }
+
+    /**
     *  Returns the min/max number from a given arraylist of longs.
-    */     
+    */
     public static long findMinMaxNumberListLong(List<Long> list, boolean chooseMinMax)
     {
         if ( list.isEmpty() )
             return 0;
-                
-        long minMax = list.get(0);    
-        
+
+        long minMax = list.get(0);
+
         if (chooseMinMax)
         {
             for (Long number : list)
-                if (minMax > number) 
+                if (minMax > number)
                     minMax = number; // Min case
         }
         else
         {
             for (Long number : list)
-                if (minMax < number) 
+                if (minMax < number)
                     minMax = number; // Max case
         }
-        
-        return minMax;        
-    }      
-    
+
+        return minMax;
+    }
+
     /**
     *  Returns the min/max number from a given arraylist of floats.
     */
@@ -222,8 +222,8 @@ public final class Math
         }
 
         return minMax;
-    }    
-    
+    }
+
     /**
     *  Returns the min/max number from a given arraylist of doubles.
     */
@@ -250,17 +250,17 @@ public final class Math
         return minMax;
     }
 
-    /** 
+    /**
     *  Returns how many times an integer min/max number from a given arraylist of integers has been visited.
-    */     
+    */
     public static int findMinMaxNumberHowManyTimesListInteger(List<Integer> list, boolean chooseMinMax)
     {
         if ( list.isEmpty() )
             return 0;
-                
+
         int howManyTimes = 0;
         int minMax = list.get(0);
-        
+
         if (chooseMinMax)
         {
             for (Integer number : list)
@@ -269,39 +269,39 @@ public final class Math
                 {
                     minMax = number; // Min case
                     howManyTimes = 1;
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                    
+                    howManyTimes++;
             }
         }
         else
         {
             for (Integer number : list)
             {
-                if (minMax < number) 
+                if (minMax < number)
                 {
                     minMax = number; // Max case
                     howManyTimes = 1;
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                    
+                    howManyTimes++;
             }
         }
-        
-        return howManyTimes;        
+
+        return howManyTimes;
     }
-    
-    /** 
+
+    /**
     *  Returns how many times a long min/max number from a given arraylist of longs has been visited.
-    */     
+    */
     public static int findMinMaxNumberHowManyTimesListLong(List<Long> list, boolean chooseMinMax)
     {
         if ( list.isEmpty() )
             return 0;
-                
+
         int howManyTimes = 0;
         long minMax = list.get(0);
-        
+
         if (chooseMinMax)
         {
             for (Long number : list)
@@ -310,28 +310,28 @@ public final class Math
                 {
                     minMax = number; // Min case
                     howManyTimes = 1;
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                    
+                    howManyTimes++;
             }
         }
         else
         {
             for (Long number : list)
             {
-                if (minMax < number) 
+                if (minMax < number)
                 {
                     minMax = number; // Max case
                     howManyTimes = 1;
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                    
+                    howManyTimes++;
             }
         }
-        
-        return howManyTimes;        
-    }    
-    
+
+        return howManyTimes;
+    }
+
     /**
     *  Returns how many times a float min/max number from a given arraylist of floats has been visited.
     */
@@ -371,8 +371,8 @@ public final class Math
         }
 
         return howManyTimes;
-    }    
-    
+    }
+
     /**
     *  Returns how many times a double min/max number from a given arraylist of doubles has been visited.
     */
@@ -414,28 +414,28 @@ public final class Math
         return howManyTimes;
     }
 
-    /** 
+    /**
     *  Returns how many times a min/max number from a given arraylist of integers has been visited and that min/max.
-    */    
+    */
     public static int[] findMinMaxNumberAndHowManyTimesListInteger(List<Integer> list, boolean chooseMinMax)
     {
         if ( list.isEmpty() )
             return new int[] { 0, 0 };
-                
-        int howManyTimes = 0;        
-        int minMax = list.get(0); 
-        
+
+        int howManyTimes = 0;
+        int minMax = list.get(0);
+
         if (chooseMinMax)
         {
             for (Integer number : list)
             {
-                if (minMax > number) 
+                if (minMax > number)
                 {
                     minMax = number; // Min case
                     howManyTimes = 1;
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                        
+                    howManyTimes++;
             }
         }
         else
@@ -445,37 +445,37 @@ public final class Math
                 if (minMax < number)
                 {
                     minMax = number; // Max case
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                       
+                    howManyTimes++;
             }
         }
-        
-        return new int[] { howManyTimes, minMax };    
+
+        return new int[] { howManyTimes, minMax };
     }
 
-    /** 
+    /**
     *  Returns how many times a min/max number from a given arraylist of longs has been visited and that min/max.
-    */    
+    */
     public static long[] findMinMaxNumberAndHowManyTimesListLong(List<Long> list, boolean chooseMinMax)
     {
         if ( list.isEmpty() )
             return new long[] { 0, 0 };
-                
-        int howManyTimes = 0;        
-        long minMax = list.get(0); 
-        
+
+        int howManyTimes = 0;
+        long minMax = list.get(0);
+
         if (chooseMinMax)
         {
             for (Long number : list)
             {
-                if (minMax > number) 
+                if (minMax > number)
                 {
                     minMax = number; // Min case
                     howManyTimes = 1;
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                        
+                    howManyTimes++;
             }
         }
         else
@@ -485,15 +485,15 @@ public final class Math
                 if (minMax < number)
                 {
                     minMax = number; // Max case
-                } 
+                }
                 else if (minMax == number)
-                    howManyTimes++;                       
+                    howManyTimes++;
             }
         }
-        
-        return new long[] { howManyTimes, minMax };    
-    }    
-    
+
+        return new long[] { howManyTimes, minMax };
+    }
+
     /**
     *  Returns how many times a min/max number from a given arraylist of floats has been visited and that min/max.
     */
@@ -532,8 +532,8 @@ public final class Math
         }
 
         return new float[] { howManyTimes, minMax };
-    }    
-    
+    }
+
     /**
     *  Returns how many times a min/max number from a given arraylist of integers has been visited and that min/max.
     */
@@ -605,10 +605,10 @@ public final class Math
     {
         return ( number * (number - 1) ) / 2;
     }
-    
+
     /**
     *  Calculates all the prime numbers up to given threshold.
-    */    
+    */
     public static int[] findPrimeNumbersUpToThreshold(int threshold)
     {
         ArrayList<Integer> allPrimeNumbers = new ArrayList<Integer>();
@@ -625,13 +625,13 @@ public final class Math
                     allPrimeNumbers.add(x);
             }
         }
-        
-        return ArraysAutoBoxUtils.toPrimitiveListInteger(allPrimeNumbers);        
+
+        return ArraysAutoBoxUtils.toPrimitiveListInteger(allPrimeNumbers);
     }
-    
+
     /**
     *  Calculates the first prime numbers up to a given point.
-    */    
+    */
     public static int[] findFirstPrimeNumbers(int howManyPrimeNumbers)
     {
         int[] allPrimeNumbers = new int[howManyPrimeNumbers];
@@ -646,15 +646,15 @@ public final class Math
 
                 if (y > x / 2)
                     allPrimeNumbers[c++] = x;
-                
+
                 if (c == howManyPrimeNumbers)
                     return allPrimeNumbers;
             }
         }
-        
+
         // will probably never reach this limit, fail-safe exit from function
-        return allPrimeNumbers;        
-    }    
+        return allPrimeNumbers;
+    }
 
 
 }

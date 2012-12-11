@@ -4,28 +4,28 @@ import java.awt.*;
 import org.BioLayoutExpress3D.Network.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
-/** 
-*   
+/**
+*
 * This class includes descriptions for graph edges.
 *
 * @author Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class GraphEdge
-{ 
+{
     private Color edgeColor = null;
     private GraphNode graphNodeFirst = null;
     private GraphNode graphNodeSecond = null;
     private Edge edge = null;
 
     public GraphEdge(GraphNode graphNodeFirst, GraphNode graphNodeSecond, Edge edge, float weight)
-    {        
+    {
         this.graphNodeFirst = graphNodeFirst;
-        this.graphNodeSecond = graphNodeSecond;        
-        this.edge = edge;                
-        
+        this.graphNodeSecond = graphNodeSecond;
+        this.edge = edge;
+
         if (WEIGHTED_EDGES)
         {
             int red = (int)(255.0f * weight);
@@ -48,7 +48,7 @@ public final class GraphEdge
         return edge.getEdgeName();
     }
 
-    public Color getColor() 
+    public Color getColor()
     {
         return edgeColor;
     }
@@ -56,44 +56,44 @@ public final class GraphEdge
     public float getWeight()
     {
         return edge.getWeight();
-    }    
-    
+    }
+
     public void setWeight(float weight)
     {
         edge.setWeight(weight);
-    }     
-    
+    }
+
     public float getNormalisedWeight()
     {
         return edge.getNormalisedWeight();
-    }    
-    
+    }
+
     public void setNormalisedWeight(float normalisedWeight)
     {
         edge.setNormalisedWeight(normalisedWeight);
-    }       
-    
+    }
+
     public float getScaledWeight()
     {
         return edge.getScaledWeight();
-    }    
-    
+    }
+
     public void setScaledWeight(float scaledWeight)
     {
         edge.setScaledWeight(scaledWeight);
-    }       
-    
-    public Edge getEdge() 
+    }
+
+    public Edge getEdge()
     {
         return edge;
     }
 
-    public GraphNode getNodeFirst() 
+    public GraphNode getNodeFirst()
     {
         return graphNodeFirst;
     }
 
-    public GraphNode getNodeSecond() 
+    public GraphNode getNodeSecond()
     {
         return graphNodeSecond;
     }

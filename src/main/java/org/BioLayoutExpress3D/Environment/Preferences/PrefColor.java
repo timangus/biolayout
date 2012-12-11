@@ -10,30 +10,30 @@ import org.BioLayoutExpress3D.StaticLibraries.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class PrefColor extends PrefType
-{ 
-    
-    /** 
+{
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private String currentValue = "";
-    
-    /** 
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private String defaultValue = "";
 
-    /** 
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private Color color = null;
 
-    /** 
+    /**
     *  The constructor of the PrefColor class.
-    */       
+    */
     public PrefColor(Color defaultValue, String prefName, boolean isSaved)
     {
         super(prefName, isSaved);
@@ -41,14 +41,14 @@ public class PrefColor extends PrefType
         this.defaultValue = currentValue = Utils.getHexColor(defaultValue);
 
         color = Color.decode(currentValue);
-        
+
         prefType = PrefTypes.PREF_COLOR;
         LayoutPreferences.getLayoutPreferencesSingleton().add(this);
     }
 
-    /** 
+    /**
     *  Returns this Color preference.
-    */     
+    */
     public Color get()
     {
         return color;
@@ -63,9 +63,9 @@ public class PrefColor extends PrefType
         color = value;
     }
 
-    /** 
+    /**
     *  Loads this Color preference. Overrides the parent class abstract method.
-    */      
+    */
     @Override
     public void loadPref()
     {
@@ -99,15 +99,15 @@ public class PrefColor extends PrefType
             Preferences.userRoot().put(prefName, currentValue);
     }
 
-    /** 
+    /**
     *  Restores this Color preference. Overrides the parent class abstract method.
-    */    
+    */
     @Override
     public void restorePref()
     {
         currentValue = defaultValue;
         color = Color.decode(currentValue);
     }
-        
-        
+
+
 }

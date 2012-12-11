@@ -14,35 +14,35 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutGraphStatisticsDialog extends JDialog implements Runnable
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the GraphStatistics class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555739L;
-            
+
     private Graph graph = null;
     private JTextArea textArea = null;
     private AbstractAction graphStatisticsDialogAction = null;
-    
+
     private int diameter = 0;
-    
+
     private double averageConnectivityAll = 0.0;
     private double averageConnectivityParents = 0.0;
     private double averageConnectivityChilds = 0.0;
-    
+
     private int maxConnectivityAll = 0;
     private int maxConnectivityChilds = 0;
     private int maxConnectivityParents = 0;
     private int nodesWithChildren = 0;
     private int nodesWithParents = 0;
-    
+
     private Collection<GraphNode> currentNodes = null;
     private Collection<GraphEdge> currentEdges = null;
-    
+
     private boolean calculateDiameter = false;
 
     /**
@@ -52,32 +52,32 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
 
     public LayoutGraphStatisticsDialog(JFrame frame, Graph graph)
     {
-        super(frame, false);   
+        super(frame, false);
 
         this.graph = graph;
-        
+
         initActions();
         initComponents(frame);
-    }  
-    
+    }
+
     private void initActions()
     {
-        graphStatisticsDialogAction = new AbstractAction("Graph Statistics") 
+        graphStatisticsDialogAction = new AbstractAction("Graph Statistics")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555724L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 initGraphStatisticsDialog();
             }
         };
-        graphStatisticsDialogAction.setEnabled(false);        
+        graphStatisticsDialogAction.setEnabled(false);
     }
-    
+
     private void initComponents(JFrame frame)
     {
         textArea = new JTextArea();
@@ -106,8 +106,8 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
     {
         if ( isVisible() )
             initGraphStatisticsDialog();
-    }    
-    
+    }
+
     private void initGraphStatisticsDialog()
     {
         clearStatistics();
@@ -128,11 +128,11 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
 
         Thread graphStatisticsThread = new Thread(this);
         graphStatisticsThread.setPriority(Thread.NORM_PRIORITY);
-        graphStatisticsThread.start();        
-    }    
-    
+        graphStatisticsThread.start();
+    }
+
     private void initGraphStatistics(String title, Collection<GraphNode> currentNodes, Collection<GraphEdge> currentEdges, boolean calculateDiameter)
-    {        
+    {
         this.setTitle(title);
 
         this.currentNodes = currentNodes;
@@ -142,11 +142,11 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
 
     private void clearStatistics()
     {
-        abortThread = true;        
-        
+        abortThread = true;
+
         averageConnectivityAll = 0.0;
         averageConnectivityParents = 0.0;
-        averageConnectivityChilds = 0.0;        
+        averageConnectivityChilds = 0.0;
         maxConnectivityAll = 0;
         maxConnectivityChilds = 0;
         maxConnectivityParents = 0;
@@ -156,12 +156,12 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
     }
 
     @Override
-    public void run() 
+    public void run()
     {
         try
         {
             abortThread = false;
-            
+
             this.setVisible(true);
             this.setResizable(false);
 
@@ -204,22 +204,22 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
         for (GraphNode graphNode : nodes)
         {
             if (abortThread) return;
-            
+
             if (graphNode.getNodeNeighbours().size() > maxConnectivityAll)
                 maxConnectivityAll = graphNode.getNodeNeighbours().size();
-            
+
             if (graphNode.getNodeChildren().size() > 0)
             {
                 nodesWithChildren++;
-                
+
                 if (graphNode.getNodeChildren().size() > maxConnectivityChilds)
                     maxConnectivityChilds = graphNode.getNodeChildren().size();
             }
-            
-            if (graphNode.getNodeParents().size() > 0) 
+
+            if (graphNode.getNodeParents().size() > 0)
             {
                 nodesWithParents++;
-                
+
                 if (graphNode.getNodeParents().size() > maxConnectivityParents)
                     maxConnectivityParents = graphNode.getNodeParents().size();
             }
@@ -228,10 +228,10 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
             averageConnectivityParents += graphNode.getNodeParents().size();
             averageConnectivityChilds += graphNode.getNodeChildren().size();
         }
-        
+
         averageConnectivityAll /= nodes.size();
         averageConnectivityParents /= nodesWithParents;
-        averageConnectivityChilds /= nodesWithChildren;        
+        averageConnectivityChilds /= nodesWithChildren;
     }
 
     private void getDiameter(Collection<GraphNode> nodes)
@@ -240,37 +240,37 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
         for (GraphNode graphNode : nodes)
         {
             if (abortThread) return;
-            
+
             selected.clear();
             selected.add(graphNode);
-            
+
             getNodeDiameter(selected, 0);
         }
     }
-    
+
     private void getNodeDiameter(Collection<GraphNode> selected, int diameter)
     {
         if (abortThread) return;
-        
+
         Collection<GraphNode> neigbours = new HashSet<GraphNode>();
-        for (GraphNode graphNode : selected) 
+        for (GraphNode graphNode : selected)
             neigbours.addAll( graphNode.getNodeNeighbours() );
 
         if ( selected.containsAll(neigbours) )
         {
             if (this.diameter < diameter)
                 this.diameter = diameter;
-            
+
             return;
         }
         else
         {
             selected.addAll(neigbours);
-        
+
             getNodeDiameter(selected, diameter + 1);
         }
     }
-    
+
     public AbstractAction getGraphStatisticsDialogAction()
     {
         return graphStatisticsDialogAction;

@@ -102,7 +102,7 @@ public final class LayoutOnlineServices extends HttpConnection
                         String[] currentServerVersionWords = serverVersionLine.split("\\s+");
                         float runningVersion = Float.parseFloat(runningVersionWords[runningVersionWords.length - 1]);
                         float currentServerVersion = Float.parseFloat(currentServerVersionWords[currentServerVersionWords.length - 1]);
-                        
+
                         if (runningVersion >= currentServerVersion)
                         {
                             if (!runOnStartup)
@@ -112,7 +112,7 @@ public final class LayoutOnlineServices extends HttpConnection
                         {
                             if (runOnStartup)
                                 LayoutFrame.sleep(10000);
-                            
+
                             int option = JOptionPane.showConfirmDialog(layoutFrame, "A newer version of BioLayout Express 3D is available!\n  Would you like to visit the Downloads page now ?", "Newer Version of BioLayout Express 3D found!", JOptionPane.YES_NO_OPTION);
                             if (option == JOptionPane.YES_OPTION)
                             {
@@ -139,19 +139,19 @@ public final class LayoutOnlineServices extends HttpConnection
 
     /**
     *  Sets the name of the check for updates http connection.
-    */     
+    */
     public void setCheckForUpdatesName(String checkForUpdates)
     {
         this.nameOfHttpConnection = checkForUpdates;
-    }    
-    
+    }
+
     /**
     *  Gets the name of the check for updates http connection.
-    */     
+    */
     public String getCheckForUpdatesName()
     {
         return nameOfHttpConnection;
     }
-    
-    
+
+
 }

@@ -14,7 +14,7 @@ import static java.lang.Math.*;
 
 public final class CPUEmulatedGLSLFunctions
 {
-    
+
     /**
     *  Mix CPU emulated GLSL function that provides linear interpolation support.
     */
@@ -41,12 +41,12 @@ public final class CPUEmulatedGLSLFunctions
 
     /**
     *  Fract CPU emulated GLSL function that provides fract support. Also available as modf() in C/C++.
-    */    
+    */
     public static float fract(float x)
     {
         return (float)( x - floor(x) );
     }
-    
+
     /**
     *  Clamp CPU emulated GLSL function that provides clamp support.
     */
@@ -67,12 +67,12 @@ public final class CPUEmulatedGLSLFunctions
     /**
     *  Smootherstep CPU emulated GLSL function that provides 5th order polynomial interpolation support.
     *  Prof. Ken Perlin suggests an improved version of the smoothstep function which has zero 1st and 2nd order derivatives at t=0 and t=1.
-    */        
+    */
     public static float smootherstep(float edge0, float edge1, float x)
     {
         x = clamp( (x - edge0) / (edge1 - edge0), 0.0f, 1.0f );
         return x * x * x * ( x * (x * 6.0f - 15.0f) + 10.0f );
-    }    
+    }
 
 
 }

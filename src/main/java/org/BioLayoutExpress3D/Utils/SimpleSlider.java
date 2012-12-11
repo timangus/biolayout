@@ -11,16 +11,16 @@ import static java.lang.Math.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011-2012
 * @version 3.0.0.0
-* 
+*
 */
 
 public class SimpleSlider extends JPanel implements ChangeListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the SimpleSlider class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555698L;
-            
+
     private JTextField     textfield = null;
     private String         actionCommand = "";
     private ActionListener actionListener = null;
@@ -37,7 +37,7 @@ public class SimpleSlider extends JPanel implements ChangeListener
     public SimpleSlider(int fieldSize, int sliderWidth, int sliderHeight, double initialValue, double minValue, double maxValue, int ticks, String textLabel, boolean isInteger)
     {
         super(true);
-                
+
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.isInteger = isInteger;
@@ -75,13 +75,13 @@ public class SimpleSlider extends JPanel implements ChangeListener
         if ( e.getSource().equals(slider) )
         {
             value = minValue + ( ( (double)slider.getValue() / 100.0) * tickScale * (double)ticks );
-            
+
             if (isInteger)
             {
                 value = rint(value);
                 nf.setMaximumFractionDigits(0);
             }
-            
+
             textfield.setText( nf.format(value) );
 
             if (actionListener != null)
@@ -89,7 +89,7 @@ public class SimpleSlider extends JPanel implements ChangeListener
         }
     }
 
-    
+
     public void addActionListener(ActionListener actionListener)
     {
         this.actionListener = actionListener;
@@ -99,22 +99,22 @@ public class SimpleSlider extends JPanel implements ChangeListener
     {
         this.actionCommand = actionCommand;
     }
-    
+
     public boolean checkSourceFromActionEvent(ActionEvent e)
     {
         return e.getSource().equals(slider);
     }
-    
+
     @Override
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
-        
+
         textfield.setEnabled(enabled);
-        slider.setEnabled(enabled);    
+        slider.setEnabled(enabled);
         if (label != null) label.setEnabled(enabled);
     }
-    
+
     @Override
     public void setToolTipText(String text)
     {
@@ -131,10 +131,10 @@ public class SimpleSlider extends JPanel implements ChangeListener
     public void setValue(double value)
     {
         this.value = value;
-        
-        textfield.setText( nf.format(value) );        
+
+        textfield.setText( nf.format(value) );
         slider.setValue( (int)rint( 100.0 * (value - minValue) / (maxValue - minValue) ) );
     }
-    
-    
+
+
 }

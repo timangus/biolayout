@@ -373,7 +373,7 @@ public class FRLayoutComputing extends OpenCLContext
             clSetKernelArg(kernels[0], kernel1ArgumentIndex++, Sizeof.cl_float, Pointer.to(new float[]{ frLayout.getKSquareValue() }));
         }
         clSetKernelArg(kernels[0], kernel1ArgumentIndex++, Sizeof.cl_int, Pointer.to(new int[]{ BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE }));
-        clSetKernelArg(kernels[0], kernel1ArgumentIndex++, Sizeof.cl_int, Pointer.to(new int[]{ BOOLEAN_PACKED_DATA_BIT_SIZE }));        
+        clSetKernelArg(kernels[0], kernel1ArgumentIndex++, Sizeof.cl_int, Pointer.to(new int[]{ BOOLEAN_PACKED_DATA_BIT_SIZE }));
         if (useIndices1DKernel)
             clSetKernelArg(kernels[0], kernel1ArgumentIndex++, Sizeof.cl_int, Pointer.to(new int[]{ 0 }));
         else
@@ -455,7 +455,7 @@ public class FRLayoutComputing extends OpenCLContext
         double totalTimeGPU = 0.0;
 
         for (int layoutIteration = 0; layoutIteration < iterations; layoutIteration++)
-        {           
+        {
             totalTimeGPUKernel1Sum = 0.0;
             totalTimeGPUKernel1WithTransfersSum = 0.0;
 
@@ -687,7 +687,7 @@ public class FRLayoutComputing extends OpenCLContext
             long startTime = 0, endTime = 0;
             // calc on CPU
             if (singleCoreOrNCPComparisonMethod)
-            {                
+            {
                 if (!javaOrNativeComparisonMethod && USE_NATIVE_CODE) // use native code
                 {
                     startTime = System.nanoTime();

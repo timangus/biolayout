@@ -11,14 +11,14 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009-2010
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutMenuBar extends JMenuBar implements ActionListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutMenuBar class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555692L;
 
     /**
@@ -57,7 +57,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     private JMenu fileImportSubMenu = null;
     private JMenu fileExportSubMenu = null;
     private JMenu fileExportSubMenuClassSetsAsFileSubMenu = null;
-    private JMenu selectionSubMenu = null;      
+    private JMenu selectionSubMenu = null;
 
     private JRadioButtonMenuItem _2DTranslateAction = null;
     private JRadioButtonMenuItem _2DZoomAction = null;
@@ -71,7 +71,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     private int mask = 0;
     private boolean constructorInitializationFinished = false;
 
-    public LayoutMenuBar() 
+    public LayoutMenuBar()
     {
         this.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
 
@@ -133,12 +133,12 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         constructorInitializationFinished = true;
     }
 
-    private void initAllMenus() 
+    private void initAllMenus()
     {
         mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-        
+
         fileMenu.setMnemonic(KeyEvent.VK_F);
-        add(fileMenu);        
+        add(fileMenu);
         editMenu.setMnemonic(KeyEvent.VK_E);
         add(editMenu);
         viewMenu.setMnemonic(KeyEvent.VK_V);
@@ -152,7 +152,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         helpMenu.setMnemonic(KeyEvent.VK_H);
         add(helpMenu);
         _2DMenu.setMnemonic(KeyEvent.VK_2);
-        add(_2DMenu);        
+        add(_2DMenu);
         _3DMenu.setMnemonic(KeyEvent.VK_3);
         add(_3DMenu);
 
@@ -528,8 +528,8 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         viewToggleLegend = viewMenu.add(customizeNodeNamesAction);
         viewToggleLegend.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, mask + ActionEvent.ALT_MASK));
         viewToggleLegend.setMnemonic(KeyEvent.VK_N);
-    }    
-    
+    }
+
     public void setViewMenuShowClassesLegendsAction(AbstractAction showClassesLegendsAction)
     {
         addSeparator(viewMenu);
@@ -702,13 +702,13 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     public void set2DMenuEnabled(boolean state)
     {
         _2DMenu.setVisible(state);
-    }   
-    
+    }
+
     public void set2DMenuAutoRotateAction(AbstractAction autoRotateAction)
     {
         _2DMenu.add(autoRotateAction).setIcon(null);
-    }    
-    
+    }
+
     public void set2DMenuScreenSaver2DModeAction(AbstractAction screenSaver2DModeAction)
     {
         _2DMenu.add(screenSaver2DModeAction).setIcon(null);
@@ -723,7 +723,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         _2DMenu.add(_2DTranslateAction);
         _2DTranslateAction.setIcon( new ImageIcon( texturesLoaderNavigationToolBarIcons.getImage("Up") ) );
     }
-    
+
     public void set2DMenuZoomAction(AbstractAction zoomAction)
     {
         _2DZoomAction = new JRadioButtonMenuItem(zoomAction);
@@ -741,7 +741,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     public void set2DMenuRenderAction(AbstractAction renderAction)
     {
         _2DMenu.add(renderAction).setIcon(null);
-    }     
+    }
 
     public void set2DMenuHighResRenderAction(AbstractAction highResRenderAction)
     {
@@ -751,8 +751,8 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     public void set3DMenuEnabled(boolean state)
     {
         _3DMenu.setVisible(state);
-    }    
-    
+    }
+
     public void set3DMenuAutoRotateAction(AbstractAction autoRotateAction)
     {
         _3DMenu.add(autoRotateAction).setIcon(null);
@@ -772,7 +772,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         _3DMenu.add(_3DRotateAction);
         _3DRotateAction.setIcon( new ImageIcon( texturesLoaderNavigationToolBarIcons.getImage("RotateUp") ) );
     }
-    
+
     public void set3DMenuSelectAction(AbstractAction selectAction)
     {
         _3DSelectAction = new JRadioButtonMenuItem(selectAction);
@@ -780,7 +780,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         _3DMenu.add(_3DSelectAction);
         _3DSelectAction.setIcon(null);
     }
-    
+
     public void set3DMenuTranslateAction(AbstractAction translateAction)
     {
         _3DTranslateAction = new JRadioButtonMenuItem(translateAction);
@@ -788,7 +788,7 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         _3DMenu.add(_3DTranslateAction);
         _3DTranslateAction.setIcon( new ImageIcon( texturesLoaderNavigationToolBarIcons.getImage("Up") ) );
     }
-    
+
     public void set3DMenuZoomAction(AbstractAction zoomAction)
     {
         _3DZoomAction = new JRadioButtonMenuItem(zoomAction);
@@ -796,8 +796,8 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         _3DMenu.add(_3DZoomAction);
         _3DZoomAction.setIcon( new ImageIcon( texturesLoaderNavigationToolBarIcons.getImage("ZoomIn") ) );
         addSeparator(_3DMenu);
-    }   
-    
+    }
+
     public void set3DMenuResetViewAction(AbstractAction resetViewAction)
     {
         _3DMenu.add(resetViewAction).setIcon( new ImageIcon( texturesLoaderNavigationToolBarIcons.getImage("ResetView") ) );
@@ -806,8 +806,8 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     public void set3DMenuRenderAction(AbstractAction renderAction)
     {
         _3DMenu.add(renderAction).setIcon(null);
-    }    
-    
+    }
+
     public void set3DMenuHighResRenderAction(AbstractAction highResRenderAction)
     {
         _3DMenu.add(highResRenderAction).setIcon(null);
@@ -822,14 +822,14 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     }
 
     @Override
-    public void setEnabled(boolean flag) 
+    public void setEnabled(boolean flag)
     {
         fileMenu.setEnabled(flag);
         fileImportSubMenu.setEnabled(flag);
         fileExportSubMenu.setEnabled(flag);
         fileExportSubMenuClassSetsAsFileSubMenu.setEnabled(flag);
         editMenu.setEnabled(flag);
-        selectionSubMenu.setEnabled(flag);        
+        selectionSubMenu.setEnabled(flag);
         viewMenu.setEnabled(flag);
         searchMenu.setEnabled(flag);
         simulationMenu.setEnabled(flag);
@@ -857,11 +857,11 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         viewMenu.removeAll();
         searchMenu.removeAll();
         simulationMenu.removeAll();
-        toolsMenu.removeAll();                
+        toolsMenu.removeAll();
         helpMenu.removeAll();
         _2DMenu.removeAll();
         _3DMenu.removeAll();
-        
+
         initAllMenus();
     }
 
@@ -884,21 +884,21 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
             _3DTranslateAction.setSelected(false);
             _3DZoomAction.setSelected(false);
             _3DRotateAction.setSelected(true);
-        }        
+        }
         else if ( e.getSource().equals(_3DTranslateAction) )
         {
             _3DSelectAction.setSelected(false);
             _3DRotateAction.setSelected(false);
             _3DZoomAction.setSelected(false);
             _3DTranslateAction.setSelected(true);
-        }        
+        }
         else if ( e.getSource().equals(_3DZoomAction) )
         {
             _3DSelectAction.setSelected(false);
             _3DRotateAction.setSelected(false);
             _3DTranslateAction.setSelected(false);
             _3DZoomAction.setSelected(true);
-        }        
+        }
         else if ( e.getSource().equals(_3DSelectAction) )
         {
             _3DRotateAction.setSelected(false);
@@ -907,6 +907,6 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
             _3DSelectAction.setSelected(true);
         }
     }
-    
-    
+
+
 }

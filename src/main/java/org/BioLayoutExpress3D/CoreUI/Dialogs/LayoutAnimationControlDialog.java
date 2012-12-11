@@ -88,7 +88,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         initComponents();
         initDialog();
     }
-    
+
     /**
     *  This method is called from within the constructor to initialize the Spectrum Image File Chooser.
     */
@@ -103,7 +103,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
 
     /**
     *  Initializes all actions.
-    */    
+    */
     private void initActions()
     {
         animationControlDialogAction = new AbstractAction("Animation Control")
@@ -120,11 +120,11 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
                 if ( animationControlDialogAction.isEnabled() )
                     openDialogWindow();
                 else
-                    JOptionPane.showMessageDialog(layoutFrame, "Relevant Graph Data To Animate Not Provided!", "Animation Control", JOptionPane.INFORMATION_MESSAGE);                
+                    JOptionPane.showMessageDialog(layoutFrame, "Relevant Graph Data To Animate Not Provided!", "Animation Control", JOptionPane.INFORMATION_MESSAGE);
             }
         };
-        animationControlDialogAction.setEnabled(false);        
-    }   
+        animationControlDialogAction.setEnabled(false);
+    }
 
     /**
     *  Initializes the animation control dialog components.
@@ -132,31 +132,31 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     private void initComponents()
     {
         JPanel nodeAnimationPanel = new JPanel(true);
-        perNodeMaxValueOrmEPNComponentsCheckbox = (isExpressionProfileAnimationMode) ? new JCheckBox("   Per Node Max Value") : new JCheckBox("   mEPN Components Animation Only");        
+        perNodeMaxValueOrmEPNComponentsCheckbox = (isExpressionProfileAnimationMode) ? new JCheckBox("   Per Node Max Value") : new JCheckBox("   mEPN Components Animation Only");
         if (isExpressionProfileAnimationMode)
             perNodeMaxValueOrmEPNComponentsCheckbox.setToolTipText("Per Node Max Value");
         else
             perNodeMaxValueOrmEPNComponentsCheckbox.setToolTipText("mEPN Components Animation Only");
         perNodeMaxValueOrmEPNComponentsCheckbox.setSelected( isExpressionProfileAnimationMode ? ANIMATION_PER_NODE_MAX_VALUE.get() : ANIMATION_MEPN_COMPONENTS_ANIMATION_ONLY.get() );
         perNodeMaxValueOrmEPNComponentsCheckbox.addActionListener(this);
-        selectedNodesCheckbox = new JCheckBox("   Selected Nodes Animation Only");        
+        selectedNodesCheckbox = new JCheckBox("   Selected Nodes Animation Only");
         selectedNodesCheckbox.setToolTipText("Selected Nodes Animation Only");
         selectedNodesCheckbox.setEnabled(false);
         selectedNodesCheckbox.setSelected( ANIMATION_SELECTED_NODES_ANIMATION_ONLY.get() );
         selectedNodesCheckbox.addActionListener(this);
-        showNodeAnimationValueCheckbox = new JCheckBox("   Show Node Animation Value");        
+        showNodeAnimationValueCheckbox = new JCheckBox("   Show Node Animation Value");
         showNodeAnimationValueCheckbox.setToolTipText("Show Node Animation Value");
         showNodeAnimationValueCheckbox.setSelected( ANIMATION_SHOW_NODE_ANIMATION_VALUE.get() );
         showNodeAnimationValueCheckbox.addActionListener(this);
         JLabel fluidTransitionLabel = new JLabel("Fluid Node Transition:");
         fluidTransitionLabel.setToolTipText("Fluid Node Transition");
-        fluidTransitionOffRadioButton = new JRadioButton("  Discrete");        
+        fluidTransitionOffRadioButton = new JRadioButton("  Discrete");
         fluidTransitionOffRadioButton.setToolTipText("Discrete");
         fluidTransitionOffRadioButton.addActionListener(this);
-        fluidTransitionLinearRadioButton = new JRadioButton("  Linear");        
+        fluidTransitionLinearRadioButton = new JRadioButton("  Linear");
         fluidTransitionLinearRadioButton.setToolTipText("Linear");
         fluidTransitionLinearRadioButton.addActionListener(this);
-        fluidTransitionPolynomialRadioButton = new JRadioButton("  Polynomial");        
+        fluidTransitionPolynomialRadioButton = new JRadioButton("  Polynomial");
         fluidTransitionPolynomialRadioButton.setToolTipText("Polynomial");
         fluidTransitionPolynomialRadioButton.addActionListener(this);
         ButtonGroup fluidTransitionsButtonGroup = new ButtonGroup();
@@ -196,7 +196,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         setMaxNodeSizeLabel = new JLabel("          Set Max Node Size:");
         setMaxNodeSizeLabel.setToolTipText("Set Max Node Size");
         setMaxNodeSizeComboBox = new JComboBox();
-        setMaxNodeSizeComboBox.setToolTipText("Max Node Size");        
+        setMaxNodeSizeComboBox.setToolTipText("Max Node Size");
         if (isExpressionProfileAnimationMode)
         {
             setMaxValueLabel = new JLabel("          Set Max Value:");
@@ -205,7 +205,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         }
         else
         {
-            setFixedMaxValueCheckBox = new JCheckBox("   Set (Fixed) Max Value:");            
+            setFixedMaxValueCheckBox = new JCheckBox("   Set (Fixed) Max Value:");
             setFixedMaxValueCheckBox.setToolTipText("Set (Fixed) Max Value");
             setFixedMaxValueCheckBox.setSelected(setFixedMaxValueCheckBoxState);
             setFixedMaxValueCheckBox.addActionListener(this);
@@ -214,7 +214,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
             if (isExpressionProfileAnimationMode)
                 setFixedMaxValueCheckBox.setEnabled( !ANIMATION_PER_NODE_MAX_VALUE.get() );
         }
-        maxValueFoundTextField = new FloatNumberField(0, 5);        
+        maxValueFoundTextField = new FloatNumberField(0, 5);
         maxValueFoundTextField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
         if (isExpressionProfileAnimationMode)
             maxValueFoundTextField.setEnabled( !ANIMATION_PER_NODE_MAX_VALUE.get() );
@@ -225,66 +225,66 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         }
         maxValueFoundTextField.setToolTipText("Max Value");
         JPanel colorPalettePanel = new JPanel(true);
-        useColorPaletteSpectrumTransitionCheckBox = new JCheckBox("   Use Color Palette Spectrum Transition");        
+        useColorPaletteSpectrumTransitionCheckBox = new JCheckBox("   Use Color Palette Spectrum Transition");
         useColorPaletteSpectrumTransitionCheckBox.setToolTipText("Use Color Palette Spectrum Transition");
         useColorPaletteSpectrumTransitionCheckBox.setSelected(true);
         useColorPaletteSpectrumTransitionCheckBox.addActionListener(this);
-        useRealMaxValueForColorTransitionCheckBox = new JCheckBox("   Use Real Max Value For Color Transition");        
+        useRealMaxValueForColorTransitionCheckBox = new JCheckBox("   Use Real Max Value For Color Transition");
         useRealMaxValueForColorTransitionCheckBox.setToolTipText("Use Real Max Value For Color Transition");
         useRealMaxValueForColorTransitionCheckBox.addActionListener(this);
         if (isExpressionProfileAnimationMode)
             useRealMaxValueForColorTransitionCheckBox.setEnabled( !ANIMATION_PER_NODE_MAX_VALUE.get() );
-        minValueColorLabel = new JLabel("Min Spectrum Color:");        
+        minValueColorLabel = new JLabel("Min Spectrum Color:");
         minValueColorLabel.setToolTipText("Min Spectrum Color");
         minValueColorLabel.setEnabled(false);
-        maxValueColorLabel = new JLabel("Max Spectrum Color:");        
+        maxValueColorLabel = new JLabel("Max Spectrum Color:");
         maxValueColorLabel.setToolTipText("Max Spectrum Color");
         maxValueColorLabel.setEnabled(false);
-        minSpectrumColorButton = new ColorButton(" ");        
+        minSpectrumColorButton = new ColorButton(" ");
         minSpectrumColorButton.setPreferredSize( new Dimension(15, 15) );
         minSpectrumColorButton.setBackground(ANIMATION_MIN_SPECTRUM_COLOR);
         minSpectrumColorButton.setToolTipText("Min Spectrum Color Button");
         minSpectrumColorButton.setEnabled(false);
         minSpectrumColorButton.addActionListener(this);
-        maxSpectrumColorButton = new ColorButton(" ");        
+        maxSpectrumColorButton = new ColorButton(" ");
         maxSpectrumColorButton.setPreferredSize( new Dimension(15, 15) );
         maxSpectrumColorButton.setBackground(ANIMATION_MAX_SPECTRUM_COLOR);
         maxSpectrumColorButton.setToolTipText("Max Spectrum Color Button");
         maxSpectrumColorButton.setEnabled(false);
         maxSpectrumColorButton.addActionListener(this);
-        useImageAsSpectrumCheckBox = new JCheckBox( "   Use Image As Spectrum");        
+        useImageAsSpectrumCheckBox = new JCheckBox( "   Use Image As Spectrum");
         useImageAsSpectrumCheckBox.setToolTipText( "Use Image As Spectrum");
         useImageAsSpectrumCheckBox.setSelected(true);
         useImageAsSpectrumCheckBox.addActionListener(this);
         imageSpectrumFileNamesComboBox = new JComboBox(ANIMATION_DEFAULT_SPECTRUM_IMAGE_FILES);
-        imageSpectrumFileNamesComboBox.setSelectedIndex(ANIMATION_DEFAULT_SPECTRUM_IMAGE.get() - 1);        
+        imageSpectrumFileNamesComboBox.setSelectedIndex(ANIMATION_DEFAULT_SPECTRUM_IMAGE.get() - 1);
         imageSpectrumFileNamesComboBox.setToolTipText("All Default Internal Spectrum Images");
         imageSpectrumFileNamesComboBox.setEditable(false);
         imageSpectrumFileNamesComboBox.addActionListener(this);
-        loadImageFileButton = new JButton("Load");        
+        loadImageFileButton = new JButton("Load");
         loadImageFileButton.setToolTipText("Load");
         loadImageFileButton.addActionListener(this);
-        defaultImageFileButton = new JButton("Default");        
+        defaultImageFileButton = new JButton("Default");
         defaultImageFileButton.setToolTipText("Default");
         defaultImageFileButton.setEnabled(false);
         defaultImageFileButton.addActionListener(this);
         JPanel animationControlPanel = new JPanel(true);
-        startAnimationButton = new JButton("Start Animation");        
+        startAnimationButton = new JButton("Start Animation");
         startAnimationButton.setToolTipText("Start Animation");
         startAnimationButton.addActionListener(this);
-        pauseAnimationButton = new JButton("Pause Animation");        
+        pauseAnimationButton = new JButton("Pause Animation");
         pauseAnimationButton.setToolTipText("Pause Animation");
         pauseAnimationButton.setEnabled(false);
         pauseAnimationButton.addActionListener(this);
-        stepAnimationButton = new JButton("Step Animation");        
+        stepAnimationButton = new JButton("Step Animation");
         stepAnimationButton.setToolTipText("Step Animation");
         stepAnimationButton.setEnabled(false);
         stepAnimationButton.addActionListener(this);
-        stopAnimationButton = new JButton("Stop Animation");        
+        stopAnimationButton = new JButton("Stop Animation");
         stopAnimationButton.setToolTipText("Stop Animation");
         stopAnimationButton.setEnabled(false);
         stopAnimationButton.addActionListener(this);
-        closeButton = new JButton("Close Animation Control Dialog");        
+        closeButton = new JButton("Close Animation Control Dialog");
         closeButton.setToolTipText("Close Animation Control Dialog");
         closeButton.addActionListener(this);
 
@@ -336,7 +336,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         for (int i = 1; i < 10; i++)
             entitiesOrTimeBlocksPerSecondComboBox.addItem( TICKS_PER_SEC_STRING[index] + Utils.numberFormatting(i / 10.0, 2) );
         for (int i = 1; i <= MAX_RATE_PER_SEC; i++)
-            entitiesOrTimeBlocksPerSecondComboBox.addItem(TICKS_PER_SEC_STRING[index] + i);     
+            entitiesOrTimeBlocksPerSecondComboBox.addItem(TICKS_PER_SEC_STRING[index] + i);
         entitiesOrTimeBlocksPerSecondComboBox.setSelectedIndex(ANIMATION_DEFAULT_ENTITY_OR_TIMEBLOCK_PER_SECOND.get() - 1);
         entitiesOrTimeBlocksPerSecondComboBox.addActionListener(this);
 
@@ -556,8 +556,8 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
                 closeDialogWindow();
             }
         } );
-    }    
-    
+    }
+
     /**
     *  Clears the animation control dialog components.
     */
@@ -678,7 +678,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         initComponents();
 
         if (isExpressionProfileAnimationMode)
-        {            
+        {
             setMaxValueInTextField( layoutFrame.getExpressionData().findGlobalMaxValueFromExpressionDataArray() );
             ANIMATION_EXPRESSION_DATA_LOCAL_MAX_VALUES = layoutFrame.getExpressionData().findLocalMaxValuesFromExpressionDataArray( layoutFrame.getGraph().getGraphNodes() );
         }
@@ -839,7 +839,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     {
         imageSpectrumFileNamesComboBox.removeAllItems();
         for (int i = 0; i < ANIMATION_DEFAULT_SPECTRUM_IMAGE_FILES.length; i++)
-            imageSpectrumFileNamesComboBox.addItem(ANIMATION_DEFAULT_SPECTRUM_IMAGE_FILES[i]);        
+            imageSpectrumFileNamesComboBox.addItem(ANIMATION_DEFAULT_SPECTRUM_IMAGE_FILES[i]);
         imageSpectrumFileNamesComboBox.setToolTipText("All Default Internal Spectrum Images");
         imageSpectrumFileNamesComboBox.setEnabled(true);
         imageSpectrumFileNamesComboBox.setSelectedIndex(ANIMATION_DEFAULT_SPECTRUM_IMAGE.get() - 1);
@@ -889,9 +889,9 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         stopAnimationButton.setEnabled(true);
         closeButton.setEnabled(false);
 
-        layoutFrame.blockExceptNavigationToolBar();       
+        layoutFrame.blockExceptNavigationToolBar();
         layoutFrame.getGraph().setAnimationValues(true, entityOrTimeBlockToStartFrom);
-        layoutFrame.getGraph().getGraphRendererActions().getAutoRotateAction().actionPerformed( new ActionEvent(this, 0, START_ANIMATION_EVENT_STRING) );        
+        layoutFrame.getGraph().getGraphRendererActions().getAutoRotateAction().actionPerformed( new ActionEvent(this, 0, START_ANIMATION_EVENT_STRING) );
     }
 
     /**
@@ -961,7 +961,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
             minSpectrumColorButton.setEnabled(!ANIMATION_USE_IMAGE_AS_SPECTRUM);
             maxSpectrumColorButton.setEnabled(!ANIMATION_USE_IMAGE_AS_SPECTRUM);
             useImageAsSpectrumCheckBox.setEnabled(true);
-            
+
             if (ANIMATION_USE_IMAGE_AS_SPECTRUM)
             {
                 imageSpectrumFileNamesComboBox.setEnabled( ANIMATION_USER_SPECTRUM_IMAGE_FILE.isEmpty() );
@@ -975,7 +975,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         stepAnimationButton.setEnabled(false);
         stopAnimationButton.setEnabled(false);
         closeButton.setEnabled(true);
-        
+
         if (resumeRendererAndThenStopAnimation)
             layoutFrame.getGraph().generalResumeRenderUpdateThread();
         layoutFrame.getGraph().setAnimationValues(false, 0);
@@ -1067,8 +1067,8 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         }
         else if ( e.getSource().equals(imageSpectrumFileNamesComboBox) )
         {
-            ANIMATION_CHOSEN_DEFAULT_SPECTRUM_IMAGE_FILE_INDEX = ( ANIMATION_USER_SPECTRUM_IMAGE_FILE.isEmpty() ) ? imageSpectrumFileNamesComboBox.getSelectedIndex() : 0;            
-            ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = true;            
+            ANIMATION_CHOSEN_DEFAULT_SPECTRUM_IMAGE_FILE_INDEX = ( ANIMATION_USER_SPECTRUM_IMAGE_FILE.isEmpty() ) ? imageSpectrumFileNamesComboBox.getSelectedIndex() : 0;
+            ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = true;
             ANIMATION_DEFAULT_SPECTRUM_IMAGE.set(ANIMATION_CHOSEN_DEFAULT_SPECTRUM_IMAGE_FILE_INDEX + 1);
             layoutFrame.getLayoutGraphPropertiesDialog().setHasNewPreferencesBeenApplied(true);
         }
@@ -1111,10 +1111,10 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         }
     }
 
-    public AbstractAction getAnimationControlDialogAction() 
+    public AbstractAction getAnimationControlDialogAction()
     {
         return animationControlDialogAction;
     }
-    
+
 
 }

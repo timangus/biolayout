@@ -117,7 +117,7 @@ public class LinearAlgebraComputing extends OpenGLContext
     {
         // create textures
         // y gets two textures, alternatingly read-only and write-only,
-        // x is just read-only        
+        // x is just read-only
         gl.glGenTextures(1, TEXTURE_ID_X);
         gl.glGenTextures(2, TEXTURE_ID_YS);
 
@@ -185,7 +185,7 @@ public class LinearAlgebraComputing extends OpenGLContext
         if ( !checkFrameBufferStatus() )
         {
             if (DEBUG_BUILD) println("FBO glFramebufferTexture2DEXT() Status: Failed!");
-        } 
+        }
         else
         {
             if (DEBUG_BUILD) println("FBO glFramebufferTexture2DEXT() Status: Passed!");
@@ -194,7 +194,7 @@ public class LinearAlgebraComputing extends OpenGLContext
         // enable texture x (read-only, not changed in the computation loop) at texture unit 1
         gl.glActiveTexture(GL_TEXTURE1);
         gl.glBindTexture( textureParameters.textureTarget, TEXTURE_ID_X.get(0) );
-        
+
         if (textureParameters.textureTarget == GL_TEXTURE_2D)
             linearAlgebraComputingShaders.useTexture2DShaderForLinearAlgebra(gl, 1, 0, alpha);
         else
@@ -246,7 +246,7 @@ public class LinearAlgebraComputing extends OpenGLContext
     *  Retrieves GPU results, performs and times saxpy on the CPU & compares results
     */
     private void retrieveGPUResultsAndCompareWithCPU()
-    {        
+    {
         // get GPU results
         FloatBuffer data = FloatBuffer.allocate(N);
         transferFromTexture(ATTACHMENT_POINTS[readTexture], data);
@@ -283,7 +283,7 @@ public class LinearAlgebraComputing extends OpenGLContext
             }
 
             avgError /= (double)N;
-            if (DEBUG_BUILD) 
+            if (DEBUG_BUILD)
             {
                 printf("\nMax Error: \t\t\t%e\n", maxError);
                 printf("Avg Error: \t\t\t%e\n", avgError);
@@ -293,24 +293,24 @@ public class LinearAlgebraComputing extends OpenGLContext
 
             if (showResults)
             {
-                if (DEBUG_BUILD) 
-                {                    
+                if (DEBUG_BUILD)
+                {
                     println("\nCPU RESULTS:");
                     printArrayResults(dataYArray);
                 }
             }
         }
-        
+
         if (showResults)
         {
             // print out results
-            if (DEBUG_BUILD) 
+            if (DEBUG_BUILD)
             {
                 println("\nGPU RESULTS:");
                 printArrayResults(data);
             }
         }
-        
+
         data.clear();
         data = null;
         System.gc();
@@ -352,7 +352,7 @@ public class LinearAlgebraComputing extends OpenGLContext
     protected void initializeGPUMemoryImplementation()
     {
         // init shaders runtime
-        linearAlgebraComputingShaders = new LinearAlgebraComputingShaders(gl);        
+        linearAlgebraComputingShaders = new LinearAlgebraComputingShaders(gl);
         createTextures();
     }
 
@@ -362,7 +362,7 @@ public class LinearAlgebraComputing extends OpenGLContext
     @Override
     protected void performGPUComputingCalculationsImplementation()
     {
-        performComputation();        
+        performComputation();
     }
 
     /**
@@ -380,10 +380,10 @@ public class LinearAlgebraComputing extends OpenGLContext
     @Override
     protected void deleteOpenGLContextForGPUComputing()
     {
-        deleteDataArrays();        
-        linearAlgebraComputingShaders.destructor(gl);        
+        deleteDataArrays();
+        linearAlgebraComputingShaders.destructor(gl);
         deleteTextures();
     }
 
-    
+
 }

@@ -13,33 +13,33 @@ import java.util.prefs.*;
 
 public class PrefFloat extends PrefType
 {
-    
-    /** 
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private float currentValue = 0.0f;
-    
-    /** 
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private float defaultValue = 0.0f;
 
-    /** 
+    /**
     *  The constructor of the PrefFloat class.
-    */       
+    */
     public PrefFloat(float defaultValue, String prefName, boolean isSaved)
     {
         super(prefName, isSaved);
-        
+
         this.defaultValue = currentValue = defaultValue;
-        
+
         prefType = PrefTypes.PREF_FLOAT;
         LayoutPreferences.getLayoutPreferencesSingleton().add(this);
     }
 
-    /** 
+    /**
     *  Returns this Float preference.
-    */     
+    */
     public float get()
     {
         return currentValue;
@@ -53,9 +53,9 @@ public class PrefFloat extends PrefType
         currentValue = value;
     }
 
-    /** 
+    /**
     *  Loads this Float preference. Overrides the parent class abstract method.
-    */     
+    */
     @Override
     public void loadPref()
     {
@@ -86,14 +86,14 @@ public class PrefFloat extends PrefType
             Preferences.userRoot().putFloat(prefName, currentValue);
     }
 
-    /** 
+    /**
     *  Restores this Float preference. Overrides the parent class abstract method.
-    */    
+    */
     @Override
     public void restorePref()
     {
         currentValue = defaultValue;
-    }     
-    
-    
+    }
+
+
 }

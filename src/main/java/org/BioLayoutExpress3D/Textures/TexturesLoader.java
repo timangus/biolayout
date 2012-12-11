@@ -247,7 +247,7 @@ public class TexturesLoader
         }
         finally
         {
-            try 
+            try
             {
                 if (textureBufferedReader != null) textureBufferedReader.close();
             }
@@ -255,7 +255,7 @@ public class TexturesLoader
             {
                 if (DEBUG_BUILD) println("IOException while closing the stream in TexturesLoader.loadImagesInfoFile():\n" + ioe.getMessage());
             }
-        }        
+        }
     }
 
     /**
@@ -467,6 +467,6 @@ public class TexturesLoader
             imagesMap = null;
         }
     }
-   
-   
+
+
 }

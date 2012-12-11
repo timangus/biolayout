@@ -17,8 +17,8 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.Shapes3D.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 * WrapperGraphmlToLayoutParser is the wrapper parser class used to connect the GraphML parsed xml data files with the main BioLayout Express 3D application.
 *
 * @see org.BioLayoutExpress3D.Files.Parsers.GraphmlParser
@@ -29,20 +29,20 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 public final class WrapperGraphmlToLayoutParser extends CoreParser implements GraphmlParser.GraphmlParserListener
 {
-    
+
     /**
     *  Constant value for defining the minimum range allowed.
-    */      
+    */
     private static final float MINIMUM_RANGE = 300.0f;
-    
+
     /**
     *  Constant value for defining the component container regex.
-    */     
+    */
     private static final String COMPONENT_CONTAINER_REGEX = "*";
 
     /**
     *  GraphmlParser reference (to be used for graphml xml file parsing).
-    */    
+    */
     private GraphmlParser graphmlParser = null;
 
     /**
@@ -52,48 +52,48 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
     /**
     *  Boolean variable to be used for validating the XML file.
-    */       
-    private boolean validateXMLFile = false;    
-    
+    */
+    private boolean validateXMLFile = false;
+
     /**
     *  LayoutProgressBarDialog reference (reference for the loading dialog).
-    */    
+    */
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
 
     /**
     *  GraphmlNetworkContainer reference (reference for the grapml network container).
     */
     private GraphmlNetworkContainer gnc = null;
-    
+
     /**
     *  The WrapperGraphmlToLayoutParser class constructor for graphml xml files (first constructor).
-    */     
+    */
     public WrapperGraphmlToLayoutParser(NetworkContainer nc, LayoutFrame layoutFrame, GraphmlParser graphmlParser, boolean validateXMLFile)
     {
         super(nc, layoutFrame);
-        
+
         this.graphmlParser = graphmlParser;
         this.validateXMLFile = validateXMLFile;
     }
-       
+
     /**
     *  Checks if the file actually exists.
-    */     
+    */
     @Override
-    public boolean init(File file, String fileExtension) 
+    public boolean init(File file, String fileExtension)
     {
-        try 
+        try
         {
             fileReaderBuffered = new BufferedReader( new FileReader(file) );
-            fileReaderBuffered.close();   
-            
+            fileReaderBuffered.close();
+
             // use absolute path here so as to be able to import files from different (than current) directories, useful for drag-n-drop
             fileName = file.getAbsolutePath();
             simpleFileName = file.getName();
 
             return true;
-        } 
-        catch (Exception exc) 
+        }
+        catch (Exception exc)
         {
             try
             {
@@ -110,59 +110,59 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
             return false;
         }
-    }    
-    
+    }
+
     /**
     *  Parses the graphml file.
-    */         
+    */
     @Override
     public boolean parse()
     {
         isSuccessful = false;
-        nc.setOptimized(false);    
+        nc.setOptimized(false);
         layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
         if (graphmlParser != null)
         {
             graphmlParser.setXmlParserName(fileName);
             graphmlParser.setListener(this);
-            
+
             isSuccessful = graphmlParser.parseFromFile(fileName, validateXMLFile);
-                    
+
             convertToLayoutFormat();
 
             graphmlParser.removeListener();
         }
-            
+
         layoutProgressBarDialog.endProgressBar();
         layoutProgressBarDialog.stopProgressBar();
 
         return isSuccessful;
     }
-    
+
     /**
     *  GraphmlParser callback to inform about the graphml details parsed.
-    */    
+    */
     @Override
     public void graphmlDetailsParsed()
     {
         int numberOfTotalLines = graphmlParser.getGraphmlParsedNodes() + graphmlParser.getGraphmlParsedEdges();
         layoutProgressBarDialog.prepareProgressBar(numberOfTotalLines, "Parsing " + simpleFileName + " GraphML Pathway...");
         layoutProgressBarDialog.startProgressBar();
-    }    
+    }
 
     /**
     *  GraphmlParser callback to inform about the graphml node or edge parsed.
-    */        
+    */
     @Override
     public void nodeOrEdgeParsed()
-    {        
+    {
         layoutProgressBarDialog.incrementProgress();
     }
-    
+
     /**
     *  Converts the xml parsed information to layout compatible format.
-    */     
+    */
     private void convertToLayoutFormat()
     {
         if (graphmlParser != null)
@@ -204,7 +204,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             for ( String edgeKey : allEdgesMap.keySet() )
             {
                 edgeTuple6 = allEdgesMap.get(edgeKey);
-                
+
                 edgeName = edgeTuple6.fifth[17];
                 isTotalInhibitorEdge = edgeTuple6.fourth[1].equals(GRAPHML_PETRI_NET_INHIBITOR_ARROWHEAD_LOOK_UP_TABLE[0]) || edgeTuple6.fourth[1].equals(GRAPHML_PETRI_NET_INHIBITOR_ARROWHEAD_LOOK_UP_TABLE[1]);
                 isPartialInhibitorEdge = edgeTuple6.fourth[1].equals(GRAPHML_PETRI_NET_INHIBITOR_ARROWHEAD_LOOK_UP_TABLE[2]);
@@ -218,10 +218,10 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 node2Name = node2Tuple6.fifth[0];
 
                 if ( node1Name.startsWith(COMPONENT_CONTAINER_REGEX) && node1Name.endsWith(COMPONENT_CONTAINER_REGEX) ) // skip Component Containers to not become nodes in the network
-                    continue;            
+                    continue;
                 if ( node2Name.startsWith(COMPONENT_CONTAINER_REGEX) && node2Name.endsWith(COMPONENT_CONTAINER_REGEX) ) // skip Component Containers to not become nodes in the network
                     continue;
-                
+
                 node1Width = node1Tuple6.first[1];  // reverse index because graphml file & parser has it in height/width format instead of width/height!
                 node1Height = node1Tuple6.first[0]; // reverse index because graphml file & parser has it in height/width format instead of width/height!
 
@@ -236,7 +236,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
                 node1Shape = node1Tuple6.sixth;
                 node2Shape = node2Tuple6.sixth;
-                
+
                 if (DEBUG_BUILD) println("\nedgeKey: '" + edgeKey + "'" + " edgeName: " + edgeName + " isTotalInhibitorEdge: " + isTotalInhibitorEdge + " isPartialInhibitorEdge: " + isPartialInhibitorEdge + " hasDualArrowHead: " + hasDualArrowHead + " hasNoArrowHead: " + hasNoArrowHead +
                                          "\nnode1Name: " + node1Name + " node1Width: " + node1Width + " node1Height: " + node1Height + " node1Shape: " + node1Shape + ( (node1Color1 != null) ? ( " \nColor1: " + node1Color1.toString() ) : "" ) + ( (node1Color2 != null) ? ( " Color2: " + node1Color2.toString() ) : "" ) +
                                          "\nnode2Name: " + node2Name + " node2Width: " + node2Width + " node2Height: " + node2Height + " node2Shape: " + node2Shape + ( (node2Color1 != null) ? ( " \nColor1: " + node2Color1.toString() ) : "" ) + ( (node2Color2 != null) ? ( " Color2: " + node2Color2.toString() ) : "" ) );
@@ -262,8 +262,8 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             gnc.setHasStandardPetriNetTransitions(hasStandardPetriNetTransitions);
             gnc.initAllGraphmlNodesMap( allNodesMap, allEdgesMap, createComponentContainers(allNodesMap) );
             gnc.parsemEPNClassSetAndClasses();
-        }                
-    }   
+        }
+    }
 
     /**
     *  Look up shapes method for graphml shapes for the given node.
@@ -307,7 +307,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 }
             }
             else // GraphmlShapesGroup2 node found
-            {                
+            {
                 nodeColorToReturn   = nodeGroup2Tuple6.second;
                 nodeShapeSizeToReturn = nodeGroup2Tuple6.third;
                 nodeShape2DToReturn = nodeGroup2Tuple6.fourth;
@@ -317,7 +317,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             }
         }
         else // GraphmlShapesGroup1 node found
-        {            
+        {
             nodeColorToReturn     = nodeGroup1Tuple6.second;
             nodeShapeSizeToReturn = nodeGroup1Tuple6.third;
             nodeShape2DToReturn   = nodeGroup1Tuple6.fourth;
@@ -326,7 +326,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             ismEPNTransition = nodeGroup1Tuple6.sixth;
         }
 
-        return Tuples.tuple( nodeShape2DToReturn, nodeShape3DToReturn, nodeShapeSizeToReturn, 
+        return Tuples.tuple( nodeShape2DToReturn, nodeShape3DToReturn, nodeShapeSizeToReturn,
                              Tuples.tuple(ismEPNTransition || hasStandardPetriNetTransitions, ismEPNComponent, hasStandardPetriNetTransitions),
                              Tuples.tuple( (nodeGroup1Tuple6 != null) ? nodeGroup1Tuple6.first : GraphmlShapesGroup1.NONE,
                                            (nodeGroup2Tuple6 != null) ? nodeGroup2Tuple6.first : GraphmlShapesGroup2.NONE,
@@ -349,14 +349,14 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 currentGraphmlShape = (GraphmlShapesGroup1)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[i].third;
                 shapeIndex = currentGraphmlShape.ordinal();
                 return Tuples.tuple(currentGraphmlShape,                                              // return type of graphml shape
-                                       (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[shapeIndex].fourth,  // return graphml color                                       
-                                       (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[shapeIndex].fifth,   // return graphml shape size                                          
+                                       (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[shapeIndex].fourth,  // return graphml color
+                                       (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[shapeIndex].fifth,   // return graphml shape size
                                     (Shapes2D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[shapeIndex].sixth,   // return graphml 2D shape
                                     (Shapes3D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[shapeIndex].seventh, // return graphml 3D shape
                                     checkForTransition(currentGraphmlShape) );                        // return mEPN Transition
             }
         }
-        
+
         return Tuples.tuple(GraphmlShapesGroup1.NONE, Color.BLACK, 0.0f, CIRCLE, SPHERE, false);
     }
 
@@ -384,8 +384,8 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
         for (int i = 0; i < numberOfShapes; i++)
         {
             if ( nodeShape.equals( (String)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[i].first ) && ( (nodeColor1 != null) && nodeColor1.equals( (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[i].third ) ) ) // because of possible errors in glyph color definitions
-            {                
-                currentGraphmlShape = (GraphmlShapesGroup2)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[i].second;                    
+            {
+                currentGraphmlShape = (GraphmlShapesGroup2)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[i].second;
                 if ( currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_VERTICAL) || currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_HORIZONTAL) )
                 {
                     ismEPNTransition = true;
@@ -394,12 +394,12 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 else if ( currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_DIAMOND) )
                 {
                     ismEPNTransition = true;
-                }               
+                }
 
                 shapeIndex = currentGraphmlShape.ordinal();
                 return Tuples.tuple(currentGraphmlShape,                                             // return type of graphml shape
                                        (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[shapeIndex].third,  // return graphml color
-                                       (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[shapeIndex].fourth, // return graphml shape size   
+                                       (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[shapeIndex].fourth, // return graphml shape size
                                     (Shapes2D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[shapeIndex].fifth,  // return graphml 2D shape
                                     (Shapes3D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[shapeIndex].sixth,  // return graphml 3D shape
                                     ismEPNTransition);
@@ -430,7 +430,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                      currentGraphmlShape.equals(GraphmlShapesGroup3.SIMPLE_BIOCHEMICAL) || currentGraphmlShape.equals(GraphmlShapesGroup3.GENERIC_ENTITY)  ||
                      currentGraphmlShape.equals(GraphmlShapesGroup3.DRUG)               || currentGraphmlShape.equals(GraphmlShapesGroup3.ION_SIMPLE_MOLECULE) )
                     ismEPNComponent = true;
-                
+
                 shapeIndex = currentGraphmlShape.ordinal();
                 return Tuples.tuple(currentGraphmlShape,                                             // return type of graphml shape
                                        (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[shapeIndex].third,  // return graphml color
@@ -443,7 +443,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
         return Tuples.tuple(GraphmlShapesGroup3.NONE, Color.BLACK, 0.0f, CIRCLE, SPHERE, false);
     }
-    
+
     /**
     *  Transform the yEd-style rendering of graphml files.
     */
@@ -460,7 +460,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
         float currentCoordYUpper = 0.0f;
         float currentCoordXLower = 0.0f;
         float currentCoordYLower = 0.0f;
-        
+
         for ( String nodeName : allNodesMap.keySet() )
         {
             nodeTuple6 = allNodesMap.get(nodeName);
@@ -469,22 +469,22 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             currentCoordXUpper = nodeTuple6.first[2];
             currentCoordYUpper = nodeTuple6.first[3];
             currentCoordXLower = nodeTuple6.first[2] + nodeTuple6.first[1];
-            currentCoordYLower = nodeTuple6.first[3] + nodeTuple6.first[0];            
+            currentCoordYLower = nodeTuple6.first[3] + nodeTuple6.first[0];
 
             if (currentCoordXUpper < minX) minX = currentCoordXUpper;
             if (currentCoordYUpper < minY) minY = currentCoordYUpper;
             if (currentCoordXLower < minX) minX = currentCoordXLower;
             if (currentCoordYLower < minY) minY = currentCoordYLower;
-            
+
             if (currentCoordXUpper > maxX) maxX = currentCoordXUpper;
             if (currentCoordYUpper > maxY) maxY = currentCoordYUpper;
             if (currentCoordXLower > maxX) maxX = currentCoordXLower;
             if (currentCoordYLower > maxY) maxY = currentCoordYLower;
-            
+
             // have to pad half the width/height in coords, as yEd does it that way
             // reverse index because graphml file & parser has it in height/width format instead of width/height!
             nodeTuple6.first[2] += nodeTuple6.first[1] / 2.0f;
-            nodeTuple6.first[3] += nodeTuple6.first[0] / 2.0f;            
+            nodeTuple6.first[3] += nodeTuple6.first[0] / 2.0f;
         }
 
         float rangeX = abs(maxX - minX);
@@ -492,7 +492,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
         if (rangeX < MINIMUM_RANGE) rangeX = MINIMUM_RANGE;
         if (rangeY < MINIMUM_RANGE) rangeY = MINIMUM_RANGE;
         float ratioX = rangeX / CANVAS_X_SIZE;
-        float ratioY = rangeY / CANVAS_Y_SIZE;    
+        float ratioY = rangeY / CANVAS_Y_SIZE;
         // convert to multiplicationFactor instead of divisionFactor for a possible speed-up (divisions are usually more slow)
         float multiplicationFactor = (ratioX > ratioY) ? (1.0f / ratioX) : (1.0f / ratioY);
 
@@ -547,7 +547,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
             allPathValues = edgeTuple6.second;
             edgeLabelValues = edgeTuple6.fifth;
-            
+
             // scale the sx/sy/tx/ty values
             allPathValues.first[0] *= multiplicationFactor;
             allPathValues.first[1] *= multiplicationFactor;
@@ -559,7 +559,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             allPathValues.first[1] -= minX;
             allPathValues.first[2] -= minX;
             allPathValues.first[3] -= minX;
-            
+
             // don't use a foreach loop so as to avoid the object copy that may not register the multiplicationFactor calculation
             size = allPathValues.second.size();
             for (int i = 0; i < size; i++)
@@ -567,12 +567,12 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 // scale the polyline point values
                 allPathValues.second.get(i).x *= multiplicationFactor;
                 allPathValues.second.get(i).y *= multiplicationFactor;
-                
+
                 // need to translate the polyline point values
                 allPathValues.second.get(i).x -= minX;
-                allPathValues.second.get(i).y -= minY;                
+                allPathValues.second.get(i).y -= minY;
             }
-                        
+
             if ( !edgeLabelValues[7].isEmpty() )
             {
                 height = Float.parseFloat(edgeLabelValues[7]); // retrieve the height value
@@ -581,23 +581,23 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
             }
             if ( !edgeLabelValues[14].isEmpty() )
-            {            
+            {
                 width = Float.parseFloat(edgeLabelValues[14]); // retrieve the width value
                 width *= multiplicationFactor; // scale the width value
                 edgeLabelValues[14] = Float.toString(width);
             }
-            
+
             if ( !edgeLabelValues[15].isEmpty() )
-            {            
+            {
                 x = Float.parseFloat(edgeLabelValues[15]); // retrieve the x value
                 x *= multiplicationFactor; // scale the x value
                 x -= minX; // need to translate the x value only
                 edgeLabelValues[15] = Float.toString(x);
             }
-            
+
             if ( !edgeLabelValues[16].isEmpty() )
             {
-                y = Float.parseFloat(edgeLabelValues[16]); // retrieve the y value                                     
+                y = Float.parseFloat(edgeLabelValues[16]); // retrieve the y value
                 y *= multiplicationFactor; // scale the y value
                 y -= minY; // need to translate the y value only
                 edgeLabelValues[16] = Float.toString(y);
@@ -605,12 +605,12 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
         }
 
         gnc.setRangeX(rangeX);
-        gnc.setRangeY(rangeY);       
+        gnc.setRangeY(rangeY);
     }
-    
+
     /**
     *  Creates the component containers.
-    */    
+    */
     private ArrayList<GraphmlComponentContainer> createComponentContainers(HashMap<String, Tuple6<float[], String[], String[], String[], String[], String>> allNodesMap)
     {
         Tuple6<float[], String[], String[], String[], String[], String> nodeTuple6 = null;
@@ -620,8 +620,8 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
         Rectangle2D.Float rectangle2D = null;
         String nodeColorString = "";
         Color nodeColor = null;
-        ArrayList<GraphmlComponentContainer> allPathwayComponentContainersFor3D = new ArrayList<GraphmlComponentContainer>();     
-        
+        ArrayList<GraphmlComponentContainer> allPathwayComponentContainersFor3D = new ArrayList<GraphmlComponentContainer>();
+
         try
         {
             for ( String nodeName : allNodesMap.keySet() )
@@ -630,8 +630,8 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 nodeLabelName = nodeTuple6.fifth[0].trim();
                 if ( nodeLabelName.startsWith(COMPONENT_CONTAINER_REGEX) && nodeLabelName.endsWith(COMPONENT_CONTAINER_REGEX) )
                 {
-                    nodeLabelNameElements = nodeLabelName.substring( 1, nodeLabelName.length() ).split("\\" + COMPONENT_CONTAINER_REGEX + "+"); // skip first regex character                                                                
-                    geometryValues = nodeTuple6.first;                                
+                    nodeLabelNameElements = nodeLabelName.substring( 1, nodeLabelName.length() ).split("\\" + COMPONENT_CONTAINER_REGEX + "+"); // skip first regex character
+                    geometryValues = nodeTuple6.first;
                     rectangle2D = new Rectangle2D.Float(geometryValues[2], geometryValues[3], geometryValues[1], geometryValues[0]); // reverse index because graphml file & parser has it in height/width format instead of width/height!
                     nodeColorString = nodeTuple6.second[1];
                     nodeColor = (nodeColorString != null) ? Color.decode(nodeColorString) : DEFAULT_NODE_COLOR;
@@ -643,18 +643,18 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                     else if (nodeLabelNameElements.length == 3)
                         allPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(nodeLabelNameElements[0], Integer.parseInt(nodeLabelNameElements[1]), Float.parseFloat(nodeLabelNameElements[2]), rectangle2D, nodeColor) );
                 }
-            }        
+            }
 
             Collections.sort(allPathwayComponentContainersFor3D);
         }
         catch (Exception exc)
         {
             JOptionPane.showMessageDialog(layoutFrame, "Parsing the Graphml Component Containers reported an exception:\n" + nodeLabelName + " " + exc.getMessage(), "Graphml Component Containers Parser Error", JOptionPane.WARNING_MESSAGE);
-            if (DEBUG_BUILD) println("Parsing the Graphml Component Containers reported an exception:\n" + nodeLabelName + " " + exc.getMessage());            
+            if (DEBUG_BUILD) println("Parsing the Graphml Component Containers reported an exception:\n" + nodeLabelName + " " + exc.getMessage());
         }
-        
+
         return allPathwayComponentContainersFor3D;
     }
-    
+
 
 }

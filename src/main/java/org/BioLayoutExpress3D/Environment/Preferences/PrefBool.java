@@ -8,38 +8,38 @@ import java.util.prefs.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class PrefBool extends PrefType
-{ 
-    
-    /** 
+{
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private boolean currentValue = false;
-    
-    /** 
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private boolean defaultValue = false;
 
-    /** 
+    /**
     *  The constructor of the PrefBool class.
-    */       
+    */
     public PrefBool(boolean defaultValue, String prefName, boolean isSaved)
     {
         super(prefName, isSaved);
-        
+
         this.defaultValue = currentValue = defaultValue;
-        
+
         prefType = PrefTypes.PREF_BOOL;
         LayoutPreferences.getLayoutPreferencesSingleton().add(this);
     }
 
-    /** 
+    /**
     *  Returns this Boolean preference.
-    */     
+    */
     public boolean get()
     {
         return currentValue;
@@ -53,9 +53,9 @@ public class PrefBool extends PrefType
         currentValue = value;
     }
 
-    /** 
+    /**
     *  Loads this Boolean preference. Overrides the parent class abstract method.
-    */       
+    */
     @Override
     public void loadPref()
     {
@@ -80,9 +80,9 @@ public class PrefBool extends PrefType
             Preferences.userRoot().putBoolean(prefName, currentValue);
     }
 
-    /** 
+    /**
     *  Restores this Boolean preference. Overrides the parent class abstract method.
-    */      
+    */
     @Override
     public void restorePref()
     {

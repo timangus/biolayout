@@ -10,62 +10,62 @@ package org.BioLayoutExpress3D.Utils;
 *
 */
 
-public final class SearchURL 
+public final class SearchURL
 {
     private String url = "";
     private String description = "";
     private String name = "";
 
-    public SearchURL(String url) 
+    public SearchURL(String url)
     {
         this.url = url;
     }
 
-    public SearchURL(String url, String name) 
+    public SearchURL(String url, String name)
     {
         this.url = url;
         this.name = name;
     }
 
-    public SearchURL(String url, String name, String description) 
+    public SearchURL(String url, String name, String description)
     {
         this.url = url;
         this.name = name;
         this.description = description;
     }
 
-    public String getUrl() 
+    public String getUrl()
     {
         return url;
     }
 
-    public void setUrl(String url) 
+    public void setUrl(String url)
     {
         this.url = url;
     }
 
-    public String getDescription() 
+    public String getDescription()
     {
         return description;
     }
 
-    public void setDescription(String description) 
+    public void setDescription(String description)
     {
         this.description = description;
     }
 
-    public String getName() 
+    public String getName()
     {
         return name;
     }
 
-    public void setName(String name) 
+    public void setName(String name)
     {
         this.name = name;
     }
 
     @Override
-    public String toString() 
+    public String toString()
     {
         return description;
     }

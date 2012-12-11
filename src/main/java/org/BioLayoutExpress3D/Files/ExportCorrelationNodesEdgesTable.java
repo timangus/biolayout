@@ -64,7 +64,7 @@ public final class ExportCorrelationNodesEdgesTable
             */
             public static final long serialVersionUID = 111222333444555715L;
 
-            @Override            
+            @Override
             public void actionPerformed(ActionEvent action)
             {
                 setFileChooser("Save Correlation Nodes Edges Table As File");
@@ -80,7 +80,7 @@ public final class ExportCorrelationNodesEdgesTable
         int[][] counts = expressionData.getCounts();
         int totalRows = expressionData.getTotalRows();
         minThreshold = (int)floor(100.0f * STORED_CORRELATION_THRESHOLD);
-        rangeThreshold = 100 - minThreshold;        
+        rangeThreshold = 100 - minThreshold;
         for (int i = minThreshold; i <= 100; i++)
             calculateDistances(i, counts, totalRows);
     }

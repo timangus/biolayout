@@ -23,9 +23,9 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 final class MCLWindowDialog extends JDialog implements Runnable, ActionListener // package access
 {
-    /** 
+    /**
     *  Serial version UID variable for the MCLWindow class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555669L;
 
     private static final String MCL_TITLE = "MCL Graph Clustering";
@@ -36,7 +36,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
     private int primeNumberIndex2 = 0;
     private int primeNumberIndex3 = 0;
 
-    private LayoutFrame layoutFrame = null;       
+    private LayoutFrame layoutFrame = null;
     private Graph graph = null;
     private File fileInput = null;
     private Vertex[] vertexIDs = null;
@@ -44,20 +44,20 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
     private JTextArea textArea = null;
     private boolean cancelMCLThread = false;
     private JButton cancelMCLThreadButton = null;
-    
+
     public MCLWindowDialog(LayoutFrame layoutFrame, Graph graph, File fileInput)
     {
         super(layoutFrame, MCL_TITLE, false);
-                
-        this.layoutFrame = layoutFrame;        
+
+        this.layoutFrame = layoutFrame;
         this.graph = graph;
         this.fileInput = fileInput;
-        
-        cancelMCLThread = false;        
-        
+
+        cancelMCLThread = false;
+
         initComponents();
     }
-    
+
     private void initComponents()
     {
         JPanel test   = new JPanel(true);
@@ -88,30 +88,30 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
         if ( !layoutFrame.getFileNameLoaded().isEmpty() ) // check if a file has been loaded before block/unblock so as not to enable menu/toolbar items
             layoutFrame.block();
 
-        this.addWindowListener( new WindowAdapter() 
+        this.addWindowListener( new WindowAdapter()
         {
-           @Override            
-            public void windowClosing(WindowEvent e) 
+           @Override
+            public void windowClosing(WindowEvent e)
             {
                 layoutFrame.unblock();
                 closeMCLWindow();
             }
-        } );        
-        this.getContentPane().add(test,BorderLayout.CENTER);       
-        this.pack();                
+        } );
+        this.getContentPane().add(test,BorderLayout.CENTER);
+        this.pack();
         this.setResizable(false);
         this.setSize( new Dimension(500, 500) );
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
-        this.setVisible(true);        
-    }    
-    
-    private void createMCLHeader() 
+        this.setVisible(true);
+    }
+
+    private void createMCLHeader()
     {
-        try 
+        try
         {
             OutputStreamWriter fosw = new OutputStreamWriter( new FileOutputStream(fileInput) );
-            
+
             NetworkContainer nc = layoutFrame.getNetworkRootContainer();
             //setting header info
             int numberOfVertices = nc.getNumberOfVertices();
@@ -127,7 +127,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
                 value = vertex.getVertexID();
                 vertexIDs[value] = vertex;
                 fosw.write(value + " ");
-                
+
                 HashMap<Vertex, Edge> edgeConnection = vertex.getEdgeConnectionsMap();
                 for ( Vertex vertex2 : edgeConnection.keySet() )
                 {
@@ -136,38 +136,38 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
                     command = ( WEIGHTED_EDGES && !nc.getIsPetriNet() ) ? ( value + ":" + edgeConnection.get(vertex2).getWeight() + " ") : (value + " ");
                     fosw.write(command);
                 }
-                
+
                 fosw.write("$\n");
             }
-            
+
             fosw.write(")\n");
             fosw.flush();
             fosw.close();
-        } 
+        }
         catch (IOException ioExc)
         {
             if (DEBUG_BUILD) println("Exception in createMCLHeader():\n" + ioExc.getMessage());
         }
     }
-    
+
     private String[] createMCLcommand()
     {
             String[] temp_MCL_commands = null;
-            String[] MCL_commands = { 
+            String[] MCL_commands = {
                                       new File( LoadNativeLibrary.findCurrentProgramDirectory() + CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "mcl" + ( (IS_WIN) ? ".exe" : "" ) ).getAbsolutePath(),
                                       fileInput.getAbsolutePath(),
                                       "-I", Float.toString( MCL_INFLATION_VALUE.get() )
-                                    };            
-            
+                                    };
+
             if (MCL_PRE_INFLATION_VALUE.get() > 0.0)
             {
                 temp_MCL_commands = new String[] { "-pi", Float.toString( MCL_PRE_INFLATION_VALUE.get() ) };
                 MCL_commands = Utils.mergeArrays(MCL_commands, temp_MCL_commands);
             }
-            
+
             temp_MCL_commands = new String[] { "-scheme", Integer.toString( MCL_SCHEME.get() ) };
             MCL_commands = Utils.mergeArrays(MCL_commands, temp_MCL_commands);
-           
+
             if ( USE_MULTICORE_PROCESS && USE_MCL_N_CORE_PARALLELISM.get() )
             {
                 temp_MCL_commands = new String[] { "-t", Integer.toString(NUMBER_OF_AVAILABLE_PROCESSORS) };
@@ -180,14 +180,14 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
                 temp_MCL_commands = new String[] { "--adapt-local" };
                 MCL_commands = Utils.mergeArrays(MCL_commands, temp_MCL_commands);
             }
-            
+
             if ( MCL_ADAPT_SMOOTH.get() )
             {
                 temp_MCL_commands = new String[] { "--adapt-smooth" };
                 MCL_commands = Utils.mergeArrays(MCL_commands, temp_MCL_commands);
             }
             */
-            
+
             if ( !MCL_ADVANCED_OPTIONS.get().isEmpty() )
             {
                 temp_MCL_commands = MCL_ADVANCED_OPTIONS.get().split("\\s+");
@@ -201,26 +201,26 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
             for (String command : MCL_commands)
                 if ( !command.isEmpty() )
                     full_MCL_command += " " + command;
-            full_MCL_command = full_MCL_command.trim();            
+            full_MCL_command = full_MCL_command.trim();
             appendText("\nNow starting " + ( ( USE_MULTICORE_PROCESS && USE_MCL_N_CORE_PARALLELISM.get() ) ? NUMBER_OF_AVAILABLE_PROCESSORS + "-Core " : " " ) + "MCL process with command:\n[" + full_MCL_command + "]\n\n");
             if (DEBUG_BUILD) println(full_MCL_command);
-            
+
             return MCL_commands;
     }
-        
+
     private void runMCL()
     {
         BufferedReader br = null;
 
-        try 
-        {                                            
-            // Runtime runtime = Runtime.getRuntime();            
+        try
+        {
+            // Runtime runtime = Runtime.getRuntime();
             // has to use the exec(String[]) method instead of the old exec(String) so as to avoid the Tokenizer of the second one omitting all whitespaces in file paths!!!
             // Process MCL_process = runtime.exec( createMCLcommand() );
             Process MCL_process = new ProcessBuilder( createMCLcommand() ).start();
             br = new BufferedReader( new InputStreamReader( MCL_process.getInputStream() ) );
             MCLStreamGrabber errorGrabberMCL = new MCLStreamGrabber( MCL_process.getErrorStream() );
-            errorGrabberMCL.start(this);            
+            errorGrabberMCL.start(this);
 
             String line = "";
             int parsingIteration = 0;
@@ -235,11 +235,11 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
             Edge edge1 = null;
             Edge edge2 = null;
             ArrayList<String[]> MCL_paramList = new ArrayList<String[]>();
-            while ( ( line = br.readLine() ) != null && !cancelMCLThread ) 
+            while ( ( line = br.readLine() ) != null && !cancelMCLThread )
             {
                param = line.split("\\s+");
 
-               if ( param[0].equals(")") ) 
+               if ( param[0].equals(")") )
                {
                    parsingIteration = 0;
                    parsingResult = 0;
@@ -259,30 +259,30 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
                        edge1 = vertex1.getEdgeConnectionsMap().get(vertex2);
                        edge2 = vertex2.getEdgeConnectionsMap().get(vertex1);
                    }
-                       
+
                    if (edge1 != null)
                        edge1.setScaledWeight(weight);
-                   
+
                    if (edge2 != null)
                        edge2.setScaledWeight(weight);
                }
 
-               if (parsingResult == 1) 
+               if (parsingResult == 1)
                {
                    //EXTRACTS CLUSTERS TO A TEMPORARY BUFFER
                    classNumber++;
                    MCL_paramList.add(param);
                }
 
-               if ( param[0].equals("(mcldump") ) 
+               if ( param[0].equals("(mcldump") )
                {
                    // SPOTS WHICH TYPE OF OUTPUT WE ARE READING
-                   if ( param[1].equals("ite") ) 
+                   if ( param[1].equals("ite") )
                    {
                        parsingIteration = 1;
                    }
-                   
-                   if ( param[1].equals("result") ) 
+
+                   if ( param[1].equals("result") )
                    {
                        parsingResult = 1;
                    }
@@ -298,8 +298,8 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
 
                 createAllLayoutClasses(layoutClasses, classNumber, MCL_paramList);
             }
-        } 
-        catch (IOException ioExc) 
+        }
+        catch (IOException ioExc)
         {
             if (DEBUG_BUILD) println("IOException in runMCL():\n" + ioExc.getMessage());
         }
@@ -318,8 +318,8 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
 
             }
         }
-    }    
-    
+    }
+
     private void clearClassesAndCreateClassSet()
     {
         String classSetName = "MCL_" + MCL_INFLATION_VALUE.get() + "_" + MCL_SCHEME.get();
@@ -354,7 +354,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
         String zerosToPut = "";
         int prevIntegerCharacters = 0;
         int classNumberIndex = 0;
-        int currentIntegerCharacters = 0;               
+        int currentIntegerCharacters = 0;
         for (String[] MCL_param : MCL_paramList)
         {
             currentIntegerCharacters = Integer.toString(++classNumberIndex).length();
@@ -363,13 +363,13 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
                 zerosToPut = "";
                 for (int i = 0; i < (maxIntegerCharacters - currentIntegerCharacters); i++)
                     zerosToPut += "0";
-            }                
+            }
             prevIntegerCharacters = currentIntegerCharacters;
-            
+
             if ( !MCL_ASSIGN_RANDOM_CLUSTER_COLOURS.get() )
             {
                 sameColours = 0;
-                clusterColor = createColorBasedOnPrimeNumbers(colorIndicesRGB, false);                
+                clusterColor = createColorBasedOnPrimeNumbers(colorIndicesRGB, false);
                 while (clusterColors.contains(clusterColor) && clusterColors.size() <= RGBColorCombinations)
                 {
                     clusterColor = createColorBasedOnPrimeNumbers(colorIndicesRGB, true);
@@ -388,7 +388,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
             // IF WE WANT: SET MEMBERS IN SMALL CLUSTERS TO NO CLASS
             for (int i = 0; i < MCL_param.length; i++)
                 layoutClasses.setClass(vertexIDs[new Integer(MCL_param[i])], ( MCL_param.length > MCL_SMALLEST_CLUSTER.get() ) ? classNumberIndex : 0);
-        }        
+        }
     }
 
     /**
@@ -424,21 +424,21 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
 
     public void appendText(String text)
     {
-        try 
+        try
         {
             MCL_text.insertString(MCL_text.getLength(), text, null);
             textArea.setCaretPosition( MCL_text.getLength() );
-        } 
+        }
         catch (Exception exc)
         {
             if (DEBUG_BUILD) println("Exception in appendText(): " + text + "\n" + exc.getMessage());
         }
-    }    
-    
-    @Override    
-    public void run() 
+    }
+
+    @Override
+    public void run()
     {
-        if (graph.getGraphNodes().size() >= 1) 
+        if (graph.getGraphNodes().size() >= 1)
         {
            this.setTitle( MCL_TITLE + ( ( USE_MULTICORE_PROCESS && USE_MCL_N_CORE_PARALLELISM.get() ) ? " (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "" ) );
 
@@ -459,7 +459,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
 
              this.repaint();
            }
-        } 
+        }
         else
         {
            appendText("No Graph Loaded!");
@@ -468,26 +468,26 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
         if ( !layoutFrame.getFileNameLoaded().isEmpty() ) // check if a file has been loaded before block/unblock so as not to enable menu/toolbar items
             layoutFrame.unblock();
     }
-    
+
     public boolean isMCLWindowVisible()
     {
         return this.isVisible();
-    }    
-    
+    }
+
     public void MCLWindowToFront()
     {
         this.toFront();
-    }    
-    
+    }
+
     private void closeMCLWindow()
     {
         cancelMCLThread = true;
         fileInput.delete();
-        
-        this.setVisible(false);            
+
+        this.setVisible(false);
         this.dispose();
-    }    
-    
+    }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {

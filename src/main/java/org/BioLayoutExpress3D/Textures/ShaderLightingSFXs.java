@@ -62,8 +62,8 @@ public class ShaderLightingSFXs
     /**
     *  File name of Animation shader files.
     */
-    protected static final String SHADER_FILE_NAME_3 = "Animation";    
-    
+    protected static final String SHADER_FILE_NAME_3 = "Animation";
+
     /**
     *  Constant value needed for the pre-calculated effects 2D texture.
     */
@@ -99,8 +99,8 @@ public class ShaderLightingSFXs
     *  Geometry shader storage.
     *  3 sets of shader files per shader program.
     */
-    protected int[][] GEOMETRY_SHADERS = new int[NUMBER_OF_AVAILABLE_SHADERS][3];    
-    
+    protected int[][] GEOMETRY_SHADERS = new int[NUMBER_OF_AVAILABLE_SHADERS][3];
+
     /**
     *  Fragment shader storage.
     *  3 sets of shader files per shader program.
@@ -111,11 +111,11 @@ public class ShaderLightingSFXs
     *  Shader program storage.
     */
     protected int[] SHADER_PROGRAMS = new int[NUMBER_OF_AVAILABLE_SHADERS];
-    
+
     /**
     *  Variable needed for the vertex/geometry/fragment pairs.
-    */    
-    protected boolean[][] loadShadersPairs = null; 
+    */
+    protected boolean[][] loadShadersPairs = null;
 
     /**
     *  Shader program 2D texture name.
@@ -230,13 +230,13 @@ public class ShaderLightingSFXs
     /**
     *  Shader program py name.
     */
-    protected static final String SHADER_PROGRAM_PY_NAME = "py";    
-    
+    protected static final String SHADER_PROGRAM_PY_NAME = "py";
+
     /**
     *  Shader program py storage.
     */
-    protected int[] SHADER_PROGRAM_PYS = new int[NUMBER_OF_AVAILABLE_SHADERS];    
-    
+    protected int[] SHADER_PROGRAM_PYS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program timer name.
     */
@@ -296,7 +296,7 @@ public class ShaderLightingSFXs
     *  Shader program old LCD style transparency storage.
     */
     protected int[] SHADER_PROGRAM_OLD_LCD_STYLE_TRANSPARENCIES = new int[NUMBER_OF_AVAILABLE_SHADERS];
-    
+
     /**
     *  Shader program erosion name.
     */
@@ -305,7 +305,7 @@ public class ShaderLightingSFXs
     /**
     *  Shader program erosion storage.
     */
-    private final int[] SHADER_PROGRAM_EROSIONS = new int[NUMBER_OF_AVAILABLE_SHADERS];    
+    private final int[] SHADER_PROGRAM_EROSIONS = new int[NUMBER_OF_AVAILABLE_SHADERS];
 
     /**
     *  Shader program shrink triangles name.
@@ -315,8 +315,8 @@ public class ShaderLightingSFXs
     /**
     *  Shader program shrink triangles storage.
     */
-    protected int[] SHADER_PROGRAM_SHRINK_TRIANGLES = new int[NUMBER_OF_AVAILABLE_SHADERS];          
-    
+    protected int[] SHADER_PROGRAM_SHRINK_TRIANGLES = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program solid wireframe name.
     */
@@ -325,8 +325,8 @@ public class ShaderLightingSFXs
     /**
     *  Shader program solid wireframe storage.
     */
-    protected int[] SHADER_PROGRAM_SOLID_WIREFRAMES = new int[NUMBER_OF_AVAILABLE_SHADERS];      
-    
+    protected int[] SHADER_PROGRAM_SOLID_WIREFRAMES = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program normals name.
     */
@@ -335,8 +335,8 @@ public class ShaderLightingSFXs
     /**
     *  Shader program normals storage.
     */
-    protected int[] SHADER_PROGRAM_NORMALS = new int[NUMBER_OF_AVAILABLE_SHADERS];        
-    
+    protected int[] SHADER_PROGRAM_NORMALS = new int[NUMBER_OF_AVAILABLE_SHADERS];
+
     /**
     *  Shader program pre-calculated effects 2D texture px name.
     */
@@ -667,12 +667,12 @@ public class ShaderLightingSFXs
 
     /**
     *  Variable to store the useGeometryShaders option.
-    */    
+    */
     protected boolean useGeometryShaders = false;
-    
+
     /**
     *  Variable to store the applyNormalsGeometry option.
-    */    
+    */
     protected boolean applyNormalsGeometry = false;
 
     /**
@@ -689,24 +689,24 @@ public class ShaderLightingSFXs
     public ShaderLightingSFXs(GL2 gl, float timerUpdateStep)
     {
         this(gl, timerUpdateStep, false, false, true);
-    }    
-    
+    }
+
     /**
     *  The third constructor of the ShaderLightingSFXs class.
     */
     public ShaderLightingSFXs(GL2 gl, boolean useGeometryShaders)
     {
         this(gl, 0.01f, useGeometryShaders, false, true);
-    }       
-    
+    }
+
     /**
     *  The fourth constructor of the ShaderLightingSFXs class.
     */
     public ShaderLightingSFXs(GL2 gl, boolean useGeometryShaders, boolean applyNormalsGeometry)
     {
         this(gl, 0.01f, useGeometryShaders, applyNormalsGeometry, true);
-    }     
-    
+    }
+
     /**
     *  The fifth constructor of the ShaderLightingSFXs class.
     */
@@ -726,20 +726,20 @@ public class ShaderLightingSFXs
 
         if (useInitMethods)
             initAllMethods(gl);
-    }   
-    
+    }
+
     /**
     *  Initializes all relevant methods.
-    */    
+    */
     private void initAllMethods(GL2 gl)
     {
         initWaterEffect(32, true, 1, 10.0f);
         initBump3D2DTexture(gl, ACTIVE_TEXTURE_UNIT_FOR_BUMP3D_EMBOSS_2D_TEXTURE);
         initPerlinNoise3DTexture(gl, ACTIVE_TEXTURE_UNIT_FOR_PERLIN_NOISE_3D_TEXTURE);
         initGlyphbombing3DTexture(gl, ACTIVE_TEXTURE_UNIT_FOR_GLYPHBOMBING_3D_TEXTURE);
-        loadAndCompileAllShaderPrograms(gl);        
+        loadAndCompileAllShaderPrograms(gl);
     }
-    
+
     /**
     *  Initializes the water effect.
     */
@@ -798,7 +798,7 @@ public class ShaderLightingSFXs
             perlinNoise3DTexture.initPerlinNoise3DTexture(gl, textureUnit);
         }
     }
-    
+
     /**
     *  Initializes the glyphbombing 3D texture.
     */
@@ -815,7 +815,7 @@ public class ShaderLightingSFXs
     *  Loads and compiles all the shader programs.
     */
     private void loadAndCompileAllShaderPrograms(GL2 gl)
-    {        
+    {
         int NUMBER_OF_OUTPUT_GS_VERTICES = GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER;
         if (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders)
         {
@@ -832,36 +832,36 @@ public class ShaderLightingSFXs
         String versionString = (USE_330_SHADERS_PROCESS) ? MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE : MINIMUM_GLSL_VERSION_FOR_120_SHADERS;
         String GLSLPreprocessorCommands = "#version " + versionString + "\n" +
                                           "#define GPU_SHADER_FP64_COMPATIBILITY_CONDITION "      + ( (USE_GL_ARB_GPU_SHADER_FP64 && GL_IS_NVIDIA) ? 1 : 0 )                                             + "\n" +
-                                          "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                                                                   + "\n" + 
+                                          "#define GPU_SHADER4_COMPATIBILITY_CONDITION "          + ( USE_GL_EXT_GPU_SHADER4 ? 1 : 0 )                                                                   + "\n" +
                                           "#define GPU_GEOMETRY_SHADER4_COMPATIBILITY_CONDITION " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? 1 : 0 )                                      + "\n" +
                                           "#define APPLY_NORMALS_GEOMETRY_CONDITION "             + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders && applyNormalsGeometry) ? 1 : 0 )              + "\n" +
                                           "#define ANIMATION_COMPATIBILITY_CONDITION "            + ( (GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_INTEGER <= MINIMUM_GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS) ? 1 : 0 ) + "\n" +
-                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "out" : "varying" )                                                    + "\n" +  
-                                          "#define GS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? ""    : "varying" )                                                    + "\n" +  
-                                          "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "in"  : "varying" )                                                    + "\n" +  
-                                          "#define VS_POSITION "    + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "Position"   + "\n" + 
+                                          "#define VS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "out" : "varying" )                                                    + "\n" +
+                                          "#define GS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? ""    : "varying" )                                                    + "\n" +
+                                          "#define FS_VARYING "                                   + ( (USE_330_SHADERS_PROCESS) ? "in"  : "varying" )                                                    + "\n" +
+                                          "#define VS_POSITION "    + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "Position"   + "\n" +
                                           "#define VS_MC_POSITION " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "MCPosition" + "\n" +
-                                          "#define VS_NORMAL "      + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "Normal"     + "\n" + 
-                                          "#define VS_SCENE_COLOR " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "SceneColor" + "\n" + 
-                                          "#define VS_TEX_COORD "   + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "TexCoord"   + "\n" +                
+                                          "#define VS_NORMAL "      + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "Normal"     + "\n" +
+                                          "#define VS_SCENE_COLOR " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "SceneColor" + "\n" +
+                                          "#define VS_TEX_COORD "   + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "TexCoord"   + "\n" +
                                           "#define VS_V "           + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "vs" : "" ) + "V"          + "\n" +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_POSITION "    + "vsPosition"      + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_MC_POSITION " + "vsMCPosition"    + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_NORMAL "      + "vsNormal"        + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_SCENE_COLOR " + "vsSceneColor"    + "\n" : "") +
-                                          ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_TEX_COORD "   + "vsTexCoord"      + "\n" : "") +                
-                                          ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_V "           + "vsV"             + "\n" : "") +              
+                                          ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_TEX_COORD "   + "vsTexCoord"      + "\n" : "") +
+                                          ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define VS_GS_V "           + "vsV"             + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define GS_FS_POSITION "    + "fsPosition"      + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define GS_FS_MC_POSITION " + "fsMCPosition"    + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define GS_FS_NORMAL "      + "fsNormal"        + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define GS_FS_SCENE_COLOR " + "fsSceneColor"    + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define GS_FS_V "           + "fsV"             + "\n" : "") +
                                           ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ?  "#define GS_FS_TEX_COORD "   + "fsTexCoord"      + "\n" : "") +
-                                          "#define FS_POSITION "    + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "Position"   + "\n" + 
-                                          "#define FS_MC_POSITION " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "MCPosition" + "\n" + 
-                                          "#define FS_NORMAL "      + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "Normal"     + "\n" + 
+                                          "#define FS_POSITION "    + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "Position"   + "\n" +
+                                          "#define FS_MC_POSITION " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "MCPosition" + "\n" +
+                                          "#define FS_NORMAL "      + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "Normal"     + "\n" +
                                           "#define FS_SCENE_COLOR " + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "SceneColor" + "\n" +
-                                          "#define FS_TEX_COORD "   + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "TexCoord"   + "\n" +                
+                                          "#define FS_TEX_COORD "   + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "TexCoord"   + "\n" +
                                           "#define FS_V "           + ( (USE_GL_ARB_GEOMETRY_SHADER4 && useGeometryShaders) ? "fs" : "" ) + "V"          + "\n"
                                           ;
         ShaderTypes[] allShaderTypes = ShaderTypes.values();
@@ -876,7 +876,7 @@ public class ShaderLightingSFXs
                                                                 LOAD_SHADER_PROGRAMS_FROM_EXTERNAL_SOURCE, VERTEX_SHADERS, FRAGMENT_SHADERS, GEOMETRY_SHADERS, SHADER_PROGRAMS, GL_TRIANGLES, GL_TRIANGLE_STRIP, NUMBER_OF_OUTPUT_GS_VERTICES, i, GLSLPreprocessorCommands, DEBUG_BUILD);
             else
                 ShaderUtils.loadShaderFileCompileAndLinkProgram(gl, new String[] { SHADER_FILES_DIRECTORY_1, SHADER_FILES_DIRECTORY_2, GPU_COMPUTING_DIRECTORY + SHADER_FILES_DIRECTORY_3 }, new String[]{ shaderEffectFileName, SHADER_FILE_NAME_2, SHADER_FILE_NAME_3 },
-                                                                LOAD_SHADER_PROGRAMS_FROM_EXTERNAL_SOURCE, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i, GLSLPreprocessorCommands, DEBUG_BUILD);                
+                                                                LOAD_SHADER_PROGRAMS_FROM_EXTERNAL_SOURCE, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i, GLSLPreprocessorCommands, DEBUG_BUILD);
 
             // common effects uniform variables
             SHADER_PROGRAM_2D_TEXTURES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], SHADER_PROGRAM_2D_TEXTURE_NAME);
@@ -898,7 +898,7 @@ public class ShaderLightingSFXs
             SHADER_PROGRAM_ANTIALIASES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_ANTIALIAS_NAME);
             SHADER_PROGRAM_STATES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_STATE_NAME);
             SHADER_PROGRAM_OLD_LCD_STYLE_TRANSPARENCIES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_OLD_LCD_STYLE_TRANSPARENCY_NAME);
-            SHADER_PROGRAM_EROSIONS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_EROSION_NAME);           
+            SHADER_PROGRAM_EROSIONS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_EROSION_NAME);
             SHADER_PROGRAM_SHRINK_TRIANGLES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_SHRINK_TRIANGLES_NAME);
             SHADER_PROGRAM_SOLID_WIREFRAMES[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_SOLID_WIREFRAME_NAME);
             SHADER_PROGRAM_NORMALS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], shaderEffectName + SHADER_PROGRAM_NORMALS_NAME);
@@ -925,7 +925,7 @@ public class ShaderLightingSFXs
             SHADER_PROGRAM_ANIMATION_USE_IMAGE_AS_SPECTRUMS[i] = gl.glGetUniformLocation(SHADER_PROGRAMS[i], SHADER_PROGRAM_ANIMATION_USE_IMAGE_AS_SPECTRUM_NAME);
         }
     }
-    
+
     /**
     *  Processes the water effect.
     */
@@ -956,8 +956,8 @@ public class ShaderLightingSFXs
     public void timerEffect()
     {
         timerUpdate += timerUpdateStep;
-    }    
-    
+    }
+
     /**
     *  Processes the timer effect.
     */
@@ -965,7 +965,7 @@ public class ShaderLightingSFXs
     {
         timerUpdate += timerUpdateStep;
 
-        if (updateWaterEffect) 
+        if (updateWaterEffect)
             waterEffect();
     }
 
@@ -1000,7 +1000,7 @@ public class ShaderLightingSFXs
         gl.glUniform1i(SHADER_PROGRAM_SPHERICAL_MAPPINGS[effectIndex], (useSphericalMapping) ? 1 : 0);
         gl.glUniform1i(SHADER_PROGRAM_EMBOSS_NODE_TEXTURES[effectIndex], (useEmbossBioLayoutLogoName) ? 1 : 0);
         gl.glUniform1f(SHADER_PROGRAM_PXS[effectIndex], px);
-        gl.glUniform1f(SHADER_PROGRAM_PYS[effectIndex], py);        
+        gl.glUniform1f(SHADER_PROGRAM_PYS[effectIndex], py);
         gl.glUniform1f(SHADER_PROGRAM_TIMERS[effectIndex], timerUpdate);
         gl.glUniform1f(SHADER_PROGRAM_MORPHINGS[effectIndex], morphingValue);
         gl.glUniform1i(SHADER_PROGRAM_USER_CLIPPINGS[effectIndex], (useUserClipping) ? 1 : 0);
@@ -1053,7 +1053,7 @@ public class ShaderLightingSFXs
                 gl.glUniform3fv(SHADER_PROGRAM_ANIMATION_MAX_SPECTRUM_COLORS[effectIndex], 1, ANIMATION_MAX_SPECTRUM_COLOR_ARRAY, 0);
             }
             else
-            {                
+            {
                 gl.glUniform1i(SHADER_PROGRAM_ANIMATION_2D_TEXTURES[effectIndex], ACTIVE_TEXTURE_UNIT_FOR_ANIMATION_SPECTRUM_2D_TEXTURE);
             }
         }
@@ -1099,7 +1099,7 @@ public class ShaderLightingSFXs
         else
         {
             for (int i = 0; i < NUMBER_OF_AVAILABLE_SHADERS; i++)
-                ShaderUtils.detachAndDeleteShader(gl, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i);            
+                ShaderUtils.detachAndDeleteShader(gl, VERTEX_SHADERS, FRAGMENT_SHADERS, SHADER_PROGRAMS, i);
         }
 
         if (glyphbombing3DTexture != null)

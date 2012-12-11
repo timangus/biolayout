@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import static org.BioLayoutExpress3D.CPUParallelism.DataStructures.BlockingBoundedCollectionDataStructureTypes.*;
 
-/** 
-*   
+/**
+*
 * BlockingBoundedCollection<T> class with a general representation for a collection.
 * It uses a Semaphore to turn the collection into a blocking bounded collection.
 *
@@ -24,10 +24,10 @@ import static org.BioLayoutExpress3D.CPUParallelism.DataStructures.BlockingBound
 
 public class BlockingBoundedCollection<T> implements Iterable<T>
 {
-    
-    /** 
+
+    /**
     *  The collection data structure used for the BlockingBoundedCollection.
-    */      
+    */
     private Collection<T> storage = null;
 
     /**
@@ -40,9 +40,9 @@ public class BlockingBoundedCollection<T> implements Iterable<T>
     */
     private Semaphore semaphore = null;
 
-    /** 
+    /**
     *  The constructor of the BlockingBoundedCollection<T> class.
-    */      
+    */
     public BlockingBoundedCollection(BlockingBoundedCollectionDataStructureTypes blockingBoundedCollectionDataStructureType, int bound)
     {
         if ( blockingBoundedCollectionDataStructureType.equals(USE_VECTOR) )
@@ -60,7 +60,7 @@ public class BlockingBoundedCollection<T> implements Iterable<T>
 
         variableIterator = new BlockingBoundedIteratorCollection<T>(storage);
         semaphore = new Semaphore(bound);
-    }     
+    }
 
     /**
     *  Adds the object to the BlockingBoundedCollection.
@@ -81,28 +81,28 @@ public class BlockingBoundedCollection<T> implements Iterable<T>
         }
     }
 
-    /** 
+    /**
     *  Removes the object from the BlockingBoundedCollection.
-    */    
+    */
     public boolean remove(T o)
     {
         boolean wasRemoved = storage.remove(o);
         if (wasRemoved)
             semaphore.release();
         return wasRemoved;
-    } 
-    
-    /** 
+    }
+
+    /**
     *  Tests if the BlockingBoundedCollection is empty.
-    */     
+    */
     public boolean isEmpty()
-    { 
-        return storage.isEmpty(); 
-    }     
-    
-    /** 
+    {
+        return storage.isEmpty();
+    }
+
+    /**
     *  Returns the size of the BlockingBoundedCollection.
-    */    
+    */
     public int size()
     {
         return storage.size();
@@ -115,7 +115,7 @@ public class BlockingBoundedCollection<T> implements Iterable<T>
     {
         storage.clear();
         semaphore.release( semaphore.availablePermits() );
-    }   
+    }
 
     /**
     *  Returns an iterator for the stack. It is also used with the for each loop.
@@ -136,14 +136,14 @@ public class BlockingBoundedCollection<T> implements Iterable<T>
         return variableIterator.randomizedIterator();
     }
 
-    /** 
+    /**
     *  Returns a string representation of the BlockingBoundedCollection.
-    */       
+    */
     @Override
     public String toString()
     {
-        return storage.toString(); 
+        return storage.toString();
     }
-    
-    
+
+
 }

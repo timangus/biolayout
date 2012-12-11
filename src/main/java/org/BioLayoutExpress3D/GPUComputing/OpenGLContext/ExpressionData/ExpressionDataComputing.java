@@ -97,7 +97,7 @@ public class ExpressionDataComputing extends OpenGLContext
     private boolean javaOrNativeComparisonMethod = false;
     private boolean benchmarkMode = true;
     private boolean compareResults = true;
-    private boolean showDifferentResultsOnly = false;    
+    private boolean showDifferentResultsOnly = false;
     private boolean reportIterationsInConsole = false;
     private boolean showResults = false;
     private double errorThreshold = 0.0;
@@ -148,7 +148,7 @@ public class ExpressionDataComputing extends OpenGLContext
     {
         this.totalRows = totalRows;
         this.totalColumns = totalColumns;
-        
+
         long totalExpressionDataCalculationsNeeded = org.BioLayoutExpress3D.StaticLibraries.Math.totalTriangularMatrixCalculationsNeeded( (long)totalRows );
 
         if (textureParameters.textureFormat == GL_RGBA)
@@ -188,7 +188,7 @@ public class ExpressionDataComputing extends OpenGLContext
 
         benchmarkMode = compareResults = showDifferentResultsOnly = reportIterationsInConsole = COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU.get();
         singleCoreOrNCPComparisonMethod = COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD.get().contains(SINGLE_CORE_STRING);
-        javaOrNativeComparisonMethod = COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD.get().contains(JAVA_STRING);        
+        javaOrNativeComparisonMethod = COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD.get().contains(JAVA_STRING);
 
         if (DEBUG_BUILD) println("\nMaxTextureSize: " + maxTextureSize + " TotalRows: " + totalRows + " TotalColumns: " + totalColumns +
                                  "\nTotal expression data calculations needed: " + totalExpressionDataCalculationsNeeded +
@@ -632,7 +632,7 @@ public class ExpressionDataComputing extends OpenGLContext
                     startTime = System.nanoTime();
                     for (int i = 0; i < N; i++)
                         dataResultsCPUArray[i] = expressionData.calculateCorrelation( (int)indexXArray[i], (int)indexYArray[i], dataExpressionArray );
-                    endTime = System.nanoTime();                    
+                    endTime = System.nanoTime();
                 }
                 totalTimeCPU = (endTime - startTime) / 1000000000.0; // for secs
             }
@@ -796,7 +796,7 @@ public class ExpressionDataComputing extends OpenGLContext
             for (int j = (secondLoopFirstInit) ? lastIndexYPreviousWriting : (i + 1); j < totalRows; j++)
             {
                 if (secondLoopFirstInit)
-                    secondLoopFirstInit = false;                
+                    secondLoopFirstInit = false;
 
                 if ( exitLoops = (++index > N) )
                 {

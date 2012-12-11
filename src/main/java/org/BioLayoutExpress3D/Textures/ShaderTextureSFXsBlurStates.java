@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Textures;
 
-/** 
-*   
+/**
+*
 * ShaderTextureSFXsBlurStates enumeration class which holds information for the blur state of a texture.
 *
 * @see org.BioLayoutExpress3D.Textures.TextureSFXs

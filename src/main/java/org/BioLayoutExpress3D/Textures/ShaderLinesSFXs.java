@@ -27,7 +27,7 @@ public class ShaderLinesSFXs extends ShaderLightingSFXs
     *  Available number of lighting shaders.
     */
     public static final int NUMBER_OF_AVAILABLE_LINE_SHADERS = ShaderTypes.values().length;
-    
+
     /**
     *  The constructor of the ShaderLinesSFXs class.
     */
@@ -38,23 +38,23 @@ public class ShaderLinesSFXs extends ShaderLightingSFXs
         initAllVariables();
         loadAndCompileAllShaderPrograms(gl);
     }
-    
+
     /**
     *  Initializes all relevant variables.
-    */    
+    */
     private void initAllVariables()
     {
         SHADER_FILES_DIRECTORY_1 = "Lines";
         VERTEX_SHADERS = new int[NUMBER_OF_AVAILABLE_LINE_SHADERS][3];
-        FRAGMENT_SHADERS = new int[NUMBER_OF_AVAILABLE_LINE_SHADERS][3];        
-        SHADER_PROGRAMS = new int[NUMBER_OF_AVAILABLE_LINE_SHADERS];         
-    }    
+        FRAGMENT_SHADERS = new int[NUMBER_OF_AVAILABLE_LINE_SHADERS][3];
+        SHADER_PROGRAMS = new int[NUMBER_OF_AVAILABLE_LINE_SHADERS];
+    }
 
     /**
     *  Loads and compiles all the shader programs.
     */
     private void loadAndCompileAllShaderPrograms(GL2 gl)
-    {            
+    {
         String versionString =  MINIMUM_GLSL_VERSION_FOR_330_SHADERS + " " + GLSL_LANGUAGE_MODE;
         String GLSLPreprocessorCommands = "#version " + versionString + "\n";
         ShaderTypes[] allShaderTypes = ShaderTypes.values();

@@ -129,7 +129,7 @@ public abstract class OpenCLContext
     public OpenCLContext(JFrame jFrame, boolean dialogErrorLog, boolean profileCommandQueue, boolean openCLSupportAndExtensionsLogOnly)
     {
         this.jFrame = jFrame;
-        this.dialogErrorLog = dialogErrorLog;        
+        this.dialogErrorLog = dialogErrorLog;
         this.profileCommandQueue = profileCommandQueue;
         this.openCLSupportAndExtensionsLogOnly = openCLSupportAndExtensionsLogOnly;
     }
@@ -179,9 +179,9 @@ public abstract class OpenCLContext
             checkOpenCLPlatformSupport();
             return;
         }
-        
+
         try
-        {            
+        {
             Tuple2<Boolean, String> tuple2 = initializeOpenCLContext();
             if (tuple2.first)
             {
@@ -235,7 +235,7 @@ public abstract class OpenCLContext
         clGetPlatformIDs(platforms.length, platforms, null);
 
         if (CL_ALL_PLATFORM_NAMES == null)
-        {            
+        {
             CL_ALL_PLATFORM_NAMES = new String[platforms.length];
             CL_IS_PLATFORM_AMD_ATI = new boolean[platforms.length];
             CL_ALL_PLATFORM_DEVICE_IDS = new cl_device_id[platforms.length][];
@@ -259,11 +259,11 @@ public abstract class OpenCLContext
             CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_TYPES = new int[platforms.length][];
             CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_SIZES = new long[platforms.length][];
             CL_ALL_PLATFORM_DEVICES_MAX_CONSTANT_BUFFER_SIZES = new long[platforms.length][];
-            CL_ALL_PLATFORM_DEVICES_QUEUES_PROPERTIES = new String[platforms.length][][];            
+            CL_ALL_PLATFORM_DEVICES_QUEUES_PROPERTIES = new String[platforms.length][][];
             CL_ALL_PLATFORM_DEVICES_IMAGES_SUPPORT = new int[platforms.length][];
             CL_ALL_PLATFORM_DEVICES_CL_DEVICE_MAX_SAMPLERS = new int[platforms.length][];
             CL_ALL_PLATFORM_DEVICES_MAX_READ_IMAGES_ARGS = new int[platforms.length][];
-            CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS = new int[platforms.length][];            
+            CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS = new int[platforms.length][];
             CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_WIDTHS = new int[platforms.length][];
             CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_HEIGHTS = new int[platforms.length][];
             CL_ALL_PLATFORM_DEVICES_IMAGE_3D_MAX_WIDTHS = new int[platforms.length][];
@@ -312,11 +312,11 @@ public abstract class OpenCLContext
                 CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_TYPES[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
                 CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_SIZES[i] = new long[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
                 CL_ALL_PLATFORM_DEVICES_MAX_CONSTANT_BUFFER_SIZES[i] = new long[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
-                CL_ALL_PLATFORM_DEVICES_QUEUES_PROPERTIES[i] = new String[CL_ALL_PLATFORM_DEVICES_NAMES[i].length][2];                
+                CL_ALL_PLATFORM_DEVICES_QUEUES_PROPERTIES[i] = new String[CL_ALL_PLATFORM_DEVICES_NAMES[i].length][2];
                 CL_ALL_PLATFORM_DEVICES_IMAGES_SUPPORT[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
                 CL_ALL_PLATFORM_DEVICES_CL_DEVICE_MAX_SAMPLERS[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
                 CL_ALL_PLATFORM_DEVICES_MAX_READ_IMAGES_ARGS[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
-                CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];                
+                CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
                 CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_WIDTHS[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
                 CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_HEIGHTS[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
                 CL_ALL_PLATFORM_DEVICES_IMAGE_3D_MAX_WIDTHS[i] = new int[CL_ALL_PLATFORM_DEVICES_NAMES[i].length];
@@ -327,7 +327,7 @@ public abstract class OpenCLContext
                 CL_ALL_PLATFORM_DEVICES_EXECUTION_CAPABILITIES[i] = new String[CL_ALL_PLATFORM_DEVICES_NAMES[i].length][2];
                 CL_ALL_PLATFORM_DEVICES_EXTENSIONS[i] = new String[CL_ALL_PLATFORM_DEVICES_NAMES[i].length][];
             }
-            
+
             for (int j = 0; j < CL_ALL_PLATFORM_DEVICE_IDS[i].length; j++)
                 reportOpenCLDeviceCaps(i, j, CL_ALL_PLATFORM_DEVICE_IDS[i][j]);
         }
@@ -620,7 +620,7 @@ public abstract class OpenCLContext
     {
         // Obtain the length of the string that will be queried
         long[] size = new long[1];
-        clGetPlatformInfo(platform, parameterName, 0, null, size);        
+        clGetPlatformInfo(platform, parameterName, 0, null, size);
         if (size[0] <= 0)
             return "";
         else if (size[0] > MAXIMUM_SIZE_OF_CL_STRING)
@@ -676,12 +676,12 @@ public abstract class OpenCLContext
         if (context == null)
         {
             if (DEBUG_BUILD) println("Unable to create a GPU context");
-            
+
             // If no context for a GPU device could be created,
             // try to create one for a CPU device.
             context = clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_CPU, null, null, null);
 
-            if (context == null)                
+            if (context == null)
                 return Tuples.tuple(false, "Unable to create a GPU or a CPU context.");
             else
                 return Tuples.tuple(true, "Created a CPU context.");
@@ -737,7 +737,7 @@ public abstract class OpenCLContext
         catch (OutOfMemoryError memErr)
         {
             if (dialogErrorLog)
-                JOptionPane.showMessageDialog(jFrame, "Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: initializeCPUMemory()", "Java Out Of Memory Error", JOptionPane.WARNING_MESSAGE);            
+                JOptionPane.showMessageDialog(jFrame, "Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: initializeCPUMemory()", "Java Out Of Memory Error", JOptionPane.WARNING_MESSAGE);
             if (DEBUG_BUILD) println("Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: initializeCPUMemory()");
 
             CPUErrorOccured = true;
@@ -802,7 +802,7 @@ public abstract class OpenCLContext
         return (CPUErrorOccured || GPUErrorOccured);
     }
 
-    
+
     // Abstract methods from here on
 
     /**

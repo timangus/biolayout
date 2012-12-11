@@ -4,8 +4,8 @@ import java.util.concurrent.atomic.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 * The LoggerThread class is used to create threads from a ThreadFactory that is used within a thread pool in executors.
 *
 * @see org.BioLayoutExpress3D.CPUParallelism.Executors.LoggerThreadFactory
@@ -32,9 +32,9 @@ public class LoggerThread extends Thread
     */
     private static final AtomicInteger alive = new AtomicInteger();
 
-    /** 
+    /**
     *  The first constructor of the LoggerThread class.
-    */      
+    */
     public LoggerThread(Runnable runnable)
     {
         this(runnable, DEFAULT_NAME);
@@ -70,7 +70,7 @@ public class LoggerThread extends Thread
     public void run()
     {
         if (DEBUG_BUILD) println("Created " + getName());
-        
+
         try
         {
             alive.incrementAndGet();
@@ -81,11 +81,11 @@ public class LoggerThread extends Thread
             alive.decrementAndGet();
 
             // warning, have to run in another thread to avoid InterruptedException problems with multicore ConsoleOutput thread interruption & Executor.shutdown()!
-            if (DEBUG_BUILD) 
+            if (DEBUG_BUILD)
             {
                 new Thread( new Runnable()
                 {
-                    
+
                     @Override
                     public void run()
                     {

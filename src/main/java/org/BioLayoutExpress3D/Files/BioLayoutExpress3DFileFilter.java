@@ -3,8 +3,8 @@ package org.BioLayoutExpress3D.Files;
 import java.io.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
-/** 
-*   
+/**
+*
 * BioLayoutExpress3DFileFilter is the file filter class used to filter which files to show in the Open File dialog.
 *
 * @see org.BioLayoutExpress3D.CoreUI.LayoutFrame
@@ -65,23 +65,23 @@ public class BioLayoutExpress3DFileFilter extends javax.swing.filechooser.FileFi
     *  Accept all directories and all BioLayout Express 3D supported file types.
     */
     @Override
-    public boolean accept(File file) 
+    public boolean accept(File file)
     {
         if (file != null)
         {
             if ( file.exists() )
             {
-                if ( file.isDirectory() ) 
+                if ( file.isDirectory() )
                     return !directoriesNotAccepted;
 
                 String fileName = file.getAbsolutePath();
-                String fileExtension = fileName.substring( fileName.lastIndexOf(".") + 1, fileName.length() ).toLowerCase(); // tolerance to upper/lowercase mix-ups                
+                String fileExtension = fileName.substring( fileName.lastIndexOf(".") + 1, fileName.length() ).toLowerCase(); // tolerance to upper/lowercase mix-ups
                 for (String extension : supportedExtensions)
                     if ( fileExtension.equals(extension) && file.isFile() )
                         return true;
             }
         }
-        
+
         return false;
     }
 
@@ -89,23 +89,23 @@ public class BioLayoutExpress3DFileFilter extends javax.swing.filechooser.FileFi
     *  The description of this filter.
     */
     @Override
-    public String getDescription() 
+    public String getDescription()
     {
         return "Supported file types: " + this.toString();
     }
-    
+
     /**
     *  Shows detailed information about the supported file types.
-    */    
+    */
     @Override
     public String toString()
     {
         StringBuilder allSupportedFileTypes = new StringBuilder();
         for (String extension : supportedExtensions)
             allSupportedFileTypes.append("(*.").append(extension).append(") ");
-            
+
         return allSupportedFileTypes.toString();
     }
-    
-    
+
+
 }

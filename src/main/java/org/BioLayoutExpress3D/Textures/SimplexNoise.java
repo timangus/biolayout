@@ -137,7 +137,7 @@ final class SimplexNoise // package access
         // The x,y distances from the cell origin
         double x0 = xIn - X0;
         double y0 = yIn - Y0;
-        
+
         // For the 2D case, the SIMPLEX shape is an equilateral triangle.
         // Determine which SIMPLEX we are in.
         int i1 = 0, j1 = 0; // Offsets for second (middle) corner of SIMPLEX in (i,j) coords
@@ -178,7 +178,7 @@ final class SimplexNoise // package access
             t0 *= t0;
             n0 = t0 * t0 * dot(GRAD3[gi0], x0, y0); // (x,y) of GRAD3 used for 2D gradient
         }
-        
+
         double t1 = 0.5 - x1 * x1 - y1 * y1;
         if (t1 < 0)
         {
@@ -189,7 +189,7 @@ final class SimplexNoise // package access
             t1 *= t1;
             n1 = t1 * t1 * dot(GRAD3[gi1], x1, y1);
         }
-        
+
         double t2 = 0.5 - x2 * x2 - y2 * y2;
         if (t2 < 0)
         {
@@ -225,7 +225,7 @@ final class SimplexNoise // package access
 
         // Very nice and simple unskew factor, too
         final double G3 = 1.0 / 6.0;
-        
+
         double t = (i + j + k) * G3;
         // Unskew the cell origin back to (x,y,z) space
         double X0 = i - t;

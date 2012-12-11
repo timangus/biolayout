@@ -89,7 +89,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     *  2D OpenGL renderer related variable.
     */
     private ImageSFXs imageSFXs = null;
-    
+
     /**
     *  2D OpenGL renderer related variable.
     */
@@ -102,9 +102,9 @@ final class GraphRenderer2D implements GraphInterface // package access
 
     /**
     *  2D OpenGL renderer related variable.
-    */    
-    private BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer = null;    
-    
+    */
+    private BlobStars3DScrollerEffectInitializer blobStars3DScrollerEffectInitializer = null;
+
     /**
     *  2D OpenGL renderer related variable.
     */
@@ -324,24 +324,24 @@ final class GraphRenderer2D implements GraphInterface // package access
     *  OpenGL specific animation variable.
     */
     private boolean switchRenderer = false;
-    
+
     /**
     *  OpenGL specific animation variable.
-    */    
+    */
     private Graph graph = null;
-    
+
     /**
     *  The GraphRenderer2D class constructor.
     */
     public GraphRenderer2D(Graph graph)
     {
         this.graph = graph;
-        
+
         remainingEdges = new HashSet<GraphEdge>();
         tempVisibleEdges = new HashSet<GraphEdge>();
         draggedEdges = new HashSet<GraphEdge>();
-    }   
-    
+    }
+
     /**
     *  Toggles the map rotation mode.
     */
@@ -440,7 +440,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     private void resetAllRelevantValues(boolean resetAllValues)
     {
         if ( (graphRendererThreadUpdater != null) && !animationRender ) stopRender();
-        
+
         if (!animationRender)
         {
             renderProfileMode = false;
@@ -520,8 +520,8 @@ final class GraphRenderer2D implements GraphInterface // package access
         blobStars3DScrollerEffectInitializer = new BlobStars3DScrollerEffectInitializer(64, 64, (randomNumber + 1) * 12, (4 - randomNumber) * 64, randomBlobColor, USE_SHADERS_PROCESS);
 
         if (textureSFXs == null) textureSFXs = new TextureSFXs();
-        textureSFXs.blobStars3DScrollerEffectInit(gl, blobStars3DScrollerEffectInitializer, qualityRendering);            
-        
+        textureSFXs.blobStars3DScrollerEffectInit(gl, blobStars3DScrollerEffectInitializer, qualityRendering);
+
         if (!USE_SHADERS_PROCESS)
         {
             if (imageSFXs == null) imageSFXs = new ImageSFXs();
@@ -536,7 +536,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                 imageSFXs.bumpEffect();
                 imageSFXs.radialBlurEffect((int)( 0.1f * BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE.getHeight() ), true, BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE.getWidth() / 4, BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE.getHeight() / 4);
             }
-        
+
             textureSFXs.textureDisplacementEffectInit(0.001f);
         }
         else
@@ -548,7 +548,7 @@ final class GraphRenderer2D implements GraphInterface // package access
             shaderTextureSFXs.waterEffectInit(biolayoutLogoImageTextureWithBorders, 32, true, 1, 10.0f);
             shaderTextureSFXs.bumpEffectInit(gl, BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE, biolayoutLogoImageTexture, false, 0.01f);
             shaderTextureSFXs.blurEffectInit(gl, width, height, biolayoutLogoImageTexture, ShaderTextureSFXsBlurStates.FULL_BLUR, qualityRendering);
-            shaderTextureSFXs.radialBlurEffectInit(0.01f);            
+            shaderTextureSFXs.radialBlurEffectInit(0.01f);
         }
     }
 
@@ -683,8 +683,8 @@ final class GraphRenderer2D implements GraphInterface // package access
             layoutProgressBarDialog.endProgressBar();
             layoutProgressBarDialog.stopProgressBar();
             layoutProgressBarDialog.setIndeterminate(false);
-            
-            InitDesktop.open(saveScreenshotFile);            
+
+            InitDesktop.open(saveScreenshotFile);
         }
         catch (OutOfMemoryError memErr)
         {
@@ -790,9 +790,9 @@ final class GraphRenderer2D implements GraphInterface // package access
 
         // if ( gl.glIsList(nodeList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
         gl.glDeleteLists(selectedNodesDisplayList, 1);
-        
+
         // if ( gl.glIsList(pathwayComponentContainersDisplayList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
-        gl.glDeleteLists(pathwayComponentContainersDisplayList, 1);          
+        gl.glDeleteLists(pathwayComponentContainersDisplayList, 1);
 
         prevHowManyDisplayListsToCreate = 0;
         prevHowManyDisplayListsToCreateForNodeDragging = 0;
@@ -815,23 +815,23 @@ final class GraphRenderer2D implements GraphInterface // package access
         */
 
         // don't destroy it, keep it for faster renderer mode switching
-        /*        
+        /*
         if (imageSFXs != null)
         {
             imageSFXs.destructor();
             imageSFXs = null;
-        }        
+        }
         */
 
         // don't destroy it, keep it for faster renderer mode switching
-        /*        
+        /*
         if (textureSFXs != null)
         {
             textureSFXs.destructor(gl);
             textureSFXs = null;
         }
         */
-        
+
         // don't destroy it, keep it for faster renderer mode switching
         /*
         if (shaderTextureSFXs != null)
@@ -1008,7 +1008,7 @@ final class GraphRenderer2D implements GraphInterface // package access
         // code for map rendering from here on, using display lists for edges & nodes
 
         if (ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED)
-        {            
+        {
             graph.prepareAnimationSpectrumTexture(gl);
             ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = false;
         }
@@ -1020,18 +1020,18 @@ final class GraphRenderer2D implements GraphInterface // package access
             gl.glNewList(pathwayComponentContainersDisplayList, GL_COMPILE);
             drawPathwayComponentContainers2DMode(gl);
             gl.glEndList();
-            
+
             CHANGE_GRAPHML_COMPONENT_CONTAINERS = false;
-        }        
-        
+        }
+
         if (!TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING)
             if ( !DISABLE_NODES_RENDERING.get() && (SHOW_NODES.get() || !isInMotion) )
                 if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() && YED_STYLE_COMPONENT_CONTAINERS_RENDERING_FOR_GPAPHML_FILES.get() )
-                    gl.glCallList(pathwayComponentContainersDisplayList);       
-        
+                    gl.glCallList(pathwayComponentContainersDisplayList);
+
         if (updateEdgesDisplayList)
         {
-            if (DEBUG_BUILD) println("Updating edges display list");            
+            if (DEBUG_BUILD) println("Updating edges display list");
 
             // if allEdgesDisplayLists not empty, delete all its display lists
             if (allEdgesDisplayLists != null)
@@ -1054,7 +1054,7 @@ final class GraphRenderer2D implements GraphInterface // package access
             {
                 if (updateDraggedEdgesDisplayList)
                 {
-                    if (DEBUG_BUILD) println("Updating dragged edges display list");                    
+                    if (DEBUG_BUILD) println("Updating dragged edges display list");
 
                     // if draggedEdgesDisplayLists not empty, delete all its display lists
                     if (draggedEdgesDisplayLists != null)
@@ -1082,7 +1082,7 @@ final class GraphRenderer2D implements GraphInterface // package access
 
         if (updateNodesDisplayList)
         {
-            if (DEBUG_BUILD) println("Updating nodes display list");            
+            if (DEBUG_BUILD) println("Updating nodes display list");
 
             // if ( gl.glIsList(nodeList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
             gl.glDeleteLists(nodesDisplayList, 1);
@@ -1110,7 +1110,7 @@ final class GraphRenderer2D implements GraphInterface // package access
 
         if (updateSelectedNodesDisplayList)
         {
-            if (DEBUG_BUILD) println("Updating selected nodes display list");            
+            if (DEBUG_BUILD) println("Updating selected nodes display list");
 
             // if ( gl.glIsList(nodeList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
             gl.glDeleteLists(selectedNodesDisplayList, 1);
@@ -1234,7 +1234,7 @@ final class GraphRenderer2D implements GraphInterface // package access
         float ratioY = ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() ) ? (float)height / gnc.getRangeY() : 0.0f;
         float extraSizeAmoutValueForYEdStyleRendering = ( 1.0f / ( (ratioX > ratioY) ? ratioX : ratioY ) );
         float[] currentNode1GraphmlMapCoord = null;
-        float[] currentNode2GraphmlMapCoord = null;        
+        float[] currentNode2GraphmlMapCoord = null;
         ArrayList<Point2D.Double> allPoints = null;
         int previousToLastIndex = 0;
 
@@ -1289,7 +1289,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                 lineWidth = DEFAULT_EDGE_SIZE.get() * edge.getScaledWeight();
 
             node1 = edge.getNodeFirst();
-            node2 = edge.getNodeSecond();            
+            node2 = edge.getNodeSecond();
 
             if ( !node1.equals(node2) ) // don't need to draw an arrow to itself (for now)
             {
@@ -1309,19 +1309,19 @@ final class GraphRenderer2D implements GraphInterface // package access
                     x2 = node2.getX();
                     y2 = node2.getY();
                 }
-                
+
                 color = ( WEIGHTED_EDGES && COLOR_EDGES_BY_WEIGHT.get() ) ? edge.getColor() : DEFAULT_EDGE_COLOR.get();
-                allPoints = new ArrayList<Point2D.Double>(2); // default capacity of 2                
+                allPoints = new ArrayList<Point2D.Double>(2); // default capacity of 2
                 allPoints.add( new Point.Double(x1, y1) );
                 if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
                     addPolylines(gnc, node1, node2, allPoints);
                 allPoints.add( new Point.Double(x2, y2) );
-                
-                previousToLastIndex = allPoints.size() - 1; 
+
+                previousToLastIndex = allPoints.size() - 1;
                 // lastY - nextToLastY, lastX - nextToLastX
-                lineTheta1 = atan2(allPoints.get(previousToLastIndex).y - allPoints.get(previousToLastIndex - 1).y, 
-                                   allPoints.get(previousToLastIndex).x - allPoints.get(previousToLastIndex - 1).x);                  
-                
+                lineTheta1 = atan2(allPoints.get(previousToLastIndex).y - allPoints.get(previousToLastIndex - 1).y,
+                                   allPoints.get(previousToLastIndex).x - allPoints.get(previousToLastIndex - 1).x);
+
                 nodeScaleValue = node2.getNodeSize() / NODE_SIZE_DIVIDE_RATIO;
                 if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
                     nodeScaleValue *= extraSizeAmoutValueForYEdStyleRendering;
@@ -1330,27 +1330,27 @@ final class GraphRenderer2D implements GraphInterface // package access
                 nodeTextureHeightCenter = nodeTexture.getImageHeight() / 2.0;
 
                 allPoints.get(previousToLastIndex).x -= ( nodeScaleValue * nodeTextureWidthCenter  * cos(lineTheta1) );
-                allPoints.get(previousToLastIndex).y -= ( nodeScaleValue * nodeTextureHeightCenter * sin(lineTheta1) );                
-                
+                allPoints.get(previousToLastIndex).y -= ( nodeScaleValue * nodeTextureHeightCenter * sin(lineTheta1) );
+
                 // firstY - secondY, firstX - secondY
-                lineTheta2 = atan2(allPoints.get(0).y - allPoints.get(1).y, 
-                                   allPoints.get(0).x - allPoints.get(1).x);                       
-                
+                lineTheta2 = atan2(allPoints.get(0).y - allPoints.get(1).y,
+                                   allPoints.get(0).x - allPoints.get(1).x);
+
                 nodeScaleValue = node1.getNodeSize() / NODE_SIZE_DIVIDE_RATIO;
                 if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
-                    nodeScaleValue *= extraSizeAmoutValueForYEdStyleRendering;                        
+                    nodeScaleValue *= extraSizeAmoutValueForYEdStyleRendering;
                 nodeTexture = texturesLoader.getTexture( getTextureFromNode2DShape( choose2DShape( node1.getNode2DShape() ) ) );
                 nodeTextureWidthCenter  = nodeTexture.getImageWidth()  / 2.0;
-                nodeTextureHeightCenter = nodeTexture.getImageHeight() / 2.0;                        
+                nodeTextureHeightCenter = nodeTexture.getImageHeight() / 2.0;
 
                 allPoints.get(0).x -= ( nodeScaleValue * nodeTextureWidthCenter  * cos(lineTheta2) );
                 allPoints.get(0).y -= ( nodeScaleValue * nodeTextureHeightCenter * sin(lineTheta2) );
-                
+
                 drawLines(gl, allPoints, lineWidth, color, useProportionalEdgesSizeToWeightRendering);
-                
+
                 if ( DIRECTIONAL_EDGES.get() )
                     drawArrowHeads(gl, allPoints.get(previousToLastIndex).x, allPoints.get(previousToLastIndex).y, lineWidth, color, lineTheta1, useProportionalEdgesSizeToWeightRendering);
-                
+
                 if ( edge.hasDualArrowHead() )
                     drawArrowHeads(gl, allPoints.get(0).x,                   allPoints.get(0).y,                   lineWidth, color, lineTheta2, useProportionalEdgesSizeToWeightRendering);
             }
@@ -1383,7 +1383,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                         gl.glEnable(GL_ALPHA_TEST);
                         gl.glAlphaFunc(GL_GREATER, 0); // only render if alpha > 0
                     }
-                    
+
                     if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
                     {
                         currentNode1GraphmlMapCoord = gnc.getAllGraphmlNodesMap().get( node1.getNodeName() ).first;
@@ -1429,13 +1429,13 @@ final class GraphRenderer2D implements GraphInterface // package access
 
             gl.glDisable(GL_COLOR_LOGIC_OP);
         }
-        
+
         gl.glDisable(GL_BLEND);
         gl.glEndList();
 
         return edgesDisplayLists;
     }
-    
+
     /**
     *  Draws an arrowhead.
     */
@@ -1454,14 +1454,14 @@ final class GraphRenderer2D implements GraphInterface // package access
 
     /**
     *  Adds all polylines points (if found) to the ArrayList<Point2D.Double> collection.
-    */    
+    */
     private ArrayList<Point2D.Double> addPolylines(GraphmlNetworkContainer gnc, GraphNode node1, GraphNode node2, ArrayList<Point2D.Double> allPoints)
     {
         Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]> edgeTuple6 = gnc.getAllGraphmlEdgesMap().get( node1.getNodeName() + " " + node2.getNodeName() );
         if (edgeTuple6 != null)
         {
             Point.Double point = null;
-            for (Point2D.Float polylinePoint2D : edgeTuple6.second.second) 
+            for (Point2D.Float polylinePoint2D : edgeTuple6.second.second)
             {
                 point = new Point.Double(polylinePoint2D.x, polylinePoint2D.y);
                 // end of line
@@ -1470,10 +1470,10 @@ final class GraphRenderer2D implements GraphInterface // package access
                 allPoints.add(point);
             }
         }
-        
+
         return allPoints;
-    }    
-    
+    }
+
     /**
     *  Draws all visible nodes. Uses a texture non-binding-if-not-necessary optimization technique.
     */
@@ -1564,7 +1564,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                     }
                 }
             }
-            
+
             float r = nodeColor.getRed()   / 255.0f;
             float g = nodeColor.getGreen() / 255.0f;
             float b = nodeColor.getBlue()  / 255.0f;
@@ -1644,12 +1644,12 @@ final class GraphRenderer2D implements GraphInterface // package access
                         coordX = node.getX();
                         coordY = node.getY();
                     }
-                    
+
                     gl.glColor3f(Color.BLACK.getRed() / 255.0f, Color.BLACK.getGreen() / 255.0f, Color.BLACK.getBlue() / 255.0f);
                     gl.glRasterPos2d(coordX, coordY);
                     nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
                     if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
-                        graph.drawNodeNameBackgroundLegend(gl, node, nodeName);                                        
+                        graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                     GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
                 }
             }
@@ -1688,7 +1688,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                         coordX = node.getX();
                         coordY = node.getY();
                     }
-                    
+
                     gl.glColor3f(Color.BLACK.getRed() / 255.0f, Color.BLACK.getGreen() / 255.0f, Color.BLACK.getBlue() / 255.0f);
                     gl.glRasterPos2d(coordX, coordY);
                     nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
@@ -1696,9 +1696,9 @@ final class GraphRenderer2D implements GraphInterface // package access
                     if ( node.isShowNodeName() && !ANIMATION_SHOW_NODE_ANIMATION_VALUE.get() )
                     {
                         if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
-                            graph.drawNodeNameBackgroundLegend(gl, node, nodeName);                                                
+                            graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                         GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
-                    }                    
+                    }
                     else if ( !node.ismEPNTransition() && isSelectedNodesAnimation && ANIMATION_SHOW_NODE_ANIMATION_VALUE.get() )
                     {
                         if ( !nodeName.isEmpty() )
@@ -1707,7 +1707,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                         if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
                             graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                         GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
-                    }                 
+                    }
                 }
             }
         }
@@ -1823,7 +1823,7 @@ final class GraphRenderer2D implements GraphInterface // package access
 
     /**
     *  Draws the pathway component containers in 3D mode.
-    */    
+    */
     private void drawPathwayComponentContainers2DMode(GL2 gl)
     {
         Rectangle2D.Float rectangle2D = null;
@@ -1834,15 +1834,15 @@ final class GraphRenderer2D implements GraphInterface // package access
             float g = pathwayComponentContainer.color.getGreen() / 255.0f;
             float b = pathwayComponentContainer.color.getBlue()  / 255.0f;
             gl.glColor4f(r, g, b, 1.0f);
-            rectangle2D = pathwayComponentContainer.rectangle2D;            
+            rectangle2D = pathwayComponentContainer.rectangle2D;
             gl.glVertex2f(rectangle2D.x - rectangle2D.width / 2.0f, rectangle2D.y - rectangle2D.height / 2.0f); // Bottom Left Of The Quad
             gl.glVertex2f(rectangle2D.x + rectangle2D.width / 2.0f, rectangle2D.y - rectangle2D.height / 2.0f); // Bottom Right Of The Quad
             gl.glVertex2f(rectangle2D.x + rectangle2D.width / 2.0f, rectangle2D.y + rectangle2D.height / 2.0f); // Top Right Of The Quad
             gl.glVertex2f(rectangle2D.x - rectangle2D.width / 2.0f, rectangle2D.y + rectangle2D.height / 2.0f); // Top Left Of The Quad
         }
         gl.glEnd();
-    }    
-    
+    }
+
     /**
     *  Draws the selection box.
     */
@@ -1947,7 +1947,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     *  Processes the hits from selectScene().
     */
     private void processHits(int hits)
-    {        
+    {
         int numberNames = 0;
         int nameID = 0;
         int offset = 0;
@@ -2036,7 +2036,7 @@ final class GraphRenderer2D implements GraphInterface // package access
             mouseHasClicked = false;
             updateSelectedNodesDisplayList = true;
         }
-        
+
         if ( !nodesToAdd.isEmpty() )
             selectionManager.checkSetEnabledNodeNameTextFieldAndSelectNodesTab();
     }
@@ -2183,8 +2183,8 @@ final class GraphRenderer2D implements GraphInterface // package access
                 selectedNode.popLocationFromUndoPointStack();
             }
         }
-    }  
-    
+    }
+
     /**
     *  Processes the undo event.
     */
@@ -2283,7 +2283,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void init(GLAutoDrawable glDrawable)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D init()");
-        
+
         GL2 gl = glDrawable.getGL().getGL2();
         clearScreen2D(gl);
         gl.glDisable(GL_DEPTH_TEST); //disables the depth test for the 2D mode (hidden surface removal)
@@ -2295,15 +2295,15 @@ final class GraphRenderer2D implements GraphInterface // package access
             ALL_SHAPES_2D_DISPLAY_LISTS[i] = gl.glGenLists(1);
 
         ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = true;
-        
-        prepareTexturesLoader();        
-        prepareRandomPlasmaColor();        
+
+        prepareTexturesLoader();
+        prepareRandomPlasmaColor();
         prepareImageAndTextureSFXs(gl);
         prepareParticlesEffect();
         chooseParticleEffect();
 
         buildAllShapes2DDisplayLists(gl);
-        
+
         if ( IS_RENDERER_MODE_FIRST_SWITCH && !RENDERER_MODE_START_3D.get() )
             IS_RENDERER_MODE_FIRST_SWITCH = false;
         else
@@ -2371,7 +2371,7 @@ final class GraphRenderer2D implements GraphInterface // package access
 
             if (takeScreenshot) takeScreenshot(renderToFile);
             if (takeHighResScreenshot) takeHighResScreenshot(gl);
-            if (ANIMATION_INITIATE_END_OF_ANIMATION) 
+            if (ANIMATION_INITIATE_END_OF_ANIMATION)
             {
                 ANIMATION_INITIATE_END_OF_ANIMATION = false;
                 layoutFrame.getLayoutAnimationControlDialog().stopAnimation(false);
@@ -2391,18 +2391,18 @@ final class GraphRenderer2D implements GraphInterface // package access
         GL2 gl = glDrawable.getGL().getGL2();
 
         gl.glViewport(x, y, width, height); // update the viewport
-        
+
         // update the projection (camera) mode, orthographic in this case
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
         gl.glOrtho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
         // same with:
         // GLU.gluOrtho2D(0, width, height, 0);
-        gl.glMatrixMode(GL_MODELVIEW);        
-            
+        gl.glMatrixMode(GL_MODELVIEW);
+
         // the launching of a Swing UI popup menu issues a reshape(), no need to re-init the effects though
         if (!graphPopupIsTiming)
-        {            
+        {
             if (foregroundAnimation)
             {
                 if (!USE_SHADERS_PROCESS)
@@ -2431,7 +2431,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void keyPressed(KeyEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D keyPressed()");
-                
+
         int keyCode = e.getKeyCode();
         boolean isCtrlDown = (!IS_MAC) ? e.isControlDown() : e.isMetaDown();
 
@@ -2530,7 +2530,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void keyReleased(KeyEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D keyReleased()");
-        
+
         isShiftDown = false;
         isShiftAltDown = false;
         isAltDown = false;
@@ -2543,9 +2543,9 @@ final class GraphRenderer2D implements GraphInterface // package access
     */
     @Override
     public void keyTyped(KeyEvent e)
-    {       
+    {
         if (DEBUG_BUILD) println("GraphRenderer2D keyTyped()");
-        
+
         boolean isCtrlDown = (!IS_MAC) ? e.isControlDown() : e.isMetaDown();
         if (!e.isAltDown() && !isCtrlDown)
         {
@@ -2636,17 +2636,17 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void	mouseClicked(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mouseClicked()");
-        
+
         if ( SwingUtilities.isLeftMouseButton(e) )
         {
             boolean isCtrlDown = (!IS_MAC) ? e.isControlDown() : e.isMetaDown();
             boolean flag = !isShiftDown && isCtrlDown;
 
             findNode(e.getX(), e.getY(), !flag);
-            
+
             refreshDisplay();
-            refreshDisplay(); // perform two updates to show the selected node            
-            
+            refreshDisplay(); // perform two updates to show the selected node
+
             if (flag)
             {
                 if ( !lastNodeURLStringPicked.isEmpty() )
@@ -2661,7 +2661,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     *  MouseEntered mouseEvent.
     */
     @Override
-    public void mouseEntered(MouseEvent e) 
+    public void mouseEntered(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mouseEntered()");
     }
@@ -2670,7 +2670,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     *  MouseExited mouseEvent.
     */
     @Override
-    public void mouseExited(MouseEvent e) 
+    public void mouseExited(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mouseExited()");
     }
@@ -2682,8 +2682,8 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void mousePressed(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mousePressed()");
-        
-        boolean doTranslate = (!reverseNavigationMouseButtons) ? SwingUtilities.isLeftMouseButton(e) : SwingUtilities.isRightMouseButton(e);        
+
+        boolean doTranslate = (!reverseNavigationMouseButtons) ? SwingUtilities.isLeftMouseButton(e) : SwingUtilities.isRightMouseButton(e);
         if ( doTranslate || SwingUtilities.isLeftMouseButton(e) )
         {
             mouseDragStartX = e.getX();
@@ -2727,9 +2727,9 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void mouseReleased(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mouseReleased()");
-        
+
         isInMotion = false;
-        
+
         if ( SwingUtilities.isLeftMouseButton(e) )
         {
             if (isShiftDown && !isDraggingNodes)
@@ -2781,7 +2781,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void mouseDragged(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mouseDragged()");
-        
+
         if (pickOneNode)
         {
             pickOneNode = false;
@@ -2850,7 +2850,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void mouseMoved(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mouseMoved()");
-        
+
         if (!renderProfileMode || animationRender)
         {
             if ( graphPopupIsTiming || GRAPH_POPUP_COMPONENT.isPopupMenuVisible() )
@@ -2905,11 +2905,11 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void mouseWheelMoved(MouseWheelEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer2D mouseWheelMoved()");
-        
+
         rotateValue += (e.getWheelRotation() < 0) ? amountOfRotation : -amountOfRotation;
         if (!renderProfileMode || animationRender) refreshDisplay();
     }
-    
+
     /**
     *  Switches the renderer mode for GraphRenderer2D.
     */
@@ -2917,7 +2917,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void switchRendererMode()
     {
         if (DEBUG_BUILD) println("GraphRenderer2D switchRendererMode()");
-        
+
         if (!foregroundAnimation)
         {
             layoutFrame.setEnabledAllToolBars(false);
@@ -2951,7 +2951,7 @@ final class GraphRenderer2D implements GraphInterface // package access
         enableProfiler = false;
         enableScreenSaver = false;
         deAllocOpenGLMemory = false;
-        
+
         refreshDisplay();
     }
 
@@ -2965,15 +2965,15 @@ final class GraphRenderer2D implements GraphInterface // package access
 
         if (graphRendererThreadUpdater != null) stopRender();
 
-        deAllocOpenGLMemory = true;        
+        deAllocOpenGLMemory = true;
         renderProfileMode = false;
         enableProfiler = false;
         enableScreenSaver = false;
         continueRenderingForegroundAnimationWhileSwitchingRenderer = false;
-        
+
         refreshDisplay();
-    }    
-    
+    }
+
     /**
     *  Gets a BufferedImage (mainly used for printing functionality).
     */
@@ -3033,7 +3033,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     }
 
     /**
-    *  Updates the edges display lists only. 
+    *  Updates the edges display lists only.
     */
     @Override
     public void updateEdgesDisplayList()
@@ -3071,11 +3071,11 @@ final class GraphRenderer2D implements GraphInterface // package access
 
         refreshDisplay();
     }
-    
+
     /**
     *  Updates all animation.
-    */  
-    @Override    
+    */
+    @Override
     public void updateAnimation()
     {
         if (DEBUG_BUILD) println("Updating 2D Scene");
@@ -3191,7 +3191,7 @@ final class GraphRenderer2D implements GraphInterface // package access
                     renderProfileMode = false;
                     enableProfiler = false;
                     enableScreenSaver = false;
-                    
+
                     listener.switchRendererModeCallBack();
                 }
             }
@@ -3203,7 +3203,7 @@ final class GraphRenderer2D implements GraphInterface // package access
             if (currentTick >= TOTAL_NUMBER_OF_ANIMATION_TICKS)
             {
                 currentTick = TOTAL_NUMBER_OF_ANIMATION_TICKS - 1;
-                ANIMATION_INITIATE_END_OF_ANIMATION = true;                
+                ANIMATION_INITIATE_END_OF_ANIMATION = true;
             }
 
             if (stepAnimation)
@@ -3212,8 +3212,8 @@ final class GraphRenderer2D implements GraphInterface // package access
                 generalPauseRenderUpdateThread();
             }
         }
-    }    
-    
+    }
+
     /**
     *  Refreshes the display.
     */
@@ -3286,11 +3286,11 @@ final class GraphRenderer2D implements GraphInterface // package access
 
             return false;
         }
-    }    
-    
-    /** 
+    }
+
+    /**
     *  The main take a screenshot process.
-    */ 
+    */
     @Override
     public void takeScreenShotProcess(boolean doHighResScreenShot)
     {
@@ -3312,11 +3312,11 @@ final class GraphRenderer2D implements GraphInterface // package access
         // second refresh for cleaning behind InitDesktop.open(savedImage)
         if (doHighResScreenShot)
             refreshDisplay();
-    }    
-    
+    }
+
     /**
     *  Creates the reTranslate action.
-    */   
+    */
     @Override
     public void createReTranslateAction(TranslateTypes translateType, ActionEvent e)
     {
@@ -3374,33 +3374,33 @@ final class GraphRenderer2D implements GraphInterface // package access
         refreshDisplay();
 
         if (DEBUG_BUILD) println("GraphRenderer2D reScale() By:" + factor + " New Zoom:" + scaleValue);
-    }    
-    
+    }
+
     /**
     *  Creates the Burst Layout Iterations action.
-    */    
+    */
     @Override
     public void createBurstLayoutIterationsAction(ActionEvent e) {}
-    
+
     /**
     *  Gets the undo node dragging action.
     */
     @Override
-    public void createUndoNodeDraggingAction(ActionEvent e) 
+    public void createUndoNodeDraggingAction(ActionEvent e)
     {
         processUndoEvent();
         updateAllDisplayLists();
         refreshDisplay();
 
         graph.setEnabledUndoNodeDragging(true);
-        graph.setEnabledRedoNodeDragging(true);       
+        graph.setEnabledRedoNodeDragging(true);
     }
 
     /**
     *  Gets the redo node dragging action.
     */
     @Override
-    public void createRedoNodeDraggingAction(ActionEvent e) 
+    public void createRedoNodeDraggingAction(ActionEvent e)
     {
         processRedoEvent();
         updateAllDisplayLists();
@@ -3410,79 +3410,79 @@ final class GraphRenderer2D implements GraphInterface // package access
         graph.setEnabledRedoNodeDragging(true);
     }
 
-    /** 
+    /**
     *  Gets the autorotate action.
-    */      
+    */
     @Override
-    public void createAutoRotateAction(ActionEvent e) 
+    public void createAutoRotateAction(ActionEvent e)
     {
         toggleRotation(e);
     }
-    
-    /** 
+
+    /**
     *  Gets the screensaver 2D mode action.
-    */      
+    */
     @Override
-    public void createAutoScreenSaver2DModeAction(ActionEvent e) 
+    public void createAutoScreenSaver2DModeAction(ActionEvent e)
     {
         toggleScreenSaver();
     }
-    
+
     /**
     *  Gets the pulsation 3D mode action.
     */
     @Override
-    public void createPulsation3DModeAction(ActionEvent e) {}    
-    
+    public void createPulsation3DModeAction(ActionEvent e) {}
 
-    /** 
+
+    /**
     *  Gets the selection action.
-    */      
+    */
     @Override
-    public void createSelectAction(ActionEvent e) {}    
-    
-    /** 
+    public void createSelectAction(ActionEvent e) {}
+
+    /**
     *  Gets the translation action.
-    */       
+    */
     @Override
-    public void createTranslateAction(ActionEvent e) 
+    public void createTranslateAction(ActionEvent e)
     {
         reverseNavigationMouseButtons = false;
     }
-    
-    /** 
+
+    /**
     *  Gets the rotation action.
-    */       
+    */
     @Override
-    public void createRotateAction(ActionEvent e) {}    
-    
-    /** 
+    public void createRotateAction(ActionEvent e) {}
+
+    /**
     *  Gets the zoom action.
-    */       
+    */
     @Override
-    public void createZoomAction(ActionEvent e) 
+    public void createZoomAction(ActionEvent e)
     {
         reverseNavigationMouseButtons = true;
     }
 
-    /** 
+    /**
     *  Gets the reset view action.
-    */     
+    */
     @Override
-    public void createResetViewAction(ActionEvent e) 
+    public void createResetViewAction(ActionEvent e)
     {
         resetAllRelevantValues(true);
     }
-    
-    /** 
+
+    /**
     *  Gets the render action.
-    */       
+    */
     @Override
     public void createRenderImageToFileAction(ActionEvent e) {}
-    
-    /** 
+
+    /**
     *  Gets the high resolution render action.
-    */      
+    */
     @Override
     public void createRenderHighResImageToFileAction(ActionEvent e) {}
 
@@ -3493,7 +3493,7 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void generalPauseRenderUpdateThread()
     {
         graphRendererThreadUpdater.generalPauseRenderUpdateThread();
-    }            
+    }
 
     /**
     *  Generally resumes the renderer.
@@ -3502,8 +3502,8 @@ final class GraphRenderer2D implements GraphInterface // package access
     public void generalResumeRenderUpdateThread()
     {
         graphRendererThreadUpdater.generalResumeRenderUpdateThread();
-    }            
-    
+    }
+
     /**
     *  The name of the GraphRenderer2D object.
     */

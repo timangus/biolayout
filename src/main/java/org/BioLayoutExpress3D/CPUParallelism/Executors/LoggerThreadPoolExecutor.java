@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 * The LoggerThreadPoolExecutor class is used to create a custom Thread Pool Executor with logging capabilities.
 *
 * @see org.BioLayoutExpress3D.CPUParallelism.Executors.LoggerThread

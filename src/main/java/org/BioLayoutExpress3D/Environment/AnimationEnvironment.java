@@ -17,15 +17,15 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
 public class AnimationEnvironment
 {
-    
+
     /**
     *  Constant value needed for the animation.
-    */    
+    */
     public static final String START_ANIMATION_EVENT_STRING = "StartAnimation";
 
     /**
     *  Constant value needed for the animation.
-    */    
+    */
     public static final String STOP_ANIMATION_EVENT_STRING = "StopAnimation";
 
     /**
@@ -156,8 +156,8 @@ public class AnimationEnvironment
     /**
     *  Constant value needed for the animation.
     */
-    public static boolean ANIMATION_INITIATE_END_OF_ANIMATION = false;    
-    
+    public static boolean ANIMATION_INITIATE_END_OF_ANIMATION = false;
+
     /**
     *  Constant value needed for the animation.
     */
@@ -198,5 +198,5 @@ public class AnimationEnvironment
     */
     public static final PrefInt ANIMATION_DEFAULT_SPECTRUM_IMAGE = new PrefInt(1, "animation_default_spectrum_image", true);
 
-    
+
 }

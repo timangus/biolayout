@@ -5,37 +5,37 @@ import static java.lang.Math.*;
 import org.BioLayoutExpress3D.Analysis.Blobs.*;
 
 /**
-* 
+*
 * @author Markus Brosch (mb8[at]sanger[dot]ac[dot]uk)
 * @author Full refactoring by Thanos Theo, 2008-2009
-* 
+*
 */
 
-public final class MathUtil 
+public final class MathUtil
 {
     private static final double LOG2_FACTOR = log(2);
 
-    public static double relativeEntropy(AnnotationType selected, AnnotationType wholeChip) 
+    public static double relativeEntropy(AnnotationType selected, AnnotationType wholeChip)
     {
         Set<String> clusterNames = selected.getKeys();
         double entropy = 0.0;
         double actualCluster = 0.0;
         double background = 0.0;
-        for (String clusterName : clusterNames) 
+        for (String clusterName : clusterNames)
         {
             actualCluster = selected.getP(clusterName);
             background = wholeChip.getP(clusterName);
-            
+
             if ( (actualCluster != 0.0) && (background == 0.0) )
                 entropy += Integer.MAX_VALUE;
-            else if (actualCluster != 0) 
+            else if (actualCluster != 0)
                 entropy += actualCluster * log(actualCluster / background) / LOG2_FACTOR;
         }
-        
+
         return entropy;
     }
 
-    public static Map<String, Double> relativeEntropyDetailed(AnnotationType selected, AnnotationType wholeChip) 
+    public static Map<String, Double> relativeEntropyDetailed(AnnotationType selected, AnnotationType wholeChip)
     {
         if (selected != null)
         {
@@ -43,20 +43,20 @@ public final class MathUtil
             Map<String, Double> type2entropy = new HashMap<String, Double>();
             double actualCluster = 0.0;
             double background = 0.0;
-            for (String clusterName : clusterNames) 
+            for (String clusterName : clusterNames)
             {
                 actualCluster = selected.getP(clusterName);
                 background = wholeChip.getP(clusterName);
-                
+
                 if ( (actualCluster != 0.0) && (background == 0.0) )
                     type2entropy.put (clusterName, new Double(Integer.MAX_VALUE) );
                 else if (actualCluster != 0.0)
                     type2entropy.put( clusterName, new Double(actualCluster * log(actualCluster / background) / LOG2_FACTOR) );
             }
-            
+
             return type2entropy;
-        } 
-        else 
+        }
+        else
             return null;
     }
 
@@ -66,7 +66,7 @@ public final class MathUtil
     * @param xx
     * @return the return value of the log gamma function
     */
-    public static double gammaLn(double xx) 
+    public static double gammaLn(double xx)
     {
         double x = 0.0, tmp = 0.0, ser = 0.0;
         double[] cof = {
@@ -99,13 +99,13 @@ public final class MathUtil
     * @param r number to be chosen
     * @return log(n!/r!/(n-r)!)
     */
-    public static double logComb(double n, double r) 
+    public static double logComb(double n, double r)
     {
         return gammaLn(n + 1) - gammaLn(r + 1) - gammaLn(n - r + 1);
     }
 
-    public static double hyperGeometricProb(double x, double r1, double r2, double c1, double c2) 
-    {        
+    public static double hyperGeometricProb(double x, double r1, double r2, double c1, double c2)
+    {
         return exp( logComb(r1, x) + logComb(r2, c1 - x) - logComb( c1 + c2, c1) );
     }
 
@@ -121,7 +121,7 @@ public final class MathUtil
     * @param d
     * @return [0]left-sided p-Value, [1]right-sided p-Value, [2]two-sided p-Value
     */
-    public static double[] fisher(int a, int b, int c, int d) 
+    public static double[] fisher(int a, int b, int c, int d)
     {
         double ab = a + b;
         double cd = c + d;
@@ -140,7 +140,7 @@ public final class MathUtil
         double crit = hyperGeometricProb(a, ab, cd, ac, bd);
 
         leftPval = rightPval = twoPval = 0.0;
-        for (double x = lm; x <= um; x++) 
+        for (double x = lm; x <= um; x++)
         {
             double prob = hyperGeometricProb(x, ab, cd, ac, bd);
             if (x <= a) leftPval += prob;
@@ -151,8 +151,8 @@ public final class MathUtil
         return new double[]{ leftPval, rightPval, twoPval };
     }
 
-    public static double calcScore(double fishersP, int members, double entropy) 
-    { 
+    public static double calcScore(double fishersP, int members, double entropy)
+    {
         double memberScore = 0.0;
         double fisherScore = 0.0;
 
@@ -168,5 +168,5 @@ public final class MathUtil
         return (memberScore * fisherScore * entropy);
     }
 
-    
+
 }

@@ -16,25 +16,25 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 *
 */
 
-public final class FindNameDialog extends JDialog 
-{ 
-    /** 
+public final class FindNameDialog extends JDialog
+{
+    /**
     *  Serial version UID variable for the FindDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555747L;
-            
+
     private LayoutFrame layoutFrame = null;
     private JCheckBox matchCaseCheckBox = null;
     private JCheckBox matchEntireNameCheckBox = null;
     private JTextField textField = null;
     private AbstractAction findNameDialogAction = null;
-    
-    public FindNameDialog(LayoutFrame layoutFrame, JFrame jFrame) 
+
+    public FindNameDialog(LayoutFrame layoutFrame, JFrame jFrame)
     {
-        super(jFrame, "Find By Name", true);      
-        
+        super(jFrame, "Find By Name", true);
+
         this.layoutFrame = layoutFrame;
-        
+
         initActions();
         initComponents(jFrame);
     }
@@ -43,20 +43,20 @@ public final class FindNameDialog extends JDialog
     {
         findNameDialogAction = new AbstractAction("Find By Name")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555682L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 showDialog();
             }
         };
-        findNameDialogAction.setEnabled(false);        
+        findNameDialogAction.setEnabled(false);
     }
-    
+
     private void initComponents(final JFrame jFrame)
     {
         JLabel textLabel = new JLabel("Please Type the Name of the Node:");
@@ -70,31 +70,31 @@ public final class FindNameDialog extends JDialog
         textField = new JTextField(10);
         textField.setMaximumSize( new Dimension(150, 20) );
         textField.setToolTipText("Name");
-        
-        AbstractAction findAction = new AbstractAction("Find") 
+
+        AbstractAction findAction = new AbstractAction("Find")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555748L;
-    
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setVisible(false);
                 layoutFrame.getGraph().getSelectionManager().findName(jFrame, textField.getText(), matchCaseCheckBox.isSelected(), matchEntireNameCheckBox.isSelected(), true);
             }
         };
 
-        AbstractAction findMoreAction = new AbstractAction("Find More") 
+        AbstractAction findMoreAction = new AbstractAction("Find More")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555749L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setVisible(false);
                 layoutFrame.getGraph().getSelectionManager().findName(jFrame, textField.getText(), matchCaseCheckBox.isSelected(), matchEntireNameCheckBox.isSelected(), false);
@@ -102,20 +102,20 @@ public final class FindNameDialog extends JDialog
             }
         };
 
-        AbstractAction cancelAction = new AbstractAction("Cancel") 
+        AbstractAction cancelAction = new AbstractAction("Cancel")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555750L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setVisible(false);
             }
-        };   
-        
+        };
+
         JButton findButton = new JButton(findAction);
         findButton.setToolTipText("Find");
         JButton findMoreButton = new JButton(findMoreAction);
@@ -155,18 +155,18 @@ public final class FindNameDialog extends JDialog
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
     }
 
-    public void showDialog() 
+    public void showDialog()
     {
         textField.setSelectionStart(0);
         textField.setSelectionEnd( textField.getText().length() );
-        
+
         this.setVisible(true);
     }
-    
+
     public AbstractAction getFindNameDialogAction()
     {
         return findNameDialogAction;
     }
-    
-    
+
+
 }

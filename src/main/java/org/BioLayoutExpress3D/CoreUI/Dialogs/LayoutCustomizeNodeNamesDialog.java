@@ -28,36 +28,36 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
 
     private static final String[] ALL_DELIMITERS = { ";", ":", ",", "#", "" };
     private static final int NAME_RENDERING_NUMBER_OF_OPTIONS = 3;
-    
+
     private String selectedDelimiter = ALL_DELIMITERS[0];
     private int nameRenderingTypeSelected = 0;
     private LayoutFrame layoutFrame = null;
-    
+
     private JRadioButton[] allDelimiterRadioButtons = null;
     private JCheckBox customDelimiterCheckBox = null;
     private JTextField customDelimiterTextField = null;
-    
+
     private JCheckBox showFullNameCheckBox = null;
-    private JCheckBox showPartialNameLengthCheckBox = null;  
+    private JCheckBox showPartialNameLengthCheckBox = null;
     private JLabel partialNameNumberOfCharactersLabel = null;
     private WholeNumberField partialNameNumberOfCharactersField = null;
-    
+
     private JComboBox openGLNameFontTypesComboBox = null;
-    
+
     private JRadioButton[] allNameRenderingRadioButtons = null;
-    
+
     private JButton okButton = null;
     private JButton cancelButton = null;
-    private JButton applyButton = null;    
+    private JButton applyButton = null;
 
     private AbstractAction customizeNodeNamesAction = null;
-    
+
     public LayoutCustomizeNodeNamesDialog(LayoutFrame layoutFrame)
     {
-        super(layoutFrame, "Customize Node Names", false);       
+        super(layoutFrame, "Customize Node Names", false);
 
         this.layoutFrame = layoutFrame;
-        
+
         initActions();
         initComponents();
     }
@@ -78,25 +78,25 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             public void actionPerformed(ActionEvent e)
             {
                 setVisible(true);
-                
+
                 readCustomizeNodeNamesProperties();
-                for (int i = 0; i < ALL_DELIMITERS.length; i++)                    
+                for (int i = 0; i < ALL_DELIMITERS.length; i++)
                     if ( allDelimiterRadioButtons[i].isEnabled() && allDelimiterRadioButtons[i].isSelected() )
                         allDelimiterRadioButtons[i].requestFocus();
-                for (int i = 0; i < NAME_RENDERING_NUMBER_OF_OPTIONS; i++)                    
+                for (int i = 0; i < NAME_RENDERING_NUMBER_OF_OPTIONS; i++)
                     if ( allNameRenderingRadioButtons[i].isEnabled() && allNameRenderingRadioButtons[i].isSelected() )
-                        allNameRenderingRadioButtons[i].requestFocus();                
+                        allNameRenderingRadioButtons[i].requestFocus();
                 applyButton.setEnabled(false);
             }
         };
         customizeNodeNamesAction.setEnabled(false);
-    }    
-    
+    }
+
     /**
     *  Initializes the UI components for this dialog.
     */
     private void initComponents()
-    {        
+    {
         JPanel delimiterOptionsPanel = new JPanel(true);
         allDelimiterRadioButtons = new JRadioButton[ALL_DELIMITERS.length];
         for (int i = 0; i < ALL_DELIMITERS.length; i++)
@@ -105,38 +105,38 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             allDelimiterRadioButtons[i].addActionListener(this);
             if (i == 4)
                 allDelimiterRadioButtons[4].setToolTipText("Delimiter:   None");
-            else    
-                allDelimiterRadioButtons[i].setToolTipText("Delimiter:   " + ALL_DELIMITERS[i]);            
+            else
+                allDelimiterRadioButtons[i].setToolTipText("Delimiter:   " + ALL_DELIMITERS[i]);
         }
         allDelimiterRadioButtons[0].setSelected(true);
         ButtonGroup allDelimiterRadioButtonsGroup = new ButtonGroup();
         customDelimiterTextField = new JTextField();
-        customDelimiterTextField.addCaretListener(this);        
+        customDelimiterTextField.addCaretListener(this);
         customDelimiterCheckBox = new JCheckBox();
-        customDelimiterCheckBox.addActionListener(this);        
+        customDelimiterCheckBox.addActionListener(this);
 
         JPanel nameLengthOptionsPanel = new JPanel(true);
         showFullNameCheckBox = new JCheckBox();
         showFullNameCheckBox.addActionListener(this);
         showPartialNameLengthCheckBox = new JCheckBox();
         showPartialNameLengthCheckBox.addActionListener(this);
-        
+
         JPanel partialNameNumberOfCharactersPanel = new JPanel(true);
-        partialNameNumberOfCharactersPanel.setLayout( new BoxLayout(partialNameNumberOfCharactersPanel, BoxLayout.X_AXIS) );  
+        partialNameNumberOfCharactersPanel.setLayout( new BoxLayout(partialNameNumberOfCharactersPanel, BoxLayout.X_AXIS) );
         partialNameNumberOfCharactersLabel = new JLabel("Number Of Characters:");
         partialNameNumberOfCharactersField = new WholeNumberField(0, 3);
-        partialNameNumberOfCharactersField.addCaretListener(this); 
-        
+        partialNameNumberOfCharactersField.addCaretListener(this);
+
         JPanel openGLNameFontTypesComboBoxOptionsPanel = new JPanel(true);
         openGLNameFontTypesComboBox = new JComboBox();
         for ( OpenGLFontTypes openGLFontType : OpenGLFontTypes.values() )
             openGLNameFontTypesComboBox.addItem( splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(openGLFontType) );
         openGLNameFontTypesComboBox.setSelectedIndex( getEnumIndexForName( OpenGLFontTypes.class, CUSTOMIZE_NODE_NAMES_OPENGL_NAME_FONT_TYPE.get() ) );
         openGLNameFontTypesComboBox.addActionListener(this);
-        openGLNameFontTypesComboBox.setToolTipText("OpenGL Name Font Types");             
-        
+        openGLNameFontTypesComboBox.setToolTipText("OpenGL Name Font Types");
+
         JPanel nameRenderingOptionsPanel = new JPanel(true);
-        allNameRenderingRadioButtons = new JRadioButton[NAME_RENDERING_NUMBER_OF_OPTIONS];           
+        allNameRenderingRadioButtons = new JRadioButton[NAME_RENDERING_NUMBER_OF_OPTIONS];
         for (int i = 0; i < NAME_RENDERING_NUMBER_OF_OPTIONS; i++)
         {
             allNameRenderingRadioButtons[i] = new JRadioButton();
@@ -146,19 +146,19 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             else if (i == 1)
                 allNameRenderingRadioButtons[i].setToolTipText(" B/W Name Background Legends");
             else if (i == 2)
-                allNameRenderingRadioButtons[i].setToolTipText(" Colored Name Background Legends");            
+                allNameRenderingRadioButtons[i].setToolTipText(" Colored Name Background Legends");
         }
         allNameRenderingRadioButtons[nameRenderingTypeSelected].setSelected(true);
         ButtonGroup allNameRenderingRadioButtonsGroup = new ButtonGroup();
-        
+
         JPanel buttonsPanel = new JPanel(true);
-        buttonsPanel.setLayout( new BoxLayout(buttonsPanel, BoxLayout.X_AXIS) );        
+        buttonsPanel.setLayout( new BoxLayout(buttonsPanel, BoxLayout.X_AXIS) );
         okButton = new JButton();
-        okButton.addActionListener(this);    
+        okButton.addActionListener(this);
         cancelButton = new JButton();
         cancelButton.addActionListener(this);
         applyButton = new JButton();
-        applyButton.addActionListener(this);            
+        applyButton.addActionListener(this);
         applyButton.setEnabled(false);
 
         delimiterOptionsPanel.setBorder( BorderFactory.createTitledBorder("Delimiter (Divider) Options") );
@@ -171,12 +171,12 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             else
                 allDelimiterRadioButtons[i].setText("  " + ALL_DELIMITERS[i] + "  ");
         }
-        
+
         customDelimiterTextField.setText(" ");
         customDelimiterTextField.setToolTipText("Other (Custom Delimiter)");
         customDelimiterCheckBox.setText("Other (Custom Delimiter)");
-        customDelimiterCheckBox.setToolTipText("Other (Custom Delimiter)");    
-        
+        customDelimiterCheckBox.setToolTipText("Other (Custom Delimiter)");
+
         GroupLayout delimiterOptionsPanelLayout = new GroupLayout(delimiterOptionsPanel);
         delimiterOptionsPanel.setLayout(delimiterOptionsPanelLayout);
         delimiterOptionsPanelLayout.setHorizontalGroup(
@@ -206,7 +206,7 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                 .addComponent(allDelimiterRadioButtons[2])
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(allDelimiterRadioButtons[3])
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)                
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(allDelimiterRadioButtons[4])
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(delimiterOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -227,12 +227,12 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
         partialNameNumberOfCharactersLabel.setToolTipText("Partial Name Number Of Characters");
         partialNameNumberOfCharactersLabel.setEnabled(false);
         partialNameNumberOfCharactersField.setToolTipText("Partial Name Number Of Characters");
-        partialNameNumberOfCharactersField.setEnabled(false);   
+        partialNameNumberOfCharactersField.setEnabled(false);
         partialNameNumberOfCharactersPanel.add( Box.createRigidArea( new Dimension(22, 5) ) );
-        partialNameNumberOfCharactersPanel.add(partialNameNumberOfCharactersLabel);        
+        partialNameNumberOfCharactersPanel.add(partialNameNumberOfCharactersLabel);
         partialNameNumberOfCharactersPanel.add( Box.createRigidArea( new Dimension(10, 5) ) );
-        partialNameNumberOfCharactersPanel.add(partialNameNumberOfCharactersField);        
-        
+        partialNameNumberOfCharactersPanel.add(partialNameNumberOfCharactersField);
+
         GroupLayout matchNameOptionsPanelLayout = new GroupLayout(nameLengthOptionsPanel);
         nameLengthOptionsPanel.setLayout(matchNameOptionsPanelLayout);
         matchNameOptionsPanelLayout.setHorizontalGroup(
@@ -241,7 +241,7 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                 .addGroup(matchNameOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(showFullNameCheckBox)
                     .addComponent(showPartialNameLengthCheckBox)
-                    .addComponent(partialNameNumberOfCharactersPanel))                    
+                    .addComponent(partialNameNumberOfCharactersPanel))
                 .addContainerGap(0, Short.MAX_VALUE))
         );
         matchNameOptionsPanelLayout.setVerticalGroup(
@@ -252,12 +252,12 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(showPartialNameLengthCheckBox)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(partialNameNumberOfCharactersPanel)                
+                .addComponent(partialNameNumberOfCharactersPanel)
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        
+
         openGLNameFontTypesComboBoxOptionsPanel.setBorder( BorderFactory.createTitledBorder("OpenGL Name Font Types") );
-                
+
         GroupLayout openGLNameFontTypesComboBoxOptionsPanelLayout = new GroupLayout(openGLNameFontTypesComboBoxOptionsPanel);
         nameRenderingOptionsPanel.setLayout(openGLNameFontTypesComboBoxOptionsPanelLayout);
         openGLNameFontTypesComboBoxOptionsPanelLayout.setHorizontalGroup(
@@ -274,12 +274,12 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             .addGroup(openGLNameFontTypesComboBoxOptionsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(openGLNameFontTypesComboBox)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)             
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );        
+        );
 
         nameRenderingOptionsPanel.setBorder( BorderFactory.createTitledBorder("Name Rendering Types") );
-        
+
         for (int i = 0; i < NAME_RENDERING_NUMBER_OF_OPTIONS; i++)
         {
             allNameRenderingRadioButtonsGroup.add(allNameRenderingRadioButtons[i]);
@@ -290,7 +290,7 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             else if (i == 2)
                 allNameRenderingRadioButtons[i].setText("  Colored Name Background Legends");
         }
-        
+
         GroupLayout nameRenderingOptionsPanelLayout = new GroupLayout(nameRenderingOptionsPanel);
         nameRenderingOptionsPanel.setLayout(nameRenderingOptionsPanelLayout);
         nameRenderingOptionsPanelLayout.setHorizontalGroup(
@@ -313,19 +313,19 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                 .addComponent(allNameRenderingRadioButtons[1])
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(allNameRenderingRadioButtons[2])
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)                
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );        
-        
+        );
+
         okButton.setText("OK");
-        okButton.setToolTipText("OK");    
+        okButton.setToolTipText("OK");
         cancelButton.setText("Cancel");
         cancelButton.setToolTipText("Cancel");
         applyButton.setText("Apply");
         applyButton.setToolTipText("Apply");
-        buttonsPanel.add(okButton);        
+        buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
-        buttonsPanel.add(applyButton);   
+        buttonsPanel.add(applyButton);
 
         GroupLayout layout = new GroupLayout( this.getContentPane() );
         this.getContentPane().setLayout(layout);
@@ -338,7 +338,7 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
                             .addComponent(delimiterOptionsPanel, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(nameLengthOptionsPanel, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(openGLNameFontTypesComboBoxOptionsPanel, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)                            
+                            .addComponent(openGLNameFontTypesComboBoxOptionsPanel, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(nameRenderingOptionsPanel, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(27, 27, 27)
@@ -352,17 +352,17 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                 .addComponent(delimiterOptionsPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nameLengthOptionsPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)                
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(openGLNameFontTypesComboBoxOptionsPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)                     
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(nameRenderingOptionsPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)                
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonsPanel)
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         this.setResizable(false);
-        this.pack();        
+        this.pack();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         // window gets positioned at left of layout frame main window
         this.setLocation( ( SCREEN_DIMENSION.width - layoutFrame.getWidth() ) / 2 + 2 * this.getInsets().left, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2);
@@ -373,7 +373,7 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             {
                 setVisible(false);
             }
-        } );        
+        } );
     }
 
     private void readCustomizeNodeNamesProperties()
@@ -386,8 +386,8 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                 foundIndex = i;
                 break;
             }
-        }   
-        
+        }
+
         if (foundIndex != -1)
         {
             allDelimiterRadioButtons[foundIndex].setSelected(true);
@@ -402,17 +402,17 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             customDelimiterCheckBox.doClick();
             customDelimiterCheckBox.requestFocus();
         }
-        
+
         showFullNameCheckBox.setSelected( CUSTOMIZE_NODE_NAMES_SHOW_FULL_NAME.get() );
         showFullNameCheckBox.setEnabled( CUSTOMIZE_NODE_NAMES_SHOW_FULL_NAME.get() );
-        
+
         showPartialNameLengthCheckBox.setSelected( CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH.get() );
         showPartialNameLengthCheckBox.setEnabled( CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH.get() );
-        
+
         partialNameNumberOfCharactersLabel.setEnabled( CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH.get() );
         partialNameNumberOfCharactersField.setEnabled( CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH.get() );
-        partialNameNumberOfCharactersField.setText( Integer.toString( CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH_NUMBER_OF_CHARACTERS.get() ) );        
-        
+        partialNameNumberOfCharactersField.setText( Integer.toString( CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH_NUMBER_OF_CHARACTERS.get() ) );
+
         if ( !showFullNameCheckBox.isEnabled() && !showPartialNameLengthCheckBox.isEnabled() )
         {
             showFullNameCheckBox.setEnabled(true);
@@ -420,32 +420,32 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             partialNameNumberOfCharactersLabel.setEnabled(true);
             partialNameNumberOfCharactersField.setEnabled(true);
         }
-        
+
         foundIndex = CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get();
         allNameRenderingRadioButtons[foundIndex].setSelected(true);
         allNameRenderingRadioButtons[foundIndex].doClick();
-        allNameRenderingRadioButtons[foundIndex].requestFocus();        
+        allNameRenderingRadioButtons[foundIndex].requestFocus();
     }
 
     private void applyCustomizeNodeNamesProperties()
     {
         if ( customDelimiterCheckBox.isSelected() && !showFullNameCheckBox.isSelected() )
             checkSelectedDelimiterForRegularExpressionCompatibility();
-        
+
         NODE_NAMES_OPENGL_FONT_TYPE = OpenGLFontTypes.values()[openGLNameFontTypesComboBox.getSelectedIndex()];
         CUSTOMIZE_NODE_NAMES_OPENGL_NAME_FONT_TYPE.set( NODE_NAMES_OPENGL_FONT_TYPE.toString() );
-        
+
         CUSTOMIZE_NODE_NAMES_DELIMITER.set(selectedDelimiter);
         CUSTOMIZE_NODE_NAMES_SHOW_FULL_NAME.set( showFullNameCheckBox.isSelected() );
         CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH.set( showPartialNameLengthCheckBox.isSelected() );
         CUSTOMIZE_NODE_NAMES_SHOW_PARTIAL_NAME_LENGTH_NUMBER_OF_CHARACTERS.set( partialNameNumberOfCharactersField.getValue() );
         CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.set(nameRenderingTypeSelected);
-        
+
         layoutFrame.getGraph().updateNodesDisplayList();
         if (SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS)
             layoutFrame.getLayoutGraphPropertiesDialog().setHasNewPreferencesBeenApplied(true);
-    }    
-    
+    }
+
     private void checkSelectedDelimiterForRegularExpressionCompatibility()
     {
         try
@@ -458,9 +458,9 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             JOptionPane.showMessageDialog(this, "The Custom Delimiter '" + selectedDelimiter + "' Cannot Be Accepted For Pattern Matching.\nPlease Use Another Custom Delimiter.", "Custom Delimiter Not Accepted!", JOptionPane.WARNING_MESSAGE);
             customDelimiterTextField.setText(" ");
             selectedDelimiter = " ";
-        }        
+        }
     }
-    
+
     private void setEnabledShowFullNameMode(boolean enabled)
     {
         customDelimiterTextField.setEnabled(!enabled);
@@ -469,11 +469,11 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
         showFullNameCheckBox.setSelected(enabled);
         showPartialNameLengthCheckBox.setEnabled(!enabled);
         partialNameNumberOfCharactersLabel.setEnabled(!enabled);
-        partialNameNumberOfCharactersField.setEnabled(!enabled);            
-        
+        partialNameNumberOfCharactersField.setEnabled(!enabled);
+
         applyButton.setEnabled(true);
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -484,12 +484,12 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             {
                 allDelimiterRadioButtons[i].setEnabled(radioButtonState);
                 if ( radioButtonState && allDelimiterRadioButtons[i].isSelected() )
-                    selectedDelimiter = ALL_DELIMITERS[i];                     
+                    selectedDelimiter = ALL_DELIMITERS[i];
             }
-            
+
             if (!radioButtonState)
                 selectedDelimiter = customDelimiterTextField.getText().trim();
-            
+
             applyButton.setEnabled(true);
         }
         else if ( e.getSource().equals(showFullNameCheckBox) )
@@ -503,13 +503,13 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             showPartialNameLengthCheckBox.setEnabled(!checkBoxState);
             partialNameNumberOfCharactersLabel.setEnabled(!checkBoxState);
             partialNameNumberOfCharactersField.setEnabled(!checkBoxState);
-            
+
             if ( !checkBoxState && allDelimiterRadioButtons[4].isSelected() )
             {
                 allDelimiterRadioButtons[0].doClick();
                 allDelimiterRadioButtons[0].requestFocus();
             }
-            
+
             applyButton.setEnabled(true);
         }
         else if ( e.getSource().equals(showPartialNameLengthCheckBox) )
@@ -517,8 +517,8 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
             boolean checkBoxState = showPartialNameLengthCheckBox.isSelected();
             showFullNameCheckBox.setEnabled(!checkBoxState);
             partialNameNumberOfCharactersLabel.setEnabled(checkBoxState);
-            partialNameNumberOfCharactersField.setEnabled(checkBoxState);            
-            
+            partialNameNumberOfCharactersField.setEnabled(checkBoxState);
+
             applyButton.setEnabled(true);
         }
         else if ( e.getSource().equals(openGLNameFontTypesComboBox) )
@@ -536,9 +536,9 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
         }
         else if ( e.getSource().equals(applyButton) )
         {
-            applyCustomizeNodeNamesProperties();    
+            applyCustomizeNodeNamesProperties();
             applyButton.setEnabled(false);
-        }   
+        }
         else // must be the radiobuttons' listeners
         {
             for (int i = 0; i < ALL_DELIMITERS.length; i++)
@@ -550,16 +550,16 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
                     return;
                 }
             }
-            
+
             for (int i = 0; i < NAME_RENDERING_NUMBER_OF_OPTIONS; i++)
             {
                 if ( e.getSource().equals(allNameRenderingRadioButtons[i]) )
-                {                    
+                {
                     nameRenderingTypeSelected = i;
                     applyButton.setEnabled(true);
                     return;
                 }
-            }            
+            }
         }
     }
 
@@ -581,14 +581,14 @@ public final class LayoutCustomizeNodeNamesDialog extends JDialog implements Act
         else if ( ce.getSource().equals(partialNameNumberOfCharactersField) )
         {
             if ( showPartialNameLengthCheckBox.isEnabled() )
-                applyButton.setEnabled(true);            
-        }        
+                applyButton.setEnabled(true);
+        }
     }
-    
+
     public AbstractAction getCustomizeNodeNamesAction()
     {
         return customizeNodeNamesAction;
-    }    
+    }
 
 
 }

@@ -9,8 +9,8 @@ import static java.lang.Math.*;
 *
 */
 
-public final class Point3D 
-{ 
+public final class Point3D
+{
     public float x = 0.0f;
     public float y = 0.0f;
     public float z = 0.0f;
@@ -18,8 +18,8 @@ public final class Point3D
     public Point3D()
     {
         this(0.0f, 0.0f, 0.0f);
-    }    
-    
+    }
+
     public Point3D(float x, float y, float z)
     {
         this.x = x;
@@ -58,7 +58,7 @@ public final class Point3D
     {
         return z;
     }
-    
+
     public void setZ(float z)
     {
         this.z = z;
@@ -69,7 +69,7 @@ public final class Point3D
         this.x = x;
         this.y = y;
     }
-    
+
     public void setLocation(float x, float y, float z)
     {
         this.x = x;
@@ -92,7 +92,7 @@ public final class Point3D
 
         return (float)sqrt(x1 * x1 + y1 * y1 + z1 * z1);
     }
-    
+
     @Override
     public String toString()
     {

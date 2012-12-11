@@ -63,7 +63,7 @@ public final class NetworkComponentContainer extends NetworkContainer
     public void optimize(int componentID)
     {
         initBoundaries();
-        
+
         float initialTemperature = frLayout.getTemperature();
         int numberOfIterations = 0;
 
@@ -90,7 +90,7 @@ public final class NetworkComponentContainer extends NetworkContainer
         if (!isOptimized)
         {
             frLayout.createVerticesMatrices( getVertices() );
-            
+
             if (!RENDERER_MODE_3D)
                 frLayout.allIterationsCalcBiDirForce2D(numberOfIterations, componentID, layoutProgressBarDialog);
             else

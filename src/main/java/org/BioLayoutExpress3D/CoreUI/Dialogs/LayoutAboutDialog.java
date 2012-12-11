@@ -14,46 +14,46 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutAboutDialog extends JDialog implements ActionListener, HyperlinkListener
 {
-    /** 
+    /**
     *  Serial version UID variable for the LayoutAboutDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555670L;
-    
-    private JLabel image = null;    
-    private JButton okButton = null;    
+
+    private JLabel image = null;
+    private JButton okButton = null;
     private JLabel actionLabel = null;
     private AbstractAction aboutAction = null;
 
     public LayoutAboutDialog(JFrame frame, boolean isSplash)
     {
         super(frame, "About " + VERSION, !isSplash);
-        
+
         this.setIconImage(BIOLAYOUT_ICON_IMAGE);
         image = new JLabel( new ImageIcon(BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE) );
-        
-        if (isSplash) 
+
+        if (isSplash)
         {
             actionLabel = new JLabel(" Loading...");
             actionLabel.setBackground(Color.WHITE);
-        
+
             initComponentsForSplashDialog();
-        } 
-        else 
+        }
+        else
         {
             okButton = new JButton("OK");
             okButton.setToolTipText("OK");
-            
+
             initComponentsForAboutDialog();
         }
     }
 
     private void initComponentsForSplashDialog()
-    {        
+    {
         this.setUndecorated(true);
         this.setResizable(false);
         this.getContentPane().setLayout( new BorderLayout() );
@@ -72,13 +72,13 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
     }
 
     private Point getSplashScreenLocation()
-    {        
-        SplashScreen splashScreen = SplashScreen.getSplashScreen();            
+    {
+        SplashScreen splashScreen = SplashScreen.getSplashScreen();
         // Java 1.6 SplashScreen detected at startup or use standard SplashScreen positionning
-        return (splashScreen != null) ? splashScreen.getBounds().getLocation()                
+        return (splashScreen != null) ? splashScreen.getBounds().getLocation()
                                       : new Point( ( SCREEN_DIMENSION.width - BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE.getWidth() ) / 2, ( SCREEN_DIMENSION.height - BIOLAYOUT_EXDPRESS_3D_LOGO_IMAGE.getHeight() ) / 2 );
-    }    
-    
+    }
+
     private void initComponentsForAboutDialog()
     {
         URL url = LayoutAboutDialog.class.getResource("/Resources/Html/About.html");
@@ -87,11 +87,11 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
         editorPane.setEditable(false);
         editorPane.addHyperlinkListener(this);
 
-        try 
+        try
         {
             editorPane.setPage(url);
-        } 
-        catch (IOException ioExc) 
+        }
+        catch (IOException ioExc)
         {
             if (DEBUG_BUILD) println("Attempted to read a bad URL: " + url + "\n" + ioExc.getMessage());
         }
@@ -106,57 +106,57 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
         this.setSize(950, 710);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
 
-        aboutAction = new AbstractAction("About") 
+        aboutAction = new AbstractAction("About")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555671L;
-    
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setLocation( ( SCREEN_DIMENSION.width - getWidth() ) / 2, ( SCREEN_DIMENSION.height - getHeight() ) / 2 );
                 setVisible(true);
             }
         };
     }
-    
+
     @Override
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
         if ( e.getActionCommand().equals("OK") )
             setVisible(false);
     }
-    
+
     @Override
-    public void hyperlinkUpdate(HyperlinkEvent ev) 
+    public void hyperlinkUpdate(HyperlinkEvent ev)
     {
         if (DEBUG_BUILD) println( ev.getEventType() );
-        
-        if (ev.getEventType() == HyperlinkEvent.EventType.ACTIVATED) 
-        {           
-            URL url = ev.getURL();            
-            if (DEBUG_BUILD) println(url);            
+
+        if (ev.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+        {
+            URL url = ev.getURL();
+            if (DEBUG_BUILD) println(url);
             InitDesktop.browse(url);
         }
     }
 
-    public void finishedLoading() 
+    public void finishedLoading()
     {
         this.setVisible(false);
         this.dispose();
     }
 
-    public void setText(String string) 
+    public void setText(String string)
     {
         actionLabel.setText(" " + string);
     }
 
-    public AbstractAction getAboutAction() 
+    public AbstractAction getAboutAction()
     {
         return aboutAction;
-    }    
-    
-    
+    }
+
+
 }

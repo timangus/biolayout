@@ -20,10 +20,10 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 */
 
 final class ImportSelectClassSetsDialog extends JDialog // package access
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutLegend class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555990L;
 
     private static final int CLASS_SET_NAMES_COLUMN = 0;
@@ -37,7 +37,7 @@ final class ImportSelectClassSetsDialog extends JDialog // package access
     public ImportSelectClassSetsDialog(LayoutFrame layoutFrame, ImportClassSetsDialog importClassSetsDialog)
     {
         super(layoutFrame, "Class Sets To Parse", false);
-        
+
         initComponents(importClassSetsDialog);
     }
 
@@ -117,6 +117,6 @@ final class ImportSelectClassSetsDialog extends JDialog // package access
     {
        return importSelectClassSetsTableModel.getSelectedClassSets();
     }
-    
-    
+
+
 }

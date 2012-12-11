@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Models.SuperQuadric;
 
-/** 
-*   
+/**
+*
 * SuperQuadricShapeTypes enumeration class which holds information for the shape type of a SuperQuadricShape.
 *
 * @see org.BioLayoutExpress3D.Models.SuperQuadric.SuperQuadricShape

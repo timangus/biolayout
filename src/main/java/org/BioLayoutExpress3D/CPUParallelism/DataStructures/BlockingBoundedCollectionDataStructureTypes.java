@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.CPUParallelism.DataStructures;
 
-/** 
-*   
+/**
+*
 * BlockingBoundedCollectionDataStructureTypes enumeration class which holds information for the
 * available data structures to be used with a BlockingBoundedCollection class.
 *

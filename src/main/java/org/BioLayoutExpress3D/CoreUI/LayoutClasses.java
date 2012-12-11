@@ -9,18 +9,18 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 *
 * @author Anton Enright, full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutClasses
 {
     public static final String NO_CLASS = "No Class";
-    
+
     private HashMap<Integer, VertexClass> classesIDMap = null;
     private HashMap<String, VertexClass> classesNamesMap = null;
     private HashMap<Vertex, VertexClass> classesMembershipMap = null;
     private HashSet<Color> classesColors = null;
-    
+
     private String classSetName = "";
     private int totalClasses = 0;
     private int classSetID = 0;
@@ -29,15 +29,15 @@ public final class LayoutClasses
     {
         this.classSetName = classSetName;
         this.classSetID = classSetID;
-        
+
         classesIDMap = new HashMap<Integer, VertexClass>();
-        classesNamesMap = new HashMap<String, VertexClass>();        
+        classesNamesMap = new HashMap<String, VertexClass>();
         classesMembershipMap = new HashMap<Vertex, VertexClass>();
         classesColors = new HashSet<Color>();
-        
+
         createClass(0, NO_CLASS);
         getClassByID(0).setColor(DEFAULT_NODE_COLOR);
-        
+
         classesColors.add(DEFAULT_NODE_COLOR);
         totalClasses = 0;
     }
@@ -47,7 +47,7 @@ public final class LayoutClasses
         return classSetID;
     }
 
-    public VertexClass createClass(int number, String className) 
+    public VertexClass createClass(int number, String className)
     {
         String name = (className == null) ? "" : className;
         VertexClass newClass = new VertexClass(number, name, this);
@@ -70,23 +70,23 @@ public final class LayoutClasses
         return newClass;
     }
 
-    public VertexClass createClass(String className) 
+    public VertexClass createClass(String className)
     {
         if ( !classExists(className) )
-        {            
+        {
             VertexClass newClass = new VertexClass(++totalClasses, className, this);
             classesIDMap.put(totalClasses, newClass); // integer autoboxing
             classesNamesMap.put(className, newClass);
-   
-            return newClass;            
-        } 
-        else 
+
+            return newClass;
+        }
+        else
         {
             return classesNamesMap.get(className);
         }
     }
 
-    public VertexClass getClassByID(int vertexClassID) 
+    public VertexClass getClassByID(int vertexClassID)
     {
         return classesIDMap.get(vertexClassID); // Integer autoboxing
     }
@@ -96,17 +96,17 @@ public final class LayoutClasses
         return classesNamesMap.get(className);
     }
 
-    public Set<Integer> getAllClassesKeySet() 
+    public Set<Integer> getAllClassesKeySet()
     {
         return classesIDMap.keySet();
     }
 
-    public Collection<VertexClass> getAllVertexClasses() 
+    public Collection<VertexClass> getAllVertexClasses()
     {
         return classesIDMap.values();
     }
 
-    public void clearClasses() 
+    public void clearClasses()
     {
         classesIDMap.clear();
         createClass(0, NO_CLASS);
@@ -114,7 +114,7 @@ public final class LayoutClasses
         totalClasses = 0;
     }
 
-    public int getTotalClasses() 
+    public int getTotalClasses()
     {
         return totalClasses;
     }
@@ -147,7 +147,7 @@ public final class LayoutClasses
         return classesIDMap.containsKey(vertexClassID); // Integer autoboxing
     }
 
-    public boolean classExists(String className) 
+    public boolean classExists(String className)
     {
         return classesNamesMap.containsKey(className); // Integer autoboxing
     }
@@ -157,15 +157,15 @@ public final class LayoutClasses
         if ( classExists(vertexClassID) )
         {
             classesMembershipMap.put( vertex, getClassByID(vertexClassID) );
-        } 
-        else 
+        }
+        else
         {
             createClass(vertexClassID, className);
             classesMembershipMap.put( vertex, getClassByID(vertexClassID) );
         }
     }
 
-    public void setDefaultClass(Vertex vertex) 
+    public void setDefaultClass(Vertex vertex)
     {
         setClass(vertex, 0);
     }
@@ -193,8 +193,8 @@ public final class LayoutClasses
     public HashMap<String, VertexClass> getClassesNamesMap()
     {
         return classesNamesMap;
-    }    
-    
+    }
+
     public String getClassSetName()
     {
         return classSetName;

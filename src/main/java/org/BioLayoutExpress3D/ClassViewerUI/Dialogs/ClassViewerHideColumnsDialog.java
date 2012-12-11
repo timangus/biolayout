@@ -19,10 +19,10 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 */
 
 public final class ClassViewerHideColumnsDialog extends JDialog
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutLegend class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555990L;
 
     private JButton selectDeselectAllButton = null;
@@ -30,7 +30,7 @@ public final class ClassViewerHideColumnsDialog extends JDialog
 
     private ClassViewerHideColumnsTableModel hideColumnsTableModel = null;
     boolean enableHideColumnsAndExportButtons = false;
-        
+
     public ClassViewerHideColumnsDialog(ClassViewerFrame classViewerFrame)
     {
         super(classViewerFrame, "Columns To Hide", false);
@@ -44,9 +44,9 @@ public final class ClassViewerHideColumnsDialog extends JDialog
         ClassViewerTable table = new ClassViewerTable(hideColumnsTableModel, ClassViewerHideColumnsTableModel.COLUMN_NAMES);
         table.setRowSorter( new TableRowSorter<ClassViewerHideColumnsTableModel>(hideColumnsTableModel) ); // provide a sorting mechanism to the table
 
-        selectDeselectAllButton = createSelectDeselectAllButton();        
+        selectDeselectAllButton = createSelectDeselectAllButton();
         selectDeselectAllButton.setToolTipText("Deselect All");
-        
+
         JScrollPane tableScrollPane = new JScrollPane(table);
         table.setPreferredScrollableViewportSize( new Dimension(200, 400) );
         JPanel tablePanel = new JPanel(true);
@@ -123,9 +123,9 @@ public final class ClassViewerHideColumnsDialog extends JDialog
     private void closeDialogWindow(ClassViewerFrame classViewerFrame)
     {
         if (!enableHideColumnsAndExportButtons) classViewerFrame.getChooseColumnsToHideButton().setEnabled(false);
-        setVisible(false);            
+        setVisible(false);
     }
-    
+
     public void updateClassViewerHideColumnsTable(ClassViewerFrame classViewerFrame, boolean enableHideColumnsAndExportButtons, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
     {
         resetSelectDeselectAllButton();
@@ -133,6 +133,6 @@ public final class ClassViewerHideColumnsDialog extends JDialog
         this.enableHideColumnsAndExportButtons = enableHideColumnsAndExportButtons;
         hideColumnsTableModel.updateClassViewerHideColumnsTable(classViewerFrame, enableHideColumnsAndExportButtons, updateExpresionGraphViewOnly, notUpdateTitleBar);
     }
-    
-    
+
+
 }

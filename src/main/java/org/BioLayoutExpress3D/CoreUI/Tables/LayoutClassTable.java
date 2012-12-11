@@ -18,14 +18,14 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class LayoutClassTable extends JTable
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutClassTable class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555600L;
 
     /**
@@ -37,7 +37,7 @@ public final class LayoutClassTable extends JTable
     *  The constructor of the LayoutClassTable class.
     */
     public LayoutClassTable(TableModel tableModel, String[] columnNames)
-    {        
+    {
         super(tableModel);
 
         this.columnNames = columnNames;
@@ -127,8 +127,8 @@ public final class LayoutClassTable extends JTable
         }
 
 
-    }    
-    
+    }
+
     /**
     *  Static inner class that implements a comparator for color sorting. To be used with the table.
     */

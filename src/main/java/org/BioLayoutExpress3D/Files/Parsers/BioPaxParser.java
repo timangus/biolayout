@@ -16,11 +16,11 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public final class BioPaxParser extends CoreParser 
-{ 
+public final class BioPaxParser extends CoreParser
+{
     private int counter = 0;
 
-    public BioPaxParser(NetworkContainer nc, LayoutFrame layoutFrame) 
+    public BioPaxParser(NetworkContainer nc, LayoutFrame layoutFrame)
     {
         super(nc, layoutFrame);
 
@@ -28,7 +28,7 @@ public final class BioPaxParser extends CoreParser
     }
 
     @Override
-    public boolean parse() 
+    public boolean parse()
     {
         String currReaction = "";
         String currComplex = "";
@@ -42,21 +42,21 @@ public final class BioPaxParser extends CoreParser
         Matcher matcher = null;
 
         int totalLines = 0;
-        
+
         isSuccessful = false;
         nc.setOptimized(false);
 
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
-        try 
+        try
         {
             while ( ( line = fileReaderCounter.readLine() ) != null )
                 totalLines++;
-            
+
             layoutProgressBarDialog.prepareProgressBar(totalLines, "Parsing...");
             layoutProgressBarDialog.startProgressBar();
 
-            while ( ( line = fileReaderBuffered.readLine() ) != null ) 
+            while ( ( line = fileReaderBuffered.readLine() ) != null )
             {
                 layoutProgressBarDialog.incrementProgress(++counter);
                 length = line.length();
@@ -66,31 +66,31 @@ public final class BioPaxParser extends CoreParser
                 {
                     matcher = patternMatcher(line, ".*<bp:biochemicalReaction rdf:ID=\\\"([^\\\"]+)\\\".*");
                     if ( matcher.matches() )
-                        currReaction = matcher.group(1);                    
+                        currReaction = matcher.group(1);
 
                     if ( patternMatcher(line, ".*<\\/bp:biochemicalReaction>.*").matches() )
-                        currReaction = "";                   
+                        currReaction = "";
 
                     if ( !currReaction.equals("") )
                     {
                         matcher = patternMatcher(line, ".*<bp:(\\S+) rdf:resource=\\\"#([^\\\"]+)\\\".*");
-                        if ( matcher.matches() ) 
+                        if ( matcher.matches() )
                         {
-                            if ( ( matcher.group(1).equals("LEFT") ) || ( matcher.group(1).equals("LEFT") ) ) 
+                            if ( ( matcher.group(1).equals("LEFT") ) || ( matcher.group(1).equals("LEFT") ) )
                             {
                                 String type = matcher.group(1);
                                 String target = matcher.group(2);
                                 ArrayList<String> a = null;
-                                if ( !links.containsKey(currReaction) ) 
+                                if ( !links.containsKey(currReaction) )
                                 {
                                     a = new ArrayList<String>();
                                     links.put(currReaction, a);
-                                } 
-                                else 
+                                }
+                                else
                                 {
                                     a = links.get(currReaction);
                                 }
-                                
+
                                 a.add(type + "\t" + target);
                             }
                         }
@@ -98,38 +98,38 @@ public final class BioPaxParser extends CoreParser
 
                     matcher = patternMatcher(line, ".*<bp:complex rdf:ID=\\\"([^\\\"]+)\\\".*");
                     if ( matcher.matches() )
-                        currComplex = matcher.group(1);                    
+                        currComplex = matcher.group(1);
 
                     if ( patternMatcher(line, ".*<\\/bp:complex>.*").matches() )
-                        currComplex = "";                    
+                        currComplex = "";
 
                     if ( !currComplex.equals("") )
                     {
                         matcher = patternMatcher(line, ".*<bp:COMPONENTS rdf:resource=\\\"#([^\\\"]+)\\\".*");
-                        if ( matcher.matches() ) 
+                        if ( matcher.matches() )
                         {
                             String type = "CONTAINS";
                             String target = matcher.group(1);
                             ArrayList<String> a = null;
-                            if ( !links.containsKey(currComplex) ) 
+                            if ( !links.containsKey(currComplex) )
                             {
                                 a = new ArrayList<String>();
                                 links.put(currComplex, a);
-                            } 
-                            else 
+                            }
+                            else
                             {
                                 a = links.get(currComplex);
                             }
-                            
+
                             a.add(type + "\t" + target);
                         }
                     }
 
                     matcher = patternMatcher(line, ".*<bp:catalysis rdf:ID=\\\"([^\\\"]+)\\\".*");
                     if ( matcher.matches() )
-                        currCat = matcher.group(1);                    
+                        currCat = matcher.group(1);
 
-                    if ( patternMatcher(line, ".*<\\/bp:catalysis>.*").matches() ) 
+                    if ( patternMatcher(line, ".*<\\/bp:catalysis>.*").matches() )
                     {
                         currCat = "";
                         controller = "";
@@ -141,34 +141,34 @@ public final class BioPaxParser extends CoreParser
                         String type = "";
 
                         matcher = patternMatcher(line, ".*<bp:CONTROLLER rdf:resource=\\\"#([^\\\"]+)\\\".*");
-                        if ( matcher.matches() ) 
+                        if ( matcher.matches() )
                         {
                             type = "CONTROLLER";
                             controller = matcher.group(1);
                         }
-                        
+
                         matcher = patternMatcher(line, ".*<bp:CONTROLLED rdf:resource=\\\"#([^\\\"]+)\\\".*");
-                        if ( matcher.matches() ) 
+                        if ( matcher.matches() )
                         {
                             type = "CONTROLLED";
                             controlled = matcher.group(1);
                         }
-                        
+
                         matcher = patternMatcher(line, ".*<bp:CONTROL-TYPE rdf:datatype=\\\"[^\\\"]+\\\">([^<]+).*");
-                        if ( matcher.matches() ) 
+                        if ( matcher.matches() )
                         {
                             type = matcher.group(1);
                             ArrayList<String> a = null;
-                            if ( !cats.containsKey(controller) ) 
+                            if ( !cats.containsKey(controller) )
                             {
                                 a = new ArrayList<String>();
                                 cats.put(controller, a);
-                            } 
-                            else 
+                            }
+                            else
                             {
                                 a = cats.get(controller);
                             }
-                            
+
                             if (DEBUG_BUILD) println("Adding to cats:" + type + " " + controlled + " under " + controller);
                             a.add(type + "\t" + controlled);
                         }
@@ -176,17 +176,17 @@ public final class BioPaxParser extends CoreParser
                     }
 
                     matcher = patternMatcher(line, ".*<bp:\\S+Participant rdf:ID=\\\"([^\\\"]+)\\\".*");
-                    if ( matcher.matches() )                     
-                        currParticipant = matcher.group(1);                    
+                    if ( matcher.matches() )
+                        currParticipant = matcher.group(1);
 
                     if ( patternMatcher(line, ".*<\\/bp:physicalEntityParticipant>.*").matches() )
-                        currParticipant = "";                    
+                        currParticipant = "";
 
                     if ( !currParticipant.equals("") )
                     {
                         matcher = patternMatcher(line, ".*<bp:PHYSICAL-ENTITY rdf:resource=\\\"#([^\\\"]+)\\\".*");
                         if ( matcher.matches() )
-                            participants.put(currParticipant, matcher.group(1));                        
+                            participants.put(currParticipant, matcher.group(1));
                     }
                 }
             }
@@ -202,19 +202,19 @@ public final class BioPaxParser extends CoreParser
                 {
                     String type = entry.split("\t")[0];
                     String target = entry.split("\t")[1];
-                    
+
                     if (DEBUG_BUILD) println(key + " " + participants.get(target) + " " + type);
-                    
+
                     nc.addNetworkConnection(key, type + counter, 0.0f);
                     nc.addNetworkConnection(type + counter, participants.get(target), 0.0f);
 
                     Vertex vertexMap = nc.getVerticesMap().get(type + counter);
                     vertexMap.setVertexSize(vertexMap.getVertexSize() / 2);
                     vertexMap.setPseudoVertex();
-                    
+
                     LayoutClasses lc = null;
                     VertexClass vc = null;
-                    
+
                     if ( type.equals("CONTAINS") )
                     {
                         lc = nc.getLayoutClassSetsManager().getClassSet("COMPLEXES");
@@ -239,12 +239,12 @@ public final class BioPaxParser extends CoreParser
                     counter++;
                     String type = entry.split("\t")[0];
                     String target = entry.split("\t")[1];
-                    
+
                     if (DEBUG_BUILD) println(participants.get(key) + "\t" + target + "\t1.0\t" + type);
-                    
+
                     nc.addNetworkConnection(participants.get(key), target + counter, 0.0f);
                     nc.addNetworkConnection(target + counter, type, 0.0f);
- 
+
                     Vertex vertexMap = nc.getVerticesMap().get(target + counter);
                     vertexMap.setVertexSize(vertexMap.getVertexSize() / 2);
                     vertexMap.setPseudoVertex();
@@ -257,16 +257,16 @@ public final class BioPaxParser extends CoreParser
                     lc.setClass(nc.getVerticesMap().get(target + counter), vc);
                 }
             }
-            
+
             isSuccessful = true;
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in BioPaxParser.parse():\n" + ioe.getMessage());
         }
         finally
         {
-            try 
+            try
             {
                 fileReaderCounter.close();
                 fileReaderBuffered.close();
@@ -278,19 +278,19 @@ public final class BioPaxParser extends CoreParser
             finally
             {
                 layoutProgressBarDialog.endProgressBar();
-            }                        
+            }
         }
-        
+
         return isSuccessful;
     }
 
-    private Matcher patternMatcher(String string, String patrn) 
+    private Matcher patternMatcher(String string, String patrn)
     {
         Pattern pattern = Pattern.compile(patrn);
         Matcher matcher = pattern.matcher(string);
-        
+
         return matcher;
     }
-    
-    
+
+
 }

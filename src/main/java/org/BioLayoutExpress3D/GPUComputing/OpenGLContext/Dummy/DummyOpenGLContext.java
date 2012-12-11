@@ -73,5 +73,5 @@ public class DummyOpenGLContext extends OpenGLContext
     @Override
     protected void deleteOpenGLContextForGPUComputing() {}
 
-    
+
 }

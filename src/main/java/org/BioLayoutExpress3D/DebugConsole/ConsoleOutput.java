@@ -5,9 +5,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import org.BioLayoutExpress3D.DataStructures.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
-        
-/** 
-*   
+
+/**
+*
 * ConsoleOutput is a class used to enable/disable console output.
 *
 * @author Thanos Theo, 2008-2009
@@ -47,12 +47,12 @@ public final class ConsoleOutput
     */
     private static boolean isMultiCoreOn = false;
 
-    /** 
+    /**
     *  Auxiliary variable for enabling/disabling the console output.
     */
     private static boolean isLoggingOn = false;
-    
-    /** 
+
+    /**
     *  Reference for the FileOutput log file writer.
     */
     private static FileOutput fileOutput = null;
@@ -82,23 +82,23 @@ public final class ConsoleOutput
         return isMultiCoreOn;
     }
 
-    /** 
+    /**
     *  Sets the isLoggingOn variable.
-    */    
+    */
     public static void setIsLoggingOn(boolean defineIsLoggingOn)
     {
         isLoggingOn = defineIsLoggingOn;
     }
 
-    /** 
+    /**
     *  Gets the isLoggingOn variable.
     */
     public static boolean getIsLoggingOn()
     {
         return isLoggingOn;
-    }    
-    
-    /** 
+    }
+
+    /**
     *  Sets the fileOutput variable.
     */
     public static void setFileOutput(FileOutput defineFileOutput)
@@ -106,14 +106,14 @@ public final class ConsoleOutput
         fileOutput = defineFileOutput;
     }
 
-    /** 
+    /**
     *  Gets the fileOutput variable.
     */
     public static FileOutput getFileOutput()
     {
         return fileOutput;
-    }     
-    
+    }
+
     /**
     *  Overrides System.out.print(java.lang.Boolean) with this method.
     */
@@ -146,8 +146,8 @@ public final class ConsoleOutput
                     fileOutput.print(lineConsoleOutput);
             }
         }
-    }  
-    
+    }
+
     /**
     *  Overrides System.out.print(char) with this method.
     */
@@ -180,8 +180,8 @@ public final class ConsoleOutput
                     fileOutput.print(lineConsoleOutput);
             }
         }
-    }     
-    
+    }
+
     /**
     *  Overrides System.out.print(double) with this method.
     */
@@ -214,8 +214,8 @@ public final class ConsoleOutput
                     fileOutput.print(lineConsoleOutput);
             }
         }
-    }  
-    
+    }
+
     /**
     *  Overrides System.out.print(float) with this method.
     */
@@ -249,7 +249,7 @@ public final class ConsoleOutput
             }
         }
     }
-    
+
     /**
     *  Overrides System.out.print(int) with this method.
     */
@@ -282,8 +282,8 @@ public final class ConsoleOutput
                     fileOutput.print(lineConsoleOutput);
             }
         }
-    }  
-    
+    }
+
     /**
     *  Overrides System.out.print(long) with this method.
     */
@@ -316,8 +316,8 @@ public final class ConsoleOutput
                     fileOutput.print(lineConsoleOutput);
             }
         }
-    } 
-        
+    }
+
     /**
     *  Overrides System.out.print(char[]) with this method.
     */
@@ -350,8 +350,8 @@ public final class ConsoleOutput
                     fileOutput.print(lineConsoleOutput);
             }
         }
-    }     
-    
+    }
+
     /**
     *  Overrides System.out.print(java.lang.String) with this method.
     */
@@ -385,7 +385,7 @@ public final class ConsoleOutput
             }
         }
     }
-    
+
     /**
     *  Overrides System.out.print(java.lang.Object) with this method.
     */
@@ -418,8 +418,8 @@ public final class ConsoleOutput
                     fileOutput.print(lineConsoleOutput);
             }
         }
-    }        
-    
+    }
+
     /**
     *  Overrides System.out.println with this method.
     */
@@ -452,7 +452,7 @@ public final class ConsoleOutput
                     fileOutput.println();
             }
         }
-    } 
+    }
 
     /**
     *  Overrides System.out.println(java.lang.Boolean) with this method.
@@ -486,8 +486,8 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    }     
-    
+    }
+
     /**
     *  Overrides System.out.println(char) with this method.
     */
@@ -520,8 +520,8 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    }    
-    
+    }
+
     /**
     *  Overrides System.out.println(double) with this method.
     */
@@ -554,8 +554,8 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    }      
-    
+    }
+
     /**
     *  Overrides System.out.println(float) with this method.
     */
@@ -588,8 +588,8 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    }   
-    
+    }
+
     /**
     *  Overrides System.out.println(int) with this method.
     */
@@ -622,8 +622,8 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    }     
-    
+    }
+
     /**
     *  Overrides System.out.println(long) with this method.
     */
@@ -656,8 +656,8 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    }        
-    
+    }
+
     /**
     *  Overrides System.out.println(char[]) with this method.
     */
@@ -690,8 +690,8 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    }     
-    
+    }
+
     /**
     *  Overrides System.out.println(java.lang.String) with this method.
     */
@@ -724,11 +724,11 @@ public final class ConsoleOutput
                     fileOutput.println(lineConsoleOutput);
             }
         }
-    } 
-    
+    }
+
     /**
     *  Overrides System.out.println(java.lang.Object) with this method.
-    */    
+    */
     public static void println(Object lineConsoleOutput)
     {
         if (isLoggingOn)
@@ -759,7 +759,7 @@ public final class ConsoleOutput
             }
         }
     }
-    
+
     /**
     *  Overrides System.out.printf(java.lang.String, Object... args) with this method.
     */
@@ -792,8 +792,8 @@ public final class ConsoleOutput
                     fileOutput.printf(format, args);
             }
         }
-    }    
-    
+    }
+
     /**
     *  Overrides System.out.printf(java.util.Locale, java.lang.String, Object... args) with this method.
     */
@@ -826,8 +826,8 @@ public final class ConsoleOutput
                     fileOutput.printf(locale, format, args);
             }
         }
-    }     
-    
+    }
+
     /**
     *  Overrides System.out.format(java.lang.String, Object... args) with this method.
     */
@@ -860,8 +860,8 @@ public final class ConsoleOutput
                     fileOutput.format(format, args);
             }
         }
-    }    
-    
+    }
+
     /**
     *  Overrides System.out.format(java.util.Locale, java.lang.String, Object... args) with this method.
     */
@@ -894,8 +894,8 @@ public final class ConsoleOutput
                     fileOutput.format(locale, format, args);
             }
         }
-    }     
-    
+    }
+
     /**
     *  Prints a String representing the hex format of a byte[] array.
     */
@@ -908,7 +908,7 @@ public final class ConsoleOutput
                 if (isShutDown)
                     throw new IllegalStateException("ConsoleOuput ShutDown is Imminent!");
                 reservations.incrementAndGet();
-                
+
                 try
                 {
                     queue.put( Tuples.tuple( true, Utils.byteArrayHexFormat(data) ) );

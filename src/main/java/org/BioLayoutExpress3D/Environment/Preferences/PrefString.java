@@ -8,38 +8,38 @@ import java.util.prefs.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class PrefString extends PrefType
 {
-    
-    /** 
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */      
+    */
     private String currentValue = "";
-    
-    /** 
+
+    /**
     *  Variable to be used for this PrefType sub class.
-    */       
+    */
     private String defaultValue = "";
 
-    /** 
+    /**
     *  The constructor of the PrefString class.
-    */       
+    */
     public PrefString(String defaultValue, String prefName, boolean isSaved)
     {
         super(prefName, isSaved);
-        
+
         this.defaultValue = currentValue = defaultValue;
 
         prefType = PrefTypes.PREF_STRING;
         LayoutPreferences.getLayoutPreferencesSingleton().add(this);
     }
 
-    /** 
+    /**
     *  Returns this String preference.
-    */     
+    */
     public String get()
     {
         return currentValue.replace("%20", " ");
@@ -68,9 +68,9 @@ public class PrefString extends PrefType
             currentValue = Preferences.userRoot().get(prefName, defaultValue);
     }
 
-    /** 
+    /**
     *  Saves this String preference. Overrides the parent class abstract method.
-    */     
+    */
     @Override
     public void savePref()
     {
@@ -80,14 +80,14 @@ public class PrefString extends PrefType
             Preferences.userRoot().put(prefName, currentValue);
     }
 
-    /** 
+    /**
     *  Restores this String preference. Overrides the parent class abstract method.
-    */    
+    */
     @Override
     public void restorePref()
     {
         currentValue = defaultValue;
-    }     
-    
-    
+    }
+
+
 }

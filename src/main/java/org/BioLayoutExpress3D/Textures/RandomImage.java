@@ -6,8 +6,8 @@ import com.jogamp.opengl.util.texture.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 
 
-/** 
-*   
+/**
+*
 *  This class provides support for creation of a random image to be used in multiple formats through static methods.
 *
 * @author Thanos Theo, 2008-2009
@@ -16,7 +16,7 @@ import org.BioLayoutExpress3D.StaticLibraries.*;
 */
 
 final class RandomImage // package access
-{ 
+{
 
     /**
     *  Creates a random ARGB image.

@@ -16,27 +16,27 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public final class FloatNumberField extends JTextField 
-{ 
-    /** 
+public final class FloatNumberField extends JTextField
+{
+    /**
     *  Serial version UID variable for the FloatNumberField class.
-    */      
-    public static final long serialVersionUID = 111222333444555778L; 
-        
+    */
+    public static final long serialVersionUID = 111222333444555778L;
+
     private NumberFormat numberFormatter = null;
 
     public FloatNumberField(int value, int columns)
     {
         super(columns);
-        
+
         numberFormatter = NumberFormat.getInstance();
         numberFormatter.setParseIntegerOnly(false);
         numberFormatter.setMaximumFractionDigits(2);
-        
+
         setValue(value);
     }
 
-    public void setParseIntegerOnly(boolean flag) 
+    public void setParseIntegerOnly(boolean flag)
     {
         numberFormatter.setParseIntegerOnly(flag);
     }
@@ -46,12 +46,12 @@ public final class FloatNumberField extends JTextField
         return getText().isEmpty();
     }
 
-    public float getValue() 
+    public float getValue()
     {
-        try 
-        {           
+        try
+        {
             return numberFormatter.parse( getText() ).floatValue();
-        } 
+        }
         catch (ParseException parseExc)
         {
             // This should never happen because insertString allows
@@ -60,29 +60,29 @@ public final class FloatNumberField extends JTextField
             if (DEBUG_BUILD) println("FloatNumberField.getValue() ParseException:\n" + parseExc.getMessage());
 
             Toolkit.getDefaultToolkit().beep();
-            
+
             return 0.0f;
         }
     }
 
-    public void setValue(float value) 
+    public void setValue(float value)
     {
         setText( numberFormatter.format(value) );
     }
 
     @Override
-    protected Document createDefaultModel() 
+    protected Document createDefaultModel()
     {
         return new FloatNumberDocument();
     }
 
     private static class FloatNumberDocument extends PlainDocument
     {
-        /** 
+        /**
         *  Serial version UID variable for the WholeNumberDocument class.
-        */      
-        public static final long serialVersionUID = 111222333444555779L; 
-    
+        */
+        public static final long serialVersionUID = 111222333444555779L;
+
         @Override
         public void insertString(int offset, String str, AttributeSet attrib) throws BadLocationException
         {
@@ -92,16 +92,16 @@ public final class FloatNumberField extends JTextField
             char[] source = str.toCharArray();
             char[] result = new char[source.length];
 
-            int j = 0;            
+            int j = 0;
             for (int i = 0; i < result.length; i++)
                 if ( Character.isDigit(source[i]) || (source[i] == DECIMAL_SEPARATOR_CHARACTER) )
-                    result[j++] = source[i];            
-            
+                    result[j++] = source[i];
+
             super.insertString(offset, new String(result, 0, j), attrib);
         }
-        
-        
+
+
     }
-    
-    
+
+
 }

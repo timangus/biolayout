@@ -24,7 +24,7 @@ public final class VertexClass implements Comparable<VertexClass>
     private String className = "";
     private Color classColor = null;
 
-    public VertexClass(int classID, String className, LayoutClasses layoutClasses) 
+    public VertexClass(int classID, String className, LayoutClasses layoutClasses)
     {
         this.classID = classID;
         this.className = className;
@@ -47,17 +47,17 @@ public final class VertexClass implements Comparable<VertexClass>
         return new Color( Random.getRandomRange(LOWER_THRESHOLD, UPPER_THRESHOLD), Random.getRandomRange(LOWER_THRESHOLD, UPPER_THRESHOLD), Random.getRandomRange(LOWER_THRESHOLD, UPPER_THRESHOLD) );
     }
 
-    public void setName(String className) 
+    public void setName(String className)
     {
         this.className = className;
-    }     
-    
-    public String getName() 
+    }
+
+    public String getName()
     {
         return className;
-    }         
-    
-    public void setColor(Color classColor) 
+    }
+
+    public void setColor(Color classColor)
     {
         this.classColor = classColor;
     }
@@ -67,7 +67,7 @@ public final class VertexClass implements Comparable<VertexClass>
         return classColor;
     }
 
-    public int getClassID() 
+    public int getClassID()
     {
         return classID;
     }
@@ -82,13 +82,13 @@ public final class VertexClass implements Comparable<VertexClass>
     public String toString()
     {
         return className;
-    }    
-    
+    }
+
     @Override
     public int compareTo(VertexClass vertexClass)
-    {        
+    {
         return compare( className, vertexClass.getName() );
-    }    
-    
-    
+    }
+
+
 }

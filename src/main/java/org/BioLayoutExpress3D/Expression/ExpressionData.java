@@ -85,7 +85,7 @@ public final class ExpressionData
         this.layoutFrame = layoutFrame;
 
         identityMap = new HashMap<String, Integer>();
-        
+
         if (USE_NATIVE_CODE) initNativeLibrary();
     }
 
@@ -108,7 +108,7 @@ public final class ExpressionData
     {
         this.totalRows = totalRows;
         this.totalColumns = totalColumns;
-        this.totalAnnotationColunms = totalAnnotationColunms;        
+        this.totalAnnotationColunms = totalAnnotationColunms;
 
         columnNamesArray = new String[totalColumns];
         rowIDsArray = new String[totalRows];
@@ -228,7 +228,7 @@ public final class ExpressionData
             layoutProgressBarDialog.prepareProgressBar(100, "Calculating " + metricName + " Graph:");
             layoutProgressBarDialog.startProgressBar();
             layoutProgressBarDialog.setText("Caching...");
-            
+
             for (int i = 0; i < totalRows; i++)
             {
                 sumX_sumX2_cacheArray[i] = (sumX_cacheArray[i] * sumX_cacheArray[i]);
@@ -237,7 +237,7 @@ public final class ExpressionData
 
             outOstream.writeInt( CURRENT_METRIC.ordinal() );
             outOstream.writeFloat(threshold);
-                
+
             if (USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() && USE_MULTICORE_PROCESS)
             {
                 calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold, outOstream, outPrintWriter);
@@ -330,13 +330,13 @@ public final class ExpressionData
     private void calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(float threshold, ObjectOutputStream outOstream, PrintWriter outPrintWriter) throws IOException
     {
         // below is code to break the correlation calculation into steps according to how much memory we are allocating for the intermediate step results
-        boolean isPowerOfTwo = org.BioLayoutExpress3D.StaticLibraries.Math.isPowerOfTwo(NUMBER_OF_AVAILABLE_PROCESSORS);        
+        boolean isPowerOfTwo = org.BioLayoutExpress3D.StaticLibraries.Math.isPowerOfTwo(NUMBER_OF_AVAILABLE_PROCESSORS);
         int arraySize = 0;
         int startRow = 0;
         int endRow = -1; // has to init at -1 for 'startRow = endRow + 1' line, so as to start at row 0
         int stepNumber = 0;
         int[] cachedRowsResultsIndicesToSkip = new int[totalRows - 1];
-        float[] stepResults = null;        
+        float[] stepResults = null;
         boolean rowsSearchProcessedStopped = false;
         while (!rowsSearchProcessedStopped)
         {
@@ -479,7 +479,7 @@ public final class ExpressionData
                     updateMultiCoreGUI();
 
                     for (int j = (i + 1); j < totalRows; j++)
-                        stepResults[rowResultIndex++] = calculateCorrelation(i, j, expressionData);                    
+                        stepResults[rowResultIndex++] = calculateCorrelation(i, j, expressionData);
                 }
                 else
                 {
@@ -725,7 +725,7 @@ public final class ExpressionData
     *  Clears all the cached data structures.
     */
     private void clearAllCachedDataStructures()
-    {   
+    {
         sumX_cacheBuffer.clear();
         sumX_cacheBuffer = null;
         sumX_cacheArray = null;
@@ -823,7 +823,7 @@ public final class ExpressionData
         for (GraphNode node : allGraphNodes)
         {
             localMaxValue = Float.MIN_VALUE;
-            index = getIdentityMap( node.getNodeName() );            
+            index = getIdentityMap( node.getNodeName() );
             for (int currentTick = 0; currentTick < getTotalColumns(); currentTick++)
             {
                 tempValue = getExpressionDataValue(index, currentTick);
@@ -857,7 +857,7 @@ public final class ExpressionData
     */
     public int getIdentityMap(String key)
     {
-        Integer value = identityMap.get(key);        
+        Integer value = identityMap.get(key);
         return (value == null) ? 0 : value;
     }
 

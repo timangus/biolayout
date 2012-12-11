@@ -16,8 +16,8 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public final class URLParser 
-{ 
+public final class URLParser
+{
     private NetworkContainer nc = null;
     private LayoutClassSetsManager layoutClassSetsManager = null;
     private LayoutFrame layoutFrame = null;
@@ -35,27 +35,27 @@ public final class URLParser
         this.layoutFrame = layoutFrame;
     }
 
-    public boolean init(InputStream is) 
+    public boolean init(InputStream is)
     {
         dis = new DataInputStream(is);
-        
+
         return true;
     }
 
-    public boolean parse() 
+    public boolean parse()
     {
         boolean isSuccessful = false;
         int totalLines = 0;
-        
+
         nc.setOptimized(false);
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
-        try 
+        try
         {
             layoutProgressBarDialog.prepareProgressBar(totalLines, "Parsing...");
             layoutProgressBarDialog.startProgressBar();
 
-            while ( ( line = dis.readUTF() ) != null ) 
+            while ( ( line = dis.readUTF() ) != null )
             {
                 layoutProgressBarDialog.incrementProgress();
                 length = line.length();
@@ -69,16 +69,16 @@ public final class URLParser
                         createVertices();
                 }
             }
-            
+
             isSuccessful = true;
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in URLParser.parse():\n" + ioe.getMessage());
         }
         finally
         {
-            try 
+            try
             {
                 dis.close();
             }
@@ -89,22 +89,22 @@ public final class URLParser
             finally
             {
                 layoutProgressBarDialog.endProgressBar();
-            }                        
+            }
         }
-       
-        // if (coordinatesRead) 
+
+        // if (coordinatesRead)
         //     layoutFrame.startProgressBar();
-        
+
         return isSuccessful;
     }
 
-    private void updateVertexProps() 
+    private void updateVertexProps()
     {
         String property = getNext();
         String vertex = "";
         String field1 = "", field2 = "", field3 = "", field4 = "";
 
-        if ( property.equals("//NODECLASS") ) 
+        if ( property.equals("//NODECLASS") )
         {
             vertex = getNext();
             field1 = getNext();
@@ -113,7 +113,7 @@ public final class URLParser
                 layoutClassSetsManager.getCurrentClassSetAllClasses().updateClass(nc.getVerticesMap().get(vertex), Integer.parseInt(field1), "");
         }
 
-        if ( property.equals("//NODESIZE") ) 
+        if ( property.equals("//NODESIZE") )
         {
             vertex = getNext();
             field1 = getNext();
@@ -122,7 +122,7 @@ public final class URLParser
                 nc.getVerticesMap().get(vertex).setVertexSize( Float.parseFloat(field1) );
         }
 
-        if ( property.equals("//NODECOLOR") ) 
+        if ( property.equals("//NODECOLOR") )
         {
             vertex = getNext();
             field1 = getNext();
@@ -131,26 +131,26 @@ public final class URLParser
                 nc.getVerticesMap().get(vertex).setVertexColor( Color.decode(field1) );
         }
 
-        if ( property.equals("//CLASSNAME") ) 
+        if ( property.equals("//CLASSNAME") )
         {
             field1 = getNext();
             String thisWord = "";
             String className = "";
 
             while ( !( thisWord = getNext() ).isEmpty() )
-                className += (" " + thisWord);            
+                className += (" " + thisWord);
 
             layoutClassSetsManager.getCurrentClassSetAllClasses().setClassName(Integer.parseInt(field1), className);
         }
 
-        if ( property.equals("//CLASSCOLOR") ) 
+        if ( property.equals("//CLASSCOLOR") )
         {
             field1 = getNext();
             field2 = getNext();
             layoutClassSetsManager.getCurrentClassSetAllClasses().setClassColor( Integer.parseInt(field1), Color.decode(field2) );
-        } 
-        else if ( property.equals("//COORD") ) 
-        {      
+        }
+        else if ( property.equals("//COORD") )
+        {
             // nc.setReadwithCoords(true);
 
             field1 = getNext();
@@ -159,53 +159,53 @@ public final class URLParser
             field4 = getNext();
             if ( field4.isEmpty() )
                 field4 = "0";
-            
+
             if (DEBUG_BUILD) println("name: " + field1 + " coord1: " + field2 + " coord2: " + field2);
-            
+
             nc.updateVertexLocation( field1, (int) Double.parseDouble(field2), (int) Double.parseDouble(field3), (int) Double.parseDouble(field4) );
-        } 
-        else if ( property.equals("//EDGESIZE") ) 
+        }
+        else if ( property.equals("//EDGESIZE") )
         {
             DEFAULT_EDGE_SIZE.set( Float.parseFloat( getNext() ) );
-        } 
-        else if ( property.equals("//EDGECOLOR") ) 
+        }
+        else if ( property.equals("//EDGECOLOR") )
         {
             DEFAULT_EDGE_COLOR.set( Color.decode( getNext() ) );
-        } 
-        else if ( property.equals("//DEFAULTSEARCH") ) 
+        }
+        else if ( property.equals("//DEFAULTSEARCH") )
         {
             if (DEBUG_BUILD) println("search default found!!");
-            
+
             String str = getNext();
             boolean preset = false;
-            for (int i = 0; i < PRESET_SEARCH_URL.length; i++) 
+            for (int i = 0; i < PRESET_SEARCH_URL.length; i++)
             {
-                if ( str.equals( PRESET_SEARCH_URL[i].getName() ) ) 
+                if ( str.equals( PRESET_SEARCH_URL[i].getName() ) )
                 {
                     if (DEBUG_BUILD) println("is a preset one");
-                    
+
                     SEARCH_URL = PRESET_SEARCH_URL[i];
-                    
+
                     if (DEBUG_BUILD) println( SEARCH_URL.getUrl() );
-                    
+
                     preset = true;
                     break;
                 }
             }
-            
-            if (!preset) 
+
+            if (!preset)
             {
                 if (DEBUG_BUILD) println("is a custom one");
-                
+
                 SearchURL customSearchURL = new SearchURL(str);
                 SEARCH_URL = customSearchURL;
-                
+
                 if (DEBUG_BUILD) println( SEARCH_URL.getUrl() );
-                
+
                 CUSTOM_SEARCH = true;
             }
-        } 
-        else if ( property.equals("//") ) 
+        }
+        else if ( property.equals("//") )
         {
 
         }
@@ -220,10 +220,10 @@ public final class URLParser
 
         if (weightString.length() > 0)
         {
-            try 
+            try
             {
                 weight = Float.parseFloat(weightString);
-            } 
+            }
             catch (NumberFormatException nfe) {}
         }
 
@@ -231,47 +231,47 @@ public final class URLParser
         {
             nc.addNetworkConnection(vertex1, vertex2, weight);
             WEIGHTED_EDGES = true;
-        } 
-        else 
+        }
+        else
         {
             nc.addNetworkConnection(vertex1, vertex2, 0.0f);
         }
     }
 
-    private String getNext() 
+    private String getNext()
     {
         String word = "";
         String separatorString = "\r\n\t ";
         char tempChar = ' ';
         // for (currentPos = currentPos; currentPos < length; ++currentPos)
-        while (currentPos < length) 
+        while (currentPos < length)
         {
             tempChar = line.charAt(currentPos);
             if ( separatorString.contains( String.valueOf(tempChar) ) )
                 currentPos++;
-            else 
+            else
                 break;
         }
-        
+
         if (tempChar == '"')
         {
             currentPos++;
             separatorString = "\"";
         }
-        
-        while (currentPos < length) 
+
+        while (currentPos < length)
         {
             tempChar = line.charAt(currentPos);
             if ( separatorString.contains( String.valueOf(tempChar) ) )
                 break;
-            
+
             word += tempChar;
             currentPos++;
         }
 
         if ( separatorString.contains("\"") )
             currentPos++;
-        
+
         return word;
     }
 

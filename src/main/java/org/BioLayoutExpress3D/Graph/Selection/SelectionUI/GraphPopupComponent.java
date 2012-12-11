@@ -14,12 +14,12 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
-* 
+*
 * GraphPopupComponent class that provides popupMenu functionality on top of the OpenGL renderer.
 *
 * @author Thanos Theo, 2008-2009-2010
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class GraphPopupComponent implements Runnable
@@ -73,7 +73,7 @@ public final class GraphPopupComponent implements Runnable
     private void initPopupMenuItem(String popupMenuItemName)
     {
         initPopupMenu();
-        popupMenuItem = popupMenu.add(popupMenuItemName);        
+        popupMenuItem = popupMenu.add(popupMenuItemName);
         popupMenuItem.setIcon(BIOLAYOUT_MENU_ITEM_ICON);
         popupMenuItem.setBackground(BIOLAYOUT_MENU_ITEM_BACKGROUND_COLOR);
         popupMenuItem.setForeground(Color.BLACK);
@@ -233,7 +233,7 @@ public final class GraphPopupComponent implements Runnable
             g2d.fill3DRect(PAD_X, 0, plotRectangleWidth, (int)(height - padY), true);
             g2d.setColor(DESCRIPTIONS_COLOR);
             g2d.drawRect( PAD_X, 0, plotRectangleWidth, (int)(height - padY) );
-            
+
             double value = (drawLogScale) ? log( expresionData.getExpressionDataValue(index, 0) ) : expresionData.getExpressionDataValue(index, 0);
             double max = value;
             double min = value;

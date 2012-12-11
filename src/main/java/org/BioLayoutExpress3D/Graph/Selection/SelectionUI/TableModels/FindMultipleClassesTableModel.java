@@ -14,54 +14,54 @@ import javax.swing.table.*;
 
 public final class FindMultipleClassesTableModel extends AbstractTableModel
 {
-    /** 
+    /**
     *  Serial version UID variable for the FindMultipleClassesTableModel class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555695L;
-        
+
     public static final String[] COLUMN_NAMES = { "Class Name", "Select/Deselect" };
-    
+
     private Object[][] data = null;
-    
+
     @Override
-    public int getColumnCount() 
+    public int getColumnCount()
     {
         return COLUMN_NAMES.length;
     }
 
     @Override
-    public int getRowCount() 
+    public int getRowCount()
     {
         return (data != null) ? data.length : 0;
     }
 
     @Override
-    public String getColumnName(int col) 
+    public String getColumnName(int col)
     {
         return COLUMN_NAMES[col];
     }
 
     @Override
-    public Object getValueAt(int row, int col) 
+    public Object getValueAt(int row, int col)
     {
         return (getRowCount() == 0) ? null : data[row][col];
     }
-    
+
     @Override
-    public boolean isCellEditable(int row, int col) 
+    public boolean isCellEditable(int row, int col)
     {
         return (col == 1);
     }
 
     @Override
-    public Class getColumnClass(int col) 
+    public Class getColumnClass(int col)
     {
         Object obj = getValueAt(0, col);
         return (obj == null) ? Object.class : obj.getClass();
     }
 
     @Override
-    public void setValueAt(Object value, int row, int col) 
+    public void setValueAt(Object value, int row, int col)
     {
         data[row][col] = value;
     }
@@ -114,6 +114,6 @@ public final class FindMultipleClassesTableModel extends AbstractTableModel
 
         return selectedClasses;
     }
-    
-    
+
+
 }

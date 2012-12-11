@@ -13,15 +13,15 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Anton Enright, full refactoring by Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class ExpressionLoaderDialog extends JDialog implements ActionListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ExpressionLoaderDialog class.
-    */        
-    public static final long serialVersionUID = 111222333444555706L;     
+    */
+    public static final long serialVersionUID = 111222333444555706L;
 
     private static final int NUMBER_OF_ROWS_TO_DISPLAY = 6;
 
@@ -40,9 +40,9 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     public ExpressionLoaderDialog(JFrame frame, File expressionFile)
     {
         super(frame, "Load Expression Data", true);
-        
+
         this.expressionFile = expressionFile;
-        
+
         initActions(frame);
         initComponents();
         createDialogElements( guessStart(expressionFile) );
@@ -82,7 +82,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         dataStart = new JComboBox();
         dataStart.addActionListener(this);
         dataStart.setToolTipText("Data Columns Start");
-        
+
         topPanel.add(correlationField);
         topPanel.add( new JLabel("Min Correlation    ") );
         topPanel.add(correlationMetric);
@@ -163,9 +163,9 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         };
     }
 
-    private void createDialogElements(int dataStart) 
+    private void createDialogElements(int dataStart)
     {
-        try 
+        try
         {
             BufferedReader reader = new BufferedReader( new FileReader(expressionFile) );
             String line = "";
@@ -198,10 +198,10 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                 for (int i = 0; i < columns; i++)
                 {
                     // to get rid of the names being in 'name' format
-                    if ( split[i].startsWith("\"") ) 
+                    if ( split[i].startsWith("\"") )
                         split[i] = split[i].substring( 1, split[i].length() );
-                    
-                    if ( split[i].endsWith("\"") ) 
+
+                    if ( split[i].endsWith("\"") )
                         split[i] = split[i].substring( 0, split[i].length() - 1 );
 
                     if (linecount == 0)
@@ -220,7 +220,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                     }
 
                     pageText.append("<TD NOWRAP ").append(options).append(">").append(split[i]).append("</TD>");
-                }                
+                }
                 pageText.append("</TR>\n");
                 linecount++;
             }
@@ -229,7 +229,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
             textArea.setText( pageText.toString() );
             reader.close();
-        } 
+        }
         catch (IOException ioe)
         {
            if (DEBUG_BUILD) println("IOException in ExpressionLoaderDialog.createDialogElements():\n" + ioe.getMessage());
@@ -286,24 +286,24 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
             dataStart.setSelectedIndex(maxColumns);
             reader.close();
-        } 
+        }
         catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in ExpressionLoaderDialog.guessStart():\n" + ioe.getMessage());
         }
-        
+
         return (maxColumns + 1);
     }
 
     private boolean isNumeric(String value)
     {
-        try 
+        try
         {
             // instead of numberFormatter.parse(value).floatValue() so as to avoid problems with header columns & parse(value)
             Float.parseFloat( value.replace(',', '.') );
-            
+
             return true;
-        } 
+        }
         catch (NumberFormatException nfe)
         {
             return false;
@@ -321,7 +321,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     {
         return proceed;
     }
-    
+
     public int getStartColumn()
     {
         return startColumn;

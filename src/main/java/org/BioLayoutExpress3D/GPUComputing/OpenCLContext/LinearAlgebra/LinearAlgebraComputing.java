@@ -171,7 +171,7 @@ public class LinearAlgebraComputing extends OpenCLContext
             readEvents = new cl_event[1][];
             readEvents[0] = new cl_event[]{ new cl_event() };
         }
-        
+
         clEnqueueReadBuffer(commandQueue, memoryObjects[2], CL_TRUE, 0, Sizeof.cl_float * N, dstGPUPointer, 0, null, (profileCommandQueue) ? readEvents[0][0] : null);
 
         if (profileCommandQueue)
@@ -261,7 +261,7 @@ public class LinearAlgebraComputing extends OpenCLContext
                 break;
             }
         }
-        
+
         if (DEBUG_BUILD)
         {
             println( "\nGPU vs. CPU Results Test " + ( (passed) ? "PASSED!" : "FAILED!" ) );
@@ -278,7 +278,7 @@ public class LinearAlgebraComputing extends OpenCLContext
             clEventExecutionStatistics.addEntry("kernel", kernelEvents[0][0]);
             clEventExecutionStatistics.addEntry("  read", readEvents[0][0]);
             clEventExecutionStatistics.print();
-            
+
             if (DEBUG_BUILD) println("\nGPU is " + ( total / (double)clEventExecutionStatistics.getDurationTime(kernelEvents[0][0]) ) + " times faster than the CPU for this calculation.");
         }
     }

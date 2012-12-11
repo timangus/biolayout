@@ -6,18 +6,18 @@ import org.BioLayoutExpress3D.Graph.*;
 import static org.BioLayoutExpress3D.Graph.ActionsUI.GraphCreateActionsInterface.*;
 
 /**
-* 
-* The GraphActions class encapsulates UI Action support for the core Graph rendering class. 
-* 
+*
+* The GraphActions class encapsulates UI Action support for the core Graph rendering class.
+*
 * @see org.BioLayoutExpress3D.Graph.Graph
 * @author Thanos Theo, 2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class GraphActions
-{  
-    
+{
+
     private AbstractAction translateUpAction = null;
     private AbstractAction translateDownAction = null;
     private AbstractAction translateLeftAction = null;
@@ -30,19 +30,19 @@ public final class GraphActions
     private AbstractAction zoomOutAction = null;
     private AbstractAction printGraphAction = null;
     private AbstractAction burstLayoutIterationsAction = null;
-    
+
     /**
     *  The GraphActions constructor.
-    */        
+    */
     public GraphActions(Graph graph)
     {
         createActions(graph);
     }
-    
+
     /**
     *  Creates all the actions.
-    */    
-    private void createActions(final Graph graph) 
+    */
+    private void createActions(final Graph graph)
     {
         translateUpAction = new AbstractAction("Up")
         {
@@ -164,70 +164,70 @@ public final class GraphActions
         };
         rotateRightAction.setEnabled(false);
 
-        zoomInAction = new AbstractAction("Zoom In") 
+        zoomInAction = new AbstractAction("Zoom In")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555721L;
-    
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createReScaleAction(ScaleTypes.SCALE_IN, e);
             }
         };
         zoomInAction.setEnabled(false);
-                
-        zoomOutAction = new AbstractAction("Zoom Out") 
+
+        zoomOutAction = new AbstractAction("Zoom Out")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555722L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createReScaleAction(ScaleTypes.SCALE_OUT, e);
             }
         };
         zoomOutAction.setEnabled(false);
-        
-        printGraphAction = new AbstractAction("Print Graph") 
+
+        printGraphAction = new AbstractAction("Print Graph")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555723L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.printGraph();
             }
         };
         printGraphAction.setEnabled(false);
-        
+
         burstLayoutIterationsAction = new AbstractAction("Burst Layout Iterations")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555725L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createBurstLayoutIterationsAction(e);
             }
         };
         burstLayoutIterationsAction.setEnabled(false);
-    }   
+    }
 
     /**
     *  Gets the translateUp action.
-    */        
+    */
     public AbstractAction getTranslateUpAction()
     {
         return translateUpAction;
@@ -235,7 +235,7 @@ public final class GraphActions
 
     /**
     *  Gets the translateDown action.
-    */            
+    */
     public AbstractAction getTranslateDownAction()
     {
         return translateDownAction;
@@ -243,7 +243,7 @@ public final class GraphActions
 
     /**
     *  Gets the translateLeft action.
-    */            
+    */
     public AbstractAction getTranslateLeftAction()
     {
         return translateLeftAction;
@@ -251,7 +251,7 @@ public final class GraphActions
 
     /**
     *  Gets the translateRight action.
-    */            
+    */
     public AbstractAction getTranslateRightAction()
     {
         return translateRightAction;
@@ -259,7 +259,7 @@ public final class GraphActions
 
     /**
     *  Gets the rotateUp action.
-    */            
+    */
     public AbstractAction getRotateUpAction()
     {
         return rotateUpAction;
@@ -267,7 +267,7 @@ public final class GraphActions
 
     /**
     *  Gets the rotateDown action.
-    */                
+    */
     public AbstractAction getRotateDownAction()
     {
         return rotateDownAction;
@@ -275,7 +275,7 @@ public final class GraphActions
 
     /**
     *  Gets the rotateLeft action.
-    */                
+    */
     public AbstractAction getRotateLeftAction()
     {
         return rotateLeftAction;
@@ -283,7 +283,7 @@ public final class GraphActions
 
     /**
     *  Gets the rotateRight action.
-    */                
+    */
     public AbstractAction getRotateRightAction()
     {
         return rotateRightAction;
@@ -291,7 +291,7 @@ public final class GraphActions
 
     /**
     *  Gets the zoomIn action.
-    */                
+    */
     public AbstractAction getZoomInAction()
     {
         return zoomInAction;
@@ -299,27 +299,27 @@ public final class GraphActions
 
     /**
     *  Gets the zoomOut action.
-    */                    
-    public AbstractAction getZoomOutAction() 
+    */
+    public AbstractAction getZoomOutAction()
     {
         return zoomOutAction;
     }
 
     /**
     *  Gets the print graph action.
-    */                    
-    public AbstractAction getPrintGraphAction() 
+    */
+    public AbstractAction getPrintGraphAction()
     {
         return printGraphAction;
     }
-    
+
     /**
     *  Gets the burstLayoutIterations action.
-    */                    
+    */
     public AbstractAction getBurstLayoutIterationsAction()
     {
         return burstLayoutIterationsAction;
     }
-    
-    
+
+
 }

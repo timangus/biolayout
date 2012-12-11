@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Models.Lathe3D;
 
-/** 
-*   
+/**
+*
 * Lathe3DShapeAngleIncrements enumeration class which holds information for the angle increment of a Lathe3DShape.
 *
 * @see org.BioLayoutExpress3D.Models.Lathe3D.Lathe3DShape

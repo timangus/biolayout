@@ -3,15 +3,15 @@ package org.BioLayoutExpress3D.Analysis.Blobs;
 import java.util.*;
 
 /**
-* 
+*
 * This class counts equal Objects of type T. Also the frequency/probability of a certain object is computed.
 *
 * @author Markus Brosch (mb8[at]sanger[dot]ac[dot]uk)
 * @author Full refactoring by Thanos Theo, 2008-2009
-* 
+*
 */
 
-public class AnnotationType 
+public class AnnotationType
 {
     private HashMap<String, Counter> anno2count = new HashMap<String, Counter>();
     private double overallCount = 0;
@@ -21,18 +21,18 @@ public class AnnotationType
     *
     * @param clusterName Object of type T which is counted.
     */
-    public void add(String clusterName, String id) 
+    public void add(String clusterName, String id)
     {
-        if ( clusterName.trim().equals("") ) 
+        if ( clusterName.trim().equals("") )
             return;
-        
-        Counter counter = anno2count.get(clusterName);        
-        if (counter == null) 
+
+        Counter counter = anno2count.get(clusterName);
+        if (counter == null)
         {
             counter = new Counter();
             anno2count.put(clusterName, counter);
         }
-        
+
         counter.increment(id);
         overallCount++;
     }
@@ -43,12 +43,12 @@ public class AnnotationType
     * @param clusterName Interested Object
     * @return How often this Object clusterName was counted.
     */
-    public int getCount(String clusterName) 
+    public int getCount(String clusterName)
     {
         Counter si = anno2count.get(clusterName);
-        if (si == null) 
+        if (si == null)
             return 0;
-        
+
         return si.getValue();
     }
 
@@ -58,39 +58,39 @@ public class AnnotationType
     * @param clusterName Interested Object
     * @return count of Object clusterName divided by the total number of accounted objects.
     */
-    public double getP(String clusterName) 
+    public double getP(String clusterName)
     {
         return this.getCount(clusterName) / overallCount;
     }
 
-    public Set<String> getIDs(String clusterName) 
+    public Set<String> getIDs(String clusterName)
     {
         Counter si = anno2count.get(clusterName);
-        
-        if (si == null) 
+
+        if (si == null)
             return new HashSet<String>();
-        
+
         return si.getGeneIDs();
     }
 
-    public Set<String> getKeys() 
+    public Set<String> getKeys()
     {
         return anno2count.keySet();
     }
 
     @Override
-    public String toString() 
+    public String toString()
     {
         Counter counter = null;
-        StringBuilder sb = new StringBuilder();        
+        StringBuilder sb = new StringBuilder();
         for ( String key : anno2count.keySet() )
         {
             counter = anno2count.get(key);
             sb.append("\nkey:").append(key).append(" counter:").append(counter.toString());
         }
-        
+
         return sb.toString();
     }
 
-    
+
 }

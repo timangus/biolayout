@@ -4,8 +4,8 @@ import java.util.concurrent.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 * The BlockingBoundedExecutor class is used to bound the task injection rate in an executor.
 *
 * In such an approach, use an unbounded queue for the executor as there's no reason to bound both the queue size and the injection rate.
@@ -18,10 +18,10 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 public class BlockingBoundedExecutor
 {
-    
-    /** 
+
+    /**
     *  The executor used for the BlockingBoundedExecutor.
-    */      
+    */
     private Executor executor = null;
 
     /**
@@ -29,14 +29,14 @@ public class BlockingBoundedExecutor
     */
     private Semaphore semaphore = null;
 
-    /** 
+    /**
     *  The constructor of the BlockingBoundedExecutor class.
-    */      
+    */
     public BlockingBoundedExecutor(Executor executor, int bound)
     {
         this.executor = executor;
         this.semaphore = new Semaphore(bound);
-    }     
+    }
 
     /**
     *  Executes the runnable if the semaphore permits the execution of the given runnable.
@@ -78,6 +78,6 @@ public class BlockingBoundedExecutor
             if (DEBUG_BUILD) println("InterruptedException with the semaphore.acquire() method in the BlockingBoundedExecutor class:\n" + ex.getMessage() );
         }
     }
-    
-    
+
+
 }

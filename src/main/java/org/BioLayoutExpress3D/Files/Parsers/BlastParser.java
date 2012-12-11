@@ -14,12 +14,12 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public final class BlastParser extends CoreParser 
-{ 
+public final class BlastParser extends CoreParser
+{
     private String firstVertex = "";
     private int counter = 0;
 
-    public BlastParser(NetworkContainer nc, LayoutFrame layoutFrame) 
+    public BlastParser(NetworkContainer nc, LayoutFrame layoutFrame)
     {
         super(nc, layoutFrame);
 
@@ -27,24 +27,24 @@ public final class BlastParser extends CoreParser
     }
 
     @Override
-    public boolean parse() 
+    public boolean parse()
     {
         int totalLines = 0;
-        
+
         isSuccessful = false;
         nc.setOptimized(false);
 
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
-        try 
+        try
         {
             while ( ( line = fileReaderCounter.readLine() ) != null )
                 totalLines++;
-            
+
             layoutProgressBarDialog.prepareProgressBar(totalLines, "Parsing...");
             layoutProgressBarDialog.startProgressBar();
 
-            while ( ( line = fileReaderBuffered.readLine() ) != null ) 
+            while ( ( line = fileReaderBuffered.readLine() ) != null )
             {
                 layoutProgressBarDialog.incrementProgress(++counter);
                 length = line.length();
@@ -52,28 +52,28 @@ public final class BlastParser extends CoreParser
 
                 if (length > 0)
                 {
-                    if ( line.startsWith("Query= ") ) 
+                    if ( line.startsWith("Query= ") )
                     {
                         getNext();
                         firstVertex = getNext();
 
-                    } 
-                    else if ( line.startsWith("Sequences producing ") ) 
+                    }
+                    else if ( line.startsWith("Sequences producing ") )
                     {
                         readNextHits();
                     }
                 }
             }
-            
+
             isSuccessful = true;
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in BlastParser.parse():\n" + ioe.getMessage());
         }
         finally
         {
-            try 
+            try
             {
                 fileReaderCounter.close();
                 fileReaderBuffered.close();
@@ -85,22 +85,22 @@ public final class BlastParser extends CoreParser
             finally
             {
                 layoutProgressBarDialog.endProgressBar();
-            }                        
+            }
         }
 
         /*
-        if (coordinatesRead) 
+        if (coordinatesRead)
         {
             layoutProgressBarDialog.startProgressBar();
         }
         */
-        
+
         return isSuccessful;
     }
 
-    private void readNextHits() 
+    private void readNextHits()
     {
-        try 
+        try
         {
             line = fileReaderBuffered.readLine();
             counter++;
@@ -111,26 +111,26 @@ public final class BlastParser extends CoreParser
                 createVertices();
             }
 
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in BlastParser.readNextHits():\n" + ioe.getMessage());
         }
     }
 
-    private void createVertices() 
+    private void createVertices()
     {
         float weight = 0.0f;
         currentPos = 0;
         String vertex2 = getNext();
         if ( vertex2.equals(firstVertex) )
             return;
-        
+
         String weightString = "";
-        try 
+        try
         {
             weightString = line.substring(length - 3, length);
-        } 
+        }
         catch (Exception exc) {}
 
         if (weightString.charAt(0) == '-')
@@ -144,24 +144,24 @@ public final class BlastParser extends CoreParser
             try
             {
                 weight = Double.parseDouble(weight_string);
-            } 
+            }
             catch(NumberFormatException nfe) {}
         }
         */
-        
-        if ( (weight == 0.0f) || (weight > 100.0f) ) 
+
+        if ( (weight == 0.0f) || (weight > 100.0f) )
             weight = 100.0f;
 
         if (weight > 0.0f)
         {
             nc.addNetworkConnection(firstVertex, vertex2, weight);
             WEIGHTED_EDGES = true;
-        } 
-        else 
+        }
+        else
         {
             nc.addNetworkConnection(firstVertex, vertex2, 0.0f);
         }
     }
-    
-    
+
+
 }

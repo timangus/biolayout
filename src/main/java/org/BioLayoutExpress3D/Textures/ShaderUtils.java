@@ -20,7 +20,7 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 public final class ShaderUtils
 {
-    
+
     /**
     *  The file path of the shader file to be copied from.
     */
@@ -44,13 +44,13 @@ public final class ShaderUtils
     /**
     *  The tesselation evaluation shader file name.
     */
-    private static final String TESSELATION_EVALUATION_SHADER_FILE_NAME = "tesselationEvaluationShader";    
-    
+    private static final String TESSELATION_EVALUATION_SHADER_FILE_NAME = "tesselationEvaluationShader";
+
     /**
     *  The geometry shader file name.
     */
     private static final String GEOMETRY_SHADER_FILE_NAME = "geometryShader";
-    
+
     /**
     *  The fragment shader file name.
     */
@@ -70,12 +70,12 @@ public final class ShaderUtils
     *  The tesselation evaluation shaders file name extension.
     */
     private static final String TESSELATION_EVALUATION_SHADERS_FILE_NAME_EXTENSION = ".tes";
-    
+
     /**
     *  The geometry shaders file name extension.
     */
-    private static final String GEOMETRY_SHADERS_FILE_NAME_EXTENSION = ".geom";    
-    
+    private static final String GEOMETRY_SHADERS_FILE_NAME_EXTENSION = ".geom";
+
     /**
     *  The fragment shaders file name extension.
     */
@@ -94,13 +94,13 @@ public final class ShaderUtils
     /**
     *  The tesselation evaluation source buffer.
     */
-    private static final IntBuffer TESSELATION_EVALUATION_SOURCE_BUFFER = Buffers.newDirectIntBuffer(1);    
-    
+    private static final IntBuffer TESSELATION_EVALUATION_SOURCE_BUFFER = Buffers.newDirectIntBuffer(1);
+
     /**
     *  The geometry source buffer.
     */
-    private static final IntBuffer GEOMETRY_SOURCE_BUFFER = Buffers.newDirectIntBuffer(1);    
-    
+    private static final IntBuffer GEOMETRY_SOURCE_BUFFER = Buffers.newDirectIntBuffer(1);
+
     /**
     *  The fragment source buffer.
     */
@@ -108,16 +108,16 @@ public final class ShaderUtils
 
     /**
     *  Checks if the given OpenGL extension is supported with the current configuration.
-    */    
+    */
     public static boolean checkOpenGLExtensionSupport(String extensionString)
     {
-        for (String currentString : GL_EXTENSIONS_STRINGS)           
+        for (String currentString : GL_EXTENSIONS_STRINGS)
             if ( currentString.contains(extensionString) )
                 return true;
-        
+
         return false;
-    }    
-    
+    }
+
     /**
     *  Loads the shader file and compiles the shader program from the internal jar.
     */
@@ -230,17 +230,17 @@ public final class ShaderUtils
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String pathName, String shaderName, boolean loadFromFileOrFromJar, int[] vertexShaders, int[] geometryShaders, int[] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    {   
+    {
         loadShaderFileCompileAndLinkProgram(gl, pathName, shaderName, new boolean[]{ true, true, true }, loadFromFileOrFromJar, vertexShaders, geometryShaders, fragmentShaders, shaderPrograms, inputTopology, outputTopology, maxVerticesOut, index, GLSLPreprocessorCommands, validateShader);
-    }    
-    
+    }
+
     /**
     *  Loads the shader file and compiles the shader program.
     *  Overloaded version so as to load the separate vertex/geometry/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String pathName, String shaderName, boolean[] loadVertexGeometryFragmentPair, boolean loadFromFileOrFromJar, int[] vertexShaders, int[] geometryShaders, int[] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    {            
+    {
         boolean setGeometryShaderTopologySettingsBeforeLinkingProgram = false;
         if (loadVertexGeometryFragmentPair[0])
             vertexShaders[index] = gl.glCreateShader(GL_VERTEX_SHADER);
@@ -255,11 +255,11 @@ public final class ShaderUtils
             {
                 if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                 return;
-            }        
+            }
             if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
             {
                 if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
-                return;                
+                return;
             }
             geometryShaders[index] = gl.glCreateShader(GL_GEOMETRY_SHADER);
             setGeometryShaderTopologySettingsBeforeLinkingProgram = true;
@@ -289,9 +289,9 @@ public final class ShaderUtils
                 gl.glCompileShader(geometryShaders[index]);
                 checkInfoLog(gl, "Geometry File '" + GEOMETRY_SHADER_FILE_NAME + shaderName + GEOMETRY_SHADERS_FILE_NAME_EXTENSION + "'", geometryShaders[index], true);
                 gl.glAttachShader(shaderPrograms[index], geometryShaders[index]);
-            }            
+            }
         }
-        
+
         if (loadVertexGeometryFragmentPair[2])
         {
             String fragmentSource = GLSLPreprocessorCommands + readShaderFile(pathName, FRAGMENT_SHADER_FILE_NAME + shaderName + FRAGMENT_SHADERS_FILE_NAME_EXTENSION, loadFromFileOrFromJar);
@@ -303,64 +303,64 @@ public final class ShaderUtils
                 gl.glAttachShader(shaderPrograms[index], fragmentShaders[index]);
             }
         }
-        
+
         if (setGeometryShaderTopologySettingsBeforeLinkingProgram)
         {
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_INPUT_TYPE_EXT, inputTopology);
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_OUTPUT_TYPE_EXT, outputTopology);
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_VERTICES_OUT_EXT, maxVerticesOut);
         }
-                
+
         gl.glLinkProgram(shaderPrograms[index]);
         if (!validateShader && !GL_IS_AMD_ATI) gl.glValidateProgram(shaderPrograms[index]); // warning, the AMD/ATI driver produces unnecessary OpenGL errors with GLSL validation
         checkInfoLog(gl, "Shader Program '" + shaderName + "'", shaderPrograms[index], false);
-    }    
-            
+    }
+
     /**
     *  Loads the shader file and compiles the shader program.
     *  Overloaded version so as to load the separate vertex/tesselation control & evaluation/geometry/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String pathName, String shaderName, boolean loadFromFileOrFromJar, int[] vertexShaders, int[] tesselationControlShaders, int[] tesselationEvaluationShaders, int[] fragmentShaders, int[] shaderPrograms, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    { 
+    {
         loadShaderFileCompileAndLinkProgram(gl, pathName, shaderName, new boolean[]{ true, true, true, false, true }, loadFromFileOrFromJar, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, null, fragmentShaders, shaderPrograms, 0, 0, 0, index, GLSLPreprocessorCommands, validateShader);
-    }    
-    
+    }
+
     /**
     *  Loads the shader file and compiles the shader program.
     *  Overloaded version so as to load the separate vertex/tesselation control & evaluation/geometry/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String pathName, String shaderName, boolean[] loadVertexTesselationGeometryFragmentPair, boolean loadFromFileOrFromJar, int[] vertexShaders, int[] tesselationControlShaders, int[] tesselationEvaluationShaders, int[] fragmentShaders, int[] shaderPrograms, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    { 
+    {
         loadVertexTesselationGeometryFragmentPair[3] = false; // make sure the geometry shader will be disabled
         loadShaderFileCompileAndLinkProgram(gl, pathName, shaderName, loadVertexTesselationGeometryFragmentPair, loadFromFileOrFromJar, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, null, fragmentShaders, shaderPrograms, 0, 0, 0, index, GLSLPreprocessorCommands, validateShader);
-    }    
-        
+    }
+
     /**
     *  Loads the shader file and compiles the shader program.
     *  Overloaded version so as to load the separate vertex/tesselation control & evaluation/geometry/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String pathName, String shaderName, boolean loadFromFileOrFromJar, int[] vertexShaders, int[] tesselationControlShaders, int[] tesselationEvaluationShaders, int[] geometryShaders, int[] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    {  
+    {
         loadShaderFileCompileAndLinkProgram(gl, pathName, shaderName, new boolean[]{ true, true, true, true, true }, loadFromFileOrFromJar, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, geometryShaders, fragmentShaders, shaderPrograms, inputTopology, outputTopology, maxVerticesOut, index, GLSLPreprocessorCommands, validateShader);
-    }    
-    
+    }
+
     /**
     *  Loads the shader file and compiles the shader program.
     *  Overloaded version so as to load the separate vertex/tesselation control & evaluation/geometry/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String pathName, String shaderName, boolean[] loadVertexTesselationGeometryFragmentPair, boolean loadFromFileOrFromJar, int[] vertexShaders, int[] tesselationControlShaders, int[] tesselationEvaluationShaders, int[] geometryShaders, int[] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    {            
+    {
         boolean setGeometryShaderTopologySettingsBeforeLinkingProgram = false;
         if (loadVertexTesselationGeometryFragmentPair[0])
             vertexShaders[index] = gl.glCreateShader(GL_VERTEX_SHADER);
         if (loadVertexTesselationGeometryFragmentPair[1])
             tesselationControlShaders[index] = gl.glCreateShader(GL3.GL_TESS_CONTROL_SHADER);
         if (loadVertexTesselationGeometryFragmentPair[2])
-            tesselationEvaluationShaders[index] = gl.glCreateShader(GL3.GL_TESS_EVALUATION_SHADER);        
+            tesselationEvaluationShaders[index] = gl.glCreateShader(GL3.GL_TESS_EVALUATION_SHADER);
         if (loadVertexTesselationGeometryFragmentPair[3])
         {
             if( (inputTopology != GL_POINTS)  && (inputTopology != GL_LINES)  &&  (inputTopology != GL_LINES_ADJACENCY_EXT)  &&  (inputTopology != GL_TRIANGLES)  &&  (inputTopology != GL_TRIANGLES_ADJACENCY_EXT) )
@@ -372,11 +372,11 @@ public final class ShaderUtils
             {
                 if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                 return;
-            }        
+            }
             if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
             {
                 if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
-                return;                
+                return;
             }
             geometryShaders[index] = gl.glCreateShader(GL_GEOMETRY_SHADER);
             setGeometryShaderTopologySettingsBeforeLinkingProgram = true;
@@ -407,8 +407,8 @@ public final class ShaderUtils
                 checkInfoLog(gl, "Tesselation Control File '" + TESSELATION_CONTROL_SHADER_FILE_NAME + shaderName + TESSELATION_CONTROL_SHADERS_FILE_NAME_EXTENSION + "'", tesselationControlShaders[index], true);
                 gl.glAttachShader(shaderPrograms[index], tesselationControlShaders[index]);
             }
-        }        
-        
+        }
+
         if (loadVertexTesselationGeometryFragmentPair[2])
         {
             String tesselationEvaluationSource = GLSLPreprocessorCommands + readShaderFile(pathName, TESSELATION_EVALUATION_SHADER_FILE_NAME + shaderName + TESSELATION_EVALUATION_SHADERS_FILE_NAME_EXTENSION, loadFromFileOrFromJar);
@@ -419,8 +419,8 @@ public final class ShaderUtils
                 checkInfoLog(gl, "Tesselation Evaluation File '" + TESSELATION_EVALUATION_SHADER_FILE_NAME + shaderName + TESSELATION_EVALUATION_SHADERS_FILE_NAME_EXTENSION + "'", tesselationEvaluationShaders[index], true);
                 gl.glAttachShader(shaderPrograms[index], tesselationEvaluationShaders[index]);
             }
-        }   
-        
+        }
+
         if (loadVertexTesselationGeometryFragmentPair[3])
         {
             String geometrySource = GLSLPreprocessorCommands + readShaderFile(pathName, GEOMETRY_SHADER_FILE_NAME + shaderName + GEOMETRY_SHADERS_FILE_NAME_EXTENSION, loadFromFileOrFromJar);
@@ -430,9 +430,9 @@ public final class ShaderUtils
                 gl.glCompileShader(geometryShaders[index]);
                 checkInfoLog(gl, "Geometry File '" + GEOMETRY_SHADER_FILE_NAME + shaderName + GEOMETRY_SHADERS_FILE_NAME_EXTENSION + "'", geometryShaders[index], true);
                 gl.glAttachShader(shaderPrograms[index], geometryShaders[index]);
-            }            
+            }
         }
-        
+
         if (loadVertexTesselationGeometryFragmentPair[4])
         {
             String fragmentSource = GLSLPreprocessorCommands + readShaderFile(pathName, FRAGMENT_SHADER_FILE_NAME + shaderName + FRAGMENT_SHADERS_FILE_NAME_EXTENSION, loadFromFileOrFromJar);
@@ -444,19 +444,19 @@ public final class ShaderUtils
                 gl.glAttachShader(shaderPrograms[index], fragmentShaders[index]);
             }
         }
-        
+
         if (setGeometryShaderTopologySettingsBeforeLinkingProgram)
         {
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_INPUT_TYPE_EXT, inputTopology);
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_OUTPUT_TYPE_EXT, outputTopology);
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_VERTICES_OUT_EXT, maxVerticesOut);
         }
-                
+
         gl.glLinkProgram(shaderPrograms[index]);
         if (!validateShader && !GL_IS_AMD_ATI) gl.glValidateProgram(shaderPrograms[index]); // warning, the AMD/ATI driver produces unnecessary OpenGL errors with GLSL validation
         checkInfoLog(gl, "Shader Program '" + shaderName + "'", shaderPrograms[index], false);
     }
-    
+
     /**
     *  Loads multiple shader files and compiles the shader program from the internal jar.
     */
@@ -529,7 +529,7 @@ public final class ShaderUtils
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String[] pathShaderNames, String[] shaderNames, boolean[][] loadVertexFragmentPair, boolean loadFromFileOrFromJar, int[][] vertexShaders, int[][] fragmentShaders, int[] shaderPrograms, int index, String GLSLPreprocessorCommands, boolean validateShader)
     {
         for (int i = 0; i < shaderNames.length; i++)
-        {   
+        {
             if (loadVertexFragmentPair[i][0])
                 vertexShaders[index][i] = gl.glCreateShader(GL_VERTEX_SHADER);
             if (loadVertexFragmentPair[i][1])
@@ -574,8 +574,8 @@ public final class ShaderUtils
             mergedShaderName += " + " + shaderNames[i];
 
         checkInfoLog(gl, "Modular Shader Program '" + mergedShaderName + "'", shaderPrograms[index], false);
-    }    
-    
+    }
+
     /**
     *  Loads multiple shader files and compiles the shader program from the internal jar.
     *  Overloaded version so as to load the separate vertex/fragment shaders to a program either from an external file or the internal jar.
@@ -584,18 +584,18 @@ public final class ShaderUtils
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String[] pathShaderNames, String[] shaderNames, boolean loadFromFileOrFromJar, int[][] vertexShaders, int[][] geometryShaders, int[][] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
     {
         loadShaderFileCompileAndLinkProgram(gl, pathShaderNames, shaderNames, returnDummyLoadVertexGeometryFragmentPairArray(shaderNames.length), loadFromFileOrFromJar, vertexShaders, geometryShaders, fragmentShaders, shaderPrograms, inputTopology, outputTopology, maxVerticesOut, index, GLSLPreprocessorCommands, validateShader);
-    }    
-    
+    }
+
     /**
     *  Loads multiple shader files and compiles the shader program from the internal jar.
     *  Overloaded version so as to load the separate vertex/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String[] pathShaderNames, String[] shaderNames, boolean[][] loadVertexGeometryFragmentPair, boolean loadFromFileOrFromJar, int[][] vertexShaders, int[][] geometryShaders, int[][] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    {        
+    {
         boolean setGeometryShaderTopologySettingsBeforeLinkingProgram = false;
         for (int i = 0; i < shaderNames.length; i++)
-        {   
+        {
             if (loadVertexGeometryFragmentPair[i][0])
                 vertexShaders[index][i] = gl.glCreateShader(GL_VERTEX_SHADER);
             if (loadVertexGeometryFragmentPair[i][1])
@@ -609,12 +609,12 @@ public final class ShaderUtils
                 {
                     if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                     return;
-                }        
+                }
                 if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
                 {
                     if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
-                    return;                
-                }                
+                    return;
+                }
                 geometryShaders[index][i] = gl.glCreateShader(GL_GEOMETRY_SHADER);
                 setGeometryShaderTopologySettingsBeforeLinkingProgram = true;
             }
@@ -650,8 +650,8 @@ public final class ShaderUtils
                     checkInfoLog(gl, "Modular Geometry File '" + GEOMETRY_SHADER_FILE_NAME + shaderNames[i] + GEOMETRY_SHADERS_FILE_NAME_EXTENSION + "'", geometryShaders[index][i], true);
                     gl.glAttachShader(shaderPrograms[index], geometryShaders[index][i]);
                 }
-            }            
-            
+            }
+
             if (loadVertexGeometryFragmentPair[i][2])
             {
                 fragmentSource = GLSLPreprocessorCommands + readShaderFile(pathShaderNames[i], FRAGMENT_SHADER_FILE_NAME + shaderNames[i] + FRAGMENT_SHADERS_FILE_NAME_EXTENSION, loadFromFileOrFromJar);
@@ -669,9 +669,9 @@ public final class ShaderUtils
         {
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_INPUT_TYPE_EXT, inputTopology);
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_OUTPUT_TYPE_EXT, outputTopology);
-            gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_VERTICES_OUT_EXT, maxVerticesOut);            
+            gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_VERTICES_OUT_EXT, maxVerticesOut);
         }
-        
+
         gl.glLinkProgram(shaderPrograms[index]);
         if (!validateShader && !GL_IS_AMD_ATI) gl.glValidateProgram(shaderPrograms[index]); // warning, the AMD/ATI driver produces unnecessary OpenGL errors with GLSL validation
 
@@ -680,56 +680,56 @@ public final class ShaderUtils
             mergedShaderName += " + " + shaderNames[i];
 
         checkInfoLog(gl, "Modular Shader Program '" + mergedShaderName + "'", shaderPrograms[index], false);
-    }    
-        
+    }
+
     /**
     *  Loads the shader file and compiles the shader program.
     *  Overloaded version so as to load the separate vertex/tesselation control & evaluation/geometry/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String[] pathNames, String[] shaderNames, boolean loadFromFileOrFromJar, int[][] vertexShaders, int[][] tesselationControlShaders, int[][] tesselationEvaluationShaders, int[][] fragmentShaders, int[] shaderPrograms, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    { 
+    {
         loadShaderFileCompileAndLinkProgram(gl, pathNames, shaderNames, returnDummyLoadVertexTesselationGeometryFragmentPairArray(shaderNames.length, false), loadFromFileOrFromJar, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, null, fragmentShaders, shaderPrograms, 0, 0, 0, index, GLSLPreprocessorCommands, validateShader);
     }
-    
+
     /**
     *  Loads the shader file and compiles the shader program.
     *  Overloaded version so as to load the separate vertex/tesselation control & evaluation/geometry/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String[] pathNames, String[] shaderNames, boolean[][] loadVertexTesselationGeometryFragmentPair, boolean loadFromFileOrFromJar, int[][] vertexShaders, int[][] tesselationControlShaders, int[][] tesselationEvaluationShaders, int[][] fragmentShaders, int[] shaderPrograms, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    { 
+    {
         for (int i = 0 ; i < shaderNames.length; i++)
             loadVertexTesselationGeometryFragmentPair[i][3] = false; // make sure the geometry shaders will be disabled
         loadShaderFileCompileAndLinkProgram(gl, pathNames, shaderNames, loadVertexTesselationGeometryFragmentPair, loadFromFileOrFromJar, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, null, fragmentShaders, shaderPrograms, 0, 0, 0, index, GLSLPreprocessorCommands, validateShader);
-    }     
-    
+    }
+
     /**
     *  Loads multiple shader files and compiles the shader program from the internal jar.
     *  Overloaded version so as to load the separate vertex/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String[] pathShaderNames, String[] shaderNames, boolean loadFromFileOrFromJar, int[][] vertexShaders, int[][] tesselationControlShaders, int[][] tesselationEvaluationShaders, int[][] geometryShaders, int[][] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    { 
+    {
         loadShaderFileCompileAndLinkProgram(gl, pathShaderNames, shaderNames, returnDummyLoadVertexTesselationGeometryFragmentPairArray(shaderNames.length, true), loadFromFileOrFromJar, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, geometryShaders, fragmentShaders, shaderPrograms, inputTopology, outputTopology, maxVerticesOut, index, GLSLPreprocessorCommands, validateShader);
     }
-    
+
     /**
     *  Loads multiple shader files and compiles the shader program from the internal jar.
     *  Overloaded version so as to load the separate vertex/fragment shaders to a program either from an external file or the internal jar.
     *  Overloaded version that also supports GLSL preprocessor commands.
     */
     public static void loadShaderFileCompileAndLinkProgram(GL2 gl, String[] pathShaderNames, String[] shaderNames, boolean[][] loadVertexTesselationGeometryFragmentPair, boolean loadFromFileOrFromJar, int[][] vertexShaders, int[][] tesselationControlShaders, int[][] tesselationEvaluationShaders, int[][] geometryShaders, int[][] fragmentShaders, int[] shaderPrograms, int inputTopology, int outputTopology, int maxVerticesOut, int index, String GLSLPreprocessorCommands, boolean validateShader)
-    {        
+    {
         boolean setGeometryShaderTopologySettingsBeforeLinkingProgram = false;
         for (int i = 0; i < shaderNames.length; i++)
-        {   
+        {
             if (loadVertexTesselationGeometryFragmentPair[i][0])
                 vertexShaders[index][i] = gl.glCreateShader(GL_VERTEX_SHADER);
             if (loadVertexTesselationGeometryFragmentPair[i][1])
                 tesselationControlShaders[index][i] = gl.glCreateShader(GL3.GL_TESS_CONTROL_SHADER);
             if (loadVertexTesselationGeometryFragmentPair[i][2])
-                tesselationEvaluationShaders[index][i] = gl.glCreateShader(GL3.GL_TESS_EVALUATION_SHADER);               
+                tesselationEvaluationShaders[index][i] = gl.glCreateShader(GL3.GL_TESS_EVALUATION_SHADER);
             if (loadVertexTesselationGeometryFragmentPair[i][3])
             {
                 if( (inputTopology != GL_POINTS)  && (inputTopology != GL_LINES)  &&  (inputTopology != GL_LINES_ADJACENCY_EXT)  &&  (inputTopology != GL_TRIANGLES)  &&  (inputTopology != GL_TRIANGLES_ADJACENCY_EXT) )
@@ -741,12 +741,12 @@ public final class ShaderUtils
                 {
                     if (DEBUG_BUILD) println("Error: You have not specified a supported Geometry Shader Output Topology.\nShader loading process now aborted.");
                     return;
-                }        
+                }
                 if (maxVerticesOut > GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER)
                 {
                     if (DEBUG_BUILD) println("Error: You have specified a larger number of Geometry Shader output vertices than this GPU can handle.\nGL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB: " + GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER + "\nShader loading process now aborted.");
-                    return;                
-                }                
+                    return;
+                }
                 geometryShaders[index][i] = gl.glCreateShader(GL_GEOMETRY_SHADER);
                 setGeometryShaderTopologySettingsBeforeLinkingProgram = true;
             }
@@ -782,7 +782,7 @@ public final class ShaderUtils
                     checkInfoLog(gl, "Tesselation Control File '" + TESSELATION_CONTROL_SHADER_FILE_NAME + shaderNames[i] + TESSELATION_CONTROL_SHADERS_FILE_NAME_EXTENSION + "'", tesselationControlShaders[index][i], true);
                     gl.glAttachShader(shaderPrograms[index], tesselationControlShaders[index][i]);
                 }
-            }        
+            }
 
             if (loadVertexTesselationGeometryFragmentPair[i][2])
             {
@@ -794,8 +794,8 @@ public final class ShaderUtils
                     checkInfoLog(gl, "Tesselation Evaluation File '" + TESSELATION_EVALUATION_SHADER_FILE_NAME + shaderNames[i] + TESSELATION_EVALUATION_SHADERS_FILE_NAME_EXTENSION + "'", tesselationEvaluationShaders[index][i], true);
                     gl.glAttachShader(shaderPrograms[index], tesselationEvaluationShaders[index][i]);
                 }
-            }             
-            
+            }
+
             if (loadVertexTesselationGeometryFragmentPair[i][3])
             {
                 geometrySource = GLSLPreprocessorCommands + readShaderFile(pathShaderNames[i], GEOMETRY_SHADER_FILE_NAME + shaderNames[i] + GEOMETRY_SHADERS_FILE_NAME_EXTENSION, loadFromFileOrFromJar);
@@ -806,8 +806,8 @@ public final class ShaderUtils
                     checkInfoLog(gl, "Modular Geometry File '" + GEOMETRY_SHADER_FILE_NAME + shaderNames[i] + GEOMETRY_SHADERS_FILE_NAME_EXTENSION + "'", geometryShaders[index][i], true);
                     gl.glAttachShader(shaderPrograms[index], geometryShaders[index][i]);
                 }
-            }            
-            
+            }
+
             if (loadVertexTesselationGeometryFragmentPair[i][4])
             {
                 fragmentSource = GLSLPreprocessorCommands + readShaderFile(pathShaderNames[i], FRAGMENT_SHADER_FILE_NAME + shaderNames[i] + FRAGMENT_SHADERS_FILE_NAME_EXTENSION, loadFromFileOrFromJar);
@@ -825,9 +825,9 @@ public final class ShaderUtils
         {
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_INPUT_TYPE_EXT, inputTopology);
             gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_OUTPUT_TYPE_EXT, outputTopology);
-            gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_VERTICES_OUT_EXT, maxVerticesOut);            
+            gl.glProgramParameteri(shaderPrograms[index], GL_GEOMETRY_VERTICES_OUT_EXT, maxVerticesOut);
         }
-        
+
         gl.glLinkProgram(shaderPrograms[index]);
         if (!validateShader && !GL_IS_AMD_ATI) gl.glValidateProgram(shaderPrograms[index]); // warning, the AMD/ATI driver produces unnecessary OpenGL errors with GLSL validation
 
@@ -836,8 +836,8 @@ public final class ShaderUtils
             mergedShaderName += " + " + shaderNames[i];
 
         checkInfoLog(gl, "Modular Shader Program '" + mergedShaderName + "'", shaderPrograms[index], false);
-    }    
-    
+    }
+
     /**
     *  Returns a dummy loadVertexFragmentPair array.
     */
@@ -852,7 +852,7 @@ public final class ShaderUtils
 
         return loadVertexFragmentPair;
     }
-    
+
     /**
     *  Returns a dummy loadVertexGeometryFragmentPair array.
     */
@@ -867,8 +867,8 @@ public final class ShaderUtils
         }
 
         return loadVertexGeometryFragmentPair;
-    }    
-    
+    }
+
     /**
     *  Returns a dummy loadVertexTesselationGeometryFragmentPair array.
     */
@@ -881,12 +881,12 @@ public final class ShaderUtils
             loadVertexTesselationGeometryFragmentPair[i][1] = true;
             loadVertexTesselationGeometryFragmentPair[i][2] = true;
             loadVertexTesselationGeometryFragmentPair[i][3] = useGeometryShaders;
-            loadVertexTesselationGeometryFragmentPair[i][4] = true;            
+            loadVertexTesselationGeometryFragmentPair[i][4] = true;
         }
 
         return loadVertexTesselationGeometryFragmentPair;
-    }       
-    
+    }
+
     /**
     *  Reads the shader file.
     */
@@ -899,7 +899,7 @@ public final class ShaderUtils
         {
             String shaderFilePath = SHADERS_FILE_PATH_2 + pathName + "/" + fileName;
             String shaderJarFilePath = SHADERS_FILE_PATH_1 + "/" + SHADERS_FILE_PATH_2 + pathName + "/" + fileName;
-          
+
             br = new BufferedReader( (loadFromFileOrFromJar) ?
                     new FileReader(shaderFilePath) :
                     new InputStreamReader( ShaderUtils.class.getResourceAsStream(shaderJarFilePath) ) );
@@ -998,8 +998,8 @@ public final class ShaderUtils
     public static void detachAndDeleteShader(GL2 gl, int[] vertexShaders, int[] geometryShaders, int[] fragmentShaders, int[] shaderPrograms, int index)
     {
         detachAndDeleteShader(gl, new boolean[]{ true, true, true }, vertexShaders, fragmentShaders, shaderPrograms, index);
-    }    
-    
+    }
+
     /**
     *  Detaches and deletes the shader program.
     *  Overloaded version so as to detach and delete the separate vertex/geometry/fragment shaders.
@@ -1014,7 +1014,7 @@ public final class ShaderUtils
                 gl.glDeleteShader(vertexShaders[index]);
             }
         }
-        
+
         if (loadVertexGeometryFragmentPair[1])
         {
             if ( gl.glIsShader(geometryShaders[index]) )
@@ -1022,7 +1022,7 @@ public final class ShaderUtils
                 gl.glDetachShader(shaderPrograms[index], geometryShaders[index]);
                 gl.glDeleteShader(geometryShaders[index]);
             }
-        }        
+        }
 
         if (loadVertexGeometryFragmentPair[2])
         {
@@ -1035,16 +1035,16 @@ public final class ShaderUtils
 
         if ( gl.glIsProgram(shaderPrograms[index]) )
             gl.glDeleteProgram(shaderPrograms[index]);
-    }    
-                
+    }
+
     /**
     *  Detaches and deletes the shader program.
     */
     public static void detachAndDeleteShader(GL2 gl, int[] vertexShaders, int[] tesselationControlShaders, int[] tesselationEvaluationShaders, int[] geometryShaders, int[] fragmentShaders, int[] shaderPrograms, int index)
     {
         detachAndDeleteShader(gl, new boolean[]{ true, true, true, true, true }, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, geometryShaders, fragmentShaders, shaderPrograms, index);
-    }    
-    
+    }
+
     /**
     *  Detaches and deletes the shader program.
     *  Overloaded version so as to detach and delete the separate vertex/geometry/fragment shaders.
@@ -1059,7 +1059,7 @@ public final class ShaderUtils
                 gl.glDeleteShader(vertexShaders[index]);
             }
         }
-        
+
         if (loadVertexTesselationGeometryFragmentPair[1])
         {
             if ( gl.glIsShader(tesselationControlShaders[index]) )
@@ -1067,8 +1067,8 @@ public final class ShaderUtils
                 gl.glDetachShader(shaderPrograms[index], tesselationControlShaders[index]);
                 gl.glDeleteShader(tesselationControlShaders[index]);
             }
-        }        
-        
+        }
+
         if (loadVertexTesselationGeometryFragmentPair[2])
         {
             if ( gl.glIsShader(tesselationEvaluationShaders[index]) )
@@ -1076,8 +1076,8 @@ public final class ShaderUtils
                 gl.glDetachShader(shaderPrograms[index], tesselationEvaluationShaders[index]);
                 gl.glDeleteShader(tesselationEvaluationShaders[index]);
             }
-        }        
-        
+        }
+
         if (loadVertexTesselationGeometryFragmentPair[3])
         {
             if ( gl.glIsShader(geometryShaders[index]) )
@@ -1085,7 +1085,7 @@ public final class ShaderUtils
                 gl.glDetachShader(shaderPrograms[index], geometryShaders[index]);
                 gl.glDeleteShader(geometryShaders[index]);
             }
-        }        
+        }
 
         if (loadVertexTesselationGeometryFragmentPair[4])
         {
@@ -1098,8 +1098,8 @@ public final class ShaderUtils
 
         if ( gl.glIsProgram(shaderPrograms[index]) )
             gl.glDeleteProgram(shaderPrograms[index]);
-    }    
-    
+    }
+
     /**
     *  Detaches and deletes multiple shader programs.
     */
@@ -1141,15 +1141,15 @@ public final class ShaderUtils
         if ( gl.glIsProgram(shaderPrograms[index]) )
             gl.glDeleteProgram(shaderPrograms[index]);
     }
-    
+
     /**
     *  Detaches and deletes multiple shader programs.
     */
     public static void detachAndDeleteShader(GL2 gl, int[][] vertexShaders, int[][] geometryShaders, int[][] fragmentShaders, int[] shaderPrograms, int index)
     {
         detachAndDeleteShader(gl, returnDummyLoadVertexGeometryFragmentPairArray(vertexShaders[0].length), vertexShaders, fragmentShaders, shaderPrograms, index);
-    }    
-    
+    }
+
     /**
     *  Detaches and deletes multiple shader programs.
     *  Overloaded version so as to detach and delete the separate vertex/geometry/fragment shaders.
@@ -1178,7 +1178,7 @@ public final class ShaderUtils
                     gl.glDeleteShader(geometryShaders[index][i]);
                 }
             }
-        }        
+        }
 
         for (int i = 0; i < fragmentShaders[index].length; i++)
         {
@@ -1194,16 +1194,16 @@ public final class ShaderUtils
 
         if ( gl.glIsProgram(shaderPrograms[index]) )
             gl.glDeleteProgram(shaderPrograms[index]);
-    }    
-    
+    }
+
     /**
     *  Detaches and deletes multiple shader programs.
     */
     public static void detachAndDeleteShader(GL2 gl, int[][] vertexShaders, int[][] tesselationControlShaders, int[][] tesselationEvaluationShaders, int[][] geometryShaders, int[][] fragmentShaders, int[] shaderPrograms, int index)
     {
         detachAndDeleteShader(gl, returnDummyLoadVertexTesselationGeometryFragmentPairArray(vertexShaders[0].length, true), vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, geometryShaders, fragmentShaders, shaderPrograms, index);
-    }    
-    
+    }
+
     /**
     *  Detaches and deletes multiple shader programs.
     *  Overloaded version so as to detach and delete the separate vertex/geometry/fragment shaders.
@@ -1213,8 +1213,8 @@ public final class ShaderUtils
         for (int i = 0 ; i < vertexShaders.length; i++)
             loadVertexTesselationGeometryFragmentPair[i][3] = false; // make sure the geometry shaders will be disabled
         detachAndDeleteShader(gl, loadVertexTesselationGeometryFragmentPair, vertexShaders, tesselationControlShaders, tesselationEvaluationShaders, null, fragmentShaders, shaderPrograms, index);
-    }    
-    
+    }
+
     /**
     *  Detaches and deletes multiple shader programs.
     *  Overloaded version so as to detach and delete the separate vertex/geometry/fragment shaders.
@@ -1232,7 +1232,7 @@ public final class ShaderUtils
                 }
             }
         }
-        
+
         for (int i = 0; i < tesselationControlShaders[index].length; i++)
         {
             if (loadVertexTesselationGeometryFragmentPair[i][1])
@@ -1243,8 +1243,8 @@ public final class ShaderUtils
                     gl.glDeleteShader(tesselationControlShaders[index][i]);
                 }
             }
-        }         
-        
+        }
+
         for (int i = 0; i < tesselationEvaluationShaders[index].length; i++)
         {
             if (loadVertexTesselationGeometryFragmentPair[i][2])
@@ -1255,7 +1255,7 @@ public final class ShaderUtils
                     gl.glDeleteShader(tesselationEvaluationShaders[index][i]);
                 }
             }
-        }         
+        }
 
         for (int i = 0; i < geometryShaders[index].length; i++)
         {
@@ -1267,7 +1267,7 @@ public final class ShaderUtils
                     gl.glDeleteShader(geometryShaders[index][i]);
                 }
             }
-        }        
+        }
 
         for (int i = 0; i < fragmentShaders[index].length; i++)
         {
@@ -1283,7 +1283,7 @@ public final class ShaderUtils
 
         if ( gl.glIsProgram(shaderPrograms[index]) )
             gl.glDeleteProgram(shaderPrograms[index]);
-    }      
+    }
 
 
 }

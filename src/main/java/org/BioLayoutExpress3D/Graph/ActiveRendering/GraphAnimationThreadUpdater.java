@@ -4,12 +4,12 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
-* 
+*
 * GraphAnimationThreadUpdater class encapsulates optional multicore animation thread update functionality to the OpenGL renderer.
 *
 * @author Thanos Theo, 2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 final class GraphAnimationThreadUpdater extends Thread implements Runnable // package access
@@ -18,7 +18,7 @@ final class GraphAnimationThreadUpdater extends Thread implements Runnable // pa
     /**
     *  Used to stop the updating animation thread.
     */
-    private volatile boolean updating = false;        
+    private volatile boolean updating = false;
 
     /**
     *  Used to suspend the updating animation thread.
@@ -27,26 +27,26 @@ final class GraphAnimationThreadUpdater extends Thread implements Runnable // pa
 
     /**
     *  GraphRendererThreadUpdater reference.
-    */            
-    private GraphRendererThreadUpdater graphRendererThreadUpdater = null;    
-    
+    */
+    private GraphRendererThreadUpdater graphRendererThreadUpdater = null;
+
     /**
     *  GLCanvas reference.
-    */        
-    private GraphRendererThreadUpdaterAnimationInterface graphRendererThreadUpdaterAnimationInterface = null;    
-    
+    */
+    private GraphRendererThreadUpdaterAnimationInterface graphRendererThreadUpdaterAnimationInterface = null;
+
     /**
     *  The GraphAnimationThreadUpdater constructor. Package access.
-    */        
+    */
     GraphAnimationThreadUpdater(GraphRendererThreadUpdater graphRendererThreadUpdater, GraphRendererThreadUpdaterAnimationInterface graphRendererThreadUpdaterAnimationInterface)
-    {        
+    {
         this.graphRendererThreadUpdater = graphRendererThreadUpdater;
         this.graphRendererThreadUpdaterAnimationInterface = graphRendererThreadUpdaterAnimationInterface;
     }
 
     /**
     *  The main animation update thread code logic.
-    */      
+    */
     @Override
     public void run()
     {
@@ -62,7 +62,7 @@ final class GraphAnimationThreadUpdater extends Thread implements Runnable // pa
                     graphRendererThreadUpdaterAnimationInterface.updateAnimation();
 
                     if ( (graphRendererThreadUpdater != null) && graphRendererThreadUpdater.getRenderUpdateThreadSuspended() )
-                        graphRendererThreadUpdater.resumeRendererThreadUpdater();                 
+                        graphRendererThreadUpdater.resumeRendererThreadUpdater();
                     else
                         pauseAnimationThreadUpdater();
 
@@ -80,14 +80,14 @@ final class GraphAnimationThreadUpdater extends Thread implements Runnable // pa
 
         // out of the main GraphAnimationThreadUpdater loop, when exiting the GraphAnimationThreadUpdater
     }
-    
+
     /**
     *  Sets the GraphAnimationThreadUpdater updating variable. Package access.
-    */        
+    */
     synchronized void setUpdating(boolean updating)
     {
         this.updating = updating;
-    }        
+    }
 
     /**
     *  Pauses the GraphAnimationThreadUpdater thread.
@@ -122,14 +122,14 @@ final class GraphAnimationThreadUpdater extends Thread implements Runnable // pa
         return animationUpdateThreadSuspended;
     }
 
-    /** 
+    /**
     *  Overriden toString() method for GraphAnimationThreadUpdater.
-    */     
+    */
     @Override
     public String toString()
     {
         return "GraphAnimationThreadUpdater (" + this.getName() + ")";
     }
-    
+
 
 }

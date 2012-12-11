@@ -83,5 +83,5 @@ public class DummyOpenCLContext extends OpenCLContext
     @Override
     protected void deleteOpenCLContextForGPUComputing() throws CLException {}
 
-    
+
 }

@@ -77,7 +77,7 @@ public final class CoreSaver
             */
             public static final long serialVersionUID = 111222333444555716L;
 
-            @Override            
+            @Override
             public void actionPerformed(ActionEvent action)
             {
                 isCollapsed = layoutFrame.getGraph().getSelectionManager().getGroupManager().isCollapsedMode();
@@ -100,7 +100,7 @@ public final class CoreSaver
             */
             public static final long serialVersionUID = 111222333444555717L;
 
-            @Override            
+            @Override
             public void actionPerformed(ActionEvent action)
             {
                 isCollapsed = layoutFrame.getGraph().getSelectionManager().getGroupManager().isCollapsedMode();
@@ -133,7 +133,7 @@ public final class CoreSaver
             */
             public static final long serialVersionUID = 111222333444555718L;
 
-            @Override            
+            @Override
             public void actionPerformed(ActionEvent action)
             {
                 isCollapsed = layoutFrame.getGraph().getSelectionManager().getGroupManager().isCollapsedMode();
@@ -242,7 +242,7 @@ public final class CoreSaver
             {
                 doSaveFile = true;
             }
-            
+
             String saveFilePath = saveFile.getAbsolutePath().substring(0, saveFile.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
             if ( DATA_TYPE.equals(DataTypes.EXPRESSION) && !saveFilePath.equals(EXPRESSION_FILE_PATH) )
             {
@@ -543,7 +543,7 @@ public final class CoreSaver
             }
         }
     }
-    
+
     private void saveGraphmlData(FileWriter fileWriter) throws IOException
     {
         GraphmlNetworkContainer gnc = nc.getGraphmlNetworkContainer();
@@ -569,23 +569,23 @@ public final class CoreSaver
             currentNodeGraphmlMapCoord = gnc.getAllGraphmlNodesMap().get( graphNode.getNodeName() ).first;
             fileWriter.write("//GRAPHML_NODE_DATA\t\"" + graphNode.getNodeName() + "\"\t\"" + nc.getNodeName( graphNode.getNodeName() ).replace("\n", "").replace("\"", " ").trim() + "\"\t" + Float.toString(currentNodeGraphmlMapCoord[2]) + "\t" + Float.toString(currentNodeGraphmlMapCoord[3]) + "\t" + Float.toString(currentNodeGraphmlMapCoord[4]) + "\n");
         }
-        
-        Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]> edgeTuple6 = null;       
+
+        Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]> edgeTuple6 = null;
         for ( String edgeKey : gnc.getAllGraphmlEdgesMap().keySet() )
         {
             edgeTuple6 = gnc.getAllGraphmlEdgesMap().get(edgeKey);
             fileWriter.write("//GRAPHML_EDGE_DATA\t\"" + edgeKey + "\"\t\"" + edgeTuple6.first + "\"");
             for (Point2D.Float polylinePoint2D : edgeTuple6.second.second)
                 fileWriter.write("\t" + polylinePoint2D.x + "\t" + polylinePoint2D.y);
-            fileWriter.write("\n");            
+            fileWriter.write("\n");
         }
-        
+
         for ( GraphmlComponentContainer pathwayComponentContainer : gnc.getAllPathwayComponentContainersFor3D() )
         {
             fileWriter.write("//GRAPHML_COMPONENT_CONTAINER_DATA\t\"" + pathwayComponentContainer.name + "\"\t" + pathwayComponentContainer.depth + "\t" + pathwayComponentContainer.alpha + "\t"
                                                                       + pathwayComponentContainer.rectangle2D.x + "\t" + pathwayComponentContainer.rectangle2D.y + "\t" + pathwayComponentContainer.rectangle2D.width + "\t" + pathwayComponentContainer.rectangle2D.height + "\t\""
                                                                       + Utils.getHexColor(pathwayComponentContainer.color) + "\"\n");
-        }        
+        }
     }
 
     private class CoreSaverProcess implements Runnable

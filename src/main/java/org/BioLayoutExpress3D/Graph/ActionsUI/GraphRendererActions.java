@@ -5,43 +5,43 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
-* 
+*
 * The GraphRendererActions class encapsulates UI Action support for the GraphRenderer2D/3D classes.
-* 
+*
 * @see org.BioLayoutExpress3D.Graph.ActionsUI.GraphRendererCreateActionsInterface
 * @see org.BioLayoutExpress3D.Graph.GraphRenderer3D
 * @author Thanos Theo, 2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class GraphRendererActions
-{ 
+{
 
     private AbstractAction undoNodeDragging = null;
     private AbstractAction redoNodeDragging = null;
     private AbstractAction autoRotateAction = null;
     private AbstractAction screenSaver2DModeAction = null;
     private AbstractAction pulsation3DModeAction = null;
-    private AbstractAction selectAction = null;    
-    private AbstractAction translateAction = null;    
-    private AbstractAction rotateAction = null;    
+    private AbstractAction selectAction = null;
+    private AbstractAction translateAction = null;
+    private AbstractAction rotateAction = null;
     private AbstractAction zoomAction = null;
     private AbstractAction resetViewAction = null;
     private AbstractAction renderImageToFileAction = null;
-    private AbstractAction renderHighResImageToFileAction = null;    
+    private AbstractAction renderHighResImageToFileAction = null;
 
     /**
     *  The GraphRendererActions constructor.
-    */    
+    */
     public GraphRendererActions(Graph graph)
     {
         createActions(graph);
-    }    
-    
-    /** 
+    }
+
+    /**
     *  Creates all the actions.
-    */       
+    */
     private void createActions(final Graph graph)
     {
         undoNodeDragging = new AbstractAction("Undo Node Dragging On Selection")
@@ -74,15 +74,15 @@ public final class GraphRendererActions
         };
         redoNodeDragging.setEnabled(false);
 
-        autoRotateAction = new AbstractAction("Toggle AutoRotate / Profile") 
+        autoRotateAction = new AbstractAction("Toggle AutoRotate / Profile")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555731L;
-        
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createAutoRotateAction(e);
             }
@@ -100,8 +100,8 @@ public final class GraphRendererActions
             {
                 graph.createAutoScreenSaver2DModeAction(e);
             }
-        };      
-        
+        };
+
         pulsation3DModeAction = new AbstractAction("Toggle Pulsation / Morphing ®")
         {
             /**
@@ -116,73 +116,73 @@ public final class GraphRendererActions
             }
         };
 
-        selectAction = new AbstractAction("Selection Mode") 
+        selectAction = new AbstractAction("Selection Mode")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555733L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createSelectAction(e);
             }
         };
         selectAction.setEnabled(false);
-        
-        translateAction = new AbstractAction("Translation Mode") 
+
+        translateAction = new AbstractAction("Translation Mode")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555734L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createTranslateAction(e);
             }
-        };        
+        };
         translateAction.setEnabled(false);
-        
-        rotateAction = new AbstractAction("Rotation Mode") 
+
+        rotateAction = new AbstractAction("Rotation Mode")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555735L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createRotateAction(e);
             }
-        };        
+        };
         rotateAction.setEnabled(false);
-        
-        zoomAction = new AbstractAction("Zoom Mode") 
+
+        zoomAction = new AbstractAction("Zoom Mode")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555736L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createZoomAction(e);
             }
-        };        
+        };
         zoomAction.setEnabled(false);
-        
+
         resetViewAction = new AbstractAction("Reset View")
-        { 
-            /** 
+        {
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555737L;
-            
+
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -190,38 +190,38 @@ public final class GraphRendererActions
             }
         };
         resetViewAction.setEnabled(false);
-        
-        renderImageToFileAction = new AbstractAction("Render Graph Image To File As...") 
+
+        renderImageToFileAction = new AbstractAction("Render Graph Image To File As...")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555738L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createRenderImageToFileAction(e);
             }
-        };        
-        renderImageToFileAction.setEnabled(false);        
-        
-        renderHighResImageToFileAction = new AbstractAction("Render High Res Graph Image To File As...") 
+        };
+        renderImageToFileAction.setEnabled(false);
+
+        renderHighResImageToFileAction = new AbstractAction("Render High Res Graph Image To File As...")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 101222333444555739L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 graph.createRenderHighResImageToFileAction(e);
             }
-        };        
+        };
         renderHighResImageToFileAction.setEnabled(false);
-    }        
-    
+    }
+
     /**
     *  Gets the undo node dragging action.
     */
@@ -242,14 +242,14 @@ public final class GraphRendererActions
     *  Gets the autorotate action.
     */
     public AbstractAction getAutoRotateAction()
-    {        
+    {
         return autoRotateAction;
     }
 
     /**
     *  Gets the screensaver 2D mode action.
     */
-    public AbstractAction getAutoScreenSaver2DModeAction() 
+    public AbstractAction getAutoScreenSaver2DModeAction()
     {
         return screenSaver2DModeAction;
     }
@@ -257,16 +257,16 @@ public final class GraphRendererActions
     /**
     *  Gets the pulsation 3D mode action.
     */
-    public AbstractAction getPulsation3DModeAction() 
-    { 
-        return pulsation3DModeAction; 
+    public AbstractAction getPulsation3DModeAction()
+    {
+        return pulsation3DModeAction;
     }
 
     /**
     *  Gets the selection action.
     */
     public AbstractAction getSelectAction()
-    {        
+    {
         return selectAction;
     }
 
@@ -274,7 +274,7 @@ public final class GraphRendererActions
     *  Gets the translation action.
     */
     public AbstractAction getTranslateAction()
-    {        
+    {
         return translateAction;
     }
 
@@ -282,7 +282,7 @@ public final class GraphRendererActions
     *  Gets the rotation action.
     */
     public AbstractAction getRotateAction()
-    {        
+    {
         return rotateAction;
     }
 
@@ -290,7 +290,7 @@ public final class GraphRendererActions
     *  Gets the zoom action.
     */
     public AbstractAction getZoomAction()
-    {        
+    {
         return zoomAction;
     }
 
@@ -298,9 +298,9 @@ public final class GraphRendererActions
     *  Gets the reset view action.
     */
     public AbstractAction getResetViewAction()
-    {        
+    {
         return resetViewAction;
-    }    
+    }
 
     /**
     *  Gets the render action.
@@ -308,15 +308,15 @@ public final class GraphRendererActions
     public AbstractAction getRenderImageToFileAction()
     {
         return renderImageToFileAction;
-    }   
+    }
 
     /**
     *  Gets the high resolution render action.
     */
-    public AbstractAction getRenderHighResImageToFileAction() 
-    {        
-        return renderHighResImageToFileAction;        
+    public AbstractAction getRenderHighResImageToFileAction()
+    {
+        return renderHighResImageToFileAction;
     }
-    
-    
+
+
 }

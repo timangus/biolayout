@@ -20,23 +20,23 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 */
 
 public final class FindClassDialog extends JDialog
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the FindClassDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555744L;
-            
+
     private LayoutFrame layoutFrame = null;
     private ClassComboBox classComboBox = null;
     private int currentClassIndex = 0;
     private AbstractAction findClassDialogAction = null;
-    
-    public FindClassDialog(LayoutFrame layoutFrame, JFrame jFrame) 
+
+    public FindClassDialog(LayoutFrame layoutFrame, JFrame jFrame)
     {
         super(jFrame, "Find By Class", true);
-        
+
         this.layoutFrame = layoutFrame;
-        
+
         initActions();
         initComponents(jFrame);
     }
@@ -45,40 +45,40 @@ public final class FindClassDialog extends JDialog
     {
         findClassDialogAction = new AbstractAction("Find By Class")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555683L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setVisible(true);
             }
         };
-        findClassDialogAction.setEnabled(false);     
-    }    
-    
+        findClassDialogAction.setEnabled(false);
+    }
+
     private void initComponents(final JFrame jFrame)
     {
         JLabel textLabel = new JLabel("Please Select a Class:");
         textLabel.setAlignmentX(CENTER_ALIGNMENT);
         classComboBox = new ClassComboBox(layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses(), false, false);
         classComboBox.setToolTipText("Select a Class");
-        AbstractAction okAction = new AbstractAction("OK") 
+        AbstractAction okAction = new AbstractAction("OK")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555745L;
-    
+
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                VertexClass selectedVertexClass = (VertexClass)classComboBox.getSelectedItem();                
+                VertexClass selectedVertexClass = (VertexClass)classComboBox.getSelectedItem();
                 currentClassIndex = classComboBox.getSortedVertexClasses().indexOf(selectedVertexClass);
                 layoutFrame.getGraph().getSelectionManager().findClass(jFrame, selectedVertexClass);
-                
+
                 setVisible(false);
             }
         };
@@ -86,15 +86,15 @@ public final class FindClassDialog extends JDialog
         JButton okButton = new JButton(okAction);
         okButton.setToolTipText("OK");
 
-        AbstractAction cancelAction = new AbstractAction("Cancel") 
+        AbstractAction cancelAction = new AbstractAction("Cancel")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555746L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 setVisible(false);
             }
@@ -114,56 +114,56 @@ public final class FindClassDialog extends JDialog
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
         container.add(buttonPanel);
-        
+
         this.add(container);
         this.getRootPane().setDefaultButton(okButton);
         this.setResizable(false);
         this.pack();
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
-    }    
-    
+    }
+
     public void resetCurrentClassIndex()
     {
-        currentClassIndex = -1;        
+        currentClassIndex = -1;
         classComboBox.updateClasses( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses() );
         classComboBox.setSelectedIndex(0);
     }
-    
+
     public void setCurrentClassIndex(int currentClassIndex)
     {
         this.currentClassIndex = currentClassIndex;
         classComboBox.updateClasses( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses() );
         classComboBox.setSelectedIndex(currentClassIndex);
     }
-    
+
     public int numberOfAllClasses()
     {
         return classComboBox.getSortedVertexClasses().size();
     }
-    
+
     public int getClassIndex()
     {
         return currentClassIndex;
     }
-    
+
     public VertexClass currentVertexClass()
     {
         VertexClass vertexClass = classComboBox.getSortedVertexClasses().get(currentClassIndex);
         classComboBox.setSelectedIndex(currentClassIndex);
-        
+
         return vertexClass;
     }
-    
+
     public VertexClass nextVertexClass()
     {
         // multiple ternary if code explanation
         if ( classComboBox.getSortedVertexClasses().size() > (currentClassIndex + 1) )
         {
-            currentClassIndex++; 
+            currentClassIndex++;
             VertexClass vertexClass = classComboBox.getSortedVertexClasses().get(currentClassIndex);
             classComboBox.setSelectedIndex(currentClassIndex);
-            
+
             return ( !vertexClass.getName().equals(NO_CLASS) ) ? vertexClass : null;
         }
         else
@@ -176,36 +176,36 @@ public final class FindClassDialog extends JDialog
         {
             currentClassIndex--;
             VertexClass vertexClass = classComboBox.getSortedVertexClasses().get(currentClassIndex);
-            
+
             return vertexClass;
         }
         else
             return null;
-    }    
-    
+    }
+
     public boolean checkNextVertexClass()
     {
         return ( classComboBox.getSortedVertexClasses().size() > (currentClassIndex + 1) ) ? ( !classComboBox.getSortedVertexClasses().get(currentClassIndex + 1).getName().equals(NO_CLASS) ) : false;
     }
-    
+
     public boolean checkPreviousVertexClass()
     {
         return ( (currentClassIndex - 1) >= 0 );
-    }     
-    
+    }
+
     public AbstractAction getFindClassDialogAction()
     {
         return findClassDialogAction;
-    }    
-    
+    }
+
     @Override
-    public void setVisible(boolean state) 
+    public void setVisible(boolean state)
     {
         classComboBox.updateClasses( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses() );
         classComboBox.setSelectedIndex(currentClassIndex);
-        
+
         super.setVisible(state);
     }
-    
-    
+
+
 }

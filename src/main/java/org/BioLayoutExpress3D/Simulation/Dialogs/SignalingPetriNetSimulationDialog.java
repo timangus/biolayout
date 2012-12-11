@@ -46,7 +46,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
 
     private int totalTimeBlocks = 100;
     private int totalRuns = 500;
-    
+
     private AbstractAction signalingPetriNetSimulationDialogAction = null;
 
     /**
@@ -84,9 +84,9 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
                     JOptionPane.showMessageDialog(layoutFrame, "No Signaling Petri Net (SPN) Pathway Loaded!", "Signaling Petri Net (SPN) Simulation", JOptionPane.INFORMATION_MESSAGE);
             }
         };
-        signalingPetriNetSimulationDialogAction.setEnabled(false);        
+        signalingPetriNetSimulationDialogAction.setEnabled(false);
     }
-    
+
     /**
     *  This method is called from within the constructor to initialize the SPN dialog.
     */
@@ -290,7 +290,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
         }
 
         if ( getSPNTransitionType( USE_SPN_TRANSITION_TYPE.get() ).equals(SPNTransitionTypes.CONSUMPTIVE) )
-        {        
+        {
             useConsumptiveTransitionsRadioButton.setSelected(true);
             useOriginalTransitionsRadioButton.setSelected(false);
         }
@@ -422,7 +422,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
             layoutFrame.getLayoutGraphPropertiesDialog().setHasNewPreferencesBeenApplied(true);
         }
         else if ( e.getSource().equals(runSimulationButton) )
-        {            
+        {
             final String totalTimeBlocksString = totalTimeBlocksTextField.getText();
             final String totalRunsString = totalRunsField.getText();
 
@@ -465,10 +465,10 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
         }
     }
 
-    public AbstractAction getSignalingPetriNetSimulationDialogAction() 
+    public AbstractAction getSignalingPetriNetSimulationDialogAction()
     {
         return signalingPetriNetSimulationDialogAction;
     }
-    
+
 
 }

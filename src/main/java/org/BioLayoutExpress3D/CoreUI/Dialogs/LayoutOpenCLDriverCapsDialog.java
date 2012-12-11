@@ -14,12 +14,12 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 */
 
 public final class LayoutOpenCLDriverCapsDialog extends JDialog implements ActionListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutOpenCLDriverCapsDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555696L;
-    
+
     private AbstractAction openCLDriverCapsAction = null;
     private JButton okButton = null;
     private boolean doneOneInit = false;
@@ -58,7 +58,7 @@ public final class LayoutOpenCLDriverCapsDialog extends JDialog implements Actio
     private void initComponents()
     {
         JPanel topPanel = new JPanel(true);
-        topPanel.setLayout( new BorderLayout() );        
+        topPanel.setLayout( new BorderLayout() );
 
         JTabbedPane allPlatformsTabbedPane = new JTabbedPane();
         JTabbedPane[] allDevicesTabbedPanes = new JTabbedPane[CL_ALL_PLATFORM_NAMES.length];
@@ -96,8 +96,8 @@ public final class LayoutOpenCLDriverCapsDialog extends JDialog implements Actio
         this.setSize(710, 705);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    }    
-    
+    }
+
     private void setOpenCLDriverCaps(int platformIndex, int deviceIndex, JTextArea textArea)
     {
         textArea.append( String.format("\nCL_DEVICE_VENDOR:\t\t\t%s\n", CL_ALL_PLATFORM_DEVICES_VENDORS[platformIndex][deviceIndex]) );
@@ -129,7 +129,7 @@ public final class LayoutOpenCLDriverCapsDialog extends JDialog implements Actio
         textArea.append( String.format("CL_DEVICE_IMAGE_SUPPORT:\t\t" + ( (IS_MAC) ? "\t" : "" ) + "%s\n", (CL_ALL_PLATFORM_DEVICES_IMAGES_SUPPORT[platformIndex][deviceIndex] != 0) ? "YES" : "NO") );
         textArea.append( String.format("CL_DEVICE_MAX_SAMPLERS:\t\t\t%d\n", CL_ALL_PLATFORM_DEVICES_CL_DEVICE_MAX_SAMPLERS[platformIndex][deviceIndex]) );
         textArea.append( String.format("CL_DEVICE_MAX_READ_IMAGE_ARGS:\t\t%d\n", CL_ALL_PLATFORM_DEVICES_MAX_READ_IMAGES_ARGS[platformIndex][deviceIndex]) );
-        textArea.append( String.format("CL_DEVICE_MAX_WRITE_IMAGE_ARGS:\t\t%d\n", CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS[platformIndex][deviceIndex]) );        
+        textArea.append( String.format("CL_DEVICE_MAX_WRITE_IMAGE_ARGS:\t\t%d\n", CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS[platformIndex][deviceIndex]) );
         textArea.append( String.format("CL_DEVICE_IMAGE2D_MAX_WIDTH:\t\t%d\n", CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_WIDTHS[platformIndex][deviceIndex]) );
         textArea.append( String.format("CL_DEVICE_IMAGE2D_MAX_HEIGHT:\t\t%d\n", CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_HEIGHTS[platformIndex][deviceIndex]) );
         textArea.append( String.format("CL_DEVICE_IMAGE3D_MAX_WIDTH:\t\t%d\n", CL_ALL_PLATFORM_DEVICES_IMAGE_3D_MAX_WIDTHS[platformIndex][deviceIndex]) );
@@ -163,5 +163,5 @@ public final class LayoutOpenCLDriverCapsDialog extends JDialog implements Actio
         return openCLDriverCapsAction;
     }
 
-    
+
 }

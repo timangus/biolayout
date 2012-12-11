@@ -11,12 +11,12 @@ import static org.BioLayoutExpress3D.CoreUI.ToolBars.LayoutAbstractToolBar.Gener
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
 /**
-* 
+*
 * The LayoutGeneralToolBar is the BioLayout toolbar responsible for General control.
 *
 * @author Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class LayoutGeneralToolBar extends LayoutAbstractToolBar
@@ -30,21 +30,21 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
     public LayoutGeneralToolBar(int orientation)
     {
         super(GENERAL_TOOLBAR_TITLE, orientation, true);
-        
+
         texturesLoaderIcons = new TexturesLoader(GENERAL_DIR_NAME, GENERAL_FILE_NAME, false, false, true, TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
         allToolBarButtons = new JButton[NUMBER_OF_GENERAL_TOOLBAR_BUTTONS];
         ImageIcon imageIcon = new ImageIcon( texturesLoaderIcons.getImage( getFirstButtonName() ) );
         imageIconWidth = imageIcon.getIconWidth();
         imageIconHeight = imageIcon.getIconHeight();
         imageDivisor = ( IS_MAC || UIManager.getLookAndFeel().getName().equals("Nimbus") ) ? 6.0f : 3.0f;
-    }   
-    
+    }
+
     @Override
     protected final String getFirstButtonName()
     {
         return splitAndCapitalizeFirstCharacters(GRAPH_OPEN);
-    }        
-    
+    }
+
     public void setGraphOpenAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(GRAPH_OPEN), splitCapitalizeFirstCharactersInvertOrderAndAddWhiteSpaceBetweenNames(GRAPH_OPEN), GRAPH_OPEN.ordinal() );
@@ -85,7 +85,7 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
             graphLastOpen.setEnabled(false);
 
             return graphLastOpen;
-        }        
+        }
     }
 
     private void setGraphLastOpenActionDetails()
@@ -108,8 +108,8 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(SNAPSHOT), capitalizeFirstCharacter(SNAPSHOT), SNAPSHOT.ordinal() );
 
         addEmptySpaceAndSeparator();
-    }    
-    
+    }
+
     public void setGraphInformationAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(GRAPH_STATISTICS), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(GRAPH_STATISTICS), GRAPH_STATISTICS.ordinal() );
@@ -134,11 +134,11 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(CLASS_VIEWER), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(CLASS_VIEWER), CLASS_VIEWER.ordinal() );
     }
-    
+
     public void setAnimationControlAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(ANIMATION_CONTROL), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(ANIMATION_CONTROL), ANIMATION_CONTROL.ordinal() );
-    }    
+    }
 
     public void setBurstLayoutIterationsAction(AbstractAction action)
     {
@@ -151,7 +151,7 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         allToolBarButtons[_2D_3D.ordinal()].setText("");
         allToolBarButtons[_2D_3D.ordinal()].setToolTipText("2D / 3D Switch");
         allToolBarButtons[_2D_3D.ordinal()].setBorderPainted(false);
-        allToolBarButtons[_2D_3D.ordinal()].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );        
+        allToolBarButtons[_2D_3D.ordinal()].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
         set2D3DButton();
         allToolBarButtons[_2D_3D.ordinal()].setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         allToolBarButtons[_2D_3D.ordinal()].setContentAreaFilled(false);
@@ -164,33 +164,33 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
     {
         setToolBarButtonAction( action, capitalizeFirstCharacter(HOME), HOME.ordinal() );
     }
-    
+
     public void set2D3DButton()
-    {   
+    {
         String[] actionNames = _2D_3D.toString().substring(1).split(ENUM_REGEX + "+");
         setToolBarButtonImages(allToolBarButtons[_2D_3D.ordinal()], actionNames[RENDERER_MODE_3D ? 0 : 1]);
     }
-            
+
     public void runSPNButtonResetRolloverState()
     {
         allToolBarButtons[RUN_SPN.ordinal()].getModel().setRollover(false);
     }
-    
+
     public void animationControlButtonResetRolloverState()
     {
         allToolBarButtons[ANIMATION_CONTROL.ordinal()].getModel().setRollover(false);
-    }    
-    
+    }
+
     @Override
     public void setEnabled(boolean enabled)
     {
-        boolean isDataSetLoaded = !DATA_TYPE.equals(DataTypes.NONE); 
+        boolean isDataSetLoaded = !DATA_TYPE.equals(DataTypes.NONE);
         for (int i = 0; i < NUMBER_OF_GENERAL_TOOLBAR_BUTTONS; i++)
         {
             if ( ( i >= GRAPH_SAVE.ordinal() ) && ( i <= GeneralToolBarButtons.BURST_LAYOUT_ITERATIONS.ordinal() ) ) // for the Graph Save, Graph Information, Graph Find, Run MCL, Run SPN, Class Viewer, Burst Layout Iterations buttons
                 allToolBarButtons[i].setEnabled(enabled && isDataSetLoaded);
             else // for the Graph Open, Graph Last Open, 2D/3D & Home buttons
-                allToolBarButtons[i].setEnabled(enabled);        
+                allToolBarButtons[i].setEnabled(enabled);
         }
     }
 
@@ -198,11 +198,11 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
     public boolean isEnabled()
     {
         for (int i = 0; i < NUMBER_OF_GENERAL_TOOLBAR_BUTTONS; i++)
-            if ( constructorInitializationFinished && !allToolBarButtons[i].isEnabled() )        
+            if ( constructorInitializationFinished && !allToolBarButtons[i].isEnabled() )
                 return false;
-        
+
         return true;
     }
-    
-    
+
+
 }

@@ -43,7 +43,7 @@ import static org.BioLayoutExpress3D.Expression.ExpressionEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
-* 
+*
 * This is the main BioLayoutExpress3D window frame. The two renderers are outputting their graphics
 * here and all actions/GUI windows are to be initiated from this central application frame.
 *
@@ -53,11 +53,11 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 */
 
 public final class LayoutFrame extends JFrame implements GraphListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the LayoutFrame class.
-    */        
-    public static final long serialVersionUID = 111222333444555678L;        
+    */
+    public static final long serialVersionUID = 111222333444555678L;
 
     private NetworkRootContainer nc = null;
     private LayoutClassSetsManager layoutClassSetsManager;
@@ -69,39 +69,39 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private JLabel nodeLabel = null;
     private JLabel statusLabel = null;
     private JPanel globalPanel = null;
-    private LayoutAboutDialog layoutAboutDialog = null;    
+    private LayoutAboutDialog layoutAboutDialog = null;
     private LayoutMenuBar layoutMenuBar = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
     private CoreSaver saver = null;
-    private LayoutPrintServices layoutPrintServices = null;    
+    private LayoutPrintServices layoutPrintServices = null;
     private FilterNodesByEdgesDialog filterNodesByEdgesDialog = null;
     private FilterEdgesByWeightDialog filterEdgesByWeightDialog = null;
     private LayoutCustomizeNodeNamesDialog layoutCustomizeNodeNamesDialog = null;
-    private LayoutShowClassesLegendsDialog layoutShowClassesLegendsDialog = null;    
+    private LayoutShowClassesLegendsDialog layoutShowClassesLegendsDialog = null;
     private FindNameDialog findNameDialog = null;
     private FindClassDialog findClassDialog = null;
     private FindMultipleClassesDialog findMultipleClassesDialog = null;
-    private SignalingPetriNetSimulationDialog SPNSimulationDialog = null;    
-    private SignalingPetriNetLoadSimulation signalingPetriNetLoadSimulation = null;    
+    private SignalingPetriNetSimulationDialog SPNSimulationDialog = null;
+    private SignalingPetriNetLoadSimulation signalingPetriNetLoadSimulation = null;
     private LayoutGraphPropertiesDialog layoutGraphPropertiesDialog = null;
     private LayoutGraphStatisticsDialog layoutGraphStatisticsDialog = null;
     private ExpressionData expresionData = null;
     private ExpressionViewerFrame expressionViewerFrame;
-    private ClassViewerFrame classViewerFrame = null;        
-    private LayoutAnimationControlDialog layoutAnimationControlDialog = null;    
+    private ClassViewerFrame classViewerFrame = null;
+    private LayoutAnimationControlDialog layoutAnimationControlDialog = null;
     private LayoutClusterMCL layoutClusterMCL = null;
     private LayoutNavigationWizardDialog layoutNavigationWizardDialog = null;
-    private LayoutTipOfTheDayDialog layoutTipOfTheDayDialog = null;       
-    private LayoutLicensesDialog layoutLicensesDialog = null;    
+    private LayoutTipOfTheDayDialog layoutTipOfTheDayDialog = null;
+    private LayoutLicensesDialog layoutLicensesDialog = null;
     private LayoutOpenGLDriverCapsDialog layoutOpenGLDriverCapsDialog = null;
     private LayoutOpenCLDriverCapsDialog layoutOpenCLDriverCapsDialog = null;
-    private LayoutJavaPlatformCapsDialog layoutJavaPlatformCapsDialog = null;  
-    private LayoutOnlineServices layoutOnlineServices = null;    
-    
+    private LayoutJavaPlatformCapsDialog layoutJavaPlatformCapsDialog = null;
+    private LayoutOnlineServices layoutOnlineServices = null;
+
     private AbstractAction fileMenuOpenAction = null;
-    private AbstractAction fileMenuExitAction = null;    
+    private AbstractAction fileMenuExitAction = null;
     private AbstractAction _2D3DSwitchAction = null;
-    private AbstractAction homeAction = null;    
+    private AbstractAction homeAction = null;
     private AbstractAction blockAllAction = null;
     private AbstractAction blockAllExceptNavigationToolBarAction = null;
     private ActionEvent blockEvent = null;
@@ -124,16 +124,16 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private boolean navigationWizardShownOnce = false;
 
     /**
-    *  The constructor of LayoutFrame. 
-    */      
+    *  The constructor of LayoutFrame.
+    */
     public LayoutFrame()
     {
         super(VERSION);
-    } 
+    }
 
     /**
     *  Initializes the frame. This method is specified to return the 'this' reference upon which it is invoked. This allows the method invocation to be chained.
-    */    
+    */
     public LayoutFrame initializeFrame(final boolean startWithAutomaticFileLoading)
     {
         LayoutPreferences.getLayoutPreferencesSingleton().loadPreferences();
@@ -145,98 +145,98 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         long prevTimeInMSecs = System.nanoTime() / 1000000;
         LayoutAboutDialog splashScreen = new LayoutAboutDialog(this, true);
-        
-        sleepMaxTime(prevTimeInMSecs);       
-        prevTimeInMSecs = System.nanoTime() / 1000000;        
 
-        allExitMessageIndices = createRandomIndexIntegerArrayList(ALL_EXIT_MESSAGES.length);   
+        sleepMaxTime(prevTimeInMSecs);
+        prevTimeInMSecs = System.nanoTime() / 1000000;
 
-        fileOpenHistory = new FileOpenHistory(MAX_FILE_HISTORY);                      
+        allExitMessageIndices = createRandomIndexIntegerArrayList(ALL_EXIT_MESSAGES.length);
+
+        fileOpenHistory = new FileOpenHistory(MAX_FILE_HISTORY);
         layoutProgressBarDialog = new LayoutProgressBarDialog(this);
         layoutNavigationWizardDialog = new LayoutNavigationWizardDialog(this);
         layoutTipOfTheDayDialog = new LayoutTipOfTheDayDialog(this);
         layoutOnlineServices = new LayoutOnlineServices(this);
-        
+
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-        
+
         splashScreen.setText(" Initializing Classes...");
-        layoutClassSetsManager = new LayoutClassSetsManager();     
+        layoutClassSetsManager = new LayoutClassSetsManager();
         layoutClassSetsManager.createNewClassSet("Default Classes...");
 
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-        
+
         splashScreen.setText(" Loading Network Container...");
         nc = new NetworkRootContainer(layoutClassSetsManager, this);
-                
+
         sleepMaxTime(prevTimeInMSecs);
-        prevTimeInMSecs = System.nanoTime() / 1000000;       
+        prevTimeInMSecs = System.nanoTime() / 1000000;
 
         splashScreen.setText(" Loading Main OpenGL Canvas...");
-        nodeLabel = new JLabel();        
+        nodeLabel = new JLabel();
         nodeLabel.setMinimumSize( new Dimension(150, 10) );
-                
+
         layoutOpenGLDriverCapsDialog = new LayoutOpenGLDriverCapsDialog(this);
-        layoutOpenCLDriverCapsDialog = new LayoutOpenCLDriverCapsDialog(this); 
+        layoutOpenCLDriverCapsDialog = new LayoutOpenCLDriverCapsDialog(this);
         layoutJavaPlatformCapsDialog = new LayoutJavaPlatformCapsDialog(this);
-        
+
         detectOpenCLSupportAndExtensions();
-        detectOpenGLSupportAndExtensions();        
-        
+        detectOpenGLSupportAndExtensions();
+
         RENDERER_MODE_3D = RENDERER_MODE_START_3D.get();
         graph = new Graph(this, nc);
-        graph.setListener(this);        
+        graph.setListener(this);
         graph.addAllEvents();
         setRenderModeSwitchUISettings();
-        
+
         statusLabel = new JLabel();
         setStatusLabel("Ready");
 
         sleepMaxTime(prevTimeInMSecs);
-        prevTimeInMSecs = System.nanoTime() / 1000000;        
-        
+        prevTimeInMSecs = System.nanoTime() / 1000000;
+
         splashScreen.setText(" Creating Toolbars...");
         layoutGraphPropertiesToolBar = new LayoutGraphPropertiesToolBar(JToolBar.HORIZONTAL);
         layoutGeneralToolBar = new LayoutGeneralToolBar(JToolBar.VERTICAL);
         layoutNavigationToolBar = new LayoutNavigationToolBar(JToolBar.VERTICAL);
-        
+
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-        
-        splashScreen.setText(" Creating Menus & All UIs...");        
+
+        splashScreen.setText(" Creating Menus & All UIs...");
         layoutClusterMCL = new LayoutClusterMCL(this, graph);
-        layoutGraphStatisticsDialog = new LayoutGraphStatisticsDialog(this, graph);       
+        layoutGraphStatisticsDialog = new LayoutGraphStatisticsDialog(this, graph);
         expresionData = new ExpressionData(this);
         expressionViewerFrame = new ExpressionViewerFrame(this, expresionData);
-        classViewerFrame = new ClassViewerFrame(this);                
+        classViewerFrame = new ClassViewerFrame(this);
         SPNSimulationDialog = new SignalingPetriNetSimulationDialog(nc, this);
         layoutAnimationControlDialog = new LayoutAnimationControlDialog(this);
-        signalingPetriNetLoadSimulation = new SignalingPetriNetLoadSimulation(nc, this);        
+        signalingPetriNetLoadSimulation = new SignalingPetriNetLoadSimulation(nc, this);
         layoutMenuBar = new LayoutMenuBar();
 
         JPanel propertiesPanel = new JPanel(true);
-        
+
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-        
+
         splashScreen.setText(" Building Layout Graph Properties Dialog...");
         layoutGraphPropertiesDialog = new LayoutGraphPropertiesDialog(this, layoutClassSetsManager, nc);
-        
+
         sleepMaxTime(prevTimeInMSecs);
-        prevTimeInMSecs = System.nanoTime() / 1000000;        
-        
+        prevTimeInMSecs = System.nanoTime() / 1000000;
+
         splashScreen.setText(" Building Search Dialogs...");
         findNameDialog = new FindNameDialog(this, this);
         findClassDialog = new FindClassDialog(this, this);
         findMultipleClassesDialog = new FindMultipleClassesDialog(this, this);
-                
+
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-        
+
         splashScreen.setText(" Creating Panels...");
         globalPanel = new JPanel(true);
-        globalPanel.setLayout( new BorderLayout() );               
+        globalPanel.setLayout( new BorderLayout() );
 
         JPanel statusLabelPanel = new JPanel(true);
         statusLabelPanel.setLayout( new BorderLayout() );
@@ -259,8 +259,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         this.setJMenuBar(layoutMenuBar);
         propertiesPanel.add(statusLabelPanel, BorderLayout.EAST);
-        propertiesPanel.add(labelPanel, BorderLayout.WEST);        
-        
+        propertiesPanel.add(labelPanel, BorderLayout.WEST);
+
         if ( SHOW_GRAPH_PROPERTIES_TOOLBAR.get() )
             globalPanel.add(layoutGraphPropertiesToolBar, BorderLayout.NORTH);
         if ( SHOW_NAVIGATION_TOOLBAR.get() )
@@ -273,17 +273,17 @@ public final class LayoutFrame extends JFrame implements GraphListener
         globalPanel.add(propertiesPanel, BorderLayout.SOUTH);
 
         this.getContentPane().add(globalPanel);
-        
+
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-        
+
         splashScreen.setText(" Initializing Rest of Graphics...");
         layoutCustomizeNodeNamesDialog = new LayoutCustomizeNodeNamesDialog(this);
         layoutShowClassesLegendsDialog = new LayoutShowClassesLegendsDialog(this);
         layoutLicensesDialog = new LayoutLicensesDialog(this);
 
         filterNodesByEdgesDialog = new FilterNodesByEdgesDialog(this);
-        filterEdgesByWeightDialog = new FilterEdgesByWeightDialog(this);       
+        filterEdgesByWeightDialog = new FilterEdgesByWeightDialog(this);
 
         saver = new CoreSaver(nc, this);
         importClassSetsParser = new ImportClassSetsParser(nc, this);
@@ -294,17 +294,17 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-        
+
         splashScreen.setText(" Done Loading All Components. Building Main View UI...");
         layoutAboutDialog = new LayoutAboutDialog(this, false);
         bioLayoutExpress3DFileFilter = new BioLayoutExpress3DFileFilter();
 
         initActions(this);
-        
+
         blockEvent = new ActionEvent(this, 1, BLOCK_ALL);
         unblockEvent = new ActionEvent(this, 2, UNBLOCK_ALL);
 
-        sleep(3 * MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING);               
+        sleep(3 * MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING);
 
         this.addWindowListener( new WindowAdapter()
         {
@@ -320,12 +320,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         sleep(MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING);
-        splashScreen.finishedLoading();        
-        frameInitializationFinish(startWithAutomaticFileLoading);  
-        
+        splashScreen.finishedLoading();
+        frameInitializationFinish(startWithAutomaticFileLoading);
+
         return this;
     }
-    
+
     /**
     *  Detects the OpenCL support and extensions.
     */
@@ -346,8 +346,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private void detectOpenGLSupportAndExtensions()
     {
         if ( FIRST_RUN_DETECT_OPENGL_SUPPORT_AND_EXTENSIONS.get() )
-        {            
-            if (!IS_MAC)            
+        {
+            if (!IS_MAC)
                 useOpenGLContextForDetectingOpenGLSupportAndExtensions();
             else
                 setHighQualityRenderingSettings();
@@ -383,13 +383,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
         CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.set(1); // default node rendering type B/W instead of LogicOp
     }
 
-    /** 
+    /**
     *  Sleeps for a max time given a previous time, depending on how much time has a process already been running.
-    */      
+    */
     private void sleepMaxTime(long prevTimeInMSecs)
     {
         long timeToSleep = MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING - (System.nanoTime() / 1000000 - prevTimeInMSecs);
-        if (timeToSleep <= 0) 
+        if (timeToSleep <= 0)
         {
             if (DEBUG_BUILD) println("sleepMaxTime() 1: timeToSleep <= 0: " + timeToSleep);
             return;
@@ -400,51 +400,51 @@ public final class LayoutFrame extends JFrame implements GraphListener
             sleep(timeToSleep);
         }
     }
-    
-    /** 
+
+    /**
     *  Loads the rest of the preferences.
-    */        
+    */
     private void loadRestOfPreferences()
     {
-        GRAPH_ANAGLYPH_GLASSES_TYPE = GraphAnaglyphGlassesTypes.values()[getEnumIndexForName( GraphAnaglyphGlassesTypes.class, ANAGLYPH_GLASSES_TYPE.get() )];                
+        GRAPH_ANAGLYPH_GLASSES_TYPE = GraphAnaglyphGlassesTypes.values()[getEnumIndexForName( GraphAnaglyphGlassesTypes.class, ANAGLYPH_GLASSES_TYPE.get() )];
         GRAPH_INTRA_OCULAR_DISTANCE_TYPE = GraphIntraOcularDistanceTypes.values()[getEnumIndexForName( GraphIntraOcularDistanceTypes.class, INTRA_OCULAR_DISTANCE_TYPE.get() )];
-        
+
         NODE_NAMES_OPENGL_FONT_TYPE = OpenGLFontTypes.values()[getEnumIndexForName( OpenGLFontTypes.class, CUSTOMIZE_NODE_NAMES_OPENGL_NAME_FONT_TYPE.get() )];
-        
+
         LATHE3D_SETTINGS.xsIn = LayoutPreferences.readPreferenceFloatArrayString( LATHE3D_SETTINGS_XSIN.get() );
-        LATHE3D_SETTINGS.ysIn = LayoutPreferences.readPreferenceFloatArrayString( LATHE3D_SETTINGS_YSIN.get() );       
+        LATHE3D_SETTINGS.ysIn = LayoutPreferences.readPreferenceFloatArrayString( LATHE3D_SETTINGS_YSIN.get() );
         LATHE3D_SETTINGS.splineStep = LATHE3D_SETTINGS_SPLINE_STEP.get();
         LATHE3D_SETTINGS.k = LATHE3D_SETTINGS_K.get();
         LATHE3D_SETTINGS.lathe3DShapeType = Lathe3DShapeTypes.values()[LATHE3D_SETTINGS_LATHE3D_SHAPE_TYPE.get()];
-        
+
         SUPER_QUADRIC_SETTINGS.e = SUPER_QUADRIC_SETTINGS_E.get();
         SUPER_QUADRIC_SETTINGS.n = SUPER_QUADRIC_SETTINGS_N.get();
         SUPER_QUADRIC_SETTINGS.v1 = SUPER_QUADRIC_SETTINGS_V1.get();
         SUPER_QUADRIC_SETTINGS.alpha = SUPER_QUADRIC_SETTINGS_ALPHA.get();
         SUPER_QUADRIC_SETTINGS.superQuadricShapeType = SuperQuadricShapeTypes.values()[SUPER_QUADRIC_SETTINGS_SUPER_QUADRIC_SHAPE_TYPE.get()];
-        
+
         EXTERNAL_OBJ_MODEL_FILE_PATH = MODEL_FILES_PATH;
-        EXTERNAL_OBJ_MODEL_FILE_NAME = capitalizeFirstCharacter(OBJModelShapes.values()[getEnumIndexForName( OBJModelShapes.class, OBJ_MODEL_LOADER_CHOSEN_PRESET_SHAPE.get() )]);        
+        EXTERNAL_OBJ_MODEL_FILE_NAME = capitalizeFirstCharacter(OBJModelShapes.values()[getEnumIndexForName( OBJModelShapes.class, OBJ_MODEL_LOADER_CHOSEN_PRESET_SHAPE.get() )]);
     }
-    
-    /** 
+
+    /**
     *  Sleeps for a given time (in milliseconds) and gives other threads a chance to run.
-    */    
+    */
     public static void sleep(long sleepTimeInMSecs)
     {
-        try 
+        try
         {
             Thread.yield(); // Give another thread a chance to run
-            TimeUnit.MILLISECONDS.sleep(sleepTimeInMSecs);            
+            TimeUnit.MILLISECONDS.sleep(sleepTimeInMSecs);
         }
         catch (InterruptedException ex)
         {
             // restore the interuption status after catching InterruptedException
             Thread.currentThread().interrupt();
             if (DEBUG_BUILD) println("Problem with the sleeping thread method in the LayoutFrame class:\n" + ex.getMessage() );
-        }          
+        }
     }
-    
+
     /**
     *  Initializes all actions.
     */
@@ -452,13 +452,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
     {
         fileMenuOpenAction = new AbstractAction("Open")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555679L;
-    
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 loadFile();
             }
@@ -466,27 +466,27 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         fileMenuExitAction = new AbstractAction("Exit")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555680L;
-            
+
             @Override
             public void actionPerformed(ActionEvent e)
-            {                
+            {
                 closeApplication();
             }
         };
 
         toolsMenuSavePreferencesAction = new AbstractAction("Save Preferences")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555687L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 LayoutPreferences.getLayoutPreferencesSingleton().savePreferences();
                 layoutGraphPropertiesDialog.setHasNewPreferencesBeenApplied(false);
@@ -495,13 +495,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         toolsMenuRevertToDefaultPreferencesAction = new AbstractAction("Revert To Default Preferences")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555688L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 int option = JOptionPane.showConfirmDialog(layoutFrame, "Do you really want to revert to default preferences?", "Revert to Default Preferences", JOptionPane.YES_NO_CANCEL_OPTION);
                 if (option == JOptionPane.YES_OPTION)
@@ -519,17 +519,17 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         _2D3DSwitchAction = new AbstractAction("2D & 3D Switch")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555689L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 rendererModeSwitchProcess(Thread.NORM_PRIORITY);
             }
-        };   
+        };
 
         homeAction = new AbstractAction("Home")
         {
@@ -578,7 +578,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 layoutGeneralToolBar.setEnabled(!IS_BLOCKED);
                 layoutNavigationToolBar.setEnabled(!IS_BLOCKED);
                 layoutMenuBar.setEnabled(!IS_BLOCKED);
-                
+
                 layoutNavigationWizardDialog.setAlwaysOnTop(IS_BLOCKED);
                 setCursor(IS_BLOCKED ? BIOLAYOUT_WAIT_CURSOR : BIOLAYOUT_NORMAL_CURSOR);
             }
@@ -598,8 +598,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
                 layoutGraphPropertiesToolBar.setEnabled(!IS_BLOCKED);
                 layoutGeneralToolBar.setEnabled(! IS_BLOCKED);
-                layoutMenuBar.setEnabled(!IS_BLOCKED);                
-                
+                layoutMenuBar.setEnabled(!IS_BLOCKED);
+
                 layoutNavigationWizardDialog.setAlwaysOnTop(IS_BLOCKED);
             }
         };
@@ -613,11 +613,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
     /**
     *  Initializes all menubar actions.
-    */     
+    */
     private void initMenuBarActions()
     {
         layoutMenuBar.cleanAllMenus();
-        
+
         layoutMenuBar.setFileMenuOpenAction(fileMenuOpenAction);
         layoutMenuBar.setFileMenuOpenRecentAction( fileOpenHistory.getActionsList(this) );
         layoutMenuBar.setFileMenuSaveGraphAsAction( saver.getSaveAction() );
@@ -658,25 +658,25 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setEditSubMenuDeselectAllAction( graph.getSelectionManager().getDeselectAllAction() );
 
         layoutMenuBar.setViewMenuHideSelectionAction( graph.getSelectionManager().getHideSelectionAction() );
-        layoutMenuBar.setViewMenuHideUnselectedAction( graph.getSelectionManager().getHideUnselectedAction() );       
+        layoutMenuBar.setViewMenuHideUnselectedAction( graph.getSelectionManager().getHideUnselectedAction() );
         layoutMenuBar.setViewMenuUnhideAllNodesAction( graph.getSelectionManager().getUnhideAllAction() );
         layoutMenuBar.setViewMenuShowAllNodeNamesAction( graph.getSelectionManager().getShowAllNodeNamesAction() );
         layoutMenuBar.setViewMenuShowSelectedNodeNamesAction( graph.getSelectionManager().getShowSelectedNodeNamesAction() );
         layoutMenuBar.setViewMenuShowAllEdgeNamesAction( graph.getSelectionManager().getShowAllEdgeNamesAction() );
         layoutMenuBar.setViewMenuShowSelectedNodesEdgeNamesAction( graph.getSelectionManager().getShowSelectedNodesEdgeNamesAction() );
         layoutMenuBar.setViewMenuHideAllNodeNamesAction( graph.getSelectionManager().getHideAllNodeNamesAction() );
-        layoutMenuBar.setViewMenuHideSelectedNodeNamesAction( graph.getSelectionManager().getHideSelectedNodeNamesAction() );        
+        layoutMenuBar.setViewMenuHideSelectedNodeNamesAction( graph.getSelectionManager().getHideSelectedNodeNamesAction() );
         layoutMenuBar.setViewMenuHideAllEdgeNamesAction( graph.getSelectionManager().getHideAllEdgeNamesAction() );
         layoutMenuBar.setViewMenuHideSelectedNodesEdgeNamesAction( graph.getSelectionManager().getHideSelectedNodesEdgeNamesAction() );
         layoutMenuBar.setViewMenuCustomizeNodeNamesAction( layoutCustomizeNodeNamesDialog.getCustomizeNodeNamesAction() );
-        layoutMenuBar.setViewMenuShowClassesLegendsAction( layoutShowClassesLegendsDialog.getShowClassesLegendsShowAction() );        
+        layoutMenuBar.setViewMenuShowClassesLegendsAction( layoutShowClassesLegendsDialog.getShowClassesLegendsShowAction() );
 
         layoutMenuBar.setSearchMenuFindByNameAction( findNameDialog.getFindNameDialogAction() );
         layoutMenuBar.setSearchMenuFindByClassAction( findClassDialog.getFindClassDialogAction() );
         layoutMenuBar.setSearchMenuFindByMultipleClassesAction( findMultipleClassesDialog.getFindMultipleClassesDialogAction() );
 
         layoutMenuBar.setSimulationMenuSPNDialogAction( SPNSimulationDialog.getSignalingPetriNetSimulationDialogAction() );
-        layoutMenuBar.setSimulationMenuLoadSimulationDataAction( signalingPetriNetLoadSimulation.getSignalingPetriNetLoadSimulationAction() );        
+        layoutMenuBar.setSimulationMenuLoadSimulationDataAction( signalingPetriNetLoadSimulation.getSignalingPetriNetLoadSimulationAction() );
 
         layoutMenuBar.setToolsMenuGraphPropertiesAction( layoutGraphPropertiesDialog.getGeneralPropertiesAction() );
         layoutMenuBar.setToolsMenuSavePreferences(toolsMenuSavePreferencesAction);
@@ -689,14 +689,14 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         layoutMenuBar.setHelpMenuNavigationWizardAction( layoutNavigationWizardDialog.getNavigationWizardAction() );
         layoutMenuBar.setHelpMenuTipOfTheDayAction( layoutTipOfTheDayDialog.getTipOfTheDayAction() );
-        layoutMenuBar.setHelpMenuLicensesAction( layoutLicensesDialog.getLicensesAction() );        
+        layoutMenuBar.setHelpMenuLicensesAction( layoutLicensesDialog.getLicensesAction() );
         layoutMenuBar.setHelpMenuOpenGLDriverCapsAction( layoutOpenGLDriverCapsDialog.getOpenGLDriverCapsAction() );
         layoutMenuBar.setHelpMenuOpenCLDriverCapsAction( layoutOpenCLDriverCapsDialog.getOpenCLDriverCapsAction() );
         layoutMenuBar.setHelpMenuJavaPlatformCapsAction( layoutJavaPlatformCapsDialog.getJavaPlatformCapsAction() );
         if (!WEBSTART) layoutMenuBar.setHelpMenuCheckForUpdatesAction(helpMenuCheckForUpdatesAction);
         layoutMenuBar.setHelpMenuAboutAction( layoutAboutDialog.getAboutAction() );
 
-        // Adds the 2D/3D menus in 2D/3D mode        
+        // Adds the 2D/3D menus in 2D/3D mode
         if (RENDERER_MODE_3D)
         {
             layoutMenuBar.set3DMenuAutoRotateAction( graph.getGraphRendererActions().getAutoRotateAction() );
@@ -707,10 +707,10 @@ public final class LayoutFrame extends JFrame implements GraphListener
             layoutMenuBar.set3DMenuZoomAction( graph.getGraphRendererActions().getZoomAction() );
             layoutMenuBar.set3DMenuResetViewAction( graph.getGraphRendererActions().getResetViewAction() );
             layoutMenuBar.set3DMenuRenderAction( graph.getGraphRendererActions().getRenderImageToFileAction() );
-            layoutMenuBar.set3DMenuHighResRenderAction( graph.getGraphRendererActions().getRenderHighResImageToFileAction() );            
+            layoutMenuBar.set3DMenuHighResRenderAction( graph.getGraphRendererActions().getRenderHighResImageToFileAction() );
         }
         else
-        {            
+        {
             layoutMenuBar.set2DMenuAutoRotateAction( graph.getGraphRendererActions().getAutoRotateAction() );
             layoutMenuBar.set2DMenuScreenSaver2DModeAction( graph.getGraphRendererActions().getAutoScreenSaver2DModeAction() );
             layoutMenuBar.set2DMenuTranslateAction( graph.getGraphRendererActions().getTranslateAction() );
@@ -719,7 +719,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             layoutMenuBar.set2DMenuRenderAction( graph.getGraphRendererActions().getRenderImageToFileAction() );
             layoutMenuBar.set2DMenuHighResRenderAction( graph.getGraphRendererActions().getRenderHighResImageToFileAction() );
         }
-        
+
         layoutMenuBar.set3DMenuEnabled(RENDERER_MODE_3D);
         layoutMenuBar.set2DMenuEnabled(!RENDERER_MODE_3D);
     }
@@ -788,8 +788,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
     }
 
     /**
-    *  Graphical/GUI initialization of the LayoutFrame. 
-    */       
+    *  Graphical/GUI initialization of the LayoutFrame.
+    */
     private void frameInitializationFinish(final boolean startWithAutomaticFileLoading)
     {
         try
@@ -801,7 +801,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 public void run()
                 {
                     try
-                    {                        
+                    {
                         setVisible(true);
 
                         layoutOnlineServices.checkApplicationUsage();
@@ -832,15 +832,15 @@ public final class LayoutFrame extends JFrame implements GraphListener
     }
 
     /**
-    *  Initializes the drag and drop process. 
-    */     
-    private void initFileDragNDrop() 
+    *  Initializes the drag and drop process.
+    */
+    private void initFileDragNDrop()
     {
         fileDragNDrop = new FileDragNDrop(graph, new FileDragNDrop.FileDragNDropListener()
         {
 
             @Override
-            public void filesDropped(File file) 
+            public void filesDropped(File file)
             {
                 loadDataSet(file);
             }
@@ -854,53 +854,53 @@ public final class LayoutFrame extends JFrame implements GraphListener
         graph.setEnabledUndoNodeDragging(!RENDERER_MODE_3D);
         graph.setEnabledRedoNodeDragging(!RENDERER_MODE_3D);
         graph.getGraphActions().getRotateUpAction().setEnabled(RENDERER_MODE_3D);   // rotate   up is enabled in 3D mode only
-        graph.getGraphActions().getRotateDownAction().setEnabled(RENDERER_MODE_3D); // rotate down is enabled in 3D mode only       
+        graph.getGraphActions().getRotateDownAction().setEnabled(RENDERER_MODE_3D); // rotate down is enabled in 3D mode only
     }
-    
+
     /*
     *   Process a light-weight thread using the Adapter technique to avoid any load latencies.
-    */     
+    */
     private void rendererModeSwitchProcess(int threadPriority)
     {
         Thread rendererModeSwitchThread = new Thread( new Runnable()
         {
 
             @Override
-            public void run() 
-            {              
+            public void run()
+            {
                 graph.switchRendererMode();
             }
 
 
-        } );           
+        } );
 
         rendererModeSwitchThread.setPriority(threadPriority);
-        rendererModeSwitchThread.start();                                
+        rendererModeSwitchThread.start();
     }
-    
+
     /**
-    *  Loads a file. 
-    */         
-    private void loadFile() 
+    *  Loads a file.
+    */
+    private void loadFile()
     {
         String loadFilePath = FILE_CHOOSER_PATH.get().substring(0, FILE_CHOOSER_PATH.get().lastIndexOf( System.getProperty("file.separator") ) + 1);
         JFileChooser fileChooser = new JFileChooser(loadFilePath);
         fileChooser.setDialogTitle("Open Graph File");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fileChooser.setFileFilter(bioLayoutExpress3DFileFilter);
-        
+
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
             File file = fileChooser.getSelectedFile();
             FILE_CHOOSER_PATH.set( file.getAbsolutePath() );
             loadDataSet(file);
         }
-    }    
-    
+    }
+
     /**
-    *  Loads a given dataset. 
-    */       
-    public void loadDataSet(File file) 
+    *  Loads a given dataset.
+    */
+    public void loadDataSet(File file)
     {
         if (loadingFile)
         {
@@ -918,11 +918,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
             else
             {
-                if ( bioLayoutExpress3DFileFilter.accept(file) ) 
+                if ( bioLayoutExpress3DFileFilter.accept(file) )
                 {
                     runParseProcess(this, Thread.NORM_PRIORITY, file);
-                } 
-                else 
+                }
+                else
                 {
                     JOptionPane.showMessageDialog(this, "Not supported BioLayout Express 3D file type!\n" + bioLayoutExpress3DFileFilter.getDescription(),
                                                         "Error: Not supported BioLayout Express 3D file type", JOptionPane.ERROR_MESSAGE);
@@ -986,25 +986,25 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
     /**
     *   Process a light-weight thread using the Adapter technique to avoid any load latencies.
-    */     
+    */
     private void runParseProcess(final LayoutFrame layoutFrame, int threadPriority, final File file)
     {
         Thread runLightWeightThread = new Thread( new Runnable()
         {
 
             @Override
-            public void run() 
-            {             
+            public void run()
+            {
                 try
                 {
                     loadingFile = true;
-                    
+
                     blockAllAction.actionPerformed(blockEvent);
                     parseFile(file);
                     blockAllAction.actionPerformed(unblockEvent);
 
                     // so as to update history in the GUI
-                    fileOpenHistory.addToHistory( file.getAbsolutePath() );                    
+                    fileOpenHistory.addToHistory( file.getAbsolutePath() );
                     layoutMenuBar.setFileMenuOpenRecentAction( fileOpenHistory.getActionsList(layoutFrame) );
                     layoutGeneralToolBar.refreshGraphLastOpenAction(fileOpenHistory.getActionsList(layoutFrame), layoutFrame);
 
@@ -1017,7 +1017,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     layoutProgressBarDialog.stopProgressBar();
                     blockAllAction.actionPerformed(unblockEvent);
                     resetAllRelevantLoadingValues();
-                    
+
                     throwableErrorMessageDialogReport(layoutFrame, memErr, "Out of Memory Error", file.getName());
                 }
                 catch (Exception exc)
@@ -1028,7 +1028,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     layoutProgressBarDialog.stopProgressBar();
                     blockAllAction.actionPerformed(unblockEvent);
                     resetAllRelevantLoadingValues();
-                    
+
                     throwableErrorMessageDialogReport(layoutFrame, exc, "File Load Error", file.getName());
                 }
                 finally
@@ -1038,11 +1038,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
 
 
-        } );           
-        
+        } );
+
         runLightWeightThread.setPriority(threadPriority);
         runLightWeightThread.start();
-    }   
+    }
 
     /**
     *  Reports a throwable exception to the user through an UI dialog.
@@ -1061,9 +1061,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
     }
 
     /**
-    *  Parses a given file. 
-    */         
-    private void parseFile(File file) 
+    *  Parses a given file.
+    */
+    private void parseFile(File file)
     {
         classViewerFrame.closeClassViewerWindow();
         layoutAnimationControlDialog.closeDialogWindow();
@@ -1071,13 +1071,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
         ANIMATION_SIMULATION_RESULTS = null;
         TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING = true;
         graph.resetAllValues();
-        graph.refreshDisplay();        
+        graph.refreshDisplay();
         setStatusLabel("Loading");
-        
+
         boolean isSuccessful = true; // so as to avoid parser error messages if parsing process is skipped
         boolean isNotSkipped = true; // so as to avoid parsing files and not updating the GUI
         boolean reachedRebuildNetwork = false;
-        CoreParser parser = null; 
+        CoreParser parser = null;
         String fileName = file.getAbsolutePath();
         String fileExtension = fileName.substring( fileName.lastIndexOf(".") + 1, fileName.length() ).toUpperCase(); // tolerance to upper/lowercase mix-ups
         DataTypes prevDataType = DATA_TYPE;
@@ -1087,7 +1087,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         EXPRESSION_FILE = "";
         EXPRESSION_FILE_PATH = "";
         WEIGHTED_EDGES = false;
-        ExpressionLoader expressionLoader = null;        
+        ExpressionLoader expressionLoader = null;
         double correlationCutOffValue = 0.0;
 
         // Blast data
@@ -1095,20 +1095,20 @@ public final class LayoutFrame extends JFrame implements GraphListener
         {
             parser = new BlastParser(nc,  this);
             DATA_TYPE = DataTypes.BLAST;
-        }            
+        }
         // Reactome OWL Data
         else if ( fileExtension.equals( SupportedInputFileTypes.OWL.toString() ) )
         {
             parser = new BioPaxParser(nc, this);
             DATA_TYPE = DataTypes.OWL;
-        }            
+        }
         // Expression data (non-layed out)
         else if ( fileExtension.equals( SupportedInputFileTypes.EXPRESSION.toString() ) )
         {
             ExpressionLoaderDialog expressionLoaderDialog = new ExpressionLoaderDialog(this, file);
             expressionLoaderDialog.setVisible(true);
 
-            if ( isNotSkipped = expressionLoaderDialog.proceed() ) 
+            if ( isNotSkipped = expressionLoaderDialog.proceed() )
             {
                 // call to clearNetwork() has to be here or the expression data parser will fail
                 clearNetworkAndGraph();
@@ -1116,9 +1116,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 expressionLoader = new ExpressionLoader(layoutClassSetsManager);
                 expressionLoader.init(file, expresionData, expressionLoaderDialog.getStartColumn() );
                 expressionLoader.parse(this);
-                
+
                 EXPRESSION_FILE = file.getName();
-                EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);                
+                EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
                 EXPRESSION_DATA_START = expressionLoaderDialog.getStartColumn();
                 DATA_TYPE = DataTypes.EXPRESSION;
 
@@ -1129,8 +1129,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 {
                     expresionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
                     file = correlationFile;
-                } 
-                else 
+                }
+                else
                 {
                     // there seems to be saved expression correlations here, let's check they are good for our requirements
                     ExpressionParser checker = new ExpressionParser(nc, this, expresionData);
@@ -1140,8 +1140,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     {
                         // the file looks good, let's use it
                         file = correlationFile;
-                    } 
-                    else 
+                    }
+                    else
                     {
                         // the file is not good, close file before deletion, delete it & rebuild it
                         checker.close();
@@ -1166,7 +1166,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().setEnabled(true);
                 }
                 else
-                {   
+                {
                     // make sure previous network is deleted from the renderers if expression parsing is skipped,
                     // as the calls to clear() has cleaned it from network component memory
                     graph.rebuildGraph();
@@ -1195,7 +1195,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         {
             parser = new WrapperGraphmlToLayoutParser( nc, this, new GraphmlParser(this), VALIDATE_XML_FILES.get() );
             DATA_TYPE = DataTypes.GRAPHML;
-        }             
+        }
         // Layed out data
         else if (    fileExtension.equals( SupportedInputFileTypes.LAYOUT.toString() ) || fileExtension.equals( SupportedInputFileTypes.SIF.toString() )
                   || fileExtension.equals( SupportedInputFileTypes.TGF.toString() )    || fileExtension.equals( SupportedInputFileTypes.TXT.toString() ) )
@@ -1210,7 +1210,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             parser = new MatrixParser(nc, this);
             DATA_TYPE = DataTypes.MATRIX;
 
-            if ( !( isNotSkipped = ( (MatrixParser)parser ).proceed() ) )            
+            if ( !( isNotSkipped = ( (MatrixParser)parser ).proceed() ) )
                 parser = null;
             else
                 correlationCutOffValue = ( (MatrixParser)parser ).getCorrelationCutOffValue();
@@ -1225,12 +1225,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
             if (DEBUG_BUILD) println( "Unsupported file format! " + file.getAbsolutePath() );
 
             return;
-        }                
+        }
 
         // Parse the file here
-        if (parser != null) 
-        {                
-            if ( parser.init(file, fileExtension) ) 
+        if (parser != null)
+        {
+            if ( parser.init(file, fileExtension) )
             {
                 if (DEBUG_BUILD) println("Parsing: " + file.getName() );
 
@@ -1268,12 +1268,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 // load expression data and annotations from original file
                 else if ( !EXPRESSION_FILE.isEmpty() )
                 {
-                    String pathName = ( !EXPRESSION_FILE_PATH.isEmpty() ) ? EXPRESSION_FILE_PATH : file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1); 
+                    String pathName = ( !EXPRESSION_FILE_PATH.isEmpty() ) ? EXPRESSION_FILE_PATH : file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
                     File expressionFile = new File(pathName + EXPRESSION_FILE);
 
                     if (DEBUG_BUILD) println("Loading Expression Data from: " + expressionFile.toString() );
 
-                    if ( expressionFile.exists() ) 
+                    if ( expressionFile.exists() )
                     {
                         if (DEBUG_BUILD) println("Loading Expression Data");
 
@@ -1282,17 +1282,17 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         isSuccessful = expressionLoader.parse(this);
 
                         expressionLoader.reInit();
-                        isSuccessful = isSuccessful && expressionLoader.parseAnnotations(this, nc);                        
+                        isSuccessful = isSuccessful && expressionLoader.parseAnnotations(this, nc);
                         DATA_TYPE = DataTypes.EXPRESSION;
                         EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-                    }         
+                    }
                     else
                     {
                         String expressionFilePathMessage = ( !EXPRESSION_FILE_PATH.isEmpty() ) ? "'" + pathName + "'" : "currently loading layout file drive/folder '" + pathName + "'";
                         JOptionPane.showMessageDialog(this, "The expression data file from where this layout file was derived from was not found.\nExpected drive/folder: " + expressionFilePathMessage + "\nThe layout file will now be loaded with no underlying expression data profile information.", "Loading expression data profile information warning", JOptionPane.WARNING_MESSAGE);
                     }
                 }
-            }                                
+            }
 
             setStatusLabel("Layout");
 
@@ -1379,7 +1379,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutProgressBarDialog.stopProgressBar();
         TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING = false;
         graph.refreshDisplay();
-        
+
         // do not do it if a Class Set is pre-selected while parsing the file
         if ( graph.getSelectionManager().getSelectedNodes().isEmpty() )
             setStatusLabel("Ready");
@@ -1415,9 +1415,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         setTitle(VERSION);
         INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
-        disableAllActions();        
+        disableAllActions();
     }
-    
+
     private void enableAllActions()
     {
         // note, save all & print actions are being enabled from inside the LayoutGraphPropertiesToolBar, LayoutGeneralToolBar, LayoutNavigationToolBar & LayoutMenuBar classes
@@ -1443,31 +1443,31 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if ( !exportClassSets.getExportClassSetsFromGraphAction().isEnabled() )
             exportClassSets.getExportClassSetsFromGraphAction().setEnabled(true);
 
-        
+
         if ( !layoutPrintServices.getPrintGraphPageSetupDialogAction().isEnabled() )
             layoutPrintServices.getPrintGraphPageSetupDialogAction().setEnabled(true);
 
         if ( !layoutCustomizeNodeNamesDialog.getCustomizeNodeNamesAction().isEnabled() )
-            layoutCustomizeNodeNamesDialog.getCustomizeNodeNamesAction().setEnabled(true);        
-        
+            layoutCustomizeNodeNamesDialog.getCustomizeNodeNamesAction().setEnabled(true);
+
         if ( !layoutShowClassesLegendsDialog.getShowClassesLegendsShowAction().isEnabled() )
             layoutShowClassesLegendsDialog.getShowClassesLegendsShowAction().setEnabled(true);
-        
+
         if ( !findNameDialog.getFindNameDialogAction().isEnabled() )
             findNameDialog.getFindNameDialogAction().setEnabled(true);
-        
+
         if ( !findClassDialog.getFindClassDialogAction().isEnabled() )
             findClassDialog.getFindClassDialogAction().setEnabled(true);
 
         if ( !findMultipleClassesDialog.getFindMultipleClassesDialogAction().isEnabled() )
             findMultipleClassesDialog.getFindMultipleClassesDialogAction().setEnabled(true);
-        
+
         if ( !layoutGraphStatisticsDialog.getGraphStatisticsDialogAction().isEnabled() )
             layoutGraphStatisticsDialog.getGraphStatisticsDialogAction().setEnabled(true);
 
-        
+
         if ( !graph.getGraphActions().getPrintGraphAction().isEnabled() )
-            graph.getGraphActions().getPrintGraphAction().setEnabled(true);            
+            graph.getGraphActions().getPrintGraphAction().setEnabled(true);
 
         if ( !graph.getGraphActions().getTranslateUpAction().isEnabled() )
             graph.getGraphActions().getTranslateUpAction().setEnabled(true);
@@ -1497,10 +1497,10 @@ public final class LayoutFrame extends JFrame implements GraphListener
             graph.getGraphActions().getZoomInAction().setEnabled(true);
 
         if ( !graph.getGraphActions().getZoomOutAction().isEnabled() )
-            graph.getGraphActions().getZoomOutAction().setEnabled(true);                 
+            graph.getGraphActions().getZoomOutAction().setEnabled(true);
 
         if ( !graph.getGraphActions().getBurstLayoutIterationsAction().isEnabled() )
-            graph.getGraphActions().getBurstLayoutIterationsAction().setEnabled(true);       
+            graph.getGraphActions().getBurstLayoutIterationsAction().setEnabled(true);
 
 
         if ( !graph.getGraphRendererActions().getSelectAction().isEnabled() )
@@ -1517,9 +1517,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         if ( !graph.getGraphRendererActions().getResetViewAction().isEnabled() )
             graph.getGraphRendererActions().getResetViewAction().setEnabled(true);
-        
+
         if ( !graph.getGraphRendererActions().getRenderImageToFileAction().isEnabled() )
-            graph.getGraphRendererActions().getRenderImageToFileAction().setEnabled(true);        
+            graph.getGraphRendererActions().getRenderImageToFileAction().setEnabled(true);
 
         if ( !graph.getGraphRendererActions().getRenderHighResImageToFileAction().isEnabled() )
             graph.getGraphRendererActions().getRenderHighResImageToFileAction().setEnabled(true);
@@ -1588,8 +1588,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
             layoutPrintServices.getPrintGraphPageSetupDialogAction().setEnabled(false);
 
         if ( layoutCustomizeNodeNamesDialog.getCustomizeNodeNamesAction().isEnabled() )
-            layoutCustomizeNodeNamesDialog.getCustomizeNodeNamesAction().setEnabled(false);        
-        
+            layoutCustomizeNodeNamesDialog.getCustomizeNodeNamesAction().setEnabled(false);
+
         if ( layoutShowClassesLegendsDialog.getShowClassesLegendsShowAction().isEnabled() )
             layoutShowClassesLegendsDialog.getShowClassesLegendsShowAction().setEnabled(false);
 
@@ -1609,10 +1609,10 @@ public final class LayoutFrame extends JFrame implements GraphListener
             signalingPetriNetLoadSimulation.getSignalingPetriNetLoadSimulationAction().setEnabled(false);
 
         if ( layoutGraphStatisticsDialog.getGraphStatisticsDialogAction().isEnabled() )
-            layoutGraphStatisticsDialog.getGraphStatisticsDialogAction().setEnabled(false);           
-        
+            layoutGraphStatisticsDialog.getGraphStatisticsDialogAction().setEnabled(false);
+
         if ( layoutAnimationControlDialog.getAnimationControlDialogAction().isEnabled() )
-            layoutAnimationControlDialog.getAnimationControlDialogAction().setEnabled(false);            
+            layoutAnimationControlDialog.getAnimationControlDialogAction().setEnabled(false);
 
 
         if ( graph.getGraphActions().getPrintGraphAction().isEnabled() )
@@ -1707,7 +1707,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if ( graph.getSelectionManager().getUnhideAllAction().isEnabled() )
             graph.getSelectionManager().getUnhideAllAction().setEnabled(false);
 
-        
+
         // disable all the events below as well
         if ( expressionViewerFrame.getExpressionViewerAction().isEnabled() )
             expressionViewerFrame.getExpressionViewerAction().setEnabled(false);
@@ -1730,13 +1730,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
     }
 
     /**
-    *  Resizes nodes to K value. 
-    */      
+    *  Resizes nodes to K value.
+    */
     private void resizeNodesAndArrowHeadsToKvalue()
     {
         double nodesToKValueRatio = nc.getKValue() / REFERENCE_K_VALUE;
         double arrowheadsToKValueRatio = nc.getKValue() / (REFERENCE_K_VALUE / 5.0) + 1.0;
-        
+
         int newNodeSize = 0;
         for ( Vertex vertex : nc.getVertices() )
         {
@@ -1744,7 +1744,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             if (newNodeSize < MIN_NODE_SIZE) newNodeSize = MIN_NODE_SIZE; // make sure node size is at least MIN_NODE_SIZE
             vertex.setVertexSize(newNodeSize);
         }
-        
+
         arrowheadsToKValueRatio = (arrowheadsToKValueRatio < MIN_ARROWHEAD_SIZE) ? MIN_ARROWHEAD_SIZE : ( (arrowheadsToKValueRatio > MAX_ARROWHEAD_SIZE) ? MAX_ARROWHEAD_SIZE : arrowheadsToKValueRatio );
         ARROW_HEAD_SIZE.set( (int)arrowheadsToKValueRatio );
     }
@@ -1782,7 +1782,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             {
                 fileDragNDrop.remove(graph, true);
                 this.dispose();
-                System.exit(0);            
+                System.exit(0);
             }
         }
         else
@@ -1865,8 +1865,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
     public void setNodeSurfaceImageTexture(boolean selected)
     {
         layoutGraphPropertiesDialog.setNodeSurfaceImageTexture(selected);
-    }    
-    
+    }
+
     public void setTrippyBackground(boolean selected)
     {
         layoutGraphPropertiesDialog.setTrippyBackground(selected);
@@ -1897,7 +1897,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         return layoutShowClassesLegendsDialog.getTableModel();
     }
 
-    public void toggleLegend(AbstractAction action) 
+    public void toggleLegend(AbstractAction action)
     {
         layoutMenuBar.toggleLegend(action);
     }
@@ -1907,11 +1907,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
         return layoutProgressBarDialog;
     }
 
-    public ExpressionData getExpressionData() 
+    public ExpressionData getExpressionData()
     {
         return expresionData;
-    }    
-    
+    }
+
     public ExpressionViewerFrame getExpressionViewerFrame()
     {
         return expressionViewerFrame;
@@ -1922,7 +1922,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         return classViewerFrame;
     }
 
-    public CoreSaver getCoreSaver() 
+    public CoreSaver getCoreSaver()
     {
         return saver;
     }
@@ -1951,18 +1951,18 @@ public final class LayoutFrame extends JFrame implements GraphListener
     {
         return nc;
     }
-    
+
     public Graph getGraph()
     {
         return graph;
     }
 
-    public void block() 
+    public void block()
     {
         blockAllAction.actionPerformed(blockEvent);
     }
 
-    public void unblock() 
+    public void unblock()
     {
         blockAllAction.actionPerformed(unblockEvent);
     }
@@ -1977,12 +1977,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
         blockAllExceptNavigationToolBarAction.actionPerformed(unblockEvent);
     }
 
-    public void setNodeLabel(String label) 
+    public void setNodeLabel(String label)
     {
         nodeLabel.setText(" " + label + " ");
     }
-    
-    public void setStatusLabel(String label) 
+
+    public void setStatusLabel(String label)
     {
         statusLabel.setText(" " + label + " ");
     }
@@ -2042,12 +2042,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
     {
         return layoutPrintServices;
     }
-    
+
     public LayoutClusterMCL getLayoutClusterMCL()
     {
         return layoutClusterMCL;
     }
-    
+
     public SignalingPetriNetSimulationDialog getSignalingPetriNetSimulationDialog()
     {
         return SPNSimulationDialog;
@@ -2072,32 +2072,32 @@ public final class LayoutFrame extends JFrame implements GraphListener
     {
         layoutGeneralToolBar.runSPNButtonResetRolloverState();
     }
-    
+
     public void layoutGeneralToolBarAnimationControlButtonResetRolloverState()
     {
         layoutGeneralToolBar.animationControlButtonResetRolloverState();
-    }    
-    
+    }
+
     @Override
     public void switchRendererModeCallBack()
-    {   
+    {
         // remove previous mode events
-        graph.removeAllEvents(); 
-        
+        graph.removeAllEvents();
+
         RENDERER_MODE_3D = !RENDERER_MODE_3D; // switch renderer code here
         if (DEBUG_BUILD) println("\nNow switching to " + (RENDERER_MODE_3D ? "3D" : "2D") + " renderer mode.\n");
         graph.setReInitializeRendererMode(true);
         graph.updateAllDisplayLists();
         graph.refreshDisplay();
-        
+
         // add next mode events
-        graph.addAllEvents();   
-        
-        setRenderModeSwitchUISettings();  
-        initMenuBarActions();        
-        layoutGeneralToolBar.set2D3DButton();       
+        graph.addAllEvents();
+
+        setRenderModeSwitchUISettings();
+        initMenuBarActions();
+        layoutGeneralToolBar.set2D3DButton();
         setEnabledAllToolBars(true);
     }
 
-    
+
 }

@@ -67,10 +67,10 @@ public final class ExpressionLoader
         layoutProgressBarDialog.prepareProgressBar(100, "Reading Expression Data: ");
         layoutProgressBarDialog.startProgressBar();
 
-        int totalRows = 0;        
-        int totalColumns = 0;        
+        int totalRows = 0;
+        int totalColumns = 0;
         int counter = 0;
-        
+
         try
         {
             String line = "";
@@ -128,7 +128,7 @@ public final class ExpressionLoader
 
                     if ( lineSplit[0].endsWith("\"") )
                         lineSplit[0] = lineSplit[0].substring(0, lineSplit[0].length() - 1);
-                    
+
                     expressionData.setRowID(counter - 1, lineSplit[0]);
                     expressionData.setIdentityMap(lineSplit[0], counter - 1);
 
@@ -180,11 +180,11 @@ public final class ExpressionLoader
         layoutProgressBarDialog.prepareProgressBar(100, "Reading Expression Annotations: ");
         layoutProgressBarDialog.startProgressBar();
 
-        int totalRows = 0;        
+        int totalRows = 0;
         int totalColumns = 0;
         int counter = 0;
-        int chipGeneCount = 0;        
-        
+        int chipGeneCount = 0;
+
         try
         {
             String line = "";
@@ -200,7 +200,7 @@ public final class ExpressionLoader
 
                 totalRows++;
             }
-            
+
             int totalAnnotationColumns = dataStart - 1;
             layoutProgressBarDialog.setText("Parsing: " + totalRows + " Rows, " + totalColumns + " Data Columns & " + totalAnnotationColumns + " Annotation Columns");
 
@@ -227,8 +227,8 @@ public final class ExpressionLoader
 
                     if ( lineSplit[0].endsWith("\"") )
                         lineSplit[0] = lineSplit[0].substring(0, lineSplit[0].length() - 1);
-                    
-                    vertex = nc.getVerticesMap().get(lineSplit[0]);                    
+
+                    vertex = nc.getVerticesMap().get(lineSplit[0]);
                     if (vertex != null)
                     {
                         chipGeneCount++;
@@ -257,7 +257,7 @@ public final class ExpressionLoader
 
             AnnotationTypeManagerBG.getInstanceSingleton().setChipGeneCount(chipGeneCount);
             layoutProgressBarDialog.endProgressBar();
-            
+
             isSuccessful = true;
         }
         catch (IOException ioe)

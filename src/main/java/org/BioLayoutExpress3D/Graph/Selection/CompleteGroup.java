@@ -44,7 +44,7 @@ final class CompleteGroup implements Runnable // package access
             processCompleteGraphGroup();
         }
     }
-   
+
     private void processCompleteGraphGroup()
     {
         selectionManager.unhideAll(false);
@@ -73,14 +73,14 @@ final class CompleteGroup implements Runnable // package access
         Collection<GraphNode> visibleNodes = selectionManager.getVisibleNodes();
         GroupGraphNodeComparator groupGraphNodeComparator = new GroupGraphNodeComparator();
         List<GraphNode> group = null;
-        
+
         layoutProgressBarDialog.prepareProgressBar(visibleNodes.size(), "Sorting & Grouping Complete Sub Graphs");
         layoutProgressBarDialog.startProgressBar();
 
         for (GraphNode visibleGraphNode : visibleNodes)
         {
             layoutProgressBarDialog.incrementProgress();
-            
+
             group = new ArrayList<GraphNode>( visibleGraphNode.getNeighborsIntersection() );
             Collections.sort(group, groupGraphNodeComparator);
 
@@ -92,22 +92,22 @@ final class CompleteGroup implements Runnable // package access
         layoutProgressBarDialog.endProgressBar();
         layoutProgressBarDialog.stopProgressBar();
     }
-    
+
     private void groupGroups(HashSet<Collection<GraphNode>> allGroups)
     {
         if (DEBUG_BUILD) println("Searching For Complete Sub Graphs");
 
         layoutProgressBarDialog.prepareProgressBar(allGroups.size(), "Searching For Complete Sub Graphs");
         layoutProgressBarDialog.startProgressBar();
-        
+
         for (Collection<GraphNode> groupCollection : allGroups)
         {
             layoutProgressBarDialog.incrementProgress();
-            
+
             selectionManager.addNodesToSelected(groupCollection, false, true, true, false, false, false); // do not update viewers so as to avoid crashes!
             selectionManager.getGroupManager().collapseSelectedNodesForCompleteGraphGrouping();
         }
-        
+
         selectionManager.getGroupManager().applyCollapseGroupNaming();
 
         layoutProgressBarDialog.endProgressBar();

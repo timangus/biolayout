@@ -19,7 +19,7 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
 *
-* OpenGLContext is the main OpenGL context component for GPU Computing. 
+* OpenGLContext is the main OpenGL context component for GPU Computing.
 * It is a heavyweight AWT component, Canvas, that utilizes an Active Rendering framework for OpenGL, only available in JOGL JSR-231 and above.
  *
 * @author Dominik Göddeke, Thanos Theo, 2008-2009-2010
@@ -352,7 +352,7 @@ public abstract class OpenGLContext extends Canvas
         else
         {
             if (dialogErrorLog)
-                JOptionPane.showMessageDialog(this, "No Current OpenGL Context!", "OpenGL GPU Compatibility Error", JOptionPane.WARNING_MESSAGE);            
+                JOptionPane.showMessageDialog(this, "No Current OpenGL Context!", "OpenGL GPU Compatibility Error", JOptionPane.WARNING_MESSAGE);
             if (DEBUG_BUILD) println("No Current OpenGL Context!");
 
             GPUErrorOccured = true;
@@ -437,10 +437,10 @@ public abstract class OpenGLContext extends Canvas
                 // initialize OpenGL Vertex Arrays support
                 gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
                 gl.glEnableClientState(GL_NORMAL_ARRAY);
-                gl.glEnableClientState(GL_VERTEX_ARRAY);                
+                gl.glEnableClientState(GL_VERTEX_ARRAY);
             }
-        }        
-        
+        }
+
         if (USE_SHADERS_PROCESS)
         {
             int firstIndexOfDot = GL_VERSION_STRING.indexOf(".");
@@ -448,7 +448,7 @@ public abstract class OpenGLContext extends Canvas
             if ( USE_SHADERS_PROCESS = ( (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_QUALITY_RENDERING_AND_SHADERS) || LoadNativeLibrary.isMacLionAndAbove() ) )
             {
                 USE_330_SHADERS_PROCESS = (openGLVersion >= MINIMUM_OPENGL_VERSION_FOR_330_SHADERS);
-                
+
                 IntBuffer OPENGL_INT_VALUE = Buffers.newDirectIntBuffer(1);
                 GL_SHADING_LANGUAGE_VERSION_STRING = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);
                 gl.glGetIntegerv(GL_MAX_DRAW_BUFFERS, OPENGL_INT_VALUE);
@@ -494,11 +494,11 @@ public abstract class OpenGLContext extends Canvas
                 {
                     gl.glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB, OPENGL_INT_VALUE);
                     GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB_INTEGER = OPENGL_INT_VALUE.get(0);
-                }             
+                }
                 USE_GL_EXT_GPU_SHADER4 = gl.isExtensionAvailable("GL_EXT_gpu_shader4");
                 USE_GL_ARB_GPU_SHADER5 = gl.isExtensionAvailable("GL_ARB_gpu_shader5");
                 USE_GL_ARB_GPU_SHADER_FP64 = gl.isExtensionAvailable("GL_ARB_gpu_shader_fp64");
-                
+
                 if (DEBUG_BUILD)
                 {
                     StringBuilder output = new StringBuilder();
@@ -600,7 +600,7 @@ public abstract class OpenGLContext extends Canvas
         catch (OutOfMemoryError memErr)
         {
             if (dialogErrorLog)
-                JOptionPane.showMessageDialog(this, "Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: initializeCPUMemory()", "Java Out Of Memory Error", JOptionPane.WARNING_MESSAGE);            
+                JOptionPane.showMessageDialog(this, "Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: initializeCPUMemory()", "Java Out Of Memory Error", JOptionPane.WARNING_MESSAGE);
             if (DEBUG_BUILD) println("Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: initializeCPUMemory()");
 
             CPUErrorOccured = true;
@@ -638,7 +638,7 @@ public abstract class OpenGLContext extends Canvas
         catch (OutOfMemoryError memErr)
         {
             if (dialogErrorLog)
-                JOptionPane.showMessageDialog(this, "Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: retrieveGPUResults()", "Java Out Of Memory Error", JOptionPane.WARNING_MESSAGE);            
+                JOptionPane.showMessageDialog(this, "Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: retrieveGPUResults()", "Java Out Of Memory Error", JOptionPane.WARNING_MESSAGE);
             if (DEBUG_BUILD) println("Java reported an Out Of Memory error: " + memErr.getMessage() + "!\nPoint of error: retrieveGPUResults()");
 
             CPUErrorOccured = true;
@@ -738,13 +738,13 @@ public abstract class OpenGLContext extends Canvas
         // make active and bind
         gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
         gl.glBindTexture(textureParameters.textureTarget, textureID);
-        
+
         // turn off filtering and wrap modes
         gl.glTexParameteri(textureParameters.textureTarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         gl.glTexParameteri(textureParameters.textureTarget, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         gl.glTexParameteri(textureParameters.textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP);
         gl.glTexParameteri(textureParameters.textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        
+
         // define texture with floating point format
         gl.glTexImage2D(textureParameters.textureTarget, 0, textureParameters.textureInternalFormat, textureSize, textureSize, 0, textureParameters.textureFormat, GL_FLOAT, null);
     }
@@ -809,7 +809,7 @@ public abstract class OpenGLContext extends Canvas
 	gl.glPolygonMode(GL_FRONT, GL_FILL);
 
         // and render the quad
-        gl.glBegin(GL_QUADS);	
+        gl.glBegin(GL_QUADS);
 	if (textureParameters.textureTarget == GL_TEXTURE_2D)
         {
 	    // render with normalized texcoords
@@ -925,7 +925,7 @@ public abstract class OpenGLContext extends Canvas
         return (CPUErrorOccured || GPUErrorOccured);
     }
 
-    
+
     // Abstract methods from here on
 
     /**
@@ -953,5 +953,5 @@ public abstract class OpenGLContext extends Canvas
     */
     protected abstract void deleteOpenGLContextForGPUComputing();
 
-    
+
 }

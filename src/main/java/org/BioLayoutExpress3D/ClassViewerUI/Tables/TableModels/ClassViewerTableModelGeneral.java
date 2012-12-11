@@ -17,17 +17,17 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 */
 
 public final class ClassViewerTableModelGeneral extends AbstractTableModel
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ClassViewerTableModelGeneral class.
-    */      
-    public static final long serialVersionUID = 111222333444555790L; 
+    */
+    public static final long serialVersionUID = 111222333444555790L;
 
     public static final String[] ORIGINAL_COLUMN_NAMES = { "Selected", "Name", "Incoming", "Outgoing" };
 
     private int originalNumberOfColumns = ORIGINAL_COLUMN_NAMES.length;
     private String[] columnNames = ORIGINAL_COLUMN_NAMES;
-    private Object[][] data = null;    
+    private Object[][] data = null;
 
     private LayoutFrame layoutFrame = null;
     private ClassViewerFrame classViewerFrame = null;
@@ -39,19 +39,19 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
     }
 
     @Override
-    public int getColumnCount() 
+    public int getColumnCount()
     {
         return columnNames.length;
     }
 
     @Override
-    public int getRowCount() 
+    public int getRowCount()
     {
         return (data != null) ? data.length : 0;
     }
 
     @Override
-    public String getColumnName(int col) 
+    public String getColumnName(int col)
     {
         return columnNames[col];
     }
@@ -73,22 +73,22 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
     * Don't need to implement this method unless your table is editable.
     */
     @Override
-    public boolean isCellEditable(int row, int col) 
+    public boolean isCellEditable(int row, int col)
     {
         //Note that the data/cell address is constant,
         //no matter where the cell appears onscreen.
         return ( (col == 0) || (col == 1) );
     }
 
-    @Override    
-    public void setValueAt(Object value, int row, int col) 
-    {        
+    @Override
+    public void setValueAt(Object value, int row, int col)
+    {
         GraphNode graphNode = (GraphNode)data[row][data[0].length - 1]; // retrieve GraphNode from last column in table
-        
+
         if (DEBUG_BUILD) println(graphNode.toString() + " " + (String)data[row][1]);
 
-        switch (col) 
-        {                    
+        switch (col)
+        {
             case 0:
 
                 if ( !( (Boolean)value ).booleanValue() )
@@ -105,7 +105,7 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
                     layoutFrame.getGraph().updateSelectedNodesDisplayList();
                     layoutFrame.getClassViewerFrame().setUpdateResetSelectDeselectAllButton(true);
                 }
-                
+
                 break;
 
             case 1:
@@ -141,11 +141,11 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
                 break;
         }
 
-        data[row][col] = value;        
+        data[row][col] = value;
     }
 
     public void setSelectedAllColumns(boolean isSelected)
-    {        
+    {
         HashSet<GraphNode> graphNodes = new HashSet<GraphNode>();
         for (int i = 0; i < getRowCount(); i++)
         {
@@ -165,26 +165,26 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
         layoutFrame.getClassViewerFrame().setUpdateResetSelectDeselectAllButton(true);
     }
 
-    public void proccessSelected(boolean allClasses) 
+    public void proccessSelected(boolean allClasses)
     {
         proccessSelected(allClasses, null);
-    }    
-    
-    public void proccessSelected(boolean allClasses, Object[][] hideColumnsData) 
+    }
+
+    public void proccessSelected(boolean allClasses, Object[][] hideColumnsData)
     {
         HashSet<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
         int selectedSize = selectedNodes.size();
-        if (selectedSize == 0) 
+        if (selectedSize == 0)
         {
-            data = new Object[0][0];         
+            data = new Object[0][0];
             return;
         }
-        
+
         int howManyColumnsToHide = 0;
-        ArrayList<Integer> allHiddenColumnIndices = null;        
+        ArrayList<Integer> allHiddenColumnIndices = null;
         if (hideColumnsData != null)
         {
-            allHiddenColumnIndices = new ArrayList<Integer>();  
+            allHiddenColumnIndices = new ArrayList<Integer>();
             for (int i = 0; i < hideColumnsData.length; i++)
             {
                 if ( !( (Boolean)hideColumnsData[i][1] ).booleanValue() )
@@ -193,12 +193,12 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
                     allHiddenColumnIndices.add(i);
                 }
             }
-        }        
-                
+        }
+
         int numberOfClassColumns = (allClasses) ? layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames().size() : 1;
         int numberOfColumns = originalNumberOfColumns + numberOfClassColumns - howManyColumnsToHide;
         String[] newColumnNames = new String[numberOfColumns];
-        
+
         int columnIndex = 0;
         int columnsPruned = 0;
         for (columnIndex = 0; columnIndex < originalNumberOfColumns; columnIndex++)
@@ -218,11 +218,11 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
                     newColumnNames[columnIndex - columnsPruned] = lc.getClassSetName();
                 else
                     columnsPruned++;
-                
+
                 columnIndex++;
             }
-        } 
-        else 
+        }
+        else
         {
             if ( (howManyColumnsToHide == 0) || !allHiddenColumnIndices.contains(columnIndex - 2) ) // first check with || for speed-up by avoiding the contains() method
                 newColumnNames[columnIndex - columnsPruned] = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName();
@@ -234,23 +234,23 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
         if (DEBUG_BUILD)
             for (String columnName : columnNames)
                 println(columnIndex + ": " + columnName);
-        
-        numberOfColumns += 1; // +1 column for hidden GraphNode object to be stored 
+
+        numberOfColumns += 1; // +1 column for hidden GraphNode object to be stored
         data = new Object[selectedSize][numberOfColumns];
-        
+
         columnIndex = 0;
         int rowIndex = 0;
-        for (GraphNode node : selectedNodes) 
+        for (GraphNode node : selectedNodes)
         {
-            columnsPruned = 0;            
-            data[rowIndex][0] = Boolean.TRUE;            
+            columnsPruned = 0;
+            data[rowIndex][0] = Boolean.TRUE;
             data[rowIndex][1] = layoutFrame.getNetworkRootContainer().getNodeName( node.getNodeName() );
-            
+
             if ( (howManyColumnsToHide == 0) || !allHiddenColumnIndices.contains(0) )  // index columnIndex - 2 = 2 - 2
                     data[rowIndex][2 - columnsPruned] = Integer.valueOf( node.getNodeChildren().size() );
             else
                  columnsPruned++;
-            
+
             if ( (howManyColumnsToHide == 0) || !allHiddenColumnIndices.contains(1) ) // index columnIndex - 2 = 3 - 2
                     data[rowIndex][3 - columnsPruned] = Integer.valueOf( node.getNodeParents().size() );
             else
@@ -266,17 +266,17 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
                             data[rowIndex][columnIndex - columnsPruned] = lc.getVertexClass( node.getVertex() );
                     else
                         columnsPruned++;
-                    
+
                     columnIndex++;
                 }
-            } 
-            else 
+            }
+            else
             {
                 if ( (howManyColumnsToHide == 0) || !allHiddenColumnIndices.contains(columnIndex - 2) ) // first check with || for speed-up by avoiding the contains() method
                         data[rowIndex][columnIndex - columnsPruned] = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getVertexClass( node.getVertex() );
                 else
                     columnsPruned++;
-                
+
                 columnIndex++;
             }
 
@@ -290,7 +290,7 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
         for (String originalColumnName : ORIGINAL_COLUMN_NAMES)
             if( currentColumnName.equals(originalColumnName) )
                 return true;
-        
+
         return false;
     }
 
@@ -298,6 +298,6 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
     {
         return columnNames;
     }
-    
+
 
 }

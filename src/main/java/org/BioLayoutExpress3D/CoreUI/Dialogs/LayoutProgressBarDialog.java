@@ -51,16 +51,16 @@ public class LayoutProgressBarDialog extends JDialog
     private void initProgressDialog()
     {
         progressBar.setPreferredSize( new Dimension(700, 50) );
-        
+
         this.getContentPane().setLayout( new BorderLayout() );
         this.getContentPane().add(label, BorderLayout.NORTH);
         this.getContentPane().add(progressBar, BorderLayout.CENTER);
         this.getContentPane().add(statusLabel, BorderLayout.SOUTH);
-        this.getContentPane().setSize( new Dimension(700, 500) );       
+        this.getContentPane().setSize( new Dimension(700, 500) );
         this.setUndecorated(true);
 
         this.pack();
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);         
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
         this.setVisible(false);
     }
@@ -69,7 +69,7 @@ public class LayoutProgressBarDialog extends JDialog
     {
         reset = false;
         statusLabel.setText(" " + title);
-        progressBar.setMaximum(max);          
+        progressBar.setMaximum(max);
     }
 
     public void startProgressBar()
@@ -77,7 +77,7 @@ public class LayoutProgressBarDialog extends JDialog
         timer.start();
         layoutFrame.block();
         progressBar.setValue(0);
-        progressBar.setString("0%");        
+        progressBar.setString("0%");
     }
 
     public void endProgressBar()
@@ -86,11 +86,11 @@ public class LayoutProgressBarDialog extends JDialog
         statusLabel.setText(" Ready");
         progressBar.setString(" Done");
         progressBar.setValue( progressBar.getMaximum() );
-        layoutFrame.unblock();        
+        layoutFrame.unblock();
     }
 
     public void stopProgressBar()
-    {        
+    {
         reset = true;
         this.setVisible(false);
     }
@@ -99,29 +99,29 @@ public class LayoutProgressBarDialog extends JDialog
     {
         progressBar.setValue(iteration);
         int percentage = (int)( ( ( (double)progressBar.getValue() ) / ( (double)progressBar.getMaximum() ) * 100) );
-        progressBar.setString(percentage + "%");        
+        progressBar.setString(percentage + "%");
     }
 
     public synchronized void incrementProgress()
     {
         progressBar.setValue(progressBar.getValue() + 1);
         int percentage = (int)( ( ( (double)progressBar.getValue() ) / ( (double)progressBar.getMaximum() ) * 100) );
-        progressBar.setString(percentage + "%");        
+        progressBar.setString(percentage + "%");
     }
 
     public synchronized void setText(String text)
     {
-        statusLabel.setText(" " + text);        
+        statusLabel.setText(" " + text);
     }
 
     public synchronized void appendText(String text)
     {
-        statusLabel.setText(statusLabel.getText() + text);        
+        statusLabel.setText(statusLabel.getText() + text);
     }
 
     public synchronized void setIndeterminate(Boolean value)
     {
-        progressBar.setIndeterminate(value);        
+        progressBar.setIndeterminate(value);
     }
 
     public synchronized String getText()

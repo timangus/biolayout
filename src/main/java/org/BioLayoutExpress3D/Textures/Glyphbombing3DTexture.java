@@ -10,8 +10,8 @@ import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 *  This class provides 3D texture functionality for the Glyphbombinge GLSL Shader.
 *
 *
@@ -166,7 +166,7 @@ public final class Glyphbombing3DTexture
     {
         int packedPixel = 0;
         int packedPixels[] = ( (DataBufferInt)image.getRaster().getDataBuffer() ).getData();
-        
+
         for (int row = currentTexture2DSliceSize - 1; row >= 0; row--)
         {
             for (int col = 0; col < currentTexture2DSliceSize; col++)

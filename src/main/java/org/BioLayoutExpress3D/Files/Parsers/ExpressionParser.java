@@ -16,30 +16,30 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public class ExpressionParser extends CoreParser 
-{ 
+public class ExpressionParser extends CoreParser
+{
     private ObjectInputStream iistream = null;
     private ExpressionData expressionData = null;
     private int[][] counts = null;
 
-    public ExpressionParser(NetworkContainer nc, LayoutFrame layoutFrame, ExpressionData expressionData) 
+    public ExpressionParser(NetworkContainer nc, LayoutFrame layoutFrame, ExpressionData expressionData)
     {
         super(nc, layoutFrame);
-        
+
         this.expressionData = expressionData;
         this.counts = expressionData.getCounts();
     }
 
     @Override
-    public boolean init(File file, String fileExtension) 
+    public boolean init(File file, String fileExtension)
     {
-        try 
+        try
         {
             iistream = new ObjectInputStream( new BufferedInputStream( new FileInputStream(file) ) );
-            
+
             return true;
-        } 
-        catch (Exception exc) 
+        }
+        catch (Exception exc)
         {
             try
             {
@@ -59,7 +59,7 @@ public class ExpressionParser extends CoreParser
     }
 
     @Override
-    public boolean parse() 
+    public boolean parse()
     {
         int counter = 0;
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
@@ -69,7 +69,7 @@ public class ExpressionParser extends CoreParser
         isSuccessful = false;
         nc.setOptimized(false);
 
-        try 
+        try
         {
             iistream.readInt();    // move forward file seeker
             iistream.readFloat();  // move forward file seeker
@@ -80,22 +80,22 @@ public class ExpressionParser extends CoreParser
             String nodeTwo = "";
             int otherId = 0;
             float weight = 0.0f;
-            while (iistream.available() != 0) 
+            while (iistream.available() != 0)
             {
                 nodeId = iistream.readInt();
                 percent = (int)( 100.0f * ( (float)counter / (float)expressionData.getTotalRows() ) );
 
                 layoutProgressBarDialog.incrementProgress(percent);
-                
+
                 nodeOne = expressionData.getRowID(nodeId);
                 for (;;) // while (true)
                 {
                     otherId = iistream.readInt();
-                    if (nodeId == otherId) 
+                    if (nodeId == otherId)
                     {
                         break;
-                    } 
-                    else 
+                    }
+                    else
                     {
                         weight = iistream.readFloat();
                         if (weight > CURRENT_CORRELATION_THRESHOLD)
@@ -108,18 +108,18 @@ public class ExpressionParser extends CoreParser
 
                 counter++;
             }
-            
+
             WEIGHTED_EDGES = true;
-            
+
             isSuccessful = true;
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in ExpressionParser.parse():\n" + ioe.getMessage());
         }
         finally
         {
-            try 
+            try
             {
                 iistream.close();
             }
@@ -130,9 +130,9 @@ public class ExpressionParser extends CoreParser
             finally
             {
                 layoutProgressBarDialog.endProgressBar();
-            }                        
+            }
         }
-        
+
         return isSuccessful;
     }
 
@@ -148,9 +148,9 @@ public class ExpressionParser extends CoreParser
         }
     }
 
-    public void scan() 
+    public void scan()
     {
-        try 
+        try
         {
             iistream.readInt();    // move forward file seeker
             iistream.readFloat();  // move forward file seeker
@@ -159,18 +159,18 @@ public class ExpressionParser extends CoreParser
             int otherId = 0;
             int index = 0;
             float weight = 0.0f;
-            while (iistream.available() != 0) 
+            while (iistream.available() != 0)
             {
                 nodeId = iistream.readInt();
-                
+
                 for (;;) // while (true)
                 {
                     otherId = iistream.readInt();
-                    if (nodeId == otherId) 
+                    if (nodeId == otherId)
                     {
                         break;
-                    } 
-                    else 
+                    }
+                    else
                     {
                         weight = iistream.readFloat();
                         index = (int)Math.floor(100.0f * weight);
@@ -180,8 +180,8 @@ public class ExpressionParser extends CoreParser
                     }
                 }
             }
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in ExpressionParser.scan():\n" + ioe.getMessage());
         }
@@ -192,33 +192,33 @@ public class ExpressionParser extends CoreParser
         int metric = -1;
         float savedThreshold = -1.0f;
 
-        try 
+        try
         {
             metric = iistream.readInt();
             savedThreshold = iistream.readFloat();
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("IOException in ExpressionParser.check_file():\n" + ioe.getMessage());
-            
+
             return false;
         }
 
         if ( (metric == -1) || (savedThreshold == -1) )
            return false;
-        
+
         if ( (givenMetric == metric) && (givenThreshold >= savedThreshold) )
-           return true;        
+           return true;
 
         return false;
     }
 
-    public int getNodeCount() 
+    public int getNodeCount()
     {
         return nc.getNumberOfVertices();
     }
 
-    public int getEdgeCount() 
+    public int getEdgeCount()
     {
         return nc.getEdges().size();
     }

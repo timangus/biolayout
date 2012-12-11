@@ -40,7 +40,7 @@ public class GraphmlNetworkContainer
 
     private HashMap<Vertex, Tuple4<GraphmlShapesGroup1, GraphmlShapesGroup2, GraphmlShapesGroup3, Color>> allNodesmEPNShapeGroupTuplesMap = null;
     private ArrayList<GraphmlComponentContainer> allPathwayComponentContainersFor3D = null;
-    private ArrayList<GraphmlComponentContainer> allPathwayComponentContainersFor2D = null;    
+    private ArrayList<GraphmlComponentContainer> allPathwayComponentContainersFor2D = null;
 
     /**
     *  The constructor of the GraphmlNetworkContainer class.
@@ -180,7 +180,7 @@ public class GraphmlNetworkContainer
     /**
     *  Initializes the allGraphmlNodesMap variable.
     */
-    public void initAllGraphmlNodesMap(HashMap<String, Tuple6<float[], String[], String[], String[], String[], String>> allGraphmlNodesMap, 
+    public void initAllGraphmlNodesMap(HashMap<String, Tuple6<float[], String[], String[], String[], String[], String>> allGraphmlNodesMap,
                                        HashMap<String, Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]>> allGraphmlEdgesMap,
                                        ArrayList<GraphmlComponentContainer> allPathwayComponentContainers)
     {
@@ -188,7 +188,7 @@ public class GraphmlNetworkContainer
         this.allGraphmlEdgesMap = allGraphmlEdgesMap;
         this.allPathwayComponentContainersFor3D = allPathwayComponentContainers;
         this.allPathwayComponentContainersFor2D = new ArrayList<GraphmlComponentContainer>(allPathwayComponentContainers);
-        Collections.reverse(allPathwayComponentContainersFor2D);        
+        Collections.reverse(allPathwayComponentContainersFor2D);
 
         allOrigGraphmlMapCoordsMap = new HashMap<String, float[]>();
         float[] tempCoords = null;
@@ -279,24 +279,24 @@ public class GraphmlNetworkContainer
     public HashMap<String, Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]>> getAllGraphmlEdgesMap()
     {
         return allGraphmlEdgesMap;
-    }    
-    
+    }
+
     /**
     *  Gets the allPathwayComponentContainersFor3D variable.
     */
     public ArrayList<GraphmlComponentContainer> getAllPathwayComponentContainersFor3D()
     {
         return allPathwayComponentContainersFor3D;
-    }    
-   
+    }
+
     /**
     *  Gets the allPathwayComponentContainersFor2D variable.
     */
     public ArrayList<GraphmlComponentContainer> getAllPathwayComponentContainersFor2D()
     {
         return allPathwayComponentContainersFor2D;
-    }     
-    
+    }
+
     /**
     *  Resets all the graphml nodes map coordinates.
     */
@@ -492,9 +492,9 @@ public class GraphmlNetworkContainer
         allPathwayComponentContainersFor3D.clear();
         allPathwayComponentContainersFor3D = null;
         allPathwayComponentContainersFor2D.clear();
-        allPathwayComponentContainersFor2D = null;        
+        allPathwayComponentContainersFor2D = null;
         allOrigGraphmlMapCoordsMap.clear();
-        allOrigGraphmlMapCoordsMap = null;        
+        allOrigGraphmlMapCoordsMap = null;
         if (allUndoGraphmlMapCoordsStacksMap != null) allUndoGraphmlMapCoordsStacksMap.clear();
         allUndoGraphmlMapCoordsStacksMap = null;
         if (allRedoGraphmlMapCoordsStacksMap != null) allRedoGraphmlMapCoordsStacksMap.clear();

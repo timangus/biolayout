@@ -3,8 +3,8 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 * FixedPointMath is a final class containing only static methods for fixed point mathematical calculations for 8 bit (byte), 16 bit (short) & 32 bit (int) cases of both signed & unsigned float numbers.
 *
 * Below are the mathematical definition rules for addition, subtraction, multiplication & division between 2 fixed point numbers of the same base:
@@ -83,9 +83,9 @@ public final class FixedPointMath
 
 
 
-    /** 
+    /**
     *  Converts a given float to a fixed point byte number.
-    */ 
+    */
     public static byte convertFromFloatToFixedPointByteNumber(float number, int decimalPartLength)
     {
         if (decimalPartLength <= 0 || decimalPartLength > MAX_BYTE_DECIMAL_PART_LENGTH)
@@ -93,7 +93,7 @@ public final class FixedPointMath
             if (DEBUG_BUILD) println("Error with decimalPartLength: " + decimalPartLength + "\nIt must be between a range of 1-" + MAX_BYTE_DECIMAL_PART_LENGTH + " bits.\nNow setting it to " + MAX_BYTE_DECIMAL_PART_LENGTH + ".");
             decimalPartLength = MAX_BYTE_DECIMAL_PART_LENGTH;
         }
-        
+
         return (byte)( (1 << decimalPartLength) * number );
     }
 

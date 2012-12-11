@@ -7,12 +7,12 @@ import static org.BioLayoutExpress3D.CoreUI.ToolBars.LayoutAbstractToolBar.Navig
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 
 /**
-* 
+*
 * The LayoutNavigationToolBar is the BioLayout toolbar responsible for Navigation control.
 *
 * @author Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public class LayoutNavigationToolBar extends LayoutAbstractToolBar
@@ -34,7 +34,7 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
         imageIconHeight = imageIcon.getIconHeight();
         imageDivisor = ( IS_MAC || UIManager.getLookAndFeel().getName().equals("Nimbus") ) ? 6.0f : 3.0f;
     }
-    
+
     public LayoutNavigationToolBar(String name, int orientation, boolean useCustomToolBarColor) // to be used from ModelShapeNavigationToolBar subclass
     {
         super(name, orientation, useCustomToolBarColor);
@@ -44,8 +44,8 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
     protected final String getFirstButtonName()
     {
         return capitalizeFirstCharacter(UP);
-    }    
-    
+    }
+
     public void setUpAction(AbstractAction action)
     {
         setToolBarButtonAction(action, capitalizeFirstCharacter(UP), UP.ordinal() );
@@ -103,7 +103,7 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
     {
         setResetViewAction(action, true);
     }
-    
+
     public void setResetViewAction(AbstractAction action, boolean useSeparator)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(RESET_VIEW), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(RESET_VIEW), RESET_VIEW.ordinal() );
@@ -113,12 +113,12 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
     public void setNavigationWizardAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(NAVIGATION_WIZARD), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(NAVIGATION_WIZARD), NAVIGATION_WIZARD.ordinal() );
-    }  
-    
+    }
+
     @Override
     public void setEnabled(boolean enabled)
     {
-        boolean isDataSetLoaded = !DATA_TYPE.equals(DataTypes.NONE); 
+        boolean isDataSetLoaded = !DATA_TYPE.equals(DataTypes.NONE);
         for (int i = 0; i < NUMBER_OF_NAVIGATION_TOOLBAR_BUTTONS; i++)
         {
             if ( (i == 4) || (i == 5) ) // for the RotateUp & RotateDown buttons
@@ -128,8 +128,8 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
             else
                 allToolBarButtons[i].setEnabled(enabled && isDataSetLoaded);
         }
-    }  
-    
+    }
+
     @Override
     public boolean isEnabled()
     {
@@ -139,18 +139,18 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
             {
                 if ( RENDERER_MODE_3D && constructorInitializationFinished && !allToolBarButtons[i].isEnabled() )
                     return false;
-                else     
+                else
                     continue;
             }
             else
             {
-                if ( constructorInitializationFinished && !allToolBarButtons[i].isEnabled() )        
+                if ( constructorInitializationFinished && !allToolBarButtons[i].isEnabled() )
                     return false;
             }
         }
-       
+
         return true;
     }
-    
-    
+
+
 }

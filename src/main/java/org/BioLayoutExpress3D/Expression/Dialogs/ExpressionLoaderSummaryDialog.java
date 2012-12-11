@@ -15,14 +15,14 @@ import static org.BioLayoutExpress3D.Expression.ExpressionEnvironment.*;
 *
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class ExpressionLoaderSummaryDialog extends JDialog implements ChangeListener, CaretListener, DocumentListener
-{ 
-    /** 
+{
+    /**
     *  Serial version UID variable for the ExpressionLoaderSummaryDialog class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555709L;
 
     private JFrame jframe = null;
@@ -46,7 +46,7 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
 
         initActions();
         initComponents(counts, totalRows);
-        
+
         this.setSize(750, 500);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
@@ -56,21 +56,21 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
     {
         minThreshold = (int)rint(100.0f * STORED_CORRELATION_THRESHOLD);
         currentThreshold = (int)rint(100.0f * CURRENT_CORRELATION_THRESHOLD);
-        currentThresholdFloat = CURRENT_CORRELATION_THRESHOLD;        
-        
+        currentThresholdFloat = CURRENT_CORRELATION_THRESHOLD;
+
         JPanel topPanel = new JPanel(true);
         expressionDegreePlotsPanel = new ExpressionDegreePlotsPanel( counts, totalRows, minThreshold, currentThreshold, createCorrelationTextValue(currentThreshold) );
         JPanel downPanel = new JPanel(true);
-        
+
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, expressionDegreePlotsPanel, null);
-        splitPane.setEnabled(false); // disable the split pane as we use it here just for its look & feel with the DegreePlots JPanel           
+        splitPane.setEnabled(false); // disable the split pane as we use it here just for its look & feel with the DegreePlots JPanel
 
         thresholdSlider = new JSlider(minThreshold, 100);
         thresholdSlider.setValue(currentThreshold);
         thresholdSlider.addChangeListener(this);
         thresholdSlider.setToolTipText("Correlation Value");
         thresholdValueTextField = new FloatNumberField(0, 5);
-        thresholdValueTextField.addCaretListener(this);        
+        thresholdValueTextField.addCaretListener(this);
         thresholdValueTextField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
         thresholdValueTextField.getDocument().addDocumentListener(this);
         thresholdValueTextField.setEditable(false);
@@ -96,30 +96,30 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
 
     private void initActions()
     {
-        okAction = new AbstractAction("OK") 
+        okAction = new AbstractAction("OK")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555710L;
-    
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 proceed = true;
                 setVisible(false);
             }
         };
 
-        cancelAction = new AbstractAction("Cancel") 
+        cancelAction = new AbstractAction("Cancel")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555711L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 proceed = false;
                 setVisible(false);

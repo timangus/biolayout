@@ -9,14 +9,14 @@ import static org.BioLayoutExpress3D.DataStructures.StackDataStructureTypes.*;
 /**
 *
 * Re-implemented GraphUndoDelete with custom Stack data structure usage.
-* 
-* 
+*
+*
 * @author Thanos Theo, 2008-2009
 * @version 3.0.0.0
-* 
+*
 */
 
-final class GraphUndoDelete // package access 
+final class GraphUndoDelete // package access
 {
     private SelectionManager selectionManager = null;
     private org.BioLayoutExpress3D.DataStructures.Stack<HashSet<Vertex>> nodeSelectedNodesStack = null;
@@ -58,7 +58,7 @@ final class GraphUndoDelete // package access
     }
 
     public void undoDelete(NetworkContainer nc, Graph graph, LayoutProgressBarDialog layoutProgressBarDialog)
-    {        
+    {
         if (nodeSelectedNodesStack.size() > 0)
         {
             for ( Vertex vertex : nodeSelectedNodesStack.pop() )
@@ -76,7 +76,7 @@ final class GraphUndoDelete // package access
 
                 nc.getEdges().add(edge);
             }
-            
+
             graph.rebuildGraph();
         }
 
@@ -91,6 +91,6 @@ final class GraphUndoDelete // package access
 
         setEnabledDeleteActions();
     }
-    
-    
+
+
 }

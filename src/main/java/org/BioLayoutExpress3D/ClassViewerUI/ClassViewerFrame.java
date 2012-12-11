@@ -29,22 +29,22 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public final class ClassViewerFrame extends JFrame implements ActionListener, ListSelectionListener, ChangeListener, ItemListener
-{ 
+{
     /**
     *  Serial version UID variable for the ClassViewerFrame class.
-    */      
-    public static final long serialVersionUID = 111222333444555791L;    
+    */
+    public static final long serialVersionUID = 111222333444555791L;
 
     public static enum ClassViewerTabTypes { GENERAL_TAB, ENTROPY_TAB, ENTROPY_DETAILS_TAB }
     private static final int NAME_COLUMN = 1;
     private static final int TIME_TO_SLEEP_TO_ABORT_THREADS = 50;
-    
-    private LayoutFrame layoutFrame = null;    
-    private JTabbedPane tabbedPane = null;   
+
+    private LayoutFrame layoutFrame = null;
+    private JTabbedPane tabbedPane = null;
     private HashSet<GraphNode> oldSelection = null;
 
     // general table
@@ -55,11 +55,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private AbstractAction okAction = null;
     private JComboBox classSetsBox = null;
     private JCheckBox viewAllClassSets = null;
-    private AbstractAction refreshSelectionInTableAction = null;  
+    private AbstractAction refreshSelectionInTableAction = null;
     private JButton selectDeselectAllButton = null;
     private boolean selectDeselectAllButtonModeState = false;
     private boolean updateResetSelectDeselectAllButton = true;
-    
+
     private ExpressionGraphPanel expressionGraphPanel = null;
     private FindNameDialog findNameDialog = null;
     private FindClassDialog findClassDialog = null;
@@ -69,20 +69,20 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private JButton findClassButton = null;
     private JButton findMultipleClassesButton = null;
     private JButton previousClassButton = null;
-    private JButton nextClassButton = null;    
-    private AbstractAction findNameAction = null;      
+    private JButton nextClassButton = null;
+    private AbstractAction findNameAction = null;
     private AbstractAction findClassAction = null;
     private AbstractAction findMultipleClassesAction = null;
-    private AbstractAction previousClassAction = null;    
-    private AbstractAction nextClassAction = null;  
-    
+    private AbstractAction previousClassAction = null;
+    private AbstractAction nextClassAction = null;
+
     private ClassViewerHideColumnsDialog classViewerHideColumnsDialog = null;
-    private JButton refreshSelectionInTableButton = null;  
+    private JButton refreshSelectionInTableButton = null;
     private JButton chooseColumnsToHideButton = null;
-    private JButton exportTableAsButton = null;    
+    private JButton exportTableAsButton = null;
     private AbstractAction chooseColumnsToHideAction = null;
     private AbstractAction exportTableToFileAction = null;
-    
+
     // entropy table
     private ClassViewerTable entropyTable = null;
     private ClassViewerTableModelAnalysis entropyTableModel = null;
@@ -93,19 +93,19 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private JButton detailsButton = null;
     private JButton detailsForAllButton = null;
     private AbstractAction detailsAction = null;
-    private AbstractAction detailsOfAllAction = null;           
-    
+    private AbstractAction detailsOfAllAction = null;
+
     // entropy analysis details table
     private ClassViewerTableModelDetail analysisTableModel = null;
-    
+
     private ClassViewerUpdateEntropyTable updateEntropyTableRunnable = null;
     private ClassViewerUpdateDetailedEntropyTable updateDetailedEntropyTableRunnable = null;
-    
+
     // variables used for proper window event usage
     private boolean isWindowIconified = false;
     private boolean isWindowMaximized = false;
-    private boolean windowWasMaximizedBeforeIconification = false;    
-    
+    private boolean windowWasMaximizedBeforeIconification = false;
+
     private JFileChooser exportTableViewToFileChooser = null;
     private FileNameExtensionFilter fileNameExtensionFilterText = null;
 
@@ -116,8 +116,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     public ClassViewerFrame(LayoutFrame layoutFrame)
     {
         super("Class Viewer");
-        
-        this.layoutFrame = layoutFrame;        
+
+        this.layoutFrame = layoutFrame;
 
         oldSelection = new HashSet<GraphNode>();
         selectedGenes = new HashSet<String>();
@@ -126,7 +126,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         initActions(this);
         initComponents();
         initExportTableViewToFileChooser();
-    }  
+    }
 
     private void initFrame(final ClassViewerFrame classViewerFrame)
     {
@@ -284,96 +284,96 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 navigateToNextClass();
             }
         };
-        
-        refreshSelectionInTableAction = new AbstractAction("Refresh Selection In Table") 
+
+        refreshSelectionInTableAction = new AbstractAction("Refresh Selection In Table")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */      
-            public static final long serialVersionUID = 111222333444555993L; 
-            
+            */
+            public static final long serialVersionUID = 111222333444555993L;
+
             @Override
-            public void actionPerformed(ActionEvent e) 
-            {                
+            public void actionPerformed(ActionEvent e)
+            {
                 populateClassViewer(false, true);
-            }            
+            }
         };
-        
-        chooseColumnsToHideAction = new AbstractAction("Choose Columns To Hide") 
+
+        chooseColumnsToHideAction = new AbstractAction("Choose Columns To Hide")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */      
-            public static final long serialVersionUID = 111222333444555993L; 
-            
+            */
+            public static final long serialVersionUID = 111222333444555993L;
+
             @Override
-            public void actionPerformed(ActionEvent e) 
-            {                
+            public void actionPerformed(ActionEvent e)
+            {
                 classViewerHideColumnsDialog.setVisible(true);
-            }            
+            }
         };
-        
-        exportTableToFileAction = new AbstractAction("Export Table As...") 
+
+        exportTableToFileAction = new AbstractAction("Export Table As...")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */      
-            public static final long serialVersionUID = 111222333444555793L; 
-            
+            */
+            public static final long serialVersionUID = 111222333444555793L;
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 save();
             }
-        };        
-        
-        okAction = new AbstractAction("OK") 
+        };
+
+        okAction = new AbstractAction("OK")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */      
-            public static final long serialVersionUID = 111222333444555793L; 
-            
+            */
+            public static final long serialVersionUID = 111222333444555793L;
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 closeClassViewerWindow();
             }
         };
 
-        detailsAction = new AbstractAction("Details") 
+        detailsAction = new AbstractAction("Details")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */      
-            public static final long serialVersionUID = 111222333444555794L; 
-            
+            */
+            public static final long serialVersionUID = 111222333444555794L;
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 // disable any running thread
-                checkAndAbortUpdateEntropyTableRunnable();      
+                checkAndAbortUpdateEntropyTableRunnable();
                 checkAndAbortUpdateDetailedEntropyTableRunnable();
-                
+
                 updateEntropyTableRunnable = new ClassViewerUpdateEntropyTable(classViewerFrame, layoutFrame, annotationClass, analysisTableModel, selectedGenes, tabbedPane);
                 executeRunnableInThread(updateEntropyTableRunnable);
             }
         };
 
-        detailsOfAllAction = new AbstractAction("Details For All") 
+        detailsOfAllAction = new AbstractAction("Details For All")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */      
-            public static final long serialVersionUID = 111222333444555795L; 
-            
+            */
+            public static final long serialVersionUID = 111222333444555795L;
+
             @Override
-            public void actionPerformed(ActionEvent e) 
+            public void actionPerformed(ActionEvent e)
             {
                 // disable any running thread
-                checkAndAbortUpdateEntropyTableRunnable();      
+                checkAndAbortUpdateEntropyTableRunnable();
                 checkAndAbortUpdateDetailedEntropyTableRunnable();
-                
+
                 updateDetailedEntropyTableRunnable = new ClassViewerUpdateDetailedEntropyTable(classViewerFrame, layoutFrame, analysisTableModel, selectedGenes, tabbedPane);
                 executeRunnableInThread(updateDetailedEntropyTableRunnable);
             }
@@ -388,7 +388,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             int iconifyState = this.getExtendedState();
 
             // set the iconified bit, inverse process
-            // deIconifyState |= Frame.ICONIFIED;                        
+            // deIconifyState |= Frame.ICONIFIED;
 
             // clear the iconified bit
             iconifyState &= ~JFrame.ICONIFIED;
@@ -402,19 +402,19 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 int maximizeState = this.getExtendedState();
 
                 // clear the maximized bits, inverse process
-                // minimizeState &= ~Frame.MAXIMIZED_BOTH;                        
+                // minimizeState &= ~Frame.MAXIMIZED_BOTH;
 
                 // set the maximized bits
                 maximizeState |= JFrame.MAXIMIZED_BOTH;
 
                 // maximize the frame
-                this.setExtendedState(maximizeState);                            
-            }                           
-        }       
-        
+                this.setExtendedState(maximizeState);
+            }
+        }
+
         this.toFront();
     }
-        
+
     private void initializeCommonComponents()
     {
         tableModelGeneral.proccessSelected( viewAllClassSets.isSelected() );
@@ -433,40 +433,40 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if ( !selectedGenes.isEmpty() )
             populateClassViewer(false, true); //to update the classComboBox and generalTable with the current selection
     }
-    
+
     private void checkAndAbortUpdateEntropyTableRunnable()
     {
         // abort previous thread & sleep before initializing a new one!
-        if (updateEntropyTableRunnable != null) 
+        if (updateEntropyTableRunnable != null)
         {
             if ( !updateEntropyTableRunnable.getAbortThread() )
             {
                 updateEntropyTableRunnable.setAbortThread(true);
                 LayoutFrame.sleep(TIME_TO_SLEEP_TO_ABORT_THREADS);
             }
-        }        
+        }
     }
-    
+
     private void checkAndAbortUpdateDetailedEntropyTableRunnable()
     {
         // abort previous thread & sleep before initializing a new one!
-        if (updateDetailedEntropyTableRunnable != null) 
+        if (updateDetailedEntropyTableRunnable != null)
         {
             if ( !updateDetailedEntropyTableRunnable.getAbortThread() )
             {
                 updateDetailedEntropyTableRunnable.setAbortThread(true);
                 LayoutFrame.sleep(TIME_TO_SLEEP_TO_ABORT_THREADS);
             }
-        }        
+        }
     }
-    
+
     private void executeRunnableInThread(Runnable runnable)
     {
         Thread executeThread = new Thread(runnable);
         executeThread.setPriority(Thread.NORM_PRIORITY);
-        executeThread.start();        
+        executeThread.start();
     }
-            
+
     private void initComponents()
     {
         if (DEBUG_BUILD) println("Create Class Viewer Frame Elements.");
@@ -517,10 +517,10 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         generalTablePanel.add(generalTableButtonPanel);
         generalTablePanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
 
-        // button panel, south                
+        // button panel, south
         JPanel generalButtonPanel = new JPanel(true);
-        
-        // expression graph GUI component        
+
+        // expression graph GUI component
         expressionGraphPanel = new ExpressionGraphPanel( this, layoutFrame, layoutFrame.getExpressionData() );
         findNameDialog = new FindNameDialog(layoutFrame, this);
         findClassDialog = new FindClassDialog(layoutFrame, this);
@@ -574,24 +574,24 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         exportTableAsButton.setToolTipText("Export Table As...");
         chooseColumnsToHideButton = new JButton(chooseColumnsToHideAction);
         chooseColumnsToHideButton.setEnabled(false);
-        chooseColumnsToHideButton.setToolTipText("Choose Columns To Hide");                        
-                     
+        chooseColumnsToHideButton.setToolTipText("Choose Columns To Hide");
+
         // topPanel, north
         generalTopPanel.add( new JLabel("Select Current Class Set:") );
         generalTopPanel.add(classSetsBox);
         generalTopPanel.add(viewAllClassSets);
         generalTopPanel.add(refreshSelectionInTableButton);
 
-        tabGeneralPanel.add(generalTopPanel, BorderLayout.NORTH);           
-        
+        tabGeneralPanel.add(generalTopPanel, BorderLayout.NORTH);
+
         // button panel, south
         generalButtonPanel.add(chooseColumnsToHideButton);
         generalButtonPanel.add(exportTableAsButton);
         JButton okButton = new JButton(okAction);
         okButton.setToolTipText("OK");
         generalButtonPanel.add(okButton);
-        
-        tabGeneralPanel.add(generalButtonPanel, BorderLayout.SOUTH);        
+
+        tabGeneralPanel.add(generalButtonPanel, BorderLayout.SOUTH);
 
         //// ENTROPY PANEL ////
         JPanel tabEntropyPanel = new JPanel(true);
@@ -625,7 +625,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         detailsForAllButton = new JButton(detailsOfAllAction);
         detailsForAllButton.setEnabled(false);
         detailsForAllButton.setToolTipText("Details For All");
-        
+
         okButtonPanel.add(detailsButton);
         okButtonPanel.add(detailsForAllButton);
         okButton = new JButton(okAction);
@@ -662,13 +662,13 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         tabEntropyDetailPanel.add(okButtonPanelDetails, BorderLayout.SOUTH);
 
         // create & add to tab pane
-        tabbedPane = new JTabbedPane();                       
-        tabbedPane.insertTab( "General", null, tabGeneralPanel, "General Node Information", GENERAL_TAB.ordinal() );        
-        tabbedPane.insertTab( "Analysis", null, tabEntropyPanel, "Analysis Calculations", ENTROPY_TAB.ordinal() );        
+        tabbedPane = new JTabbedPane();
+        tabbedPane.insertTab( "General", null, tabGeneralPanel, "General Node Information", GENERAL_TAB.ordinal() );
+        tabbedPane.insertTab( "Analysis", null, tabEntropyPanel, "Analysis Calculations", ENTROPY_TAB.ordinal() );
         tabbedPane.add("Analysis Per Term", tabEntropyDetailPanel);
         tabbedPane.insertTab( "Analysis Detailed", null, tabEntropyDetailPanel, "Shows Analysis Per Term", ENTROPY_DETAILS_TAB.ordinal() );
         tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), false);
-        tabbedPane.addChangeListener(this);        
+        tabbedPane.addChangeListener(this);
 
         // add tab pane to content pane
         this.getContentPane().add(tabbedPane);
@@ -718,29 +718,29 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         exportTableViewToFileChooser.setDialogTitle("Export Table View As");
     }
 
-    public AbstractAction getClassViewerAction() 
+    public AbstractAction getClassViewerAction()
     {
         return classViewerDialogAction;
-    }    
-    
+    }
+
     private void setUpStringEditor(JTable table)
     {
         final JTextField textField = new JTextField();
 
-        DefaultCellEditor stringEditor = new DefaultCellEditor(textField) 
+        DefaultCellEditor stringEditor = new DefaultCellEditor(textField)
         {
-            /** 
+            /**
             *  Serial version UID variable for the DefaultCellEditor class.
-            */      
-            public static final long serialVersionUID = 111222333444555796L; 
-            
+            */
+            public static final long serialVersionUID = 111222333444555796L;
+
             @Override
-            public Object getCellEditorValue() 
+            public Object getCellEditorValue()
             {
                 return textField.getText();
             }
         };
-        
+
         table.setDefaultEditor(String.class, stringEditor);
     }
 
@@ -758,7 +758,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     {
         populateClassViewer(null, updateExpresionGraphViewOnly, notUpdateTitleBar);
     }
-    
+
     public void populateClassViewer(Object[][] hideColumnsData, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
     {
         NetworkContainer nc = layoutFrame.getNetworkRootContainer();
@@ -812,24 +812,24 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             if (updateResetSelectDeselectAllButton)
                 resetSelectDeselectAllButton();
             if (!notUpdateTitleBar)
-                setCurrentClassName("");            
+                setCurrentClassName("");
         }
     }
-    
+
     public void setCurrentClassIndex(int currentClassIndex)
     {
         findClassDialog.setCurrentClassIndex(currentClassIndex);
     }
-    
+
     public int numberOfAllClasses()
     {
         return findClassDialog.numberOfAllClasses();
-    }    
-    
+    }
+
     public int getClassIndex()
     {
         return findClassDialog.getClassIndex();
-    }    
+    }
 
     public VertexClass navigateToCurrentClass()
     {
@@ -849,7 +849,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     private VertexClass navigateToPreviousClass()
     {
-        VertexClass previousVertexClass = findClassDialog.previousVertexClass();                    
+        VertexClass previousVertexClass = findClassDialog.previousVertexClass();
         if (previousVertexClass != null)
         {
             layoutFrame.getGraph().getSelectionManager().selectByClass(previousVertexClass);
@@ -860,8 +860,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             nextClassButton.setEnabled(true);
         }
 
-        previousClassButton.setEnabled( findClassDialog.checkPreviousVertexClass() );   
-        
+        previousClassButton.setEnabled( findClassDialog.checkPreviousVertexClass() );
+
         return previousVertexClass;
     }
 
@@ -872,28 +872,28 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     public VertexClass navigateToNextClass(boolean enableTitleBarUpdate)
     {
-        VertexClass nextVertexClass = findClassDialog.nextVertexClass();                    
+        VertexClass nextVertexClass = findClassDialog.nextVertexClass();
         if (nextVertexClass != null)
         {
             layoutFrame.getGraph().getSelectionManager().selectByClass(nextVertexClass);
             generalTable.getDefaultEditor(String.class).stopCellEditing();
             layoutFrame.getGraph().updateSelectedNodesDisplayList();
-            if (enableTitleBarUpdate)            
-                setCurrentClassName( nextVertexClass.getName() );            
+            if (enableTitleBarUpdate)
+                setCurrentClassName( nextVertexClass.getName() );
 
             previousClassButton.setEnabled(findClassDialog.getClassIndex() != 0);
         }
 
         nextClassButton.setEnabled( findClassDialog.checkNextVertexClass() );
-        
+
         return nextVertexClass;
-    }    
-    
+    }
+
     private void checkClassViewerNavigationButtons()
     {
         previousClassButton.setEnabled( findClassDialog.checkPreviousVertexClass() );
         nextClassButton.setEnabled( findClassDialog.checkNextVertexClass() );
-    }    
+    }
 
     private void refreshTables()
     {
@@ -901,7 +901,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         {
             if (DEBUG_BUILD) println("refreshTables() General Tab.");
 
-            rebuildClassSets();                
+            rebuildClassSets();
             tableModelGeneral.fireTableStructureChanged();
             setVertexClassSortingToGeneralTable();
         }
@@ -913,15 +913,15 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             entropyTableModel.fireTableStructureChanged();
         }
     }
-    
+
     private void rebuildClassSets()
     {
         if (DEBUG_BUILD) println("Rebuilding ClassSets for the Class Viewer.");
-        
+
         rebuildClassSets = true;
         classSetsBox.removeAllItems();
         addClassSets(classSetsBox);
-        
+
         classSetsBox.setSelectedItem( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName() );
 
         rebuildClassSets = false;
@@ -934,8 +934,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             if ( !tableModelGeneral.findNonVertexClassColumnNamesInOriginalColumnNameArray(generalTableColumnNames[i]) )
                 generalTableSorter.setComparator( i, new ClassViewerTable.VertexClassSorting() );
     }
-    
-    private void addClassSets(JComboBox comboBox) 
+
+    private void addClassSets(JComboBox comboBox)
     {
         comboBox.removeAllItems();
 
@@ -951,29 +951,29 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         }
     }
 
-    private void save() 
+    private void save()
     {
         int dialogReturnValue = 0;
         boolean doSaveFile = false;
-        File saveFile = null;        
-        
+        File saveFile = null;
+
         exportTableViewToFileChooser.setSelectedFile( new File( IOUtils.getPrefix( layoutFrame.getFileNameLoaded() ) + "_Table_View" ) );
-        
+
         if (exportTableViewToFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
         {
-            String extension = fileNameExtensionFilterText.getExtensions()[0];                        
+            String extension = fileNameExtensionFilterText.getExtensions()[0];
             String fileName = exportTableViewToFileChooser.getSelectedFile().getAbsolutePath();
             if ( fileName.endsWith(extension) ) fileName = IOUtils.getPrefix(fileName);
-            
-            saveFile = new File(fileName + "." + extension);           
 
-            if ( saveFile.exists() ) 
+            saveFile = new File(fileName + "." + extension);
+
+            if ( saveFile.exists() )
             {
                 dialogReturnValue = JOptionPane.showConfirmDialog(this, "This File Already Exists.\nDo you want to Overwrite it?", "This File Already Exists. Overwrite?", JOptionPane.YES_NO_CANCEL_OPTION);
-                
-                if (dialogReturnValue == JOptionPane.YES_OPTION) 
-                    doSaveFile = true;     
-            } 
+
+                if (dialogReturnValue == JOptionPane.YES_OPTION)
+                    doSaveFile = true;
+            }
             else
             {
                 doSaveFile = true;
@@ -989,7 +989,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     private void saveExportTableViewFile(File file)
     {
-        try 
+        try
         {
             FileWriter fileWriter = new FileWriter(file);
             for (int j = 1; j < generalTable.getColumnCount(); j++)
@@ -1002,18 +1002,18 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                     fileWriter.write(generalTable.getValueAt(i, j).toString() + "\t");
                 fileWriter.write("\n");
             }
-            
+
             fileWriter.flush();
             fileWriter.close();
-            
+
             InitDesktop.edit(file);
-        } 
-        catch (IOException ioe) 
+        }
+        catch (IOException ioe)
         {
             if (DEBUG_BUILD) println("Exception in saveExportTableViewFile():\n" + ioe.getMessage());
-            
+
             JOptionPane.showMessageDialog(this, "Something went wrong while saving the file:\n" + ioe.getMessage() + "\nPlease try again with a different file name/path/drive.", "Error with saving the file!", JOptionPane.ERROR_MESSAGE);
-            save();            
+            save();
         }
     }
 
@@ -1042,23 +1042,23 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     public void closeClassViewerWindow()
     {
         // disable any running threads
-        checkAndAbortUpdateEntropyTableRunnable();      
+        checkAndAbortUpdateEntropyTableRunnable();
         checkAndAbortUpdateDetailedEntropyTableRunnable();
-        
+
         generalTable.getDefaultEditor(String.class).stopCellEditing();
 
-        setVisible(false);        
-    }   
-    
+        setVisible(false);
+    }
+
     /**
     *   Process a light-weight thread using the Adapter technique to avoid any GUI latencies with the JButton setEnabled() update.
-    */     
+    */
     private void runLightWeightThread(int threadPriority)
     {
         Thread runLightWeightThread = new Thread( new Runnable()
         {
             @Override
-            public void run() 
+            public void run()
             {
                 boolean enableDetailsButton = !annotationClass.isEmpty();
 
@@ -1070,18 +1070,18 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 }
 
                 detailsButton.setEnabled(enableDetailsButton);
-            }         
-        } );           
-        
+            }
+        } );
+
         runLightWeightThread.setPriority(threadPriority);
         runLightWeightThread.start();
-    }      
-    
+    }
+
     public String[] getGeneralTableColumnNames()
     {
         return tableModelGeneral.getColumnNames();
     }
-    
+
     public JButton getChooseColumnsToHideButton()
     {
         return chooseColumnsToHideButton;
@@ -1090,7 +1090,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     public void setCurrentClassName(String currentClassName)
     {
         this.currentClassName = currentClassName;
-        
+
         int numberOfSelectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes().size();
         this.setTitle("Class Viewer " + ( ( !currentClassName.isEmpty() ) ? "(Current Class Selected: " + ( (numberOfSelectedNodes > 0) ? currentClassName + " with " + numberOfSelectedNodes + " nodes" : currentClassName ) + ")" : "" ) );
     }
@@ -1105,7 +1105,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         this.updateResetSelectDeselectAllButton = updateResetSelectDeselectAllButton;
     }
 
-    @Override    
+    @Override
     public void itemStateChanged(ItemEvent e)
     {
         if (!rebuildClassSets)
@@ -1116,57 +1116,57 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().switchClassSet( (String)classSetsBox.getSelectedItem() );
                 layoutFrame.getGraph().updateAllDisplayLists();
                 layoutFrame.getGraph().refreshDisplay();
-                
+
                 refreshCurrentClassSetSelection();
-                
+
                 if (DEBUG_BUILD) println("Reinit Due to Action:" + e.toString());
-                
+
                 populateClassViewer(false, true);
             }
         }
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
         if ( e.getSource().equals(viewAllClassSets) )
         {
             if (DEBUG_BUILD) println("Reinit Due to Action:" + e.toString());
-            
+
             populateClassViewer(false, true);
         }
-    }    
-    
+    }
+
     @Override
-    public void valueChanged(ListSelectionEvent listSelectionEvent) 
+    public void valueChanged(ListSelectionEvent listSelectionEvent)
     {
-        int selectedRow = entropyTable.getSelectedRow();        
-        boolean isDifferent = (selectedRow > -1) ? !annotationClass.equals( (String)entropyTable.getModel().getValueAt(selectedRow, 0) ) : true;        
-        annotationClass = (selectedRow > -1) ? (String)entropyTable.getModel().getValueAt(selectedRow, 0) : "";        
+        int selectedRow = entropyTable.getSelectedRow();
+        boolean isDifferent = (selectedRow > -1) ? !annotationClass.equals( (String)entropyTable.getModel().getValueAt(selectedRow, 0) ) : true;
+        annotationClass = (selectedRow > -1) ? (String)entropyTable.getModel().getValueAt(selectedRow, 0) : "";
         if (isDifferent)
             runLightWeightThread(Thread.NORM_PRIORITY);
     }
 
     @Override
-    public void stateChanged(ChangeEvent changeEvent) 
+    public void stateChanged(ChangeEvent changeEvent)
     {
         if (DEBUG_BUILD) println( changeEvent.toString() );
 
-        if ( changeEvent.getSource().equals(tabbedPane) ) 
+        if ( changeEvent.getSource().equals(tabbedPane) )
         {
             if (DEBUG_BUILD) println("Reinit due to change event: " + changeEvent.toString());
 
             populateClassViewer(false, true);
         }
-    }    
-    
+    }
+
     public static class EntropyTableCellRenderer extends DefaultTableCellRenderer
     {
-        /** 
+        /**
         *  Serial version UID variable for the EntropyTableCellRenderer class.
-        */      
-        public static final long serialVersionUID = 111222333444555797L; 
- 
+        */
+        public static final long serialVersionUID = 111222333444555797L;
+
         public static final DecimalFormat DECIMAL_FORMAT_1 = new DecimalFormat("0.##E0");
         public static final DecimalFormat DECIMAL_FORMAT_2 = new DecimalFormat("0.####");
 
@@ -1174,7 +1174,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
         {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            
+
             if (value instanceof Double)
             {
                 double val = ( (Double)value ).doubleValue();
@@ -1185,9 +1185,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
             return this;
         }
-        
-        
+
+
     }
-    
-    
+
+
 }

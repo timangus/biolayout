@@ -14,10 +14,10 @@ import org.BioLayoutExpress3D.DataStructures.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-/** 
-*   
+/**
+*
 *  This class provides Perlin Noise functionality for GLSL Shaders usage through a 3D OpenGL texture.
-*  
+*
 *  Coherent Perlin Noise function over 1, 2 or 3 dimensions (copyright Ken Perlin).
 *  Modifications by John Kessenich (GLSL Orange Book & setNoiseFrequency() support).
 *  Java 1.6 & N-CP conversion by Thanos Theo.
@@ -35,13 +35,13 @@ public final class PerlinNoise3DTexture
     /**
     *  Noise 3D number of octaves.
     */
-    private static final int NOISE_3D_NUMBER_OF_OCTAVES = 4;        
-    
+    private static final int NOISE_3D_NUMBER_OF_OCTAVES = 4;
+
     /**
     *  Noise 3D texture size.
     */
-    private static final int NOISE_3D_TEXTURE_SIZE = 128;    
-    
+    private static final int NOISE_3D_TEXTURE_SIZE = 128;
+
     /**
     *  RAND_MAX value from C.
     */
@@ -55,13 +55,13 @@ public final class PerlinNoise3DTexture
     /**
     *  N value.
     */
-    private static final int N = 0x1000; 
-    
+    private static final int N = 0x1000;
+
     /**
     *  Texture ID reference.
     */
-    private final IntBuffer TEXTURE_ID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();    
-    
+    private final IntBuffer TEXTURE_ID = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
+
     /**
     *  Random reference.
     */
@@ -71,7 +71,7 @@ public final class PerlinNoise3DTexture
     *  The Perlin Noise 3D texture buffer.
     */
     private ByteBuffer perlinNoise3DTextureBuffer = null;
-    
+
     /**
     *  Constructor of the PerlinNoise3DTexture class.
     */
@@ -147,7 +147,7 @@ public final class PerlinNoise3DTexture
             g2 = new double[MAXB + MAXB + 2][2];
         double[][] g3 = null;
         if (calc2Darray && calc3Darray)
-            g3 = new double[MAXB + MAXB + 2][3];        
+            g3 = new double[MAXB + MAXB + 2][3];
         int i = 0, j = 0, k = 0;
 
         for (i = 0; i < frequency; i++)
@@ -163,7 +163,7 @@ public final class PerlinNoise3DTexture
             }
 
             if (calc2Darray && calc3Darray)
-            {            
+            {
                 for (j = 0; j < 3; j++)
                     g3[i][j] = RAND_MAX * (double)( (random.nextInt() % (frequency + frequency) ) - frequency) / frequency;
                 normalize3(g3[i]);
@@ -181,16 +181,16 @@ public final class PerlinNoise3DTexture
         {
             p[frequency + i] = p[i];
             g1[frequency + i] = g1[i];
-            
+
             if (calc2Darray)
                 for (j = 0; j < 2; j++)
                     g2[frequency + i][j] = g2[i][j];
-            
+
             if (calc2Darray && calc3Darray)
                 for (j = 0; j < 3; j++)
                     g3[frequency + i][j] = g3[i][j];
         }
-        
+
         return Tuples.tuple(p, g1, g2, g3);
     }
 
@@ -202,19 +202,19 @@ public final class PerlinNoise3DTexture
         Tuple4<int[], double[], double[][], double[][]> tuple4 = initPerlinNoise(frequency, false, false);
         int[] p = tuple4.first;
         double[] g1 = tuple4.second;
-        
+
         return perlinNoise1(xIn, frequency, p, g1);
-    }      
-    
+    }
+
     /**
     *  1D Perlin Noise function.
-    * 
+    *
     *  Overloaded version where the p/g1 arrays are being passed to the function as parameters.
     */
     public double perlinNoise1(double xIn, int frequency, int[] p, double[] g1)
     {
         int bx0 = 0, bx1 = 0;
-        double rx0 = 0.0, rx1 = 0.0, sx = 0.0, t = 0.0, u = 0.0, v = 0.0;      
+        double rx0 = 0.0, rx1 = 0.0, sx = 0.0, t = 0.0, u = 0.0, v = 0.0;
 
         // setup(0, bx0, bx1, rx0, rx1)
         t = xIn + N;
@@ -239,13 +239,13 @@ public final class PerlinNoise3DTexture
         int[] p = tuple4.first;
         double[] g1 = tuple4.second;
         double[][] g2 = tuple4.third;
-        
+
         return perlinNoise2(xIn, yIn, frequency, p, g1, g2);
-    }       
-    
+    }
+
     /**
     *  2D Perlin Noise function.
-    * 
+    *
     *  Overloaded version where the p/g1/g2 arrays are being passed to the function as parameters.
     */
     public double perlinNoise2(double xIn, double yIn, int frequency, int[] p, double[] g1, double[][] g2)
@@ -253,8 +253,8 @@ public final class PerlinNoise3DTexture
         int bx0 = 0, bx1 = 0, by0 = 0, by1 = 0, b00 = 0, b10 = 0, b01 = 0, b11 = 0;
         double rx0 = 0.0, rx1 = 0.0, ry0 = 0.0, ry1 = 0.0, sx = 0.0, sy = 0.0, a = 0.0, b = 0.0, t = 0.0, u = 0.0, v = 0.0;
         double q1 = 0.0, q2 = 0.0;
-        int i = 0, j = 0;       
-        
+        int i = 0, j = 0;
+
         // setup(0, bx0, bx1, rx0, rx1)
         t = xIn + N;
         bx0 = (int)t & (frequency - 1);
@@ -309,10 +309,10 @@ public final class PerlinNoise3DTexture
         double[] g1 = tuple4.second;
         double[][] g2 = tuple4.third;
         double[][] g3 = tuple4.fourth;
-        
+
         return perlinNoise3(xIn, yIn, zIn, frequency, p, g1, g2, g3);
-    }    
-    
+    }
+
     /**
     *  3D Perlin Noise function.
     *
@@ -323,8 +323,8 @@ public final class PerlinNoise3DTexture
         int bx0 = 0, bx1 = 0, by0 = 0, by1 = 0, bz0 = 0, bz1 = 0, b00 = 0, b10 = 0, b01 = 0, b11 = 0;
         double rx0 = 0.0, rx1 = 0.0, ry0 = 0.0, ry1 = 0.0, rz0 = 0.0, rz1 = 0.0, sy = 0.0, sz = 0.0, a = 0.0, b = 0.0, c = 0.0, d = 0.0, t = 0.0, u = 0.0, v = 0.0;
         double q1 = 0.0, q2 = 0.0, q3 = 0.0;
-        int i = 0, j = 0;     
-        
+        int i = 0, j = 0;
+
         // setup(0, bx0, bx1, rx0, rx1)
         t = xIn + N;
         bx0 = (int)t & (frequency - 1);
@@ -409,31 +409,31 @@ public final class PerlinNoise3DTexture
     *  1D Perlin Noise harmonic summing function.
     *  In what follows "alpha" is the weight when the sum is formed.
     *  Typically it is 2, as this approaches 1 the function is noisier.
-    *  "beta" is the harmonic scaling/spacing, typically 2.    
+    *  "beta" is the harmonic scaling/spacing, typically 2.
     */
     public double perlinNoise1D(double xIn, double alpha, double beta, int n, int frequency)
     {
         Tuple4<int[], double[], double[][], double[][]> tuple4 = initPerlinNoise(frequency, false, false);
         int[] p = tuple4.first;
         double[] g1 = tuple4.second;
-        
+
         return perlinNoise1D(xIn, alpha, beta, n, frequency, p, g1);
-    }    
-    
+    }
+
     /**
     *  1D Perlin Noise harmonic summing function.
     *  In what follows "alpha" is the weight when the sum is formed.
     *  Typically it is 2, as this approaches 1 the function is noisier.
     *  "beta" is the harmonic scaling/spacing, typically 2.
-    * 
+    *
     *  Overloaded version where the p/g1 arrays are being passed to the function as parameters.
     */
     public double perlinNoise1D(double xIn, double alpha, double beta, int n, int frequency, int[] p, double[] g1)
     {
         int i = 0;
         double val = 0.0, sum = 0.0;
-        double pp1 = 0.0, scale = 1.0;      
-        
+        double pp1 = 0.0, scale = 1.0;
+
         pp1 = xIn;
         for (i = 0; i < n; i++)
         {
@@ -458,25 +458,25 @@ public final class PerlinNoise3DTexture
         int[] p = tuple4.first;
         double[] g1 = tuple4.second;
         double[][] g2 = tuple4.third;
-        
+
         return perlinNoise2D(xIn, yIn, alpha, beta, n, frequency, p, g1, g2);
-    }    
-    
+    }
+
     /**
     *  2D Perlin Noise harmonic summing function.
     *  In what follows "alpha" is the weight when the sum is formed.
     *  Typically it is 2, as this approaches 1 the function is noisier.
     *  "beta" is the harmonic scaling/spacing, typically 2.
-    * 
-    *  Overloaded version where the p/g1/g2 arrays are being passed to the function as parameters. 
+    *
+    *  Overloaded version where the p/g1/g2 arrays are being passed to the function as parameters.
     */
     public double perlinNoise2D(double xIn, double yIn, double alpha, double beta, int n, int frequency, int[] p, double[] g1, double[][] g2)
     {
         int i = 0;
         double val = 0.0, sum = 0.0;
         double scale = 1.0;
-        double pp1 = 0.0, pp2 = 0.0;   
-        
+        double pp1 = 0.0, pp2 = 0.0;
+
         pp1 = xIn;
         pp2 = yIn;
         for (i = 0; i < n; i++)
@@ -506,15 +506,15 @@ public final class PerlinNoise3DTexture
         double[][] g3 = tuple4.fourth;
 
         return perlinNoise3D(xIn, yIn, zIn, alpha, beta, n, frequency, p, g1, g2, g3);
-    }    
-    
+    }
+
     /**
     *  3D Perlin Noise harmonic summing function.
     *  In what follows "alpha" is the weight when the sum is formed.
     *  Typically it is 2, as this approaches 1 the function is noisier.
     *  "beta" is the harmonic scaling/spacing, typically 2.
-    * 
-    *  Overloaded version where the p/g1/g2/g3 arrays are being passed to the function as parameters. 
+    *
+    *  Overloaded version where the p/g1/g2/g3 arrays are being passed to the function as parameters.
     */
     public double perlinNoise3D(double xIn, double yIn, double zIn, double alpha, double beta, int n, int frequency, int[] p, double[] g1, double[][] g2, double[][] g3)
     {
@@ -522,7 +522,7 @@ public final class PerlinNoise3DTexture
         double val = 0.0, sum = 0.0;
         double scale = 1.0;
         double pp1 = 0.0, pp2 = 0.0, pp3 = 0.0;
-        
+
         pp1 = xIn;
         pp2 = yIn;
         pp3 = zIn;
@@ -535,7 +535,7 @@ public final class PerlinNoise3DTexture
             pp2 *= beta;
             pp3 *= beta;
         }
-        
+
         return sum;
     }
 
@@ -549,13 +549,13 @@ public final class PerlinNoise3DTexture
             int f = 0, inc = 0;
             int frequency = 4;
             double amp = 0.5;
-       
+
             for (f = 0, inc = 0; f < NOISE_3D_NUMBER_OF_OCTAVES; ++f, frequency *= 2, ++inc, amp *= 0.5)
                 makePerlinNoise3DTextureCalculation(f, inc, frequency, amp);
         }
         else
         {
-                
+
             // variables needed for N-CP (up to 4 cores in this case, splitting the 4 frequencies to up to 4 cores)
             int numberOfNCPThreadProcesses = (NUMBER_OF_AVAILABLE_PROCESSORS > NOISE_3D_NUMBER_OF_OCTAVES) ? NOISE_3D_NUMBER_OF_OCTAVES : NUMBER_OF_AVAILABLE_PROCESSORS;
             CyclicBarrierTimer cyclicBarrierTimer = new CyclicBarrierTimer();
@@ -564,7 +564,7 @@ public final class PerlinNoise3DTexture
             LoggerThreadPoolExecutor executor = new LoggerThreadPoolExecutor(numberOfNCPThreadProcesses, numberOfNCPThreadProcesses, 0L, TimeUnit.MILLISECONDS,
                                                                              new LinkedBlockingQueue<Runnable>(numberOfNCPThreadProcesses),
                                                                              new LoggerThreadFactory("PerlinNoise3DTexture"),
-                                                                             new ThreadPoolExecutor.CallerRunsPolicy() ); 
+                                                                             new ThreadPoolExecutor.CallerRunsPolicy() );
 
             cyclicBarrierTimer.clear();
             for (int threadId = 0; threadId < numberOfNCPThreadProcesses; threadId++)
@@ -590,11 +590,11 @@ public final class PerlinNoise3DTexture
             if (DEBUG_BUILD) println("\nTotal PerlinNoise3DTexture N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
         }
     }
-    
+
     private void makePerlinNoise3DTextureCalculation(int f, int inc, int frequency, double amp)
     {
         if (DEBUG_BUILD) println("Generating Perlin Noise 3D Texture: Octave " + (f + 1) + "/" + NOISE_3D_NUMBER_OF_OCTAVES + "...");
-        
+
         int i = 0, j = 0, k = 0;
         int offset = 0;
         double ni1 = 0.0, ni2 = 0.0, ni3 = 0.0;
@@ -614,7 +614,7 @@ public final class PerlinNoise3DTexture
                     // perlinNoise3DTextureBuffer.put( (offset + inc), (byte)( ( ( SimplexNoise.perlinNoise3(ni1, ni2, ni3) + 1.0 ) * amp ) * 128.0 ) );
                 }
             }
-        }        
+        }
     }
 
     /**
@@ -636,8 +636,8 @@ public final class PerlinNoise3DTexture
                     {
                         int f = 0, inc = 0;
                         int frequency = 4;
-                        double amp = 0.5;                        
-                        
+                        double amp = 0.5;
+
                         if (isPowerOfTwo)
                         {
                             for (f = 0, inc = 0; f < NOISE_3D_NUMBER_OF_OCTAVES; ++f, frequency *= 2, ++inc, amp *= 0.5)
@@ -670,8 +670,8 @@ public final class PerlinNoise3DTexture
 
 
         };
-    }    
-    
+    }
+
     /**
     *  Binds the Perlin Noise 3D texture.
     */

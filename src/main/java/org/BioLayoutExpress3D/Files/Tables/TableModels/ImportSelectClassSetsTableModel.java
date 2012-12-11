@@ -14,54 +14,54 @@ import javax.swing.table.*;
 
 public final class ImportSelectClassSetsTableModel extends AbstractTableModel
 {
-    /** 
+    /**
     *  Serial version UID variable for the ImportSelectClassSetsTableModel class.
-    */        
+    */
     public static final long serialVersionUID = 111222333444555695L;
-        
+
     public static final String[] COLUMN_NAMES = { "Class Set Name", "Select/Deselect" };
-    
+
     private Object[][] data = null;
-    
+
     @Override
-    public int getColumnCount() 
+    public int getColumnCount()
     {
         return COLUMN_NAMES.length;
     }
 
     @Override
-    public int getRowCount() 
+    public int getRowCount()
     {
         return (data != null) ? data.length : 0;
     }
 
     @Override
-    public String getColumnName(int column) 
+    public String getColumnName(int column)
     {
         return COLUMN_NAMES[column];
     }
 
     @Override
-    public Object getValueAt(int row, int column) 
+    public Object getValueAt(int row, int column)
     {
         return (getRowCount() == 0) ? null : data[row][column];
     }
-    
+
     @Override
-    public boolean isCellEditable(int row, int column) 
+    public boolean isCellEditable(int row, int column)
     {
         return (column == 1);
     }
 
     @Override
-    public Class getColumnClass(int column) 
+    public Class getColumnClass(int column)
     {
         Object obj = getValueAt(0, column);
         return (obj == null) ? Object.class : obj.getClass();
     }
 
     @Override
-    public void setValueAt(Object value, int row, int column) 
+    public void setValueAt(Object value, int row, int column)
     {
         data[row][column] = value;
     }
@@ -105,6 +105,6 @@ public final class ImportSelectClassSetsTableModel extends AbstractTableModel
 
         return selectedClassSets;
     }
-    
-    
+
+
 }

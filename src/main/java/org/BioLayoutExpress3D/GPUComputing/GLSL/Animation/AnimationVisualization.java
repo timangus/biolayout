@@ -54,7 +54,7 @@ public final class AnimationVisualization
         processNextNodeValue = ( ANIMATION_FLUID_LINEAR_TRANSITION && ( (currentTick + 1) < TOTAL_NUMBER_OF_ANIMATION_TICKS ) );
         if (processNextNodeValue)
             nextNodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS[currentTick + 1][nodeID];
-        nodeScaleValue = (is3DMode) 
+        nodeScaleValue = (is3DMode)
                          ? (1.0f)
                          : (1.0f / NODE_SIZE_DIVIDE_RATIO);
 

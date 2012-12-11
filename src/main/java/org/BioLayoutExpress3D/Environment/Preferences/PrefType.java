@@ -12,11 +12,11 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 public abstract class PrefType
-{ 
+{
 
     /**
     *  Constant variable to be used for using or not the config file or the registry/preferences mechanism.
@@ -32,10 +32,10 @@ public abstract class PrefType
     *  Constant variable to be used for the config file first comment line.
     */
     private static final String CONFIG_FILE_FIRST_COMMENT_LINE = "# " + TITLE + TITLE_VERSION + TITLE_VERSION_NUMBER + " config file used to save various applications settings, (#) used for commenting";
-    
-    /** 
+
+    /**
     *  Constant variable to be used for the config file equals options symbol.
-    */     
+    */
     private static final String EQUALS_SYMBOL = " = ";
 
     /**
@@ -53,19 +53,19 @@ public abstract class PrefType
     */
     protected PrefTypes prefType = null;
 
-    /** 
+    /**
     *  The name of the isSaved variable.
-    */        
+    */
     protected String prefName = "";
-    
-    /** 
+
+    /**
     *  Variable to store is the preference is to be saved.
-    */       
+    */
     protected boolean isSaved = false;
 
-    /** 
+    /**
     *  Constructor of PrefType to be instantiated only by a sub class.
-    */      
+    */
     protected PrefType(String prefName, boolean isSaved)
     {
         this.prefName = prefName;
@@ -98,7 +98,7 @@ public abstract class PrefType
     *  Method to create the default (empty) config file.
     */
     private void createDefaultConfigFile()
-    {   
+    {
         PrintWriter fileout = null;
 
         try
@@ -173,7 +173,7 @@ public abstract class PrefType
                         return selection;
                 }
             }
-            
+
             return null;
         }
         catch (IOException ioe)
@@ -321,17 +321,17 @@ public abstract class PrefType
         return prefName;
     }
 
-    /** 
+    /**
     *  Gets the preference type.
-    */     
+    */
     public PrefTypes getType()
     {
         return prefType;
-    }    
-    
-    /** 
+    }
+
+    /**
     *  Gets the preference if is to be saved.
-    */      
+    */
     public boolean isSaved()
     {
         return isSaved;
@@ -342,15 +342,15 @@ public abstract class PrefType
     */
     public abstract void loadPref();
 
-    /** 
+    /**
     *  Abstract method to be implemented in a sub class.
-    */      
-    public abstract void savePref();   
-    
-    /** 
+    */
+    public abstract void savePref();
+
+    /**
     *  Abstract method to be implemented in a sub class.
-    */     
-    public abstract void restorePref();        
-    
+    */
+    public abstract void restorePref();
+
 
 }

@@ -48,9 +48,9 @@ import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 /**
-* 
+*
 * The GraphRenderer3D class is the main 3D OpenGL renderer class of BioLayoutExpress3D.
-* 
+*
 * @see org.BioLayoutExpress3D.Textures.Glyphbombing3DTexture
 * @see org.BioLayoutExpress3D.Textures.PerlinNoise3DTexture
 * @see org.BioLayoutExpress3D.Textures.ShaderLightingSFXs
@@ -61,12 +61,12 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 * @see org.BioLayoutExpress3D.Graph.GraphRenderer3DFinalVariables
 * @author Anton Enright, full rewrite/OpenGL 2.1 and above support/GLSL Advanced Shaders support by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
 final class GraphRenderer3D implements GraphInterface // package access
 {
-            
+
     // Node texture related variables
     private Texture nodeTexture = null;
     private RenderToTexture renderToTexture = null;
@@ -79,14 +79,14 @@ final class GraphRenderer3D implements GraphInterface // package access
 
     // Rotation / Depth related variables
     private float xRotate = 0.0f;
-    private float yRotate = 0.0f;    
+    private float yRotate = 0.0f;
     private float scaleValue = DEFAULT_SCALE;
     private float translateDX = 0.0f;
-    private float translateDY = 0.0f;    
-    
+    private float translateDY = 0.0f;
+
     private boolean autoRotate = false;
     private boolean autoPulsate = false;
-    
+
     private int pulseSteps = 0;
     private boolean pulsateValue = false;
     private Shapes3D current3DShape = SPHERE;
@@ -102,7 +102,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     private boolean pickAdd = false;
     private boolean selectBox = false;
 
-    private boolean isAutoRendering = false;       
+    private boolean isAutoRendering = false;
 
     // Mouse input related variables
     private int mouseButton = 0;
@@ -110,18 +110,18 @@ final class GraphRenderer3D implements GraphInterface // package access
     private int mouseDragStartY = 0;
     private int mouseLastX = 0;
     private int mouseLastY = 0;
-    
+
     private boolean rotating = false;
     private boolean pickingBox = false;
-    
-    private ShaderLightingSFXs.ShaderTypes currentShaderType = ShaderLightingSFXs.ShaderTypes.PHONG;   
+
+    private ShaderLightingSFXs.ShaderTypes currentShaderType = ShaderLightingSFXs.ShaderTypes.PHONG;
     private ModelShape geneShape = null;
     private ModelShape objModelLoaderShape = null;
     private Graph graph = null;
-    
-    /** 
+
+    /**
     *  The GraphRenderer3D class constructor.
-    */     
+    */
     public GraphRenderer3D(Graph graph)
     {
         this.graph = graph;
@@ -154,7 +154,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         {
             float px = checkForNodeTexturing() ? ( ( !SHOW_3D_ENVIRONMENT_MAPPING.get() ) ? nodeTexture.getImageWidth() : renderToTexture.getWidth() ) : 1.0f;
             float py = checkForNodeTexturing() ? ( ( !SHOW_3D_ENVIRONMENT_MAPPING.get() ) ? nodeTexture.getImageHeight() : renderToTexture.getHeight() ) : 1.0f;
-                
+
             shaderSFXsCurrentReference = (isNodesShading || !USE_GL_ARB_GEOMETRY_SHADER4) ? shaderLightingSFXsNodes : ( WIREFRAME_SELECTION_MODE.get() ) ? shaderLightingSFXsSelectedNodesNormalsGeometry : shaderLightingSFXsSelectedNodes;
             if (!isAutoRendering)
             {
@@ -182,22 +182,22 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shaderSFXsCurrentReference.useShaderLightingSFX(gl, ShaderLightingSFXs.ShaderTypes.VORONOI, checkForNodeTexturing() && isNodesShading, MATERIAL_SPHERICAL_MAPPING.get() || SHOW_3D_ENVIRONMENT_MAPPING.get(), MATERIAL_EMBOSS_NODE_TEXTURE.get(), DEPTH_FOG.get(), morphingValue, false, MATERIAL_ANTIALIAS_SHADING.get(), true, MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get(), MATERIAL_EROSION_SHADING.get() && isNodesShading, !WIREFRAME_SELECTION_MODE.get() && !isNodesShading, WIREFRAME_SELECTION_MODE.get() && !isNodesShading, MATERIAL_NORMALS_SELECTION_MODE.get() && !isNodesShading, px, py);
         }
     }
-    
+
     /**
     *  Disables the lighting shaders.
     */
     private void disableShaders(GL2 gl)
     {
         if ( USE_SHADERS_PROCESS && MATERIAL_SPECULAR.get() ) shaderSFXsCurrentReference.disableShaders(gl);
-    } 
-    
+    }
+
     /**
     *  Renders the 3D OpenGL scene.
     */
     private void renderScene3D(GL2 gl, boolean doRenderEnvironmentMapping)
     {
         if (DEBUG_BUILD) println("Rendering 3D Scene");
-        
+
         if (!TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING)
         {
             if ( SHOW_3D_SHADOWS.get() )
@@ -209,7 +209,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             if ( !DISABLE_EDGES_RENDERING.get() && (allEdgesDisplayLists != null) )
             {
                 // shaderLinesSFXs.useShaderLinesSFX(gl, ShaderLinesSFXs.ShaderTypes.LINE_RENDERING);
-                gl.glCallLists(allEdgesDisplayLists.capacity(), GL_INT, allEdgesDisplayLists);                
+                gl.glCallLists(allEdgesDisplayLists.capacity(), GL_INT, allEdgesDisplayLists);
                 // shaderLinesSFXs.disableShaders(gl);
             }
 
@@ -230,9 +230,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                     gl.glCallList(selectedNodesDisplayList);
                     disableShaders(gl);
                 }
-            }        
+            }
         }
-        
+
         if ( SHOW_3D_FRUSTUM.get() )
             drawFrustum(gl);
 
@@ -250,7 +250,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             if ( !(autoRotate && autoPulsate) )
             {
                 viewOrtho(gl, width, height);
-                
+
                 if (graphRendererThreadUpdater != null)
                 {
                     if (IS_WIN && USE_SHADERS_PROCESS)
@@ -265,19 +265,19 @@ final class GraphRenderer3D implements GraphInterface // package access
                 viewPerspective(gl);
             }
         }
-        
+
         if (checkForNodeTexturing() && USE_SHADERS_PROCESS) // so as to re-bind the texture object for proper point sprites rendering
         {
             if ( TEXTURE_ENABLED.get() && !SHOW_3D_ENVIRONMENT_MAPPING.get() )
-                nodeTexture.bind(gl);                    
+                nodeTexture.bind(gl);
             else if ( USE_GL_EXT_FRAMEBUFFER_OBJECT && SHOW_3D_ENVIRONMENT_MAPPING.get() )
                 renderToTexture.bind(gl);
-        }   
+        }
 
         if (!TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING)
             if ( !DISABLE_NODES_RENDERING.get() && (SHOW_NODES.get() || !isInMotion) )
                 if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() && YED_STYLE_COMPONENT_CONTAINERS_RENDERING_FOR_GPAPHML_FILES.get() )
-                    gl.glCallList(pathwayComponentContainersDisplayList);                
+                    gl.glCallList(pathwayComponentContainersDisplayList);
     }
 
     /**
@@ -315,18 +315,18 @@ final class GraphRenderer3D implements GraphInterface // package access
         setPerspective(gl, FOV_Y, (width <= height) ? ( (double)height / (double)width ) : ( (double)width / (double)height ), NEAR_DISTANCE, FAR_DISTANCE);
         // same with:
         // GLU.gluPerspective(FOV_Y, (width <= height) ? ( (double)height / (double)width ) : ( (double)width / (double)height ), NEAR_DISTANCE, FAR_DISTANCE);
-        
+
         // set the modelview to render our targets properly
-        gl.glMatrixMode(GL_MODELVIEW); 
+        gl.glMatrixMode(GL_MODELVIEW);
 
         // push at least one entry on to the stack
         gl.glPushName(MAP_SELECTION_ID);
 
         // "render" the targets to our modelview
         if ( FAST_SELECTION_MODE.get() )
-            gl.glCallList(fastSelectionNodesDisplayList);        
+            gl.glCallList(fastSelectionNodesDisplayList);
         else
-            gl.glCallList(nodesDisplayList);        
+            gl.glCallList(nodesDisplayList);
 
         // pop the entry from the stack
         gl.glPopName();
@@ -361,10 +361,10 @@ final class GraphRenderer3D implements GraphInterface // package access
         double bottom = -top;
         double right = aspect * top;
         double left = -right;
-        
+
         gl.glFrustum(left, right, bottom, top, zNear, zFar);
     }
-    
+
     /**
     *  Resets the view.
     */
@@ -395,7 +395,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         gl.glLightfv(GL_LIGHT0, GL_AMBIENT, LIGHT_AMBIENT_ARRAY);       // Setup the ambient light
         gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, LIGHT_DIFFUSE_ARRAY);       // Setup the diffuse light
         gl.glLightfv(GL_LIGHT0, GL_SPECULAR, LIGHT_SPECULAR_ARRAY);     // Setup the diffuse light
-        
+
         gl.glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MODEL_AMBIENT_ARRAY); // Setup a small white ambient light
         gl.glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, LOCAL_VIEWER);
         // gl.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);          // Don't enable two-sided light as it creates problems with Gouraud (fixed pipeline) lighting & SuperQuadric shapes
@@ -456,7 +456,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     private void clearScreen3D(GL2 gl)
     {
         // trippy mode disabled for tile based rendering to avoid artifacts
-        if (TRIPPY_BACKGROUND.get() && !takeHighResScreenshot) 
+        if (TRIPPY_BACKGROUND.get() && !takeHighResScreenshot)
             graph.colorCycle(BACKGROUND_COLOR_ARRAY);
 
         gl.glClearColor(BACKGROUND_COLOR_ARRAY[0], BACKGROUND_COLOR_ARRAY[1], BACKGROUND_COLOR_ARRAY[2], 1.0f);
@@ -487,7 +487,7 @@ final class GraphRenderer3D implements GraphInterface // package access
 
     /**
     *  Uses the node material.
-    */     
+    */
     private void useNodeMaterial(GL2 gl)
     {
         if ( MATERIAL_SPECULAR.get() )
@@ -499,29 +499,29 @@ final class GraphRenderer3D implements GraphInterface // package access
         {
             gl.glMaterialfv(GL_FRONT, GL_SPECULAR, NO_LIGHT_SPECULAR_ARRAY);
             gl.glMaterialf(GL_FRONT, GL_SHININESS, 0.0f);
-        }        
+        }
     }
-    
+
     /**
     *  Enables the spherical texture coordinates generation.
-    */    
+    */
     private void enableGenerateSphericalTextureCoordinates(GL2 gl)
     {
         gl.glEnable(GL_TEXTURE_GEN_S);
         gl.glEnable(GL_TEXTURE_GEN_T);
         gl.glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-        gl.glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);        
+        gl.glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
     }
 
     /**
     *  Disables the spherical texture coordinates generation.
-    */        
+    */
     private void disableGenerateSphericalTextureCoordinates(GL2 gl)
     {
         gl.glDisable(GL_TEXTURE_GEN_S);
-        gl.glDisable(GL_TEXTURE_GEN_T);     
-    }    
-    
+        gl.glDisable(GL_TEXTURE_GEN_T);
+    }
+
     /**
     *  Builds all 3D shapes display lists.
     */
@@ -529,10 +529,10 @@ final class GraphRenderer3D implements GraphInterface // package access
     {
         buildAllShapes3DDisplayLists(gl, true, true, true);
     }
-    
+
     /**
     *  Builds all 3D shapes display lists.
-    *  Overloaded version of the method above. 
+    *  Overloaded version of the method above.
     */
     private void buildAllShapes3DDisplayLists(GL2 gl, boolean changeAllShapes, boolean changeTesselationRelatedShapes, boolean changeSphericalCoordsRelatedShapes)
     {
@@ -544,25 +544,25 @@ final class GraphRenderer3D implements GraphInterface // package access
         for ( Shapes3D shape3D : Shapes3D.values() )
         {
             if ( shape3D.equals(SPHERE) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
-            {                 
+            {
                 shapeIndex = SPHERE.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 ModelShape superQuadricShape = SuperQuadricShapesProducer.createSphereShape(gl, tesselation, tesselation, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-              
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
                 gl.glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
-                superQuadricShape.disposeAllModelShapeResources(gl);                                
+
+                superQuadricShape.disposeAllModelShapeResources(gl);
             }
             else if (shape3D.equals(POINT) && changeAllShapes)
             {
@@ -581,7 +581,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     GLUT.glutSolidCube(0.2f);
                     gl.glPopMatrix();
 
-                    gl.glEndList();                    
+                    gl.glEndList();
                 }
             }
             else if (shape3D.equals(CUBE) && changeAllShapes) // cube
@@ -589,9 +589,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = CUBE.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 GLUT.glutSolidCube(1.0f);
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(TETRAHEDRON) && changeAllShapes)
@@ -601,7 +601,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 GLUT.glutSolidTetrahedron();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(OCTAHEDRON) && changeAllShapes)
@@ -609,9 +609,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = OCTAHEDRON.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 GLUT.glutSolidOctahedron();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(DODECAHEDRON) && changeAllShapes)
@@ -619,19 +619,19 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = DODECAHEDRON.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-     
+
                 GLUT.glutSolidDodecahedron();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(ICOSAHEDRON) && changeAllShapes)
             {
                 shapeIndex = ICOSAHEDRON.ordinal();
-                gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);                
+                gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 GLUT.glutSolidIcosahedron();
-                
+
                 gl.glEndList();
             }
             else if ( shape3D.equals(CONE_LEFT) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -639,22 +639,22 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = CONE_LEFT.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Cone will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createConeShape(gl, (tesselation < 3) ? 1 : tesselation / 3, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
                 gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(CONE_RIGHT) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -662,22 +662,22 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = CONE_RIGHT.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Cone will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createConeShape(gl, (tesselation < 3) ? 1 : tesselation / 3, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);   
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(TRAPEZOID_UP) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -685,67 +685,67 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = TRAPEZOID_UP.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createTrapezoidShape(gl, (tesselation < 3) ? 1 : tesselation / 3, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                 
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
-            }   
+            }
             else if ( shape3D.equals(TRAPEZOID_DOWN) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
             {
                 shapeIndex = TRAPEZOID_DOWN.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createTrapezoidShape(gl, (tesselation < 3) ? 1 : tesselation / 3, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                 
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
-            }             
+            }
             else if ( shape3D.equals(CYLINDER) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
             {
                 shapeIndex = CYLINDER.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Cylinder will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createCylinderShape(gl, (tesselation < 3) ? 1 : tesselation / 3, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
                 gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(TORUS) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -755,32 +755,32 @@ final class GraphRenderer3D implements GraphInterface // package access
                 ModelShape superToroidShape = SuperQuadricShapesProducer.createTorusShape(gl, tesselation, tesselation, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-             
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
                 gl.glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
                 superToroidShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
-                superToroidShape.disposeAllModelShapeResources(gl);              
+
+                superToroidShape.disposeAllModelShapeResources(gl);
             }
             else if (shape3D.equals(RECTANGLE_VERTICAL) && changeAllShapes)
             {
                 shapeIndex = RECTANGLE_VERTICAL.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glScalef(0.3f, 1.7f, 1.0f);
                 GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(RECTANGLE_HORIZONTAL) && changeAllShapes)
@@ -788,12 +788,12 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = RECTANGLE_HORIZONTAL.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glScalef(1.7f, 0.3f, 1.0f);
                 GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
             }
             else if ( shape3D.equals(ROUND_CUBE_THIN) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -801,53 +801,53 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = ROUND_CUBE_THIN.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS.vSegments = tesselation;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS, modelSettings);                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Z, 0.0f, 0.0f, 1.0f);                    
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }      
+            }
             else if ( shape3D.equals(ROUND_CUBE_LARGE) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
             {
                 shapeIndex = ROUND_CUBE_LARGE.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS.vSegments = tesselation;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS, modelSettings);                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Z, 0.0f, 0.0f, 1.0f);                    
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(PINEAPPLE_SLICE_TOROID) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -855,53 +855,53 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = PINEAPPLE_SLICE_TOROID.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS.vSegments = tesselation;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS, modelSettings);                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Z, 0.0f, 0.0f, 1.0f);                    
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }     
+            }
             else if ( shape3D.equals(PINEAPPLE_SLICE_ELLIPSOID) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
             {
                 shapeIndex = PINEAPPLE_SLICE_ELLIPSOID.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS.vSegments = tesselation;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS, modelSettings);                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Z, 0.0f, 0.0f, 1.0f);                    
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(DOUBLE_PYRAMID_THIN) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -910,81 +910,81 @@ final class GraphRenderer3D implements GraphInterface // package access
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 ModelShape superQuadricShape = null;
                 SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.vSegments = tesselation;
-                superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS, modelSettings);                  
+                superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Z, 0.0f, 0.0f, 1.0f);                    
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }     
+            }
             else if ( shape3D.equals(DOUBLE_PYRAMID_LARGE) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
             {
                 shapeIndex = DOUBLE_PYRAMID_LARGE.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS.vSegments = tesselation;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS, modelSettings);                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Z, 0.0f, 0.0f, 1.0f);                    
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }            
+            }
             else if ( shape3D.equals(TORUS_8_PETALS) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
             {
                 shapeIndex = TORUS_8_PETALS.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_MEPN_3D_SHAPE_AND_SETTINGS.splineStep = (tesselation < 3) ? 1 : tesselation / 3;
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_MEPN_3D_SHAPE_AND_SETTINGS, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                    
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + LATHE3D_MEPN_3D_SHAPE_AND_SCALE_X, 1.0f + LATHE3D_MEPN_3D_SHAPE_AND_SCALE_Y, 1.0f + LATHE3D_MEPN_3D_SHAPE_AND_SCALE_Z);
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Z, 0.0f, 0.0f, 1.0f);                  
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(SAUCER_4_PETALS) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -993,59 +993,59 @@ final class GraphRenderer3D implements GraphInterface // package access
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_MEPN_3D_SHAPE_OR_SETTINGS.splineStep = (tesselation < 3) ? 1 : tesselation / 3;
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_MEPN_3D_SHAPE_OR_SETTINGS, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                    
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + LATHE3D_MEPN_3D_SHAPE_OR_SCALE_X, 1.0f + LATHE3D_MEPN_3D_SHAPE_OR_SCALE_Y, 1.0f + LATHE3D_MEPN_3D_SHAPE_OR_SCALE_Z);
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Z, 0.0f, 0.0f, 1.0f);                  
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
-            }             
+            }
             else if ( shape3D.equals(GENE_MODEL) && (changeAllShapes || changeSphericalCoordsRelatedShapes) )
-            {                
-                // no need to reload the model for calculating spherical coords if it does not have textures as materials 
+            {
+                // no need to reload the model for calculating spherical coords if it does not have textures as materials
                 // (update: does indeed need to for spherical mapping in non-shader mode)
                 // if ( (geneShape != null) && !changeAllShapes && !geneShape.getHasTexture() ) continue;
-                
+
                 // no need to reload the model for calculating spherical coords, just use current geneShape.drawModelShape() geometry
                 if ( !( (geneShape != null) && !changeAllShapes && changeSphericalCoordsRelatedShapes ) )
                 {
                     if (geneShape != null) geneShape.disposeAllModelShapeResources(gl);
                     geneShape = new OBJModelLoader(gl, graph, MODEL_FILES_PATH, capitalizeFirstCharacter(OBJModelShapes.GENE) + ".obj", OBJ_MODEL_SHAPE_SIZES[OBJModelShapes.GENE.ordinal()], modelRenderingState, false, false, false);
                 }
-                
+
                 shapeIndex = GENE_MODEL.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
                 gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_SCALE_X, 1.0f + OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_SCALE_Y, 1.0f + OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_SCALE_Z);
-                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Z, 0.0f, 0.0f, 1.0f);                     
+                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 geneShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
             }
             else if ( shape3D.equals(LATHE_3D) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -1054,26 +1054,26 @@ final class GraphRenderer3D implements GraphInterface // package access
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_SETTINGS.splineStep = (tesselation < 3) ? 1 : tesselation / 3;
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_SETTINGS, graph.getLathe3DShapeAngleIncrement(tesselation), modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                    
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef( 1.0f + LATHE3D_SCALE_X.get(), 1.0f + LATHE3D_SCALE_Y.get(), 1.0f + LATHE3D_SCALE_Z.get() );
-                gl.glRotatef(LATHE3D_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);                  
+                gl.glRotatef(LATHE3D_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(LATHE3D_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(LATHE3D_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(SUPER_QUADRIC) && (changeAllShapes || changeTesselationRelatedShapes || changeSphericalCoordsRelatedShapes) )
@@ -1081,64 +1081,64 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = SUPER_QUADRIC.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_SETTINGS.uSegments = SUPER_QUADRIC_SETTINGS.vSegments = tesselation;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_SETTINGS, modelSettings);                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_SETTINGS, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef( 1.0f + SUPER_QUADRIC_SCALE_X.get(), 1.0f + SUPER_QUADRIC_SCALE_Y.get(), 1.0f + SUPER_QUADRIC_SCALE_Z.get() );
-                gl.glRotatef(SUPER_QUADRIC_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);                    
+                gl.glRotatef(SUPER_QUADRIC_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }       
+            }
             else if ( shape3D.equals(OBJ_MODEL_LOADER) && (changeAllShapes || changeSphericalCoordsRelatedShapes) )
-            {                
-                // no need to reload the model for calculating spherical coords if it does not have textures as materials 
+            {
+                // no need to reload the model for calculating spherical coords if it does not have textures as materials
                 // (update: does indeed need to for spherical mapping in non-shader mode)
                 // if ( (objModelLoaderShape != null) && !changeAllShapes && !objModelLoaderShape.getHasTexture() ) continue;
-                
+
                 // no need to reload the model for calculating spherical coords, just use current objModelLoaderShape.drawModelShape() geometry
                 if ( !( (objModelLoaderShape != null) && !changeAllShapes && changeSphericalCoordsRelatedShapes ) )
                 {
                     if (objModelLoaderShape != null) objModelLoaderShape.disposeAllModelShapeResources(gl);
                     objModelLoaderShape = new OBJModelLoader(gl, graph, EXTERNAL_OBJ_MODEL_FILE_PATH, EXTERNAL_OBJ_MODEL_FILE_NAME + ".obj", OBJ_MODEL_LOADER_SHAPE_SIZE.get(), modelRenderingState, USE_EXTERNAL_OBJ_MODEL_FILE, false, false);
                 }
-                
+
                 shapeIndex = OBJ_MODEL_LOADER.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) enableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
                 gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef( 1.0f + OBJ_MODEL_LOADER_SCALE_X.get(), 1.0f + OBJ_MODEL_LOADER_SCALE_Y.get(), 1.0f + OBJ_MODEL_LOADER_SCALE_Z.get() );
-                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);                     
+                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);
                 objModelLoaderShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 if ( MATERIAL_SPHERICAL_MAPPING.get() ) disableGenerateSphericalTextureCoordinates(gl);
-                
+
                 gl.glEndList();
-            }            
+            }
         }
     }
-    
+
     /**
     *  Builds all 3D shapes fast selection display lists.
     */
@@ -1157,15 +1157,15 @@ final class GraphRenderer3D implements GraphInterface // package access
                 ModelShape superQuadricShape = SuperQuadricShapesProducer.createSphereShape(gl, FAST_SELECTION_MODE_NODE_TESSELATION, FAST_SELECTION_MODE_NODE_TESSELATION, modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
                 gl.glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
             }
             else if (shape3D.equals(POINT) )
@@ -1185,7 +1185,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     GLUT.glutSolidCube(0.2f);
                     gl.glPopMatrix();
 
-                    gl.glEndList();                    
+                    gl.glEndList();
                 }
             }
             else if (shape3D.equals(CUBE) ) // cube
@@ -1193,9 +1193,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = CUBE.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 GLUT.glutSolidCube(1.0f);
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(TETRAHEDRON) )
@@ -1205,7 +1205,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 GLUT.glutSolidTetrahedron();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(OCTAHEDRON) )
@@ -1213,9 +1213,9 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = OCTAHEDRON.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 GLUT.glutSolidOctahedron();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(DODECAHEDRON) )
@@ -1223,38 +1223,38 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = DODECAHEDRON.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-     
+
                 GLUT.glutSolidDodecahedron();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(ICOSAHEDRON) )
             {
                 shapeIndex = ICOSAHEDRON.ordinal();
-                gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);                
+                gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 GLUT.glutSolidIcosahedron();
-                
+
                 gl.glEndList();
-            }            
+            }
             else if ( shape3D.equals(CONE_LEFT) )
             {
                 shapeIndex = CONE_LEFT.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Cone will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createConeShape(gl, FAST_SELECTION_MODE_NODE_TESSELATION, _90, modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);       
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(CONE_RIGHT) )
@@ -1262,18 +1262,18 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = CONE_RIGHT.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Cone will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createConeShape(gl, FAST_SELECTION_MODE_NODE_TESSELATION, _90, modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);    
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(TRAPEZOID_UP) )
@@ -1282,56 +1282,56 @@ final class GraphRenderer3D implements GraphInterface // package access
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_SETTINGS.splineStep = FAST_SELECTION_MODE_NODE_TESSELATION;
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createTrapezoidShape(gl, FAST_SELECTION_MODE_NODE_TESSELATION, _90, modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);     
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
-            }    
+            }
             else if ( shape3D.equals(TRAPEZOID_DOWN) )
             {
                 shapeIndex = TRAPEZOID_DOWN.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_SETTINGS.splineStep = FAST_SELECTION_MODE_NODE_TESSELATION;
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createTrapezoidShape(gl, FAST_SELECTION_MODE_NODE_TESSELATION, _90, modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);  
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
-            }                
+            }
             else if ( shape3D.equals(CYLINDER) )
             {
                 shapeIndex = CYLINDER.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Cylinder will be centered
                 ModelShape lathe3DShape = Lathe3DShapesProducer.createCylinderShape(gl, FAST_SELECTION_MODE_NODE_TESSELATION, _90, modelSettings);
-                
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);        
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 lathe3DShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(TORUS) )
@@ -1341,15 +1341,15 @@ final class GraphRenderer3D implements GraphInterface // package access
                 ModelShape superToroidShape = SuperQuadricShapesProducer.createTorusShape(gl, FAST_SELECTION_MODE_NODE_TESSELATION, FAST_SELECTION_MODE_NODE_TESSELATION , modelSettings);
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-             
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
                 gl.glRotatef(-90.0f, 0.0f, 0.0f, 1.0f);
                 superToroidShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-                
+
                 superToroidShape.disposeAllModelShapeResources(gl);
             }
             else if (shape3D.equals(RECTANGLE_VERTICAL) )
@@ -1357,12 +1357,12 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = RECTANGLE_VERTICAL.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glScalef(0.3f, 1.7f, 1.0f);
                 GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
             }
             else if (shape3D.equals(RECTANGLE_HORIZONTAL) )
@@ -1370,180 +1370,180 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = RECTANGLE_HORIZONTAL.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glScalef(1.7f, 0.3f, 1.0f);
                 GLUT.glutSolidCube(1.0f);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-            }            
+            }
             else if ( shape3D.equals(ROUND_CUBE_THIN) )
             {
                 shapeIndex = ROUND_CUBE_THIN.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS.vSegments = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS, modelSettings);     
-                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SETTINGS, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Z, 0.0f, 0.0f, 1.0f);   
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_PROTEIN_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }   
+            }
             else if ( shape3D.equals(ROUND_CUBE_LARGE) )
             {
                 shapeIndex = ROUND_CUBE_LARGE.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS.vSegments = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS, modelSettings);     
-                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SETTINGS, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Z, 0.0f, 0.0f, 1.0f);   
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_COMPLEX_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }          
+            }
             else if ( shape3D.equals(PINEAPPLE_SLICE_TOROID) )
             {
                 shapeIndex = PINEAPPLE_SLICE_TOROID.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS.vSegments = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS, modelSettings);     
-                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SETTINGS, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Z, 0.0f, 0.0f, 1.0f);   
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_SIMPLE_BIOCHEMICAL_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }      
+            }
             else if ( shape3D.equals(PINEAPPLE_SLICE_ELLIPSOID) )
             {
                 shapeIndex = PINEAPPLE_SLICE_ELLIPSOID.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS.vSegments = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS, modelSettings);     
-                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SETTINGS, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Z, 0.0f, 0.0f, 1.0f);   
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_GENERIC_ENTITY_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }     
+            }
             else if ( shape3D.equals(DOUBLE_PYRAMID_THIN) )
             {
                 shapeIndex = DOUBLE_PYRAMID_THIN.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS.vSegments = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS, modelSettings);     
-                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SETTINGS, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Z, 0.0f, 0.0f, 1.0f);   
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_DRUG_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }               
+            }
             else if ( shape3D.equals(DOUBLE_PYRAMID_LARGE) )
             {
                 shapeIndex = DOUBLE_PYRAMID_LARGE.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS.uSegments = SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS.vSegments = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS, modelSettings);     
-                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SETTINGS, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SCALE_X, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SCALE_Y, 1.0f + SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_SCALE_Z);
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Z, 0.0f, 0.0f, 1.0f);   
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_MEPN_3D_SHAPE_ION_SIMPLE_MOLECULE_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }  
+            }
             else if ( shape3D.equals(TORUS_8_PETALS) )
             {
                 shapeIndex = TORUS_8_PETALS.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_MEPN_3D_SHAPE_AND_SETTINGS.splineStep = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_MEPN_3D_SHAPE_AND_SETTINGS, _90, modelSettings);                
-                
+                ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_MEPN_3D_SHAPE_AND_SETTINGS, _90, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                    
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + LATHE3D_MEPN_3D_SHAPE_AND_SCALE_X, 1.0f + LATHE3D_MEPN_3D_SHAPE_AND_SCALE_Y, 1.0f + LATHE3D_MEPN_3D_SHAPE_AND_SCALE_Z);
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Z, 0.0f, 0.0f, 1.0f);      
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_AND_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 lathe3DShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
             }
             else if ( shape3D.equals(SAUCER_4_PETALS) )
@@ -1551,25 +1551,25 @@ final class GraphRenderer3D implements GraphInterface // package access
                 shapeIndex = SAUCER_4_PETALS.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_MEPN_3D_SHAPE_OR_SETTINGS.splineStep = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_MEPN_3D_SHAPE_OR_SETTINGS, _90, modelSettings);                
-                
+                ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_MEPN_3D_SHAPE_OR_SETTINGS, _90, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                    
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + LATHE3D_MEPN_3D_SHAPE_OR_SCALE_X, 1.0f + LATHE3D_MEPN_3D_SHAPE_OR_SCALE_Y, 1.0f + LATHE3D_MEPN_3D_SHAPE_OR_SCALE_Z);
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Z, 0.0f, 0.0f, 1.0f);      
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(LATHE3D_MEPN_3D_SHAPE_OR_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 lathe3DShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
-            }            
+            }
             else if ( shape3D.equals(GENE_MODEL) )
             {
                 if (geneShape == null)
@@ -1577,100 +1577,100 @@ final class GraphRenderer3D implements GraphInterface // package access
                     // if (geneShape != null) geneShape.disposeAllModelShapeResources(gl);
                     geneShape = new OBJModelLoader(gl, graph, MODEL_FILES_PATH, capitalizeFirstCharacter(OBJModelShapes.GENE) + ".obj", OBJ_MODEL_SHAPE_SIZES[OBJModelShapes.GENE.ordinal()], modelRenderingState, false, false, false);
                 }
-                
+
                 shapeIndex = GENE_MODEL.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
                 gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef(1.0f + OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_SCALE_X, 1.0f + OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_SCALE_Y, 1.0f + OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_SCALE_Z);
-                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_X, 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Y, 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Z, 0.0f, 0.0f, 1.0f);                     
+                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_X, 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Y, 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_MEPN_3D_SHAPE_GENE_ROTATE_Z, 0.0f, 0.0f, 1.0f);
                 geneShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-            }               
+            }
             else if ( shape3D.equals(LATHE_3D) )
             {
                 shapeIndex = LATHE_3D.ordinal();
                 modelSettings.centerModel = true; // Lathe3D Shape will be centered
                 LATHE3D_SETTINGS.splineStep = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_SETTINGS, _90, modelSettings);                
-                
+                ModelShape lathe3DShape = Lathe3DShapesProducer.createLathe3DShape(gl, LATHE3D_SETTINGS, _90, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                    
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef( 1.0f + LATHE3D_SCALE_X.get(), 1.0f + LATHE3D_SCALE_Y.get(), 1.0f + LATHE3D_SCALE_Z.get() );
-                gl.glRotatef(LATHE3D_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(LATHE3D_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);      
+                gl.glRotatef(LATHE3D_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(LATHE3D_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(LATHE3D_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);
                 lathe3DShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 lathe3DShape.disposeAllModelShapeResources(gl);
-            }             
+            }
             else if ( shape3D.equals(SUPER_QUADRIC) )
             {
                 shapeIndex = SUPER_QUADRIC.ordinal();
                 modelSettings.centerModel = false; // SuperQuadrics are alredy pre-centered
                 SUPER_QUADRIC_SETTINGS.uSegments = SUPER_QUADRIC_SETTINGS.vSegments = FAST_SELECTION_MODE_NODE_TESSELATION;
-                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_SETTINGS, modelSettings);     
-                
+                ModelShape superQuadricShape = new SuperQuadricShape(gl, SUPER_QUADRIC_SETTINGS, modelSettings);
+
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
 
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);                
+                gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef( 1.0f + SUPER_QUADRIC_SCALE_X.get(), 1.0f + SUPER_QUADRIC_SCALE_Y.get(), 1.0f + SUPER_QUADRIC_SCALE_Z.get() );
-                gl.glRotatef(SUPER_QUADRIC_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(SUPER_QUADRIC_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);   
+                gl.glRotatef(SUPER_QUADRIC_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(SUPER_QUADRIC_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);
                 superQuadricShape.drawModelShape(gl);
-                gl.glPopMatrix();                
+                gl.glPopMatrix();
 
                 gl.glEndList();
-                
+
                 superQuadricShape.disposeAllModelShapeResources(gl);
-            }    
+            }
             else if ( shape3D.equals(OBJ_MODEL_LOADER) )
-            {                
-                // no need to reload the model for calculating spherical coords if it does not have textures as materials 
+            {
+                // no need to reload the model for calculating spherical coords if it does not have textures as materials
                 // (update: does indeed need to for spherical mapping in non-shader mode)
                 // if ( (objModelLoaderShape != null) && !changeAllShapes && !objModelLoaderShape.getHasTexture() ) continue;
-                
+
                 // no need to reload the model for calculating spherical coords, just use current objModelLoaderShape.drawModelShape() geometry
                 if (objModelLoaderShape == null)
                 {
                     // if (objModelLoaderShape != null) objModelLoaderShape.disposeAllModelShapeResources(gl);
                     objModelLoaderShape = new OBJModelLoader(gl, graph, EXTERNAL_OBJ_MODEL_FILE_PATH, EXTERNAL_OBJ_MODEL_FILE_NAME + ".obj", OBJ_MODEL_LOADER_SHAPE_SIZE.get(), modelRenderingState, USE_EXTERNAL_OBJ_MODEL_FILE, false, false);
                 }
-                
+
                 shapeIndex = OBJ_MODEL_LOADER.ordinal();
                 gl.glDeleteLists(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], 1);
                 gl.glNewList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shapeIndex], GL_COMPILE);
-                
+
                 gl.glPushMatrix();
                 gl.glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
                 gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
                 gl.glScalef( 1.0f + OBJ_MODEL_LOADER_SCALE_X.get(), 1.0f + OBJ_MODEL_LOADER_SCALE_Y.get(), 1.0f + OBJ_MODEL_LOADER_SCALE_Z.get() );
-                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);    
-                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);                     
+                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_X.get(), 1.0f, 0.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Y.get(), 0.0f, 1.0f, 0.0f);
+                gl.glRotatef(OBJ_MODEL_LOADER_ROTATE_Z.get(), 0.0f, 0.0f, 1.0f);
                 objModelLoaderShape.drawModelShape(gl);
                 gl.glPopMatrix();
-                
+
                 gl.glEndList();
-            }               
+            }
         }
     }
 
@@ -1680,7 +1680,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     private void buildAllDisplayLists(GL2 gl)
     {
         if (CHANGE_NODE_TESSELATION || CHANGE_SPHERICAL_MAPPING_ENABLED)
-        {            
+        {
             buildAllShapes3DDisplayLists(gl, false, CHANGE_NODE_TESSELATION, CHANGE_SPHERICAL_MAPPING_ENABLED);
             CHANGE_NODE_TESSELATION = false;
             CHANGE_SPHERICAL_MAPPING_ENABLED = false;
@@ -1694,9 +1694,9 @@ final class GraphRenderer3D implements GraphInterface // package access
             {
                 buildAllShapes3DFastSelectionDisplayLists(gl);
                 CHANGE_ALL_FAST_SELECTION_SHAPES = false;
-            }            
+            }
         }
-     
+
         if (CHANGE_TEXTURE_ENABLED)
         {
             if ( checkForNodeTexturing() )
@@ -1705,11 +1705,11 @@ final class GraphRenderer3D implements GraphInterface // package access
         }
 
         if (ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED)
-        {            
+        {
             graph.prepareAnimationSpectrumTexture(gl);
             ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = false;
-        }        
-        
+        }
+
         if (CHANGE_GRAPHML_COMPONENT_CONTAINERS)
         {
             // if ( gl.glIsList(pathwayComponentContainersDisplayList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
@@ -1717,12 +1717,12 @@ final class GraphRenderer3D implements GraphInterface // package access
             gl.glNewList(pathwayComponentContainersDisplayList, GL_COMPILE);
             drawPathwayComponentContainers3DMode(gl);
             gl.glEndList();
-            
+
             CHANGE_GRAPHML_COMPONENT_CONTAINERS = false;
         }
-        
+
         if (updateEdgesDisplayList)
-        {            
+        {
             // if allEdgesDisplayLists not empty, delete all its display lists
             if (allEdgesDisplayLists != null)
                 for (int i = 0; i < allEdgesDisplayLists.capacity(); i++)
@@ -1735,7 +1735,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         }
 
         if (updateNodesDisplayList)
-        {            
+        {
             // if ( gl.glIsList(nodesDisplayList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
             gl.glDeleteLists(nodesDisplayList, 1);
             if ( FAST_SELECTION_MODE.get() )
@@ -1761,7 +1761,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         }
 
         if (updateSelectedNodesDisplayList)
-        {            
+        {
             // if ( gl.glIsList(selectedNodesDisplayList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
             gl.glDeleteLists(selectedNodesDisplayList, 1);
 
@@ -1771,7 +1771,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 drawAllSelectedNodes(gl);
                 gl.glEndList();
             }
-            
+
             updateSelectedNodesDisplayList = false;
         }
     }
@@ -1883,10 +1883,10 @@ final class GraphRenderer3D implements GraphInterface // package access
                     edgeTuple6 = gnc.getAllGraphmlEdgesMap().get( node1.getNodeName() + " " + node2.getNodeName() );
                     if (edgeTuple6 != null)
                     {
-                        Point3D polylinePoint = null;    
+                        Point3D polylinePoint = null;
                         for (Point2D.Float polylinePoint2D : edgeTuple6.second.second)
                         {
-                            polylinePoint = new Point3D(polylinePoint2D.x, polylinePoint2D.y, (point1.z + point2.z) / 2.0f);                            
+                            polylinePoint = new Point3D(polylinePoint2D.x, polylinePoint2D.y, (point1.z + point2.z) / 2.0f);
                             // end of line
                             // gl.glVertex4f(polylinePoint.x / 100.0f - 5.0f, polylinePoint.y / 100.0f - 5.0f, polylinePoint.z / 100.0f - 5.0f, 1.0f);
                             // gl.glVertex4f((polylinePoint.x + 0.05f) / 100.0f - 5.0f, (polylinePoint.y + 0.05f) / 100.0f - 5.0f, (polylinePoint.z + 0.05f) / 100.0f - 5.0f, 2.0f);
@@ -1907,7 +1907,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         }
 
         if (!useProportionalEdgesSizeToWeightRendering) gl.glEnd();
-        
+
         // make sure to disable shaders before the 2D rendering of node labels, but also need to disable shaders out of the display lists to avoid horribly slow FPSs!
         // shaderLinesSFXs.disableShaders(gl);
 
@@ -2037,10 +2037,10 @@ final class GraphRenderer3D implements GraphInterface // package access
 
         if (DEBUG_BUILD) println("GraphRenderer3D visibleNodes size: " + visibleNodes.size());
         for (GraphNode node : visibleNodes)
-        {            
+        {
             nodeScaleValue = node.getNodeSize();
             nodeColor = node.getColor();
-            
+
             if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
             {
                 currentNodeGraphmlMapCoord = gnc.getAllGraphmlNodesMap().get( node.getNodeName() ).first;
@@ -2061,7 +2061,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                             Tuple6<Float, Color, Boolean, Float, Boolean, Float> tuple6 = AnimationVisualization.performAnimationVisualization(true, node.getNodeID(), node.getNodeName(), layoutFrame.isAllShadingSFXSValueEnabled(), nodeColor, currentTick, animationFrameCount, animationSpectrumImage, DATA_TYPE.equals(DataTypes.EXPRESSION));
                             nodeScaleValue = tuple6.first;
                             nodeColor = tuple6.second;
-                            
+
                             if (tuple6.third)
                                 enableShaders(gl, true, false, true, tuple6.fourth, tuple6.fifth, tuple6.sixth);
                         }
@@ -2130,13 +2130,13 @@ final class GraphRenderer3D implements GraphInterface // package access
 
                     // float offset = UNIT_SPHERE_SIZE * (float)node.getNodeSize();
                     // gl.glRasterPos3f( (point.x / 100.0f - 5.0f) + offset, (point.y / 100.0f - 5.0f) + offset, (point.z / 100.0f - 5.0f) );
-                    Color.BLACK.getRGBComponents(CURRENT_COLOR);    
+                    Color.BLACK.getRGBComponents(CURRENT_COLOR);
                     if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);
-                    gl.glColor3fv(CURRENT_COLOR, 0);                    
+                    gl.glColor3fv(CURRENT_COLOR, 0);
                     gl.glRasterPos3f( (point.x / 100.0f - 5.0f), (point.y / 100.0f - 5.0f), (point.z / 100.0f - 5.0f) );
                     nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
                     if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
-                        graph.drawNodeNameBackgroundLegend(gl, node, nodeName);               
+                        graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                     GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
                 }
             }
@@ -2162,20 +2162,20 @@ final class GraphRenderer3D implements GraphInterface // package access
                         point = new Point3D(currentNodeGraphmlMapCoord[2], currentNodeGraphmlMapCoord[3], currentNodeGraphmlMapCoord[4] + CANVAS_Z_SIZE / 2.0f);
                     }
                     else
-                        point = node.getPoint();                   
-                    
+                        point = node.getPoint();
+
                     // float offset = UNIT_SPHERE_SIZE * (float)node.getNodeSize();
                     // gl.glRasterPos3f( (point.x / 100.0f - 5.0f) + offset, (point.y / 100.0f - 5.0f) + offset, (point.z / 100.0f - 5.0f) );
                     Color.BLACK.getRGBComponents(CURRENT_COLOR);
                     if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);
-                    gl.glColor3fv(CURRENT_COLOR, 0);                    
+                    gl.glColor3fv(CURRENT_COLOR, 0);
                     gl.glRasterPos3f( (point.x / 100.0f - 5.0f), (point.y / 100.0f - 5.0f), (point.z / 100.0f - 5.0f) );
                     nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
                     // if-else commands below have to be like this to be able to properly selectively render names
                     if ( node.isShowNodeName() && !ANIMATION_SHOW_NODE_ANIMATION_VALUE.get() )
                     {
                         if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
-                            graph.drawNodeNameBackgroundLegend(gl, node, nodeName);                                              
+                            graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                         GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
                     }
                     else if ( !node.ismEPNTransition() && isSelectedNodesAnimation && ANIMATION_SHOW_NODE_ANIMATION_VALUE.get() )
@@ -2186,7 +2186,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                         if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
                             graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                         GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
-                    }                                      
+                    }
                 }
             }
         }
@@ -2295,7 +2295,7 @@ final class GraphRenderer3D implements GraphInterface // package access
 
             if (DEBUG_BUILD) println("GraphRenderer3D selectedNodes size: " + selectedNodes.size());
             for (GraphNode node : selectedNodes)
-            {                
+            {
                 nodeScaleValue = node.getNodeSize();
                 if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
                 {
@@ -2329,7 +2329,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     */
     private void drawNode(GL2 gl, Point3D point, Color color, float alpha, int name, Shapes3D shape, float size, boolean normal)
     {
-        useNodeMaterial(gl);                
+        useNodeMaterial(gl);
         boolean enableDepthMask = false;
 
         if (normal)
@@ -2359,7 +2359,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                         renderToTexture.bind(gl);
                         renderToTexture.enable(gl);
                     }
-                }                
+                }
             }
             else
             {
@@ -2375,7 +2375,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             }
 
             gl.glColor4fv(CURRENT_COLOR, 0);
-            
+
             if (!enableDepthMask)
                 gl.glDepthMask(false); // Makes the z-buffer read-only for any translucent polygons (GL_FALSE for alpha < 1.0f)
         }
@@ -2386,7 +2386,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 CURRENT_COLOR[3] = alpha;
                 gl.glDepthMask(false); // Makes the z-buffer read-only for any translucent polygons (GL_FALSE for alpha < 1.0f)
             }
-            
+
             SELECTION_COLOR.get().getRGBColorComponents(CURRENT_COLOR);
             if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);
             gl.glColor4fv(CURRENT_COLOR, 0);
@@ -2478,7 +2478,7 @@ final class GraphRenderer3D implements GraphInterface // package access
 
                 draw3DShape(gl, coordX, coordY, coordZ, TRAPEZOID_DOWN, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                break;                
+                break;
 
             case CYLINDER:
 
@@ -2506,75 +2506,75 @@ final class GraphRenderer3D implements GraphInterface // package access
 
             case ROUND_CUBE_THIN:
 
-                draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_THIN, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_THIN, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                break;                
+                break;
 
             case ROUND_CUBE_LARGE:
 
-                draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, ROUND_CUBE_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);
 
                 break;
 
             case PINEAPPLE_SLICE_TOROID:
 
-                draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_TOROID, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_TOROID, size / 1.5f, 1.0f, isFastSelectionNode);
 
                 break;
 
             case PINEAPPLE_SLICE_ELLIPSOID:
 
-                draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_ELLIPSOID, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, PINEAPPLE_SLICE_ELLIPSOID, size / 1.5f, 1.0f, isFastSelectionNode);
 
                 break;
 
             case DOUBLE_PYRAMID_THIN:
 
-                draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_THIN, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_THIN, size / 1.5f, 1.0f, isFastSelectionNode);
 
                 break;
 
             case DOUBLE_PYRAMID_LARGE:
 
-                draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, DOUBLE_PYRAMID_LARGE, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                break;                    
+                break;
 
             case TORUS_8_PETALS:
 
-                draw3DShape(gl, coordX, coordY, coordZ, TORUS_8_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, TORUS_8_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);
 
                 break;
 
             case SAUCER_4_PETALS:
 
-                draw3DShape(gl, coordX, coordY, coordZ, SAUCER_4_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, SAUCER_4_PETALS, size / 1.5f, 1.0f, isFastSelectionNode);
 
                 break;
 
             case GENE_MODEL:
 
-                draw3DShape(gl, coordX, coordY, coordZ, GENE_MODEL, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, GENE_MODEL, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                break;                
+                break;
 
             case LATHE_3D:
 
-                draw3DShape(gl, coordX, coordY, coordZ, LATHE_3D, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, LATHE_3D, size / 1.5f, 1.0f, isFastSelectionNode);
 
                 break;
 
             case SUPER_QUADRIC:
 
-                draw3DShape(gl, coordX, coordY, coordZ, SUPER_QUADRIC, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, SUPER_QUADRIC, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                break;                               
+                break;
 
             case OBJ_MODEL_LOADER:
 
-                draw3DShape(gl, coordX, coordY, coordZ, OBJ_MODEL_LOADER, size / 1.5f, 1.0f, isFastSelectionNode);                
+                draw3DShape(gl, coordX, coordY, coordZ, OBJ_MODEL_LOADER, size / 1.5f, 1.0f, isFastSelectionNode);
 
-                break;                 
+                break;
 
             default: // default case draw the sphere
 
@@ -2591,14 +2591,14 @@ final class GraphRenderer3D implements GraphInterface // package access
     {
         gl.glPushMatrix();
         gl.glTranslatef(coordX, coordY, coordZ);
-        gl.glScalef(factor * size, factor * size, factor * size);        
+        gl.glScalef(factor * size, factor * size, factor * size);
         if (isFastSelectionNode)
             gl.glCallList(ALL_SHAPES_3D_FAST_SELECTION_DISPLAY_LISTS[shape3D.ordinal()]);
         else
             gl.glCallList(ALL_SHAPES_3D_DISPLAY_LISTS[shape3D.ordinal()]);
         gl.glPopMatrix();
     }
-    
+
     /**
     *  Draws the 3D shadows.
     */
@@ -2616,7 +2616,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             gl.glCallLists(allEdgesDisplayLists.capacity(), GL_INT, allEdgesDisplayLists);
         if ( !DISABLE_NODES_RENDERING.get() && (SHOW_NODES.get() || !isInMotion) )
         {
-            enableShaders(gl, true);    
+            enableShaders(gl, true);
             gl.glCallList(nodesDisplayList);
             disableShaders(gl);
             enableShaders(gl, false);
@@ -2665,9 +2665,9 @@ final class GraphRenderer3D implements GraphInterface // package access
 
     /**
     *  Draws the pathway component containers in 3D mode.
-    */    
+    */
     private void drawPathwayComponentContainers3DMode(GL2 gl)
-    {        
+    {
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2675,7 +2675,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         // determine which areas of the polygon are to be renderered
         gl.glEnable(GL_ALPHA_TEST);
         gl.glAlphaFunc(GL_GREATER, 0); // only render if alpha > 0
-                
+
         Rectangle2D.Float rectangle2D = null;
         gl.glBegin(GL_QUADS);
         for ( GraphmlComponentContainer pathwayComponentContainer : nc.getGraphmlNetworkContainer().getAllPathwayComponentContainersFor3D() )
@@ -2685,48 +2685,48 @@ final class GraphRenderer3D implements GraphInterface // package access
             CURRENT_COLOR[3] = pathwayComponentContainer.alpha;
             gl.glColor4fv(CURRENT_COLOR, 0);
             rectangle2D = pathwayComponentContainer.rectangle2D;
-            
+
             // upper surface quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Bottom Left Of The Quad
             gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Bottom Right Of The Quad
             gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Top Right Of The Quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Top Left Of The Quad
-            
+
             // lower surface quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Bottom Left Of The Quad
             gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Bottom Right Of The Quad
             gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Top Right Of The Quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Top Left Of The Quad
-            
+
             // left surfarce quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Bottom Left Of The Quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Top Left Of The Quad
-            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Left Of The Quad            
-            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Bottom Left Of The Quad            
-            
+            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Left Of The Quad
+            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Bottom Left Of The Quad
+
             // right surfarce quad
             gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Bottom Right Of The Quad
-            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Top Right Of The Quad   
-            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Right Of The Quad                        
-            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Bottom Right Of The Quad            
-            
+            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Top Right Of The Quad
+            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Right Of The Quad
+            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Bottom Right Of The Quad
+
             // top surfarce quad
-            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Bottom Right Of The Quad            
+            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Bottom Right Of The Quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Bottom Left Of The Quad
             gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Bottom Left Of The Quad
-            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Bottom Right Of The Quad            
-            
+            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y - rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Bottom Right Of The Quad
+
             // bottom surfarce quad
             gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Top Right Of The Quad
-            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Top Left Of The Quad            
-            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Left Of The Quad            
-            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Right Of The Quad            
+            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f + (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Upper Top Left Of The Quad
+            gl.glVertex3f( (rectangle2D.x - rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Left Of The Quad
+            gl.glVertex3f( (rectangle2D.x + rectangle2D.width / 2.0f) / 100.0f - 5.0f, (rectangle2D.y + rectangle2D.height / 2.0f) / 100.0f - 5.0f, ( CANVAS_Z_SIZE / 2.0f - (pathwayComponentContainer.depth / 2.0f) ) / 100.0f - 5.0f); // Lower Top Right Of The Quad
         }
-        gl.glEnd();      
-        
-        gl.glDisable(GL_ALPHA_TEST);      
+        gl.glEnd();
+
+        gl.glDisable(GL_ALPHA_TEST);
     }
-    
+
     /**
     *  Draws the frustum.
     */
@@ -2738,7 +2738,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         gl.glLineWidth(FRUSTUM_LINE_WIDTH);
 
         if (USE_VERTEX_ARRAYS_FOR_OPENGL_RENDERER)
-        {            
+        {
             // gl.glVertexPointer(3, GL_FLOAT, 0, ALL_VERTEX_3D_COORDS_LAYOUT_CUBE_BUFFER);
             gl.glInterleavedArrays(GL_V3F, 0, ALL_VERTEX_3D_COORDS_LAYOUT_CUBE_BUFFER);
             gl.glDrawArrays(GL_LINES, 0, 24);
@@ -2778,7 +2778,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             gl.glEnd();
         }
     }
-    
+
     /**
     *  Rotates the current view.
     */
@@ -2920,13 +2920,13 @@ final class GraphRenderer3D implements GraphInterface // package access
         {
             if (pickFind)
             {
-                if (mouseHasClicked) 
+                if (mouseHasClicked)
                 {
                     nodesToAdd.add(closestNode);
                     lastNodeURLStringPicked = closestNode.getURLString();
                 }
-                
-                lastNodeNamePicked = nc.getNodeName( closestNode.getNodeName() );                
+
+                lastNodeNamePicked = nc.getNodeName( closestNode.getNodeName() );
             }
             else
             {
@@ -2972,7 +2972,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             mouseHasClicked = false;
             updateSelectedNodesDisplayList = true;
         }
-        
+
         if ( !nodesToAdd.isEmpty() )
             selectionManager.checkSetEnabledNodeNameTextFieldAndSelectNodesTab();
     }
@@ -3002,7 +3002,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         gl.glEnable(GL_COLOR_LOGIC_OP);
         gl.glLogicOp(GL_XOR);
         Color.WHITE.getRGBColorComponents(CURRENT_COLOR);
-        if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);        
+        if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);
         gl.glColor3fv(CURRENT_COLOR, 0);
         gl.glLineWidth(SELECTED_BOX_LINE_WIDTH);
 
@@ -3103,8 +3103,8 @@ final class GraphRenderer3D implements GraphInterface // package access
         gl.glDeleteLists(selectedNodesDisplayList, 1);
 
         // if ( gl.glIsList(pathwayComponentContainersDisplayList) ) // always delete display list, an attempt to delete a list that has never been created is ignored
-        gl.glDeleteLists(pathwayComponentContainersDisplayList, 1);        
-        
+        gl.glDeleteLists(pathwayComponentContainersDisplayList, 1);
+
         prevHowManyDisplayListsToCreate = 0;
     }
 
@@ -3132,7 +3132,7 @@ final class GraphRenderer3D implements GraphInterface // package access
         pulsateValue = false;
         morphingValue = 0.0f;
     }
-    
+
     /**
     *  Increases the node tesselation.
     */
@@ -3163,7 +3163,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     */
     private boolean hasShapeTextureCoords(Shapes3D shape)
     {
-        shape = choose3DShape(shape);            
+        shape = choose3DShape(shape);
         for (int i = 0; i < SHAPES_WITH_TEXTURE_COORDS_ONLY.length; i++)
             if ( shape.equals(SHAPES_WITH_TEXTURE_COORDS_ONLY[i]) && !objModelLoaderShape.getHasTexture() )
                 return true;
@@ -3198,13 +3198,13 @@ final class GraphRenderer3D implements GraphInterface // package access
             renderToTexture.disposeAllRenderToTextureResources(gl);
             renderToTexture = null;
         }
-        
+
         if (objModelLoaderShape != null)
         {
             objModelLoaderShape.disposeAllModelShapeResources(gl);
             objModelLoaderShape = null;
         }
-        
+
         if (screenshot != null)
         {
             screenshot.flush();
@@ -3223,7 +3223,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             {
                 if (DEBUG_BUILD) println("Screenshot " + saveScreenshotFile.getAbsolutePath() + " taken");
                 Screenshot.writeToFile(saveScreenshotFile, width, height , true);
-                InitDesktop.open(saveScreenshotFile);                
+                InitDesktop.open(saveScreenshotFile);
             }
             else
                 screenshot = Screenshot.readToBufferedImage(width, height , true);
@@ -3318,7 +3318,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             String format = saveScreenshotFile.getAbsolutePath().substring( saveScreenshotFile.getAbsolutePath().lastIndexOf(".") + 1, saveScreenshotFile.getAbsolutePath().length() );
             // Must flip BufferedImage vertically for correct results
             ImageUtil.flipImageVertically(screenshot);
-            writeBufferedImageToFile(screenshot, format, saveScreenshotFile);            
+            writeBufferedImageToFile(screenshot, format, saveScreenshotFile);
 
             // try to force to clear all memory allocated for this task
             screenshot.flush();
@@ -3332,7 +3332,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             layoutProgressBarDialog.endProgressBar();
             layoutProgressBarDialog.stopProgressBar();
             layoutProgressBarDialog.setIndeterminate(false);
-            
+
             InitDesktop.open(saveScreenshotFile);
         }
         catch (OutOfMemoryError memErr)
@@ -3369,8 +3369,8 @@ final class GraphRenderer3D implements GraphInterface // package access
 
             CENTER_VIEW_CAMERA.setProjection(gl);
         }
-    }    
-    
+    }
+
     /**
     *  Starts the updating/rendering thread(s).
     *  Overrides the parent's abstract method.
@@ -3384,8 +3384,8 @@ final class GraphRenderer3D implements GraphInterface // package access
             graphRendererThreadUpdater = new GraphRendererThreadUpdater(graph, this, frameskip, fullscreen, targetFPS);
             graphRendererThreadUpdater.startWithPriority(Thread.NORM_PRIORITY);
         }
-    } 
-    
+    }
+
     /**
     *  Stops updating/rendering thread(s).
     *  Overrides the parent's abstract method.
@@ -3429,7 +3429,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     */
     private void togglePulsation()
     {
-        if (!rotating) 
+        if (!rotating)
             startRotationAndPulsation();
         else
             stopRotationAndPulsation();
@@ -3441,7 +3441,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     private void startRotation()
     {
         if (!rotating)
-        {            
+        {
             rotating = true;
             autoRotate = true;
             startRender();
@@ -3452,7 +3452,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Stops rotation.
     */
     private void stopRotation()
-    {        
+    {
         if (rotating)
         {
             rotating = false;
@@ -3477,9 +3477,9 @@ final class GraphRenderer3D implements GraphInterface // package access
     private void stopRotationAndPulsation()
     {
         if (USE_SHADERS_PROCESS) resetPulsateValues();
-        autoPulsate = false;        
+        autoPulsate = false;
         stopRotation();
-    }    
+    }
 
     /**
     *  Renders a high resolution image to file.
@@ -3509,10 +3509,10 @@ final class GraphRenderer3D implements GraphInterface // package access
     {
         autoRotate = false;
         autoPulsate = false;
-        
+
         stopRotationAndPulsation();
-    }  
-    
+    }
+
     /**
     *  Enables/disables the given shader SFX lighting program.
     */
@@ -3524,16 +3524,16 @@ final class GraphRenderer3D implements GraphInterface // package access
             layoutFrame.setShaderLightingSFXValue(shaderType);
             refreshDisplay();
         }
-    }   
-    
+    }
+
     /**
     *  Called by the JOGL2 glDrawable immediately after the OpenGL context is initialized.
     */
     @Override
-    public void init(GLAutoDrawable glDrawable) 
+    public void init(GLAutoDrawable glDrawable)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D init()");
-        
+
         GL2 gl = glDrawable.getGL().getGL2();
         clearScreen3D(gl);
 
@@ -3569,16 +3569,16 @@ final class GraphRenderer3D implements GraphInterface // package access
         gl.glFogf(GL_FOG_DENSITY, 0.01f);                      // How Dense Will The Fog Be
 
         ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = true;
-        
-        prepareLighting(gl);        
+
+        prepareLighting(gl);
         if (USE_SHADERS_PROCESS)
         {
-            if (!USE_GL_ARB_GEOMETRY_SHADER4) 
+            if (!USE_GL_ARB_GEOMETRY_SHADER4)
                 preparePointSprites(gl);
             prepareShaderLighting(gl);
         }
         if (USE_GL_EXT_FRAMEBUFFER_OBJECT) prepareEnvironmentMapping(gl);
-        
+
         nodeTexture = graph.prepareNodeTexture(gl, nodeTexture);
     }
 
@@ -3586,17 +3586,17 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Called by the JOGL2 glDrawable to initiate OpenGL rendering by the client.
     */
     @Override
-    public void display(GLAutoDrawable glDrawable) 
+    public void display(GLAutoDrawable glDrawable)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D display()");
-        
+
         GL2 gl = glDrawable.getGL().getGL2();
         if (deAllocOpenGLMemory)
         {
             if (DEBUG_BUILD) println("GraphRenderer3D draw: delete all display lists & destroy all textures");
 
             /*
-            if (USE_SHADERS_PROCESS) 
+            if (USE_SHADERS_PROCESS)
             {
                 // don't destroy them, keep it for faster renderer mode switching
                 shaderLightingSFXsNodes.destructor(gl);
@@ -3604,7 +3604,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 {
                     shaderLightingSFXsSelectedNodes.destructor(gl);
                     shaderLightingSFXsSelectedNodesNormalsGeometry.destructor(gl);
-                }                
+                }
                 if (USE_400_SHADERS_PROCESS)
                 {
                     shaderLODSFXsNodes.destructor(gl);
@@ -3612,10 +3612,10 @@ final class GraphRenderer3D implements GraphInterface // package access
                     {
                         shaderLODSFXsSelectedNodes.destructor(gl);
                         shaderLODSFXsSelectedNodesNormalsGeometry.destructor(gl);
-                    } 
+                    }
                 }
                 if (USE_400_SHADERS_PROCESS)
-                   shaderLinesSFXs.destructor(gl);                
+                   shaderLinesSFXs.destructor(gl);
             }
             */
             deleteAllDisplayLists(gl);
@@ -3630,7 +3630,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glDisableClientState(GL_VERTEX_ARRAY);
             }
             */
-            
+
             pickOneNode = false;
             animationFrameCount = 0;
             stepAnimation = false;
@@ -3646,16 +3646,16 @@ final class GraphRenderer3D implements GraphInterface // package access
             gl.glLoadIdentity();
             // position the light, just after the glLoadIdentity() call
             gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { LIGHT_POSITION[0].get(), LIGHT_POSITION[1].get(), LIGHT_POSITION[2].get(), 0.0f }, 0);
-            
+
             buildAllDisplayLists(gl);
-            
+
             if ( !ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() )
             {
                 CENTER_VIEW_CAMERA.setCamera(gl, translateDX, translateDY, scaleValue, xRotate, yRotate, 0.0f, FOCUS_POSITION_3D, true);
                 renderScene3D(gl, true);
             }
             else
-            {                
+            {
                 graph.chooseAnaglyphGlassesColorMask(gl, true);
                 LEFT_EYE_CAMERA.setProjectionAndCamera(gl, translateDX, translateDY, scaleValue, xRotate, yRotate, 0.0f, FOCUS_POSITION_3D, true);
                 renderScene3D(gl, true);
@@ -3665,49 +3665,49 @@ final class GraphRenderer3D implements GraphInterface // package access
 
                 graph.chooseAnaglyphGlassesColorMask(gl, false);
                 RIGHT_EYE_CAMERA.setProjectionAndCamera(gl, translateDX, translateDY, scaleValue, xRotate, yRotate, 0.0f, FOCUS_POSITION_3D, true);
-                renderScene3D(gl, true);            
+                renderScene3D(gl, true);
 
                 gl.glColorMask(true, true, true, true); // reset color mask so as to clear screen properly
             }
-            
+
             if ( selectMode && !(autoRotate || autoPulsate) ) selectScene(gl);
 
             if (takeScreenshot) takeScreenshot(renderToFile);
             if (takeHighResScreenshot) takeHighResScreenshot(gl);
         }
-        
+
         if (autoPulsate)
         {
             autoPulsate = false;
             display(glDrawable);
             autoPulsate = true;
         }
-        
-        if (ANIMATION_INITIATE_END_OF_ANIMATION) 
+
+        if (ANIMATION_INITIATE_END_OF_ANIMATION)
         {
             ANIMATION_INITIATE_END_OF_ANIMATION = false;
             layoutFrame.getLayoutAnimationControlDialog().stopAnimation(false);
             refreshDisplay();
-        }        
-    }    
+        }
+    }
 
     /**
     *  Called by the JOGL2 glDrawable during the first repaint after the component has been resized.
     */
     @Override
-    public void reshape(GLAutoDrawable glDrawable, int x, int y, int widthCanvas, int heightCanvas) 
-    {             
+    public void reshape(GLAutoDrawable glDrawable, int x, int y, int widthCanvas, int heightCanvas)
+    {
         if (DEBUG_BUILD) println("GraphRenderer3D reshape()");
 
         GL2 gl = glDrawable.getGL().getGL2();
-        double intraOcularDistance = extractDouble(GRAPH_INTRA_OCULAR_DISTANCE_TYPE);        
+        double intraOcularDistance = extractDouble(GRAPH_INTRA_OCULAR_DISTANCE_TYPE);
         LEFT_EYE_CAMERA.setIntraOcularDistanceAndFrustumShift(DEFAULT_INTRA_OCULAR_DISTANCE);
         LEFT_EYE_CAMERA.updateFrustumDimensions(width, height);
         LEFT_EYE_CAMERA.setIntraOcularDistanceAndFrustumShift(intraOcularDistance);
         CENTER_VIEW_CAMERA.updateViewPortAndFrustumDimensions(gl, x, y, width, height);
         CENTER_VIEW_CAMERA.setProjection(gl);
         RIGHT_EYE_CAMERA.setIntraOcularDistanceAndFrustumShift(DEFAULT_INTRA_OCULAR_DISTANCE);
-        RIGHT_EYE_CAMERA.updateFrustumDimensions(width, height);        
+        RIGHT_EYE_CAMERA.updateFrustumDimensions(width, height);
         RIGHT_EYE_CAMERA.setIntraOcularDistanceAndFrustumShift(intraOcularDistance);
         if (USE_GL_EXT_FRAMEBUFFER_OBJECT) init3DEnviromentMapping(gl);
     }
@@ -3716,11 +3716,11 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  KeyPressed keyEvent.
     */
     @Override
-    public void keyPressed(KeyEvent e) 
-    {        
+    public void keyPressed(KeyEvent e)
+    {
         if (DEBUG_BUILD) println("GraphRenderer3D keyPressed()");
-        
-        if ( e.isShiftDown() ) 
+
+        if ( e.isShiftDown() )
         {
             isShiftDown = true;
             isShiftAltDown = e.isAltDown();
@@ -3731,10 +3731,10 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  KeyReleased keyEvent.
     */
     @Override
-    public void keyReleased(KeyEvent e) 
+    public void keyReleased(KeyEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D keyReleased()");
-        
+
         isShiftDown = false;
         isShiftAltDown = false;
         pickingBox = false;
@@ -3744,23 +3744,23 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  KeyTyped keyEvent.
     */
     @Override
-    public void keyTyped(KeyEvent e) 
+    public void keyTyped(KeyEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D keyTyped()");
-        
-        boolean isCtrlDown = (!IS_MAC) ? e.isControlDown() : e.isMetaDown();        
+
+        boolean isCtrlDown = (!IS_MAC) ? e.isControlDown() : e.isMetaDown();
         if (!e.isAltDown() && !isCtrlDown)
         {
-            if (e.getKeyChar() == '<') 
+            if (e.getKeyChar() == '<')
             {
                 if (!animationRender)
                 {
                     graph.increaseNodeSize(false, true);
                     updateNodesAndSelectedNodesDisplayList();
                 }
-            }        
+            }
             else if (e.getKeyChar() == '>')
-            {                
+            {
                 if (!animationRender)
                 {
                     graph.increaseNodeSize(true, true);
@@ -3795,7 +3795,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     if (!animationRender)
                         if ( !layoutFrame.getFileNameLoaded().isEmpty() )
                             graph.initiateTakeScreenShotProcess(true);
-                }             
+                }
                 else if (e.getKeyChar() == 'x' || e.getKeyChar() == 'X')
                 {
                     if (!animationRender)
@@ -3804,8 +3804,8 @@ final class GraphRenderer3D implements GraphInterface // package access
                         increaseNodeTesselation(true);
                         updateNodesAndSelectedNodesDisplayList();
                     }
-                }        
-                else if (e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') 
+                }
+                else if (e.getKeyChar() == 'z' || e.getKeyChar() == 'Z')
                 {
                     if (!animationRender)
                     {
@@ -3814,7 +3814,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                         updateNodesAndSelectedNodesDisplayList();
                     }
                 }
-                else if (e.getKeyChar() == 's' || e.getKeyChar() == 'S') 
+                else if (e.getKeyChar() == 's' || e.getKeyChar() == 'S')
                 {
                     if (!animationRender)
                     {
@@ -3828,7 +3828,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     if (!animationRender)
                         resetAllValues();
                 }
-                else if (e.getKeyChar() == 'p' || e.getKeyChar() == 'P') 
+                else if (e.getKeyChar() == 'p' || e.getKeyChar() == 'P')
                 {
                     if (!animationRender)
                         togglePulsation();
@@ -3882,7 +3882,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == 'm' || e.getKeyChar() == 'M')
-                {                                 
+                {
                     if (!animationRender)
                     {
                         SHOW_3D_ENVIRONMENT_MAPPING.set( !SHOW_3D_ENVIRONMENT_MAPPING.get() );
@@ -3904,7 +3904,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == 't' || e.getKeyChar() == 'T')
-                {                    
+                {
                     if (!animationRender)
                     {
                         TEXTURE_ENABLED.set( !TEXTURE_ENABLED.get() );
@@ -3998,12 +3998,12 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  MouseClicked mouseEvent.
     */
     @Override
-    public void mouseClicked(MouseEvent e) 
+    public void mouseClicked(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mouseClicked()");
-        
+
         if ( SwingUtilities.isLeftMouseButton(e) )
-        {        
+        {
             boolean isCtrlDown = (!IS_MAC) ? e.isControlDown() : e.isMetaDown();
 
             findNode(e.getX(), e.getY(), true, e.isAltDown());
@@ -4012,7 +4012,7 @@ final class GraphRenderer3D implements GraphInterface // package access
 
             pickFind = false;
 
-            if (!isShiftDown && isCtrlDown)    
+            if (!isShiftDown && isCtrlDown)
             {
                 if ( !lastNodeURLStringPicked.isEmpty() )
                     InitDesktop.browse(lastNodeURLStringPicked);
@@ -4026,7 +4026,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  MouseEntered mouseEvent.
     */
     @Override
-    public void mouseEntered(MouseEvent e) 
+    public void mouseEntered(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mouseEntered()");
     }
@@ -4035,7 +4035,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  MouseExited mouseEvent.
     */
     @Override
-    public void mouseExited(MouseEvent e) 
+    public void mouseExited(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mouseExited()");
     }
@@ -4044,11 +4044,11 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  MousePressed mouseEvent.
     */
     @Override
-    public void mousePressed(MouseEvent e) 
+    public void mousePressed(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mousePressed()");
-        
-        mouseButton = e.getButton();        
+
+        mouseButton = e.getButton();
         mouseLastX = mouseDragStartX = e.getX();
         mouseLastY = mouseDragStartY = e.getY();
 
@@ -4074,40 +4074,40 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  MouseReleased mouseEvent.
     */
     @Override
-    public void mouseReleased(MouseEvent e) 
+    public void mouseReleased(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mouseReleased()");
-        
+
         isInMotion = false;
-        
-        if ( pickingBox || (currentMouseMode.equals(MouseModeTypes.SELECT) && pickingBox) ) 
+
+        if ( pickingBox || (currentMouseMode.equals(MouseModeTypes.SELECT) && pickingBox) )
         {
             pickOriginX = (int)rint( ( mouseDragStartX + e.getX() ) / 2 );
             pickOriginY = (int)rint( ( mouseDragStartY + e.getY() ) / 2 );
             pickWidth  = abs(e.getX() - mouseDragStartX);
             pickHeight = abs(e.getY() - mouseDragStartY);
-            
+
             pick(pickOriginX, pickOriginY, pickWidth, pickHeight, isShiftAltDown);
             pickingBox = false;
-            
-            refreshDisplay();            
+
+            refreshDisplay();
         }
-        
+
         refreshDisplay();
         mouseButton = 0;
-        
+
         mouseDragStartX = 0;
         mouseDragStartY = 0;
-    }  
+    }
 
     /**
     *  MouseDragged mouseMotionEvent.
     */
     @Override
-    public void mouseDragged(MouseEvent e) 
+    public void mouseDragged(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mouseDragged()");
-        
+
         if ( graphPopupIsTiming || GRAPH_POPUP_COMPONENT.isPopupMenuVisible() )
         {
             graphPopupIsTiming = false;
@@ -4115,29 +4115,29 @@ final class GraphRenderer3D implements GraphInterface // package access
             graphPopupScheduledFuture.cancel(true);
         }
 
-        if ( (mouseButton == MouseEvent.BUTTON1) && ( currentMouseMode.equals(MouseModeTypes.ROTATE) || currentMouseMode.equals(MouseModeTypes.SELECT) ) ) 
+        if ( (mouseButton == MouseEvent.BUTTON1) && ( currentMouseMode.equals(MouseModeTypes.ROTATE) || currentMouseMode.equals(MouseModeTypes.SELECT) ) )
         {
 
             if ( isShiftDown || currentMouseMode.equals(MouseModeTypes.SELECT) )
             {
                 pickingBox = true;
                 selectBox( mouseDragStartX, mouseDragStartY, e.getX(), e.getY() );
-            } 
-            else 
+            }
+            else
             {
                 rotate( mouseLastX, mouseLastY, e.getX(), e.getY() );
             }
 
             refreshDisplay();
-            
+
             mouseLastX = e.getX();
             mouseLastY = e.getY();
         }
-        else if ( (mouseButton == MouseEvent.BUTTON2) || currentMouseMode.equals(MouseModeTypes.TRANSLATE) ) 
+        else if ( (mouseButton == MouseEvent.BUTTON2) || currentMouseMode.equals(MouseModeTypes.TRANSLATE) )
         {
             translate( mouseLastX, mouseLastY, e.getX(), e.getY() );
             refreshDisplay();
-            
+
             mouseLastX = e.getX();
             mouseLastY = e.getY();
         }
@@ -4145,20 +4145,20 @@ final class GraphRenderer3D implements GraphInterface // package access
         {
             scale( mouseLastX, mouseLastY, e.getX(), e.getY() );
             refreshDisplay();
-            
+
             mouseLastX = e.getX();
             mouseLastY = e.getY();
-        }       
+        }
     }
 
     /**
     *  MouseMoved mouseMotionEvent.
     */
     @Override
-    public void mouseMoved(MouseEvent e) 
+    public void mouseMoved(MouseEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mouseMoved()");
-        
+
         if ( !(autoRotate || autoPulsate) )
         {
             if ( graphPopupIsTiming || GRAPH_POPUP_COMPONENT.isPopupMenuVisible() )
@@ -4170,7 +4170,7 @@ final class GraphRenderer3D implements GraphInterface // package access
 
             findNode(e.getX(), e.getY(), false, false);
             refreshDisplay();
-            
+
             pickFind = false;
             if ( !lastNodeNamePicked.isEmpty() )
             {
@@ -4179,8 +4179,8 @@ final class GraphRenderer3D implements GraphInterface // package access
                 graphPopupScheduledFuture = GRAPH_POPUP_SCHEDULED_EXECUTOR_SERVICE.schedule(GRAPH_POPUP_COMPONENT, COMPONENT_POPUP_DELAY_MILLISECONDS, TimeUnit.MILLISECONDS);
                 graphPopupIsTiming = true;
                 graphPopupReset = true;
-            } 
-            else 
+            }
+            else
             {
                 if (graphPopupReset)
                 {
@@ -4195,11 +4195,11 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  MouseWheelMoved mouseWheelEvent.
     */
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e) 
+    public void mouseWheelMoved(MouseWheelEvent e)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D mouseWheelMoved()");
     }
-    
+
     /**
     *  Switches the renderer mode for GraphRenderer3D.
     */
@@ -4207,7 +4207,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void switchRendererMode()
     {
         if (DEBUG_BUILD) println("GraphRenderer3D switchRendererMode()");
-        
+
         layoutFrame.setEnabledAllToolBars(false);
         listener.switchRendererModeCallBack();
     }
@@ -4219,9 +4219,9 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void addAllEvents()
     {
         if (DEBUG_BUILD) println("GraphRenderer3D addAllEvents()");
-        
+
         deAllocOpenGLMemory = false;
-        
+
         refreshDisplay();
     }
 
@@ -4232,8 +4232,8 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void removeAllEvents()
     {
         if (DEBUG_BUILD) println("GraphRenderer3D removeAllEvents()");
-        
-        deAllocOpenGLMemory = true;        
+
+        deAllocOpenGLMemory = true;
         resetAnimationValues();
     }
 
@@ -4241,26 +4241,26 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Gets a BufferedImage (mainly used for printing functionality).
     */
     @Override
-    public BufferedImage getBufferedImage() 
+    public BufferedImage getBufferedImage()
     {
         if (DEBUG_BUILD) println("GraphRenderer3D getBufferedImage()");
-        
+
         renderToFile = false;
         takeScreenshot = true;
         refreshDisplay();
         renderToFile = true;
 
         return screenshot;
-    }   
+    }
 
     /**
     *  Fully updates the display lists.
     */
     @Override
-    public void updateAllDisplayLists() 
-    {        
+    public void updateAllDisplayLists()
+    {
         if (DEBUG_BUILD) println("updateAllDisplayLists() for 3D mode");
-        
+
         updateDisplayLists(true, true, true);
         refreshDisplay();
         refreshDisplay(); // 2nd refresh to make sure new double display lists system refreshes properly
@@ -4273,7 +4273,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void updateNodesDisplayList()
     {
         if (DEBUG_BUILD) println("updateNodesDisplayList() for 3D mode");
-        
+
         updateDisplayLists(true, false, false);
         refreshDisplay();
         refreshDisplay(); // 2nd refresh to make sure new double display lists system refreshes properly
@@ -4286,11 +4286,11 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void updateSelectedNodesDisplayList()
     {
         if (DEBUG_BUILD) println("updateSelectedNodesDisplayList() for 3D mode");
-        
+
         updateDisplayLists(false, false, true);
         refreshDisplay();
         refreshDisplay(); // 2nd refresh to make sure new double display lists system refreshes properly
-    }        
+    }
 
     /**
     *  Updates the nodes & selected nodes display lists only.
@@ -4299,7 +4299,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void updateNodesAndSelectedNodesDisplayList()
     {
         if (DEBUG_BUILD) println("updateNodesAndSelectedNodesDisplayList() for 3D mode");
-        
+
         updateDisplayLists(true, false, true);
         refreshDisplay();
         refreshDisplay(); // 2nd refresh to make sure new double display lists system refreshes properly
@@ -4312,7 +4312,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void updateEdgesDisplayList()
     {
         if (DEBUG_BUILD) println("updateEdgesDisplayList() for 3D mode");
-        
+
         updateDisplayLists(false, true, false);
         refreshDisplay();
         refreshDisplay(); // 2nd refresh to make sure new double display lists system refreshes properly
@@ -4322,10 +4322,10 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Updates the display lists selectively.
     */
     @Override
-    public void updateDisplayLists(boolean nodesDisplayList, boolean edgesDisplayList, boolean selectedNodesDisplayList) 
+    public void updateDisplayLists(boolean nodesDisplayList, boolean edgesDisplayList, boolean selectedNodesDisplayList)
     {
         if (DEBUG_BUILD) println("updateDisplayLists(" + nodesDisplayList + ", " + edgesDisplayList + ", " + selectedNodesDisplayList + ") for 3D mode");
-        
+
         graph.prepareBackgroundColor();
 
         if ( prevYEdStyleRrenderingForGraphmlFiles == YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
@@ -4344,19 +4344,19 @@ final class GraphRenderer3D implements GraphInterface // package access
         }
 
         prevYEdStyleRrenderingForGraphmlFiles = YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get();
-        
+
         refreshDisplay();
         refreshDisplay(); // 2nd refresh to make sure new double display lists system refreshes properly
     }
-    
+
     /**
     *  Updates all animation.
-    */  
-    @Override    
+    */
+    @Override
     public void updateAnimation()
     {
         if (DEBUG_BUILD) println("Updating 3D Scene");
-        
+
         if (autoRotate && !animationRender)
         {
             xRotate -= AMOUNT_OF_ROTATION;
@@ -4401,7 +4401,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     {
                         shaderLightingSFXsSelectedNodes.timerEffect( ALL_SHADING_SFXS[ShaderLightingSFXs.ShaderTypes.WATER.ordinal()].get() );
                         shaderLightingSFXsSelectedNodesNormalsGeometry.timerEffect( ALL_SHADING_SFXS[ShaderLightingSFXs.ShaderTypes.WATER.ordinal()].get() );
-                    }                
+                    }
                 }
             }
         }
@@ -4422,12 +4422,12 @@ final class GraphRenderer3D implements GraphInterface // package access
             }
         }
     }
-    
+
     /**
     *  Refreshes the display.
     */
     @Override
-    public void refreshDisplay() 
+    public void refreshDisplay()
     {
         if (DEBUG_BUILD) println("GraphRenderer3D refreshDisplay()");
 
@@ -4441,10 +4441,10 @@ final class GraphRenderer3D implements GraphInterface // package access
     public void resetAllValues()
     {
         if (DEBUG_BUILD) println("GraphRenderer3D resetAllValues()");
-        
+
         if (!animationRender)
             stopRotationAndPulsation();
-        
+
         resetView();
         refreshDisplay();
         refreshDisplay(); // 2nd refresh to make sure new double display lists system refreshes properly
@@ -4460,14 +4460,14 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Checks if there are more redo steps to be performed.
     */
     @Override
-    public boolean hasMoreRedoSteps() { return false; } 
-    
-    /** 
+    public boolean hasMoreRedoSteps() { return false; }
+
+    /**
     *  The main take a screenshot process.
-    */      
+    */
     @Override
     public void takeScreenShotProcess(boolean doHighResScreenShot)
-    {       
+    {
         //give time for menubar to hide
         refreshDisplay();
 
@@ -4479,9 +4479,9 @@ final class GraphRenderer3D implements GraphInterface // package access
         refreshDisplay();
         // second refresh for cleaning behind InitDesktop.open(savedImage)
         if (doHighResScreenShot)
-            refreshDisplay();      
-    }    
-    
+            refreshDisplay();
+    }
+
     /**
     *  Creates the reTranslate action.
     */
@@ -4498,7 +4498,7 @@ final class GraphRenderer3D implements GraphInterface // package access
             translateDX -= DEFAULT_TRANSLATION;
 
         refreshDisplay();
-        
+
         if (DEBUG_BUILD) println("GraphRenderer3D reTranslate()");
     }
 
@@ -4506,7 +4506,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Creates the reRotate action.
     */
     @Override
-    public void createReRotateAction(RotateTypes rotateType, ActionEvent e)    
+    public void createReRotateAction(RotateTypes rotateType, ActionEvent e)
     {
         if ( rotateType.equals(RotateTypes.ROTATE_UP) )
             yRotate -= DEFAULT_ROTATION;
@@ -4516,9 +4516,9 @@ final class GraphRenderer3D implements GraphInterface // package access
             xRotate += DEFAULT_ROTATION;
         else if ( rotateType.equals(RotateTypes.ROTATE_RIGHT) )
             xRotate -= DEFAULT_ROTATION;
-        
+
         refreshDisplay();
-        
+
         if (DEBUG_BUILD) println("GraphRenderer3D reRotate()");
     }
 
@@ -4527,110 +4527,110 @@ final class GraphRenderer3D implements GraphInterface // package access
     */
     @Override
     public void createReScaleAction(ScaleTypes scaleType, ActionEvent e)
-    {        
+    {
         scaleValue /= scaleType.equals(ScaleTypes.SCALE_IN) ? SCALE_FACTOR : 1.0f / SCALE_FACTOR;
-        
+
         refreshDisplay();
-        
+
         if (DEBUG_BUILD) println("GraphRenderer3D reScale()");
     }
 
     /**
     *  Creates the Burst Layout Iterations action.
-    */    
+    */
     @Override
     public void createBurstLayoutIterationsAction(ActionEvent e) {}
-    
+
     /**
     *  Gets the undo node dragging action.
     */
     @Override
-    public void createUndoNodeDraggingAction(ActionEvent e) {}    
-    
+    public void createUndoNodeDraggingAction(ActionEvent e) {}
+
     /**
     *  Gets the redo node dragging action.
     */
     @Override
-    public void createRedoNodeDraggingAction(ActionEvent e) {}    
-    
-    /** 
+    public void createRedoNodeDraggingAction(ActionEvent e) {}
+
+    /**
     *  Gets the autorotate action.
-    */      
+    */
     @Override
-    public void createAutoRotateAction(ActionEvent e) 
+    public void createAutoRotateAction(ActionEvent e)
     {
         toggleRotation(e);
     }
 
-    /** 
+    /**
     *  Gets the screensaver 2D mode action.
-    */      
+    */
     @Override
-    public void createAutoScreenSaver2DModeAction(ActionEvent e) {}    
-    
+    public void createAutoScreenSaver2DModeAction(ActionEvent e) {}
+
     /**
     *  Gets the pulsation 3D mode action.
     */
     @Override
-    public void createPulsation3DModeAction(ActionEvent e) 
+    public void createPulsation3DModeAction(ActionEvent e)
     {
         togglePulsation();
     }
 
-    /** 
+    /**
     *  Gets the selection action.
-    */      
+    */
     @Override
-    public void createSelectAction(ActionEvent e) 
+    public void createSelectAction(ActionEvent e)
     {
         currentMouseMode = MouseModeTypes.SELECT;
     }
-    
-    /** 
+
+    /**
     *  Gets the translation action.
-    */       
+    */
     @Override
-    public void createTranslateAction(ActionEvent e) 
+    public void createTranslateAction(ActionEvent e)
     {
         currentMouseMode = MouseModeTypes.TRANSLATE;
     }
-    
-    /** 
+
+    /**
     *  Gets the rotation action.
-    */       
+    */
     @Override
-    public void createRotateAction(ActionEvent e) 
+    public void createRotateAction(ActionEvent e)
     {
         currentMouseMode = MouseModeTypes.ROTATE;
     }
-    
-    /** 
+
+    /**
     *  Gets the zoom action.
-    */       
+    */
     @Override
-    public void createZoomAction(ActionEvent e) 
+    public void createZoomAction(ActionEvent e)
     {
         currentMouseMode = MouseModeTypes.SCALE;
     }
 
-    /** 
+    /**
     *  Gets the reset view action.
-    */     
+    */
     @Override
-    public void createResetViewAction(ActionEvent e) 
+    public void createResetViewAction(ActionEvent e)
     {
         resetAllValues();
     }
-    
-    /** 
+
+    /**
     *  Gets the render action.
-    */       
+    */
     @Override
     public void createRenderImageToFileAction(ActionEvent e) {}
-    
-    /** 
+
+    /**
     *  Gets the high resolution render action.
-    */      
+    */
     @Override
     public void createRenderHighResImageToFileAction(ActionEvent e) {}
 
@@ -4638,7 +4638,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Generally pauses the renderer.
     */
     @Override
-    public void generalPauseRenderUpdateThread() 
+    public void generalPauseRenderUpdateThread()
     {
         graphRendererThreadUpdater.generalPauseRenderUpdateThread();
     }
@@ -4647,11 +4647,11 @@ final class GraphRenderer3D implements GraphInterface // package access
     *  Generally resumes the renderer.
     */
     @Override
-    public void generalResumeRenderUpdateThread() 
+    public void generalResumeRenderUpdateThread()
     {
         graphRendererThreadUpdater.generalResumeRenderUpdateThread();
     }
-    
+
     /**
     *  The name of the GraphRenderer3D object.
     */
@@ -4660,7 +4660,7 @@ final class GraphRenderer3D implements GraphInterface // package access
     {
         return "3D OpenGL renderer";
     }
-    
+
     /**
     *  Clean up resources
     */

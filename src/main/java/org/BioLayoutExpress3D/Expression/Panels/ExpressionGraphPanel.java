@@ -51,11 +51,11 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
     public static final String EXPRESSION_Y_AXIS_LABEL = "Y Axis: Intensity";
     public static final int VALUES_FONT_SIZE = 6;
     public static final int AXIS_FONT_SIZE = 14;
-    public static final int AXIS_FONT_STYLE = Font.ITALIC | Font.BOLD;    
+    public static final int AXIS_FONT_STYLE = Font.ITALIC | Font.BOLD;
     public static final BasicStroke AXES_BASIC_STROKE = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
     private static final int WARNING_MESSAGE_FOR_RENDERING_NUMBER_OF_PLOTS = 10;
-    
+
     private JFrame jframe = null;
     private LayoutFrame layoutFrame = null;
     private ExpressionData expresionData = null;
@@ -289,7 +289,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                 for (int j = 0; j < totalColumns; j++)
                 {
                     value = (drawLogScale) ? log( expresionData.getExpressionDataValue(index, j) ) : expresionData.getExpressionDataValue(index, j);
-                    
+
                     if (value > max)
                         max = value;
 
@@ -384,7 +384,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                             for (int j = 0; j < totalColumns; j++)
                             {
                                 checkNewMinMaxY = meanOfClassLineStepsDataMap.get(lineColor)[j][0] / meanOfClassLineStepsTimesUsedMap.get(lineColor);
-                                
+
                                 if (checkNewMinMaxY > tempMax)
                                     tempMax = checkNewMinMaxY;
 
@@ -472,7 +472,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                         for (int j = 0; j < totalColumns; j++)
                         {
                             checkNewMinMaxY = meanLineStepsData[j][0] / expandedSelectedNodes.size();
-                            
+
                             if (checkNewMinMaxY > max)
                                 max = checkNewMinMaxY;
 
@@ -513,7 +513,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             {
                 Font prevFont = g2d.getFont();
                 g2d.setFont( prevFont.deriveFont(AXIS_FONT_STYLE, AXIS_FONT_SIZE) );
-                
+
                 double maxAxesLegendStringWidth = 0.0;
                 double maxAxesLegendStringHeight = 0.0;
                 rectangle2D = g2d.getFontMetrics( g2d.getFont() ).getStringBounds(EXPRESSION_X_AXIS_LABEL, g2d);
@@ -527,7 +527,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                     maxAxesLegendStringWidth = rectangle2D.getWidth();
                 if (rectangle2D.getHeight() > maxAxesLegendStringHeight)
                     maxAxesLegendStringHeight = rectangle2D.getHeight();
-                
+
                 g2d.setStroke(AXES_BASIC_STROKE);
                 g2d.setColor(DESCRIPTIONS_COLOR);
 
@@ -537,7 +537,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                 g2d.drawLine(lineCoords[0], lineCoords[1], lineCoords[0], lineCoords[3]);
                 g2d.drawLine(lineCoords[0], lineCoords[3], lineCoords[2], lineCoords[3]);
                 g2d.drawLine(lineCoords[2], lineCoords[3], lineCoords[2], lineCoords[1]);
-                
+
                 // draw axes legend
                 g2d.drawString(EXPRESSION_X_AXIS_LABEL, PAD_X + plotRectangleWidth - (int)(maxAxesLegendStringWidth + 1.5 * PAD_BORDER) - 1, (int)(maxAxesLegendStringHeight + 1.5 * PAD_BORDER) - 2);
                 g2d.drawString(EXPRESSION_Y_AXIS_LABEL, PAD_X + plotRectangleWidth - (int)(maxAxesLegendStringWidth + 1.5 * PAD_BORDER) - 1, (int)(2 * maxAxesLegendStringHeight + 2.0 * PAD_BORDER) - 2);
@@ -595,47 +595,47 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                     g2d.drawLine( (int)(height - padY), -(int)( PAD_X + (ticks * tickWidth) ), 0, -(int)( PAD_X + (ticks * tickWidth) ) );
                 }
             }
-            
+
             g2d.setTransform(origTransform); // restore original affine transform
             g2d.setRenderingHints(currentRenderingHints); // restore original rendering hints
         }
 
 
     }
-    
+
     private void initiateTakeSingleScreenShotProcess()
     {
         File saveScreenshotFile = layoutFrame.getGraph().saveImageToFile(jframe, "Render Plot Image To File As", "plot");
         if (saveScreenshotFile != null)
             savePlotToImageFile(saveScreenshotFile, true, "");
     }
-    
+
     public void initiateTakeMultipleClassesScreenShotsProcess()
-    {        
+    {
         int initialClassIndex = layoutFrame.getClassViewerFrame().getClassIndex();
         int startingClassIndex = expressionChooseClassesToRenderPlotImagesFromDialog.getStartingClassIndex();
         int currentClassIndex = startingClassIndex;
         int endingClassIndex = expressionChooseClassesToRenderPlotImagesFromDialog.getEndingClassIndex() + 1;
-                
-        int option = 0;        
+
+        int option = 0;
         if (endingClassIndex - startingClassIndex < WARNING_MESSAGE_FOR_RENDERING_NUMBER_OF_PLOTS)
             option = JOptionPane.YES_OPTION;
         else
             option = JOptionPane.showConfirmDialog(jframe, "Please note that it may take some time to render all " + Integer.toString(endingClassIndex - startingClassIndex) + " class plot images.\nAre you sure you want to proceed ?", "Render All Current Class Set Plot Images To Files Process", JOptionPane.YES_NO_OPTION);
-                       
+
         if (option == JOptionPane.YES_OPTION)
         {
             File initialSaveScreenshotFile = layoutFrame.getGraph().saveImageToFile(jframe, "Render All Current Class Set Plot Images To Files As", "plot");
             if (initialSaveScreenshotFile != null)
-            {                
+            {
                 layoutFrame.getClassViewerFrame().setCurrentClassIndex(currentClassIndex); // sets the current Class index
-                VertexClass currentVertexClass = layoutFrame.getClassViewerFrame().navigateToCurrentClass();                
+                VertexClass currentVertexClass = layoutFrame.getClassViewerFrame().navigateToCurrentClass();
 
                 boolean savedOk = false;
                 String currentVertexClassName = "";
                 Tuple2<File, String> tuple2 = null;
-                int numberOfSelectedNodes = 0;                
-                
+                int numberOfSelectedNodes = 0;
+
                 do
                 {
                     currentVertexClassName = currentVertexClass.getName();
@@ -645,7 +645,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                     layoutFrame.getClassViewerFrame().setTitle("Class Viewer (Now Rendering Plot Image To File " + ++currentClassIndex + " of " + endingClassIndex + " for Class: " + tuple2.second + ( (numberOfSelectedNodes > 0) ? " with " + numberOfSelectedNodes + " nodes" : "") + ")");
                 }
                 while ( ( currentVertexClass = layoutFrame.getClassViewerFrame().navigateToNextClass(false) ) != null && (currentClassIndex < endingClassIndex) && savedOk );
-                
+
                 String numberOfRenderedPlotImages = (startingClassIndex == 0) && (endingClassIndex == layoutFrame.getClassViewerFrame().numberOfAllClasses() - 1) ? "All" : Integer.toString(endingClassIndex - startingClassIndex);
                 JOptionPane.showMessageDialog(jframe, "Render " + numberOfRenderedPlotImages + " Current Class Set Plot Images To Files Process successfully finished.", "Render " + numberOfRenderedPlotImages + " Current Class Set Plot Images To Files Process", JOptionPane.INFORMATION_MESSAGE);
                 layoutFrame.getClassViewerFrame().setCurrentClassIndex(initialClassIndex); // sets the initial Class index
@@ -825,7 +825,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
 
             fileWriter.flush();
             fileWriter.close();
-            
+
             InitDesktop.edit(file);
         }
         catch (IOException ioe)

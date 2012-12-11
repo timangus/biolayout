@@ -13,46 +13,46 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * @author Leon Goldovsky, full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
-* 
+*
 */
 
-public final class LayoutClusterMCL 
+public final class LayoutClusterMCL
 {
-    private LayoutFrame layoutFrame = null;    
-    private Graph graph = null;       
+    private LayoutFrame layoutFrame = null;
+    private Graph graph = null;
     private MCLWindowDialog MCL_windowDialog = null;
     private File tempInput = null;
     private AbstractAction clusterMCLAction = null;
 
-    /** 
+    /**
     *  Variable used for loading the native library only once (no use of re-loading the library).
-    */      
-    private static boolean hasOnceLoadedMCLExecutable = false;    
-    
-    public LayoutClusterMCL(LayoutFrame layoutFrame, Graph graph) 
+    */
+    private static boolean hasOnceLoadedMCLExecutable = false;
+
+    public LayoutClusterMCL(LayoutFrame layoutFrame, Graph graph)
     {
         this.layoutFrame = layoutFrame;
         this.graph = graph;
-        
+
         if (!hasOnceLoadedMCLExecutable)
             hasOnceLoadedMCLExecutable = CopyMCLExecutable.copyMCLExecutable();
-        
+
         initActions();
         checkMCLExecutable();
     }
 
-    private void initActions() 
+    private void initActions()
     {
-        clusterMCLAction = new AbstractAction("Cluster Graph Using MCL") 
+        clusterMCLAction = new AbstractAction("Cluster Graph Using MCL")
         {
-            /** 
+            /**
             *  Serial version UID variable for the AbstractAction class.
-            */        
+            */
             public static final long serialVersionUID = 111222333444555668L;
-            
+
             @Override
-            public void actionPerformed(ActionEvent e) 
-            {                
+            public void actionPerformed(ActionEvent e)
+            {
                 // make sure all nodes are deselected first
                 graph.getSelectionManager().deselectAll();
 
@@ -64,38 +64,38 @@ public final class LayoutClusterMCL
                     MCL_windowDialog.MCLWindowToFront();
             }
         };
-    }    
-    
+    }
+
     private void createAndCalcMCLWindowFrame()
     {
-        try 
+        try
         {
             if (DEBUG_BUILD) println("Creating MCL Temporary File");
 
             tempInput = ( USE_INSTALL_DIR_FOR_MCL_TEMP_FILE.get() ) ? new File(LoadNativeLibrary.findCurrentProgramDirectory() + CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "MCL_Input.tmp") : File.createTempFile("MCL_Input", "tmp");
             tempInput.deleteOnExit();
-            
+
             MCL_windowDialog = new MCLWindowDialog(layoutFrame, graph, tempInput);
             Thread MCLWindowThread = new Thread(MCL_windowDialog);
             MCLWindowThread.setPriority(Thread.NORM_PRIORITY);
-            MCLWindowThread.start();                   
-        } 
-        catch (Exception ex) 
+            MCLWindowThread.start();
+        }
+        catch (Exception ex)
         {
             if (DEBUG_BUILD) println("Creation of MCL Temporary File failed!\n" + ex.getMessage());
-        }      
-    }    
-    
-    public void checkMCLExecutable() 
+        }
+    }
+
+    public void checkMCLExecutable()
     {
         // has to use the exec(String[]) method instead of the old exec(String) so as to avoid the Tokenizer of the second one omitting all whitespaces in file paths!!!
         String[] executableFileName = { new File( LoadNativeLibrary.findCurrentProgramDirectory() + CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "mcl" + ( (IS_WIN) ? ".exe" : "" ) ).getAbsolutePath() };
         checkExecutable(executableFileName);
     }
 
-    private void checkExecutable(String[] commands) 
-    {                       
-        try 
+    private void checkExecutable(String[] commands)
+    {
+        try
         {
             // Runtime runtime = Runtime.getRuntime();
             // Process proc = runtime.exec(commands);
@@ -115,30 +115,30 @@ public final class LayoutClusterMCL
             bufferedReader.close();
 
             // check for ls failure
-            try 
+            try
             {
                 if (DEBUG_BUILD)
                     if (process.waitFor() != 0)
                         println("exit value = " + process.exitValue());
-            } 
+            }
             catch (InterruptedException ex)
             {
                 // restore the interuption status after catching InterruptedException
                 Thread.currentThread().interrupt();
                 if (DEBUG_BUILD) println("InterruptedException with the waitFor() method in the LayoutClusterMCL.checkExecutable() class & method:\n" + ex.getMessage());
             }
-            
+
             clusterMCLAction.setEnabled(true);
-        } 
+        }
         catch (IOException ioEx)
         {
             if (DEBUG_BUILD) println("MCL not found!\n" + ioEx.getMessage());
-            
+
             clusterMCLAction.setEnabled(false);
-        }        
+        }
     }
 
-    public AbstractAction getClusterMCLAction() 
+    public AbstractAction getClusterMCLAction()
     {
         return clusterMCLAction;
     }

@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Models.Lathe3D;
 
-/** 
-*   
+/**
+*
 * Lathe3DShapeTypes enumeration class which holds information for the shape type of a Lathe3DShape.
 *
 * @see org.BioLayoutExpress3D.Models.Lathe3D.Lathe3DShape

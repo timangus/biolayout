@@ -10,7 +10,7 @@ import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
 import static org.BioLayoutExpress3D.ClassViewerUI.ClassViewerFrame.ClassViewerTabTypes.*;
 
 /**
-* 
+*
 * @author Markus Brosch (mb8[at]sanger[dot]ac[dot]uk)
 * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
@@ -30,12 +30,12 @@ public final class ClassViewerUpdateEntropyTable implements Runnable
 
     private RelativeEntropyCalc relativeEntropyCalc = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
-    
+
     /**
     *  The abortThread variable is used to silently abort the Runnable/Thread.
-    */    
+    */
     private volatile boolean abortThread = false;
-        
+
     public ClassViewerUpdateEntropyTable(ClassViewerFrame classViewerFrame, LayoutFrame layoutFrame, String annotationClass, ClassViewerTableModelDetail analysisTableModel, HashSet<String> selectedGenes, JTabbedPane tabbedPane)
     {
         this.classViewerFrame = classViewerFrame;
@@ -43,22 +43,22 @@ public final class ClassViewerUpdateEntropyTable implements Runnable
         this.analysisTableModel = analysisTableModel;
         this.selectedGenes = selectedGenes;
         this.tabbedPane = tabbedPane;
-        
+
         relativeEntropyCalc = new RelativeEntropyCalc( layoutFrame.getNetworkRootContainer() );
         layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
     }
 
     @Override
-    public void run() 
+    public void run()
     {
-        if ( (annotationClass != null) && !annotationClass.equals("") ) 
+        if ( (annotationClass != null) && !annotationClass.equals("") )
         {
             layoutProgressBarDialog.prepareProgressBar(NUMBER_OF_STEPS, " Calculating analysis values for one term...");
             layoutProgressBarDialog.startProgressBar();
             layoutProgressBarDialog.incrementProgress();
 
             Map<String, HashMap<String, String>> overRepData = relativeEntropyCalc.overRepForEachCluster(selectedGenes, annotationClass);
-            
+
             if (abortThread)
             {
                 layoutProgressBarDialog.endProgressBar();
@@ -66,7 +66,7 @@ public final class ClassViewerUpdateEntropyTable implements Runnable
                 return;
             }
             layoutProgressBarDialog.incrementProgress();
-            
+
             Map<String, String> observed      = overRepData.get("Obs");
             Map<String, String> expected      = overRepData.get("Exp");
             Map<String, String> fobs          = overRepData.get("Fobs");
@@ -96,7 +96,7 @@ public final class ClassViewerUpdateEntropyTable implements Runnable
                 return;
             }
             layoutProgressBarDialog.incrementProgress();
-            
+
             tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
 
             if (abortThread)
@@ -106,7 +106,7 @@ public final class ClassViewerUpdateEntropyTable implements Runnable
                 return;
             }
             layoutProgressBarDialog.incrementProgress();
-            
+
             analysisTableModel.fireTableStructureChanged();
 
             if (abortThread)
@@ -116,28 +116,28 @@ public final class ClassViewerUpdateEntropyTable implements Runnable
                 return;
             }
             layoutProgressBarDialog.incrementProgress();
-            
-            tabbedPane.setSelectedIndex( ENTROPY_DETAILS_TAB.ordinal() );        
+
+            tabbedPane.setSelectedIndex( ENTROPY_DETAILS_TAB.ordinal() );
 
             layoutProgressBarDialog.endProgressBar();
             layoutProgressBarDialog.stopProgressBar();
 
             if ( classViewerFrame.isVisible() )
                 classViewerFrame.processAndSetWindowState();
-        }  
+        }
     }
-    
+
     public void setAbortThread(boolean abortThread)
     {
         this.abortThread = abortThread;
-        
+
         relativeEntropyCalc.setAbortThread(abortThread);
-    }    
-    
+    }
+
     public boolean getAbortThread()
     {
         return abortThread;
     }
-    
-    
+
+
 }

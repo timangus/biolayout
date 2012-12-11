@@ -1,8 +1,8 @@
 package org.BioLayoutExpress3D.DataStructures;
 
-/** 
-*   
-* StackDataStructureTypes enumeration class which holds information for the 
+/**
+*
+* StackDataStructureTypes enumeration class which holds information for the
 * available data structures to be used with a Stack class.
 *
 * @see org.BioLayoutExpress3D.DataStructures.Stack
@@ -10,4 +10,4 @@ package org.BioLayoutExpress3D.DataStructures;
 * @version 3.0.0.0
 */
 
-public enum StackDataStructureTypes { USE_VECTOR, USE_ARRAYLIST, USE_LINKEDLIST, USE_COPY_ON_WRITE_ARRAYLIST } 
+public enum StackDataStructureTypes { USE_VECTOR, USE_ARRAYLIST, USE_LINKEDLIST, USE_COPY_ON_WRITE_ARRAYLIST }

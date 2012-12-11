@@ -33,7 +33,7 @@ public final class ClassViewerUpdateDetailedEntropyTable implements Runnable
     *  The abortThread variable is used to silently abort the Runnable/Thread.
     */
     private volatile boolean abortThread = false;
-    
+
     public ClassViewerUpdateDetailedEntropyTable(ClassViewerFrame classViewerFrame, LayoutFrame layoutFrame, ClassViewerTableModelDetail modelDetail, HashSet<String> selectedGenes, JTabbedPane tabbedPane)
     {
         this.classViewerFrame = classViewerFrame;
