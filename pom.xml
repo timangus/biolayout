@@ -20,7 +20,32 @@
         <generated.sources.dir>target/generated-sources/java</generated.sources.dir>
         <buildconfig.template.file>src/main/java/org/BioLayoutExpress3D/BuildConfig.template</buildconfig.template.file>
         <buildconfig.file>${generated.sources.dir}/org/BioLayoutExpress3D/BuildConfig.java</buildconfig.file>
+        <debug.build>true</debug.build>
     </properties>
+
+    <profiles>
+        <!--<profile>
+            <id>debug</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <debug.build>true</debug.build>
+            </properties>
+        </profile>-->
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <debug.build>false</debug.build>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -324,6 +349,10 @@
                         <replacement>
                             <token>@buildTime@</token>
                             <value>${maven.build.timestamp}</value>
+                        </replacement>
+                        <replacement>
+                            <token>@debug@</token>
+                            <value>${debug.build}</value>
                         </replacement>
                     </replacements>
                 </configuration>

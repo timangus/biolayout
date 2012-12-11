@@ -7,7 +7,7 @@ import javax.swing.table.*;
 *
 * The ImportSelectClassSetsTableModel class provides all the table functionality for the ImportSelectClassSetsDialog class.
 *
-* @see org.BioLayoutExpress3D.Files.ImportSelectClassSetsDialog
+* @see org.BioLayoutExpress3D.Files.Dialogs.ImportSelectClassSetsDialog
 * @author Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
 */
