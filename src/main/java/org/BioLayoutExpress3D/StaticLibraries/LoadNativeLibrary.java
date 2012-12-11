@@ -3,7 +3,6 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.io.*;
 import java.lang.reflect.*;
 import com.jogamp.gluegen.runtime.*;
-import com.sun.org.apache.xpath.internal.operations.Equals;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
