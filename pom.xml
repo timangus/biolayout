@@ -24,15 +24,6 @@
     </properties>
 
     <profiles>
-        <!--<profile>
-            <id>debug</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <debug.build>true</debug.build>
-            </properties>
-        </profile>-->
         <profile>
             <id>release</id>
             <activation>
