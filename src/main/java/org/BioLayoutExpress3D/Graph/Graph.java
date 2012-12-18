@@ -251,27 +251,6 @@ public class Graph extends GLCanvas implements GraphInterface
     }
 
     /**
-    *  Makes the OpenGL context current for this thread.
-    */
-    public void makeContextCurrent(GLAutoDrawable glDrawable)
-    {
-        try
-        {
-            while (glDrawable.getContext().makeCurrent() == GLContext.CONTEXT_NOT_CURRENT)
-            {
-                if (DEBUG_BUILD) println("Context not current.Retrying...");
-                TimeUnit.MILLISECONDS.sleep(100);
-            }
-        }
-        catch (InterruptedException ex)
-        {
-            // restore the interuption status after catching InterruptedException
-            Thread.currentThread().interrupt();
-            if (DEBUG_BUILD) println("InterruptedException in makeContentCurrent():\n" + ex.getMessage());
-        }
-    }
-
-    /**
     *  Requests window focus for the GLCanvas.
     */
     @Override
@@ -1269,7 +1248,6 @@ public class Graph extends GLCanvas implements GraphInterface
         if (height <= 0) height = 1;
 
         GL2 gl = glDrawable.getGL().getGL2();
-        makeContextCurrent(glDrawable);
 
         GL_VENDOR_STRING = gl.glGetString(GL_VENDOR);
         GL_RENDERER_STRING = gl.glGetString(GL_RENDERER);

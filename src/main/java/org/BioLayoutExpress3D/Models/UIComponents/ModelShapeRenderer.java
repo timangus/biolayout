@@ -1294,7 +1294,6 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         if (height <= 0) height = 1;
 
         GL2 gl = glDrawable.getGL().getGL2();
-        graph.makeContextCurrent(glDrawable);
 
         GL_VENDOR_STRING = gl.glGetString(GL_VENDOR);
         GL_RENDERER_STRING = gl.glGetString(GL_RENDERER);
