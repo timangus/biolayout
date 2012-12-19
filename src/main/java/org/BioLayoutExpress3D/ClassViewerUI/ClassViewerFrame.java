@@ -1071,7 +1071,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
                 detailsButton.setEnabled(enableDetailsButton);
             }
-        } );
+        }, "runLightWeightThread" );
 
         runLightWeightThread.setPriority(threadPriority);
         runLightWeightThread.start();

@@ -598,7 +598,7 @@ public class ExpressionDataComputing extends OpenGLContext
                 }
             }
 
-        } );
+        }, "initializeTaskParallelismForWriteIterationResultsToFile" );
 
         taskParallelThread.setPriority(Thread.NORM_PRIORITY);
         taskParallelThread.start();

@@ -76,7 +76,7 @@ public final class LayoutClusterMCL
             tempInput.deleteOnExit();
 
             MCL_windowDialog = new MCLWindowDialog(layoutFrame, graph, tempInput);
-            Thread MCLWindowThread = new Thread(MCL_windowDialog);
+            Thread MCLWindowThread = new Thread(MCL_windowDialog, "MCL_windowDialog");
             MCLWindowThread.setPriority(Thread.NORM_PRIORITY);
             MCLWindowThread.start();
         }

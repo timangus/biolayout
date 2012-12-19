@@ -872,7 +872,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
 
 
-        } );
+        }, "renderModeSwitchProcess" );
 
         rendererModeSwitchThread.setPriority(threadPriority);
         rendererModeSwitchThread.start();
@@ -1038,7 +1038,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
 
 
-        } );
+        }, "runParseProcess" );
 
         runLightWeightThread.setPriority(threadPriority);
         runLightWeightThread.start();

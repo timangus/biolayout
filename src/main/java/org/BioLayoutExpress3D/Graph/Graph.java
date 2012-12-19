@@ -905,7 +905,7 @@ public class Graph extends GLCanvas implements GraphInterface
                     updateAllDisplayLists();
                 }
             }
-        } );
+        }, "burstLayoutIterations" );
 
         burstThread.setPriority(Thread.NORM_PRIORITY);
         burstThread.start();

@@ -533,7 +533,7 @@ public class ExpressionDataComputing extends OpenCLContext
                 }
             }
 
-        } );
+        }, "initializeTaskParallelismForWriteIterationResultsToFile" );
 
         taskParallelThread.setPriority(Thread.NORM_PRIORITY);
         taskParallelThread.start();

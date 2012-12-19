@@ -71,7 +71,7 @@ public final class LayoutOnlineServices extends HttpConnection
             }
 
 
-        } );
+        }, "checkApplicationUsage" );
 
         runLightWeightThread.setPriority(Thread.NORM_PRIORITY);
         runLightWeightThread.start();
@@ -131,7 +131,7 @@ public final class LayoutOnlineServices extends HttpConnection
             }
 
 
-        } );
+        }, "checkForApplicationUpdates" );
 
         runLightWeightThread.setPriority(Thread.NORM_PRIORITY);
         runLightWeightThread.start();

@@ -941,6 +941,8 @@ public final class ConsoleOutput
         {
             try
             {
+                this.setName("ConsoleOutputThread");
+                
                 while (true)
                 {
                     try

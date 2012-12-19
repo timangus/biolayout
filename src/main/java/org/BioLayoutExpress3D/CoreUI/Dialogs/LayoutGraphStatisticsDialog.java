@@ -126,7 +126,7 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
         else
             initGraphStatistics("Full Graph Statistics", graph.getGraphNodes() , graph.getGraphEdges(), false);
 
-        Thread graphStatisticsThread = new Thread(this);
+        Thread graphStatisticsThread = new Thread(this, "graphStatisticsThread");
         graphStatisticsThread.setPriority(Thread.NORM_PRIORITY);
         graphStatisticsThread.start();
     }
