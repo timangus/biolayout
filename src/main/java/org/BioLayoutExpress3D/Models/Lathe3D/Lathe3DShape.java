@@ -122,6 +122,13 @@ public class Lathe3DShape extends ModelShape
             texCoordsTriangles = new float[2 * (verticesTriangles.length / 3)];
 
         createGeometry(verticesTriangles, normalsTriangles, texCoordsTriangles);
+
+        vertices = verticesTriangles;
+        verticesTriangles = null;
+        normals = normalsTriangles;
+        normalsTriangles = null;
+        texCoords = texCoordsTriangles;
+        texCoordsTriangles = null;
     }
 
     private void createGeometry(float[] verticesTriangles, float[] normalsTriangles, float[] texCoordsTriangles)
