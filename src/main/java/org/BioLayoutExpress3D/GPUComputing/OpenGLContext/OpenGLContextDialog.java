@@ -11,7 +11,7 @@ import javax.swing.*;
 *
 */
 
-public class OpenGLContextDialog extends JDialog
+public class OpenGLContextDialog extends JFrame
 {
     /**
     *  Serial version UID variable for the OpenGLContextDialog class.
@@ -21,25 +21,14 @@ public class OpenGLContextDialog extends JDialog
     /**
     *  Constructor of the OpenGLContextDialog class.
     */
-    public OpenGLContextDialog(JFrame frame, OpenGLContext openGLContext)
+    public OpenGLContextDialog(OpenGLContext openGLContext)
     {
-        super(frame, "GPU Computing OpenGL Context");
+        super("GPU Computing OpenGL Context");
 
-        initComponents(openGLContext);
+        this.getContentPane().add(openGLContext);
 
         this.pack();
         this.setResizable(false);
-        this.setVisible(false);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
-
-    /**
-    *  This method is called from within the constructor to initialize the OpenGL context dialog.
-    */
-    private void initComponents(OpenGLContext openGLContext)
-    {
-        this.getContentPane().add(openGLContext);
-    }
-
-
 }

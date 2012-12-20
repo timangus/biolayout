@@ -3,7 +3,7 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.awt.image.*;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
-import javax.media.opengl.GL2;
+import javax.media.opengl.*;
 import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
@@ -44,7 +44,7 @@ public final class TextureProducer
             return getNullPointerTexture();
         }
 
-        return AWTTextureIO.newTexture(OpenGLContext.getGLProfile(), image, useAutoMipmapGeneration);
+        return AWTTextureIO.newTexture(GLProfile.getDefault(), image, useAutoMipmapGeneration);
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.BioLayoutExpress3D.GPUComputing.OpenGLContext.Dummy;
 
+import javax.media.opengl.*;
 import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
 
 /**
@@ -47,31 +48,31 @@ public class DummyOpenGLContext extends OpenGLContext
     *  Initializes CPU memory.
     */
     @Override
-    protected void initializeCPUMemoryImplementation() throws OutOfMemoryError {}
+    protected void initializeCPUMemoryImplementation(GL2 gl) throws OutOfMemoryError {}
 
     /**
     *  Initializes GPU memory.
     */
     @Override
-    protected void initializeGPUMemoryImplementation() {}
+    protected void initializeGPUMemoryImplementation(GL2 gl) {}
 
     /**
     *  Performs the GPU Computing calculations.
     */
     @Override
-    protected void performGPUComputingCalculationsImplementation() {}
+    protected void performGPUComputingCalculationsImplementation(GL2 gl) {}
 
     /**
     *  Retrieves GPU results.
     */
     @Override
-    protected void retrieveGPUResultsImplementation() throws OutOfMemoryError {}
+    protected void retrieveGPUResultsImplementation(GL2 gl) throws OutOfMemoryError {}
 
     /**
     *  Deletes the OpenGL context for GPU computing.
     */
     @Override
-    protected void deleteOpenGLContextForGPUComputing() {}
+    protected void deleteOpenGLContextForGPUComputing(GL2 gl) {}
 
 
 }

@@ -40,19 +40,14 @@ public abstract class OpenGLContext extends Canvas
     protected static final int[] ATTACHMENT_POINTS = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 
     /**
-    *  Number of current conntext retries.
-    */
-    private static final int NUMBER_OF_CURRENT_CONTEXT_RETRIES = 50;
-
-    /**
     *  Frame buffer object reference.
     */
     private final IntBuffer FBO = (IntBuffer)Buffers.newDirectIntBuffer(1).put( new int[] { 0 } ).rewind();
 
     /**
-    *  Reference for the GLCapabilities class.
+    *  Reference for the GLU class.
     */
-    private static GLCapabilities caps = null;
+    protected final static GLU glu = new GLU();
 
     /**
     *  Reference for the GLDrawable class.
@@ -68,16 +63,6 @@ public abstract class OpenGLContext extends Canvas
     *  Reference for the AWTGraphicsConfiguration class.
     */
     private static AWTGraphicsConfiguration awtConfig = null;
-
-    /**
-    *  Reference for the GL class.
-    */
-    protected GL2 gl = null;
-
-    /**
-    *  Reference for the GLU class.
-    */
-    protected final static GLU glu = new GLU();
 
     /**
     *  Value needed for the OpenGL GPU Computations.
@@ -159,31 +144,15 @@ public abstract class OpenGLContext extends Canvas
     }
 
     /**
-    *  Method to return a GLProfile
-    */
-    public static GLProfile getGLProfile()
-    {
-        return GLProfile.getDefault(); //FIXME getDefault?
-    }
-
-    /**
-    *  Method to initialize the preferred GLCapabilities for this Canvas.
-    */
-    private static void initCapabilities()
-    {
-        caps = new GLCapabilities(getGLProfile());
-        caps.setDoubleBuffered(false);
-        caps.setHardwareAccelerated(true);
-        caps.setSampleBuffers(false);
-    }
-
-    /**
     *  Initializes a configuration suitable for an AWT Canvas.
     *  Has to be static in order to be used from the constructor super() call.
     */
     private static GraphicsConfiguration initGraphicsConfiguration()
     {
-        initCapabilities();
+        GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
+        caps.setDoubleBuffered(false);
+        caps.setHardwareAccelerated(true);
+        caps.setSampleBuffers(false);
 
         AWTGraphicsScreen screen = (AWTGraphicsScreen)AWTGraphicsScreen.createDefault();
         awtConfig = (AWTGraphicsConfiguration)GraphicsConfigurationFactory.getFactory(AWTGraphicsDevice.class,
@@ -201,7 +170,7 @@ public abstract class OpenGLContext extends Canvas
     */
     private void initRenderingSurfaceAndContext()
     {
-        drawable = GLDrawableFactory.getFactory(getGLProfile()).createGLDrawable(
+        drawable = GLDrawableFactory.getFactory(GLProfile.getDefault()).createGLDrawable(
             NativeWindowFactory.getNativeWindow(this, awtConfig));
 
         context = drawable.createContext(null);
@@ -232,7 +201,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Starts the OpenGL context and the GPU Computing processing.
     */
-    public void startGPUComputingProcessing()
+    public void doGPUComputingProcessing()
     {
         startGPUComputingProcessing(false);
     }
@@ -278,6 +247,8 @@ public abstract class OpenGLContext extends Canvas
     */
     private void initializeAndStartGPUComputingProcessing()
     {
+        OpenGLContextDialog openGLContextDialog = new OpenGLContextDialog(this);
+
         if ( makeContextCurrent() )
         {
             /*
@@ -297,10 +268,10 @@ public abstract class OpenGLContext extends Canvas
             */
             // gl = new TraceGL(context.getGL(), System.out);
 
-            gl = context.getGL().getGL2();
+            GL2 gl = context.getGL().getGL2();
 
             requestFocusInCanvas();
-            checkOpenGLSupportAndExtensions();
+            checkOpenGLSupportAndExtensions(gl);
 
             if (!openGLSupportAndExtensionsLogOnly)
             {
@@ -309,20 +280,20 @@ public abstract class OpenGLContext extends Canvas
                     Tuple2<Boolean, String> tuple2 = thisGPGPUCompatibilityCheck.isGPUCompatible(gl);
                     if (tuple2.first)
                     {
-                        prepareLowQualityRendering();
-                        initializeClamping();
-                        initializeFBO();
-                        initializeOrthogonalProjection();
-                        initializeCPUMemory();
+                        prepareLowQualityRendering(gl);
+                        initializeClamping(gl);
+                        initializeFBO(gl);
+                        initializeOrthogonalProjection(gl);
+                        initializeCPUMemory(gl);
                         if (!CPUErrorOccured)
                         {
-                            initializeGPUMemory();
+                            initializeGPUMemory(gl);
                             if (!GPUErrorOccured)
-                                performGPUComputingCalculations();
+                                performGPUComputingCalculations(gl);
                             if (!GPUErrorOccured)
-                                retrieveGPUResults();
+                                retrieveGPUResults(gl);
                         }
-                        deleteOpenGLContext();
+                        deleteOpenGLContext(gl);
                     }
                     else
                     {
@@ -359,6 +330,8 @@ public abstract class OpenGLContext extends Canvas
         }
 
         if (DEBUG_BUILD) println( "\nOpenGL GPU Computing overal error status: " + ( getErrorOccured() ? "Errors occured." : "No errors occured." ) );
+
+        openGLContextDialog.dispose();
     }
 
     /**
@@ -369,20 +342,28 @@ public abstract class OpenGLContext extends Canvas
         try
         {
             int tries = 0;
-            while ( (context.makeCurrent() == GLContext.CONTEXT_NOT_CURRENT) && (++tries <= NUMBER_OF_CURRENT_CONTEXT_RETRIES) )
+            int status = -1;
+            do
             {
-                if (DEBUG_BUILD) println("Context not current. Retrying... " + tries);
-                TimeUnit.MILLISECONDS.sleep(10);
-            }
+                if (tries > 0)
+                {
+                    if (DEBUG_BUILD)
+                        println("Context not current. Retrying... " + tries);
 
-            return (context.makeCurrent() == GLContext.CONTEXT_CURRENT);
+                    TimeUnit.MILLISECONDS.sleep(10);
+                }
+
+                status = context.makeCurrent();
+                tries++;
+            } while (status == GLContext.CONTEXT_NOT_CURRENT && tries < 50);
+
+            return status == GLContext.CONTEXT_CURRENT || status == GLContext.CONTEXT_CURRENT_NEW;
         }
         catch (InterruptedException ex)
         {
             // restore the interuption status after catching InterruptedException
             Thread.currentThread().interrupt();
             if (DEBUG_BUILD) println("InterruptedException in makeContentCurrent():\n" + ex.getMessage());
-
             return false;
         }
     }
@@ -406,7 +387,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Checks OpenGL support & extensions mechanisms.
     */
-    private void checkOpenGLSupportAndExtensions()
+    private void checkOpenGLSupportAndExtensions(GL2 gl)
     {
         GL_VENDOR_STRING = gl.glGetString(GL_VENDOR);
         GL_RENDERER_STRING = gl.glGetString(GL_RENDERER);
@@ -538,7 +519,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Prepares the low quality rendering.
     */
-    private void prepareLowQualityRendering()
+    private void prepareLowQualityRendering(GL2 gl)
     {
         gl.glDisable(GL_MULTISAMPLE);
 
@@ -557,7 +538,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Initializes the OpenGL clamping status.
     */
-    private void initializeClamping()
+    private void initializeClamping(GL2 gl)
     {
         gl.glClampColor(GL_CLAMP_VERTEX_COLOR, GL_FALSE);
         gl.glClampColor(GL_CLAMP_FRAGMENT_COLOR, GL_FALSE);
@@ -566,7 +547,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Initializes the Frame buffer object.
     */
-    private void initializeFBO()
+    private void initializeFBO(GL2 gl)
     {
         //  allocate a framebuffer object
         gl.glGenFramebuffers(1, FBO);
@@ -576,7 +557,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Initializes an orthogonal project.
     */
-    private void initializeOrthogonalProjection()
+    private void initializeOrthogonalProjection(GL2 gl)
     {
         // viewport for 1:1 pixel = texture mapping
         gl.glMatrixMode(GL_PROJECTION);
@@ -591,11 +572,11 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Initializes CPU memory.
     */
-    private void initializeCPUMemory()
+    private void initializeCPUMemory(GL2 gl)
     {
         try
         {
-            initializeCPUMemoryImplementation();
+            initializeCPUMemoryImplementation(gl);
         }
         catch (OutOfMemoryError memErr)
         {
@@ -610,30 +591,30 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Initializes GPU memory.
     */
-    private void initializeGPUMemory()
+    private void initializeGPUMemory(GL2 gl)
     {
-        initializeGPUMemoryImplementation();
-        checkGLErrors("initializeGPUMemory()");
+        initializeGPUMemoryImplementation(gl);
+        checkGLErrors(gl, "initializeGPUMemory()");
     }
 
     /**
     *  Performs the GPU Computing calculations.
     */
-    private void performGPUComputingCalculations()
+    private void performGPUComputingCalculations(GL2 gl)
     {
-        performGPUComputingCalculationsImplementation();
-        checkGLErrors("performGPUComputingCalculations()");
+        performGPUComputingCalculationsImplementation(gl);
+        checkGLErrors(gl, "performGPUComputingCalculations()");
     }
 
     /**
     *  Retrieves GPU results.
     */
-    private void retrieveGPUResults()
+    private void retrieveGPUResults(GL2 gl)
     {
         try
         {
-            retrieveGPUResultsImplementation();
-            checkGLErrors("retrieveGPUResults()");
+            retrieveGPUResultsImplementation(gl);
+            checkGLErrors(gl, "retrieveGPUResults()");
         }
         catch (OutOfMemoryError memErr)
         {
@@ -648,18 +629,18 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Deletes the OpenGL context.
     */
-    private void deleteOpenGLContext()
+    private void deleteOpenGLContext(GL2 gl)
     {
         try
         {
-            deleteOpenGLContextForGPUComputing();
+            deleteOpenGLContextForGPUComputing(gl);
 
             gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             // free the framebuffer
             gl.glDeleteFramebuffers(1, FBO);
 
-            checkGLErrors("deleteOpenGLContext()");
+            checkGLErrors(gl, "deleteOpenGLContext()");
         }
         catch (Exception ex)
         {
@@ -672,7 +653,7 @@ public abstract class OpenGLContext extends Canvas
     *  Extremely useful debugging function: When developing,
     *  make sure to call this after almost every GL call.
     */
-    private void checkGLErrors(String label)
+    private void checkGLErrors(GL2 gl, String label)
     {
         currentGLError = gl.glGetError();
         if ( (currentGLError != GL_NO_ERROR) && (currentGLError != prevGLError) )
@@ -713,9 +694,9 @@ public abstract class OpenGLContext extends Canvas
     *  Sets up a floating point texture with NEAREST filtering.
     *  (mipmaps etc. are unsupported for floating point textures)
     */
-    protected void setupTexture(int textureID)
+    protected void setupTexture(GL2 gl, int textureID)
     {
-        setupTexture(textureID, textureSize, 0);
+        setupTexture(gl, textureID, textureSize, 0);
     }
 
     /**
@@ -723,9 +704,9 @@ public abstract class OpenGLContext extends Canvas
     *  (mipmaps etc. are unsupported for floating point textures)
     *  Overloaded version of the method above that selects an active texture unit for the render-to-texture.
     */
-    protected void setupTexture(int textureID, int textureUnit)
+    protected void setupTexture(GL2 gl, int textureID, int textureUnit)
     {
-        setupTexture(textureID, textureSize, textureUnit);
+        setupTexture(gl, textureID, textureSize, textureUnit);
     }
 
     /**
@@ -733,7 +714,7 @@ public abstract class OpenGLContext extends Canvas
     *  (mipmaps etc. are unsupported for floating point textures)
     *  Overloaded version of the method above that selects a given texture size & an active texture unit for the render-to-texture.
     */
-    protected void setupTexture(int textureID, int textureSize, int textureUnit)
+    protected void setupTexture(GL2 gl, int textureID, int textureSize, int textureUnit)
     {
         // make active and bind
         gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
@@ -753,9 +734,9 @@ public abstract class OpenGLContext extends Canvas
     *  Transfers data to texture.
     *  Check web page for detailed explanation on the difference between ATI and NVIDIA.
     */
-    protected void transferToTexture(FloatBuffer data, int textureID)
+    protected void transferToTexture(GL2 gl, FloatBuffer data, int textureID)
     {
-        transferToTexture(data, textureID, textureSize);
+        transferToTexture(gl, data, textureID, textureSize);
     }
 
     /**
@@ -763,7 +744,7 @@ public abstract class OpenGLContext extends Canvas
     *  Check web page for detailed explanation on the difference between ATI and NVIDIA.
     *  Overloaded version of the method above that selects a given texture size.
     */
-    protected void transferToTexture(FloatBuffer data, int textureID, int textureSize)
+    protected void transferToTexture(GL2 gl, FloatBuffer data, int textureID, int textureSize)
     {
         // version (a): HW-accelerated on NVIDIA
         gl.glBindTexture(textureParameters.textureTarget, textureID);
@@ -782,7 +763,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Transfers data from currently texture, and stores it in given array.
     */
-    protected void transferFromTexture(int attachmentPoint, FloatBuffer data)
+    protected void transferFromTexture(GL2 gl, int attachmentPoint, FloatBuffer data)
     {
         // version (a): texture is attached
         // recommended on both NVIDIA and ATI
@@ -797,7 +778,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Renders the OpenGL quad.
     */
-    protected void renderQuad()
+    protected void renderQuad(GL2 gl)
     {
         // render multitextured viewport-sized quad
         // depending on the texture target, switch between
@@ -840,7 +821,7 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Checks the status of the Frame Buffer (FBO) initialization.
     */
-    protected boolean checkFrameBufferStatus()
+    protected boolean checkFrameBufferStatus(GL2 gl)
     {
         int status = gl.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (status)
@@ -931,27 +912,25 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Called by an implementing subclass for initializing the CPU memory.
     */
-    protected abstract void initializeCPUMemoryImplementation() throws OutOfMemoryError;
+    protected abstract void initializeCPUMemoryImplementation(GL2 gl) throws OutOfMemoryError;
 
     /**
     *  Called by an implementing subclass for initializing the GPU memory.
     */
-    protected abstract void initializeGPUMemoryImplementation();
+    protected abstract void initializeGPUMemoryImplementation(GL2 gl);
 
     /**
     *  Called by an implementing subclass for performing the GPU Computing calculations.
     */
-    protected abstract void performGPUComputingCalculationsImplementation();
+    protected abstract void performGPUComputingCalculationsImplementation(GL2 gl);
 
     /**
     *  Called by an implementing subclass for retrieving GPU results.
     */
-    protected abstract void retrieveGPUResultsImplementation() throws OutOfMemoryError;
+    protected abstract void retrieveGPUResultsImplementation(GL2 gl) throws OutOfMemoryError;
 
     /**
     *  Called by an implementing subclass for deleting the OpenGL context for GPU computing.
     */
-    protected abstract void deleteOpenGLContextForGPUComputing();
-
-
+    protected abstract void deleteOpenGLContextForGPUComputing(GL2 gl);
 }

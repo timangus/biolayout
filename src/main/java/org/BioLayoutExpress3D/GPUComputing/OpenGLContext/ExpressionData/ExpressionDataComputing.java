@@ -5,6 +5,7 @@ import java.nio.*;
 import java.text.*;
 import java.util.concurrent.*;
 import javax.swing.*;
+import javax.media.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.common.nio.Buffers;
 import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
@@ -327,9 +328,9 @@ public class ExpressionDataComputing extends OpenGLContext
     }
 
     /**
-    *  Creates all permament textures.
+    *  Creates all permanent textures.
     */
-    private void createPermanentTextures()
+    private void createPermanentTextures(GL2 gl)
     {
         // create textures
         gl.glGenTextures(1, TEXTURE_ID_RESULTS);
@@ -339,20 +340,20 @@ public class ExpressionDataComputing extends OpenGLContext
         gl.glGenTextures(1, TEXTURE_ID_EXPRESSION_MATRIX);
 
         // set up textures
-        setupTexture(TEXTURE_ID_RESULTS.get(0), TEXTURE_RESULTS_TEXTURE_UNIT);
-        transferToTexture( dataResultsGPUBuffer, TEXTURE_ID_RESULTS.get(0) );
+        setupTexture(gl, TEXTURE_ID_RESULTS.get(0), TEXTURE_RESULTS_TEXTURE_UNIT);
+        transferToTexture( gl, dataResultsGPUBuffer, TEXTURE_ID_RESULTS.get(0) );
 
-        setupTexture(TEXTURE_ID_SUM_X_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_SUM_X_CACHE_TEXTURE_UNIT);
-        transferToTexture(dataSumX_cacheBuffer, TEXTURE_ID_SUM_X_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize);
+        setupTexture(gl, TEXTURE_ID_SUM_X_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_SUM_X_CACHE_TEXTURE_UNIT);
+        transferToTexture(gl, dataSumX_cacheBuffer, TEXTURE_ID_SUM_X_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize);
 
-        setupTexture(TEXTURE_ID_SUM_X_SUM_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_SUM_X_SUM_X2_CACHE_TEXTURE_UNIT);
-        transferToTexture(dataSumX_sumX2_cacheBuffer, TEXTURE_ID_SUM_X_SUM_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize);
+        setupTexture(gl, TEXTURE_ID_SUM_X_SUM_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_SUM_X_SUM_X2_CACHE_TEXTURE_UNIT);
+        transferToTexture(gl, dataSumX_sumX2_cacheBuffer, TEXTURE_ID_SUM_X_SUM_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize);
 
-        setupTexture(TEXTURE_ID_SUM_COLUMNS_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_SUM_COLUMNS_X2_CACHE_TEXTURE_UNIT);
-        transferToTexture(dataSumColumns_X2_cacheBuffer, TEXTURE_ID_SUM_COLUMNS_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize);
+        setupTexture(gl, TEXTURE_ID_SUM_COLUMNS_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_SUM_COLUMNS_X2_CACHE_TEXTURE_UNIT);
+        transferToTexture(gl, dataSumColumns_X2_cacheBuffer, TEXTURE_ID_SUM_COLUMNS_X2_CACHE.get(0), oneDimensionalExpressionDataConvertedTo2DSquareTextureSize);
 
-        setupTexture(TEXTURE_ID_EXPRESSION_MATRIX.get(0), twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_EXPRESSION_MATRIX_TEXTURE_UNIT);
-        transferToTexture(dataExpressionBuffer, TEXTURE_ID_EXPRESSION_MATRIX.get(0), twoDimensionalExpressionDataConvertedTo2DSquareTextureSize);
+        setupTexture(gl, TEXTURE_ID_EXPRESSION_MATRIX.get(0), twoDimensionalExpressionDataConvertedTo2DSquareTextureSize, TEXTURE_EXPRESSION_MATRIX_TEXTURE_UNIT);
+        transferToTexture(gl, dataExpressionBuffer, TEXTURE_ID_EXPRESSION_MATRIX.get(0), twoDimensionalExpressionDataConvertedTo2DSquareTextureSize);
 
         // set texenv mode from modulate (the default) to replace
         gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -361,18 +362,18 @@ public class ExpressionDataComputing extends OpenGLContext
     /**
     *  Creates all temporary index textures.
     */
-    private void createTemporaryIndexTextures()
+    private void createTemporaryIndexTextures(GL2 gl)
     {
         // create textures
         gl.glGenTextures(1, TEXTURE_ID_X);
         gl.glGenTextures(1, TEXTURE_ID_Y);
 
         // set up textures
-        setupTexture(TEXTURE_ID_X.get(0), TEXTURE_X_TEXTURE_UNIT);
-        transferToTexture( indexXBuffer, TEXTURE_ID_X.get(0) );
+        setupTexture(gl, TEXTURE_ID_X.get(0), TEXTURE_X_TEXTURE_UNIT);
+        transferToTexture( gl, indexXBuffer, TEXTURE_ID_X.get(0) );
 
-        setupTexture(TEXTURE_ID_Y.get(0), TEXTURE_Y_TEXTURE_UNIT);
-        transferToTexture( indexYBuffer, TEXTURE_ID_Y.get(0) );
+        setupTexture(gl, TEXTURE_ID_Y.get(0), TEXTURE_Y_TEXTURE_UNIT);
+        transferToTexture( gl, indexYBuffer, TEXTURE_ID_Y.get(0) );
 
         // set texenv mode from modulate (the default) to replace
         gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -401,7 +402,7 @@ public class ExpressionDataComputing extends OpenGLContext
     /**
     *  Performs the actual calculation.
     */
-    private void performComputation()
+    private void performComputation(GL2 gl)
     {
         try
         {
@@ -412,7 +413,7 @@ public class ExpressionDataComputing extends OpenGLContext
             gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureParameters.textureTarget, TEXTURE_ID_RESULTS.get(0), 0);
 
             // check if that worked
-            if ( !checkFrameBufferStatus() )
+            if ( !checkFrameBufferStatus(gl) )
             {
                 if (DEBUG_BUILD) println("FBO glFramebufferTexture2DEXT() Status: Failed!");
             }
@@ -437,11 +438,14 @@ public class ExpressionDataComputing extends OpenGLContext
             long startTime = 0;
             for (int iteration = 0; iteration < numberOfIterations; iteration++)
             {
+                if (DEBUG_BUILD)
+                    println("GPGPU ExpressionData starting iteration " + iteration + "/" + numberOfIterations);
+
                 layoutProgressBarDialog.incrementProgress();
 
-                deleteTemporaryIndexTextures();
+                deleteTemporaryIndexTextures(gl);
                 fillIndexDataArrays();
-                createTemporaryIndexTextures();
+                createTemporaryIndexTextures(gl);
 
                 if (benchmarkMode)
                     startTime = System.nanoTime();
@@ -480,7 +484,7 @@ public class ExpressionDataComputing extends OpenGLContext
                                                                                                   totalColumns);
                 }
 
-                renderQuad();
+                renderQuad(gl);
 
                 expressionDataComputingShaders.disableExpressionDataComputing(gl);
 
@@ -495,7 +499,7 @@ public class ExpressionDataComputing extends OpenGLContext
 
                 // get GPU results
                 // dataResultsGPUBuffer.clear();
-                transferFromTexture(GL_COLOR_ATTACHMENT0, dataResultsGPUBuffer);
+                transferFromTexture(gl, GL_COLOR_ATTACHMENT0, dataResultsGPUBuffer);
 
                 gl.glFlush();
                 gl.glFinish();
@@ -862,7 +866,7 @@ public class ExpressionDataComputing extends OpenGLContext
     /**
     *  Deletes all temporary index textures.
     */
-    private void deleteTemporaryIndexTextures()
+    private void deleteTemporaryIndexTextures(GL2 gl)
     {
         if (gl.glIsTexture( TEXTURE_ID_X.get(0) ) )
             gl.glDeleteTextures(1, TEXTURE_ID_X);
@@ -873,7 +877,7 @@ public class ExpressionDataComputing extends OpenGLContext
     /**
     *  Deletes all permament textures.
     */
-    private void deletePermamentTextures()
+    private void deletePermamentTextures(GL2 gl)
     {
         if (gl.glIsTexture( TEXTURE_ID_RESULTS.get(0) ) )
             gl.glDeleteTextures(1, TEXTURE_ID_RESULTS);
@@ -891,7 +895,7 @@ public class ExpressionDataComputing extends OpenGLContext
     *  Initializes CPU memory.
     */
     @Override
-    protected void initializeCPUMemoryImplementation() throws OutOfMemoryError
+    protected void initializeCPUMemoryImplementation(GL2 gl) throws OutOfMemoryError
     {
         createDataArrays();
     }
@@ -900,9 +904,9 @@ public class ExpressionDataComputing extends OpenGLContext
     *  Initializes GPU memory.
     */
     @Override
-    protected void initializeGPUMemoryImplementation()
+    protected void initializeGPUMemoryImplementation(GL2 gl)
     {
-        createPermanentTextures();
+        createPermanentTextures(gl);
         // init shaders runtime
         expressionDataComputingShaders = new ExpressionDataComputingShaders(gl, isTwoDimensionalExpressionDataConvertedTo2DSquareTextureSizePowerOfTwo);
     }
@@ -911,16 +915,16 @@ public class ExpressionDataComputing extends OpenGLContext
     *  Performs the GPU Computing calculations.
     */
     @Override
-    protected void performGPUComputingCalculationsImplementation()
+    protected void performGPUComputingCalculationsImplementation(GL2 gl)
     {
-        performComputation();
+        performComputation(gl);
     }
 
     /**
     *  Retrieves GPU results.
     */
     @Override
-    protected void retrieveGPUResultsImplementation() throws OutOfMemoryError
+    protected void retrieveGPUResultsImplementation(GL2 gl) throws OutOfMemoryError
     {
         // compareWithCPU();
     }
@@ -929,12 +933,12 @@ public class ExpressionDataComputing extends OpenGLContext
     *  Deletes the OpenGL context for GPU computing.
     */
     @Override
-    protected void deleteOpenGLContextForGPUComputing()
+    protected void deleteOpenGLContextForGPUComputing(GL2 gl)
     {
         deleteDataArrays();
         expressionDataComputingShaders.destructor(gl);
-        deleteTemporaryIndexTextures();
-        deletePermamentTextures();
+        deleteTemporaryIndexTextures(gl);
+        deletePermamentTextures(gl);
     }
 
 

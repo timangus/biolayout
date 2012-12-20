@@ -685,8 +685,7 @@ public final class ExpressionData
 
         org.BioLayoutExpress3D.GPUComputing.OpenGLContext.ExpressionData.ExpressionDataComputing expressionDataComputingContext = new org.BioLayoutExpress3D.GPUComputing.OpenGLContext.ExpressionData.ExpressionDataComputing(textureParameters, textureSize, totalRows, totalColumns, true);
         expressionDataComputingContext.initializeExpressionDataComputingVariables(this, layoutProgressBarDialog, nf1, nf2, nf3, rowIDsArray, sumX_cacheBuffer, sumX_sumX2_cacheBuffer, sumColumns_X2_cacheBuffer, expressionBuffer, threshold, outOstream, outPrintWriter, EXPRESSION_DATA_GPU_COMPUTING_MAX_ERROR_THRESHOLD);
-        new OpenGLContextDialog(layoutFrame, expressionDataComputingContext);
-        expressionDataComputingContext.startGPUComputingProcessing();
+        expressionDataComputingContext.doGPUComputingProcessing();
 
         // CPU fail-safe mechanism if GLSL GPU Computing fails for some reason
         if ( expressionDataComputingContext.getErrorOccured() )

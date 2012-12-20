@@ -113,7 +113,7 @@ public class LinearAlgebraComputing extends OpenGLContext
     /**
     *  Creates all textures.
     */
-    private void createTextures()
+    private void createTextures(GL2 gl)
     {
         // create textures
         // y gets two textures, alternatingly read-only and write-only,
@@ -122,14 +122,14 @@ public class LinearAlgebraComputing extends OpenGLContext
         gl.glGenTextures(2, TEXTURE_ID_YS);
 
         // set up textures
-        setupTexture( TEXTURE_ID_X.get(0) );
-        transferToTexture( dataX, TEXTURE_ID_X.get(0) );
+        setupTexture( gl, TEXTURE_ID_X.get(0) );
+        transferToTexture( gl, dataX, TEXTURE_ID_X.get(0) );
 
-        setupTexture( TEXTURE_ID_YS.get(writeTexture) );
-        transferToTexture( dataY, TEXTURE_ID_YS.get(writeTexture) );
+        setupTexture( gl, TEXTURE_ID_YS.get(writeTexture) );
+        transferToTexture( gl, dataY, TEXTURE_ID_YS.get(writeTexture) );
 
-        setupTexture( TEXTURE_ID_YS.get(readTexture) );
-        transferToTexture( dataY, TEXTURE_ID_YS.get(readTexture) );
+        setupTexture( gl, TEXTURE_ID_YS.get(readTexture) );
+        transferToTexture( gl, dataY, TEXTURE_ID_YS.get(readTexture) );
 
         // set texenv mode from modulate (the default) to replace
         gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -175,14 +175,14 @@ public class LinearAlgebraComputing extends OpenGLContext
     /**
     *  Performs the actual calculation.
     */
-    private void performComputation()
+    private void performComputation(GL2 gl)
     {
         // attach two textures to FBO
         gl.glFramebufferTexture2D(GL_FRAMEBUFFER, ATTACHMENT_POINTS[writeTexture], textureParameters.textureTarget, TEXTURE_ID_YS.get(writeTexture), 0);
         gl.glFramebufferTexture2D(GL_FRAMEBUFFER, ATTACHMENT_POINTS[readTexture], textureParameters.textureTarget, TEXTURE_ID_YS.get(readTexture), 0);
 
         // check if that worked
-        if ( !checkFrameBufferStatus() )
+        if ( !checkFrameBufferStatus(gl) )
         {
             if (DEBUG_BUILD) println("FBO glFramebufferTexture2DEXT() Status: Failed!");
         }
@@ -220,7 +220,7 @@ public class LinearAlgebraComputing extends OpenGLContext
             else
                 linearAlgebraComputingShaders.useTextureRectangleShaderForTextureYUniform(gl, 0);
 
-            renderQuad();
+            renderQuad(gl);
 
             // swap role of the two textures (read-only source becomes
             // write-only target and the other way round):
@@ -245,11 +245,11 @@ public class LinearAlgebraComputing extends OpenGLContext
     /**
     *  Retrieves GPU results, performs and times saxpy on the CPU & compares results
     */
-    private void retrieveGPUResultsAndCompareWithCPU()
+    private void retrieveGPUResultsAndCompareWithCPU(GL2 gl)
     {
         // get GPU results
         FloatBuffer data = FloatBuffer.allocate(N);
-        transferFromTexture(ATTACHMENT_POINTS[readTexture], data);
+        transferFromTexture(gl, ATTACHMENT_POINTS[readTexture], data);
         if (compareResults)
         {
             float[] dataXArray = dataX.array();
@@ -330,7 +330,7 @@ public class LinearAlgebraComputing extends OpenGLContext
     /**
     *  Deletes all textures.
     */
-    private void deleteTextures()
+    private void deleteTextures(GL2 gl)
     {
         gl.glDeleteTextures(1, TEXTURE_ID_X);
         gl.glDeleteTextures(2, TEXTURE_ID_YS);
@@ -340,7 +340,7 @@ public class LinearAlgebraComputing extends OpenGLContext
     *  Initializes CPU memory.
     */
     @Override
-    protected void initializeCPUMemoryImplementation() throws OutOfMemoryError
+    protected void initializeCPUMemoryImplementation(GL2 gl) throws OutOfMemoryError
     {
         createDataArrays();
     }
@@ -349,40 +349,40 @@ public class LinearAlgebraComputing extends OpenGLContext
     *  Initializes GPU memory.
     */
     @Override
-    protected void initializeGPUMemoryImplementation()
+    protected void initializeGPUMemoryImplementation(GL2 gl)
     {
         // init shaders runtime
         linearAlgebraComputingShaders = new LinearAlgebraComputingShaders(gl);
-        createTextures();
+        createTextures(gl);
     }
 
     /**
     *  Performs the GPU Computing calculations.
     */
     @Override
-    protected void performGPUComputingCalculationsImplementation()
+    protected void performGPUComputingCalculationsImplementation(GL2 gl)
     {
-        performComputation();
+        performComputation(gl);
     }
 
     /**
     *  Retrieves GPU results.
     */
     @Override
-    protected void retrieveGPUResultsImplementation() throws OutOfMemoryError
+    protected void retrieveGPUResultsImplementation(GL2 gl) throws OutOfMemoryError
     {
-        retrieveGPUResultsAndCompareWithCPU();
+        retrieveGPUResultsAndCompareWithCPU(gl);
     }
 
     /**
     *  Deletes the OpenGL context for GPU computing.
     */
     @Override
-    protected void deleteOpenGLContextForGPUComputing()
+    protected void deleteOpenGLContextForGPUComputing(GL2 gl)
     {
         deleteDataArrays();
         linearAlgebraComputingShaders.destructor(gl);
-        deleteTextures();
+        deleteTextures(gl);
     }
 
 

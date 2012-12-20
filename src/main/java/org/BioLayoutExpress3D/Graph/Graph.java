@@ -221,7 +221,7 @@ public class Graph extends GLCanvas implements GraphInterface
     */
     public static GLCapabilities getCaps()
     {
-        GLCapabilities caps = new GLCapabilities(OpenGLContext.getGLProfile());
+        GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
         caps.setAccumBlueBits(16);
         caps.setAccumGreenBits(16);
         caps.setAccumRedBits(16);

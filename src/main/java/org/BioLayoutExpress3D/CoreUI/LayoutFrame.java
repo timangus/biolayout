@@ -362,9 +362,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
     */
     private void useOpenGLContextForDetectingOpenGLSupportAndExtensions()
     {
-        OpenGLContext gmOpenGLContext = new DummyOpenGLContext(AllTextureParameters.TEXTURE_2D_ARB_RGBA_32, 4, 2, 2, false, true);
-        new OpenGLContextDialog(this, gmOpenGLContext);
-        gmOpenGLContext.startGPUComputingProcessing();
+        OpenGLContext openGLContext = new DummyOpenGLContext(AllTextureParameters.TEXTURE_2D_ARB_RGBA_32, 4, 2, 2, false, true);
+        openGLContext.doGPUComputingProcessing();
 
         // if OpenGL driver is equal & above minimum for quality rendering, enable FSAA 4x & node tesselation of 15
         if ( !GL_VERSION_STRING.isEmpty() && (Float.parseFloat( GL_VERSION_STRING.substring(0, 3) ) >= MINIMUM_OPENGL_VERSION_FOR_QUALITY_RENDERING_AND_SHADERS) )
