@@ -73,11 +73,6 @@ public final class ExpressionData
     private final CyclicBarrier threadBarrier = (USE_MULTICORE_PROCESS) ? new CyclicBarrier(NUMBER_OF_AVAILABLE_PROCESSORS + 1, cyclicBarrierTimer) : null;
 
     /**
-    *  Variable used for loading the native library only once (no use of re-loading the library).
-    */
-    private static boolean hasOnceLoadedNativeLibrary = false;
-
-    /**
     *  The constructor of the ExpressionData class.
     */
     public ExpressionData(LayoutFrame layoutFrame)
@@ -85,20 +80,6 @@ public final class ExpressionData
         this.layoutFrame = layoutFrame;
 
         identityMap = new HashMap<String, Integer>();
-
-        if (USE_NATIVE_CODE) initNativeLibrary();
-    }
-
-    /**
-    *  Native library initializer to make sure to load all relevant native libraries (if being used).
-    */
-    private void initNativeLibrary()
-    {
-        if (!hasOnceLoadedNativeLibrary)
-        {
-            int index = NativeLibrariesTypes.EXPRESSION_DATA.ordinal();
-            hasOnceLoadedNativeLibrary = LoadNativeLibrary.loadNativeLibrary(NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index], FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index]);
-        }
     }
 
     /**

@@ -85,11 +85,6 @@ public final class FRLayout
     private volatile AtomicIntegerArray displacementValuesAtomic = null;
 
     /**
-    *  Variable used for loading the native library only once (no use of re-loading the library).
-    */
-    private static boolean hasOnceLoadedNativeLibrary = false;
-
-    /**
     *  The constructor of the FRLayout class. Initializes all the variables needed for the FRLayout algorithm.
     */
     public FRLayout(float canvasXSize, float canvasYSize, float canvasZSize)
@@ -103,20 +98,6 @@ public final class FRLayout
 
         this.nf2 = NumberFormat.getNumberInstance();
         this.nf2.setMaximumFractionDigits(2);
-
-        if (USE_NATIVE_CODE) initNativeLibrary();
-    }
-
-    /**
-    *  Native library initializer to make sure to load all relevant native libraries (if being used).
-    */
-    private void initNativeLibrary()
-    {
-        if (!hasOnceLoadedNativeLibrary)
-        {
-            int index = NativeLibrariesTypes.FR_LAYOUT.ordinal();
-            hasOnceLoadedNativeLibrary = LoadNativeLibrary.loadNativeLibrary(NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index], FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES[index]);
-        }
     }
 
     /**

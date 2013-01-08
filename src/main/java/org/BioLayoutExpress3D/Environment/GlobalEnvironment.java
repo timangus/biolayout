@@ -45,16 +45,8 @@ public final class GlobalEnvironment
     public static final boolean USE_MULTICORE_PROCESS = (NUMBER_OF_AVAILABLE_PROCESSORS > 1);
     public static final char DECIMAL_SEPARATOR_CHARACTER = DecimalFormatSymbols.getInstance().getDecimalSeparator();
     public static final String DECIMAL_SEPARATOR_STRING = Character.valueOf(DECIMAL_SEPARATOR_CHARACTER).toString();
-    public static boolean USE_NATIVE_CODE = IS_WIN;
+    public static boolean USE_NATIVE_CODE = false;
     public static boolean WEBSTART = false;
-
-    // Order for native libraries file sizes: Win32, Win64, Linux32, Linux64, MacOSX
-    public static enum NativeLibrariesTypes { EXPRESSION_DATA, FR_LAYOUT }
-    public static final String[] NAME_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { "ExpressionData", "FRLayout" };
-    public static final long[][] FILE_SIZES_OF_BIOLAYOUT_EXPRESS_3D_NATIVE_LIBRARIES = { {  95244, 121237, 0, 0, 0 }, { 103928, 129376, 0, 0, 0 } };
-
-    public static final String NAME_OF_JOCL_NATIVE_LIBRARY = "jocl";
-    public static final long[] FILE_SIZES_OF_JOCL_NATIVE_LIBRARIES = { 236032, 280576, 112823, 106231, 90632 };
 
     // OpenGL & GLSL specific variables
     public static final PrefBool FIRST_RUN_DETECT_OPENGL_SUPPORT_AND_EXTENSIONS = new PrefBool(true, "first_run_detect_opengl_support_and_extensions", true);

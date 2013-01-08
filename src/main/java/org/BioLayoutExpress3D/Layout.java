@@ -255,7 +255,7 @@ public final class Layout
     }
 
     /**
-    *  Static method that is used from void main to initialize the needed JOGL libraries for OpenGL rendering.
+    *  Static method to initialize the needed JOGL libraries for OpenGL rendering.
     */
     private static boolean initJOGLNativeLibraries()
     {
@@ -272,7 +272,6 @@ public final class Layout
         if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_awt") )
             return false;
 
-        // FIXME: this probably belongs somewhere slightly deeper in the library loading code
         String osName = System.getProperty("os.name");
 
         if( osName.startsWith("Windows") )
@@ -299,11 +298,24 @@ public final class Layout
     }
 
     /**
-    *  Static method that is used from void main to initialize the needed JOCL libraries for OpenCL GPU Computing.
+    *  Static method to initialize the needed JOCL libraries for OpenCL GPU Computing.
     */
     private static boolean initJOCLNativeLibraries()
     {
-        if ( !LoadNativeLibrary.loadNativeLibrary(NAME_OF_JOCL_NATIVE_LIBRARY, FILE_SIZES_OF_JOCL_NATIVE_LIBRARIES) )
+        if ( !LoadNativeLibrary.loadNativeLibrary("jocl") )
+            return false;
+
+        LoadNativeLibrary.setJavaLibraryPath();
+
+        return true;
+    }
+
+    /**
+    *  Static method to initialize the native algorithm implementations.
+    */
+    private static boolean initNativeLibrary()
+    {
+        if ( !LoadNativeLibrary.loadNativeLibrary("biolayout") )
             return false;
 
         LoadNativeLibrary.setJavaLibraryPath();
@@ -432,6 +444,16 @@ public final class Layout
         else
         {
             if (DEBUG_BUILD) println("Error: JOCL Library not installed or found!\n");
+        }
+
+        if ( initNativeLibrary() )
+        {
+            USE_NATIVE_CODE = true;
+            if (DEBUG_BUILD) println("Using native code\n");
+        }
+        else
+        {
+            if (DEBUG_BUILD) println("Not using native code\n");
         }
 
         if (DEBUG_BUILD)
