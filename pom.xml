@@ -12,9 +12,16 @@
 
     <properties>
         <jarName>BioLayoutExpress3D</jarName>
+        <outFilename>${jarName}-${project.version}</outFilename>
+        <mainClass>org.BioLayoutExpress3D.Layout</mainClass>
+        <manifestVersion>${project.version}.0.0</manifestVersion>
+        <copyright>© The University of Edinburgh, European Molecular Biology Laoratory, Wellcome Trust Sanger Institue, Genome Research Ltd. 2006-2013</copyright>
+        <icon>src/main/resources/Resources/Images/BioLayoutExpress3DIcon.ico</icon>
 
+        <minJavaVersion>1.6</minJavaVersion>
         <jogampVersion>2.0-rc11</jogampVersion>
         <joclVersion>0.1.7</joclVersion>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <native.makefile.dir>src/main/c/</native.makefile.dir>
@@ -116,7 +123,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>org.BioLayoutExpress3D.Layout</mainClass>
+                            <mainClass>${mainClass}</mainClass>
                             <packageName>org.BioLayoutExpress3D</packageName>
                         </manifest>
                         <manifestEntries>
@@ -125,7 +132,7 @@
                     </archive>
 
                     <!-- The name for the jar that includes the dependencies -->
-                    <finalName>${jarName}-${project.version}</finalName>
+                    <finalName>${outFilename}</finalName>
 
                     <!-- Stop the plugin appending jar-with-dependencies to the name -->
                     <appendAssemblyId>false</appendAssemblyId>
@@ -138,6 +145,72 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <id>l4j-32bit</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>target/${outFilename}-32bit.exe</outfile>
+                            <jar>target/${outFilename}.jar</jar>
+                            <icon>${icon}</icon>
+                            <errTitle>${project.name}</errTitle>
+                            <jre>
+                                <minVersion>${minJavaVersion}.0</minVersion>
+                                <maxHeapSize>920</maxHeapSize>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>${manifestVersion}</fileVersion>
+                                <txtFileVersion>${manifestVersion}</txtFileVersion>
+                                <fileDescription>${project.name}</fileDescription>
+                                <copyright>${copyright}</copyright>
+                                <productVersion>${manifestVersion}</productVersion>
+                                <txtProductVersion>${manifestVersion}</txtProductVersion>
+                                <productName>${project.name}</productName>
+                                <internalName>${jarName}</internalName>
+                                <originalFilename>${outFilename}.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>l4j-64bit</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>target/${outFilename}-64bit.exe</outfile>
+                            <jar>target/${outFilename}.jar</jar>
+                            <icon>${icon}</icon>
+                            <errTitle>${project.name}</errTitle>
+                            <jre>
+                                <minVersion>${minJavaVersion}.0</minVersion>
+                                <maxHeapSize>32000</maxHeapSize>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>${manifestVersion}</fileVersion>
+                                <txtFileVersion>${manifestVersion}</txtFileVersion>
+                                <fileDescription>${project.name}</fileDescription>
+                                <copyright>${copyright}</copyright>
+                                <productVersion>${manifestVersion}</productVersion>
+                                <txtProductVersion>${manifestVersion}</txtProductVersion>
+                                <productName>${project.name}</productName>
+                                <internalName>${jarName}</internalName>
+                                <originalFilename>${outFilename}.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -409,8 +482,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>${minJavaVersion}</source>
+                    <target>${minJavaVersion}</target>
                 </configuration>
             </plugin>
 
