@@ -227,8 +227,6 @@ public final class Layout
         System.err.println(msg);
         System.err.println();
         System.err.println();
-        System.err.println(" -parseFile fileName     : parseFile used for command-line file parsing");
-        System.err.println();
         if (DEBUG_BUILD)
         {
             System.err.println(" -consoleOutput on|off   : consoleOutput used for console output (default off)");
@@ -350,12 +348,7 @@ public final class Layout
         {
             for (; i < args.length; i++)
             {
-                if ("-parseFile".equals(args[i]))
-                {
-                    fileName = args[++i];
-                    if (DEBUG_BUILD) System.out.println("Now starting with parsing fileName:\n\"" + fileName + "\"");
-                }
-                else if ("-consoleOutput".equals(args[i]))
+                if ("-consoleOutput".equals(args[i]))
                 {
                     consoleOutput = "on".equals( args[++i].toLowerCase() );
                     if (DEBUG_BUILD) System.out.println("Now starting with console output: " + Boolean.toString(consoleOutput));
@@ -403,7 +396,22 @@ public final class Layout
                 }
                 else
                 {
-                    usage("Invalid argument: " + args[i]);
+                    File f = new File(args[i]);
+                    if (f.exists())
+                    {
+                        if (!fileName.isEmpty())
+                        {
+                            usage("Only one file may be specified on the command line.");
+                        }
+                        else
+                        {
+                            fileName = args[i];
+                        }
+                    }
+                    else
+                    {
+                        usage("Invalid argument: " + args[i]);
+                    }
                 }
             }
 
