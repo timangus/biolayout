@@ -37,18 +37,6 @@ public final class CopyMCLExecutable
     private static final String[] MCL_FILES_TO_COPY = { "mcl", "cygwin1.dll" };
 
     /**
-    *  Variable used for the different sizes of the MCL executable for OSs:
-    *  Win32, Win64, Linux32, Linux64, MacOS X
-    */
-    private static final long[] SIZES_OF_MCL_SPECIFIC_EXECUTABLES = { 688194, 688194, 212438, 288775, 314264 };
-
-    /**
-    *  Variable used for the different sizes of the Cygwin library for OSs:
-    *  Win32, Win64
-    */
-    private static final long[] SIZE_OF_CYGWIN_LIBRARIES = { 1872884, 1872884 };
-
-    /**
     *  Copies the MCL executable (and depending library) depending on running OS.
     */
     public static boolean copyMCLExecutable()
@@ -70,7 +58,7 @@ public final class CopyMCLExecutable
 
             File MCLExecutableFile = new File(currentProgramDirectory + EXTRACT_TO_MCL_FILE_PATH + OSSpecificMCLExecutableNames[0]);
             BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_MCL_FILE_PATH + EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificMCLExecutableNames[0]) );
-            if ( !MCLExecutableFile.isFile() || ( !LoadNativeLibrary.checkLibraryFileSize(MCLExecutableFile.length(), SIZES_OF_MCL_SPECIFIC_EXECUTABLES) ) )
+            if ( !MCLExecutableFile.isFile() )
             {
                 MCLExecutableFile.createNewFile();
 
@@ -91,7 +79,7 @@ public final class CopyMCLExecutable
             {
                 File CygwinLibraryFile = new File(currentProgramDirectory + EXTRACT_TO_MCL_FILE_PATH + OSSpecificMCLExecutableNames[1]);
                 in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_MCL_FILE_PATH + EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificMCLExecutableNames[1]) );
-                if ( !CygwinLibraryFile.isFile() || ( !LoadNativeLibrary.checkLibraryFileSize(CygwinLibraryFile.length(), SIZE_OF_CYGWIN_LIBRARIES) ) )
+                if ( !CygwinLibraryFile.isFile() )
                 {
                     CygwinLibraryFile.createNewFile();
 

@@ -45,17 +45,6 @@ public final class LoadNativeLibrary
     */
     public static boolean loadNativeLibrary(String libraryName)
     {
-        return loadNativeLibrary(libraryName, null);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder and loads it.
-    *  Note, that loading order matters here, load those libraries that are required by other libraries first.
-    *  Inter-dependent libraries may cause problems.
-    *  Overloaded version by checking the library's file size as well.
-    */
-    public static boolean loadNativeLibrary(String libraryName, long... libraryFileSizes)
-    {
         try
         {
             boolean[] OSSpecificType = checkRunningOSAndReturnOSSpecificType();
@@ -73,7 +62,7 @@ public final class LoadNativeLibrary
 
             File libraryFile = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH + OSSpecificLibraryName);
             BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_LIBRARIES_FILE_PATH + EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificLibraryName) );
-            if ( !libraryFile.isFile() || ( !checkLibraryFileSize(libraryFile.length(), libraryFileSizes) ) )
+            if ( !libraryFile.isFile() )
             {
                 libraryFile.createNewFile();
                 IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(libraryFile) ) );
@@ -111,146 +100,9 @@ public final class LoadNativeLibrary
     }
 
     /**
-    *  Unpacks the native library to a selected folder with a pre-selected name and loads it.
-    *  Note, that loading order matters here, load those libraries that are required by other libraries first.
-    *  Inter-dependent libraries may cause problems.
-    */
-    public static boolean loadNativeLibraryWithFullName(String[] libraryNames)
-    {
-        return loadNativeLibraryWithFullName(libraryNames, false, false, null);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder with a pre-selected name and loads it.
-    *  Note, that loading order matters here, load those libraries that are required by other libraries first.
-    *  Inter-dependent libraries may cause problems.
-    *  Overloaded version with optional selection of putting the native library to the current program directory or in Java's home directory.
-    */
-    public static boolean loadNativeLibraryWithFullName(String[] libraryNames, boolean useCurrentProgramDirectory, boolean storeInJavaHomeDir)
-    {
-        return loadNativeLibraryWithFullName(libraryNames, useCurrentProgramDirectory, storeInJavaHomeDir, null);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder with a pre-selected name and loads it.
-    *  Note, that loading order matters here, load those libraries that are required by other libraries first.
-    *  Inter-dependent libraries may cause problems.
-    *  Overloaded version by checking the library's file size as well.
-    */
-    public static boolean loadNativeLibraryWithFullName(String[] libraryNames, long... libraryFileSizes)
-    {
-        return loadNativeLibraryWithFullName(libraryNames, false, false, libraryFileSizes);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder with a pre-selected name and loads it.
-    *  Note, that loading order matters here, load those libraries that are required by other libraries first.
-    *  Inter-dependent libraries may cause problems.
-    *  Overloaded version with optional selection of putting the native library to the current program directory or in Java's home directory & checking the library's file size as well.
-    */
-    public static boolean loadNativeLibraryWithFullName(String[] libraryNames, boolean useCurrentProgramDirectory, boolean storeInJavaHomeDir, long... libraryFileSizes)
-    {
-        try
-        {
-            boolean[] OSSpecificType = checkRunningOSAndReturnOSSpecificType();
-            String OSSpecificLibraryName = checkRunningOSAndReturnOSSpecificLibraryName("dummyLib");
-            int libraryNameIndexToUse = 0;
-            if ( OSSpecificLibraryName.endsWith(".dll") )
-            {
-                libraryNameIndexToUse = !( is64bit() && !isMac() ) ? 0 : 1;
-            }
-            else if ( OSSpecificLibraryName.endsWith(".so") )
-            {
-                libraryNameIndexToUse = !( is64bit() && !isMac() ) ? 2 : 3;
-            }
-            else if ( OSSpecificLibraryName.endsWith(".jnilib") )
-                libraryNameIndexToUse = 4;
-
-            String currentProgramDirectory = "";
-            File libraryFile = null;
-
-            if (useCurrentProgramDirectory && !storeInJavaHomeDir)
-            {
-                currentProgramDirectory = findCurrentProgramDirectory();
-                libraryFile = new File(currentProgramDirectory + libraryNames[libraryNameIndexToUse]);
-            }
-            else if (storeInJavaHomeDir)
-            {
-                currentProgramDirectory = findJavaHomeBinDirectory();
-
-                File librariesDir = new File(currentProgramDirectory + "bin/");
-                if ( !librariesDir.isDirectory() ) librariesDir.mkdir();
-
-                libraryFile = new File(currentProgramDirectory + "bin/" + libraryNames[libraryNameIndexToUse]);
-            }
-            else
-            {
-                currentProgramDirectory = findCurrentProgramDirectory();
-
-                File librariesDir = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH);
-                if ( !librariesDir.isDirectory() ) librariesDir.mkdir();
-
-                libraryFile = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH + libraryNames[libraryNameIndexToUse]);
-            }
-
-            int OSSPecificPathIndex = 0;
-            for (boolean position : OSSpecificType)
-            {
-                if (position) break;
-                OSSPecificPathIndex++;
-            }
-
-            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_LIBRARIES_FILE_PATH + EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] + libraryNames[libraryNameIndexToUse]) );
-            if ( !libraryFile.isFile() || ( !checkLibraryFileSize(libraryFile.length(), libraryFileSizes) ) )
-            {
-                libraryFile.createNewFile();
-                IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(libraryFile) ) );
-            }
-
-            String libraryAbsolutePath = libraryFile.getAbsolutePath();
-            System.load(libraryAbsolutePath);
-
-            if (DEBUG_BUILD)
-            {
-                println("Native " + ( ( !is64bit() ) ? "32 bit" : "64 bit" ) + " library " + libraryNames[libraryNameIndexToUse] + " loaded!");
-                println();
-            }
-
-            return true;
-        }
-        catch (FileNotFoundException ex)
-        {
-            if (DEBUG_BUILD) println("Problem with not finding the native library file:\n" + ex.getMessage());
-        }
-        catch (UnsatisfiedLinkError ex)
-        {
-            if (DEBUG_BUILD) println("Problem with loading the native library:\n" + ex.getMessage());
-        }
-        catch (IOException ex)
-        {
-            if (DEBUG_BUILD) println("IO exception with:\n" + ex.getMessage());
-        }
-        catch (RuntimeException ex)
-        {
-            if (DEBUG_BUILD) println("Runtime exception with:\n" + ex.getMessage());
-        }
-
-        return false;
-    }
-
-    /**
     *  Unpacks the native library to a selected folder.
     */
     public static boolean copyNativeLibrary(String libraryName)
-    {
-        return copyNativeLibrary(libraryName, null);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder.
-    *  Overloaded version by checking the library's file size as well.
-    */
-    public static boolean copyNativeLibrary(String libraryName, long... libraryFileSizes)
     {
         try
         {
@@ -269,7 +121,7 @@ public final class LoadNativeLibrary
             }
 
             BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_LIBRARIES_FILE_PATH + EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificLibraryName) );
-            if ( !libraryFile.isFile() || ( !checkLibraryFileSize(libraryFile.length(), libraryFileSizes) ) )
+            if ( !libraryFile.isFile() )
             {
                 libraryFile.createNewFile();
                 IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(libraryFile) ) );
@@ -277,119 +129,6 @@ public final class LoadNativeLibrary
                 if (DEBUG_BUILD)
                 {
                     println("Native " + ( ( !is64bit() ) ? "32 bit" : "64 bit" ) + " library " + OSSpecificLibraryName + " copied!");
-                    println();
-                }
-            }
-
-            return true;
-        }
-        catch (FileNotFoundException ex)
-        {
-            if (DEBUG_BUILD) println("Problem with not finding the native library file:\n" + ex.getMessage());
-        }
-        catch (IOException ex)
-        {
-            if (DEBUG_BUILD) println("IO exception with:\n" + ex.getMessage());
-        }
-        catch (RuntimeException ex)
-        {
-            if (DEBUG_BUILD) println("Runtime exception with:\n" + ex.getMessage());
-        }
-
-        return false;
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder with a pre-selected name.
-    */
-    public static boolean copyNativeLibraryWithFullName(String[] libraryNames)
-    {
-        return copyNativeLibraryWithFullName(libraryNames, false, false, null);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder with a pre-selected name.
-    *  Overloaded version with optional selection of putting the native library to the current program directory or in Java's home directory.
-    */
-    public static boolean copyNativeLibraryWithFullName(String[] libraryNames, boolean useCurrentProgramDirectory, boolean storeInJavaHomeDir)
-    {
-        return copyNativeLibraryWithFullName(libraryNames, useCurrentProgramDirectory, storeInJavaHomeDir, null);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder with a pre-selected name.
-    *  Overloaded version by checking the library's file size as well.
-    */
-    public static boolean copyNativeLibraryWithFullName(String[] libraryNames, long... libraryFileSizes)
-    {
-        return copyNativeLibraryWithFullName(libraryNames, false, false, libraryFileSizes);
-    }
-
-    /**
-    *  Unpacks the native library to a selected folder with a pre-selected name.
-    *  Overloaded version with optional selection of putting the native library to the current program directory or in Java's home directory & checking the library's file size as well.
-    */
-    public static boolean copyNativeLibraryWithFullName(String[] libraryNames, boolean useCurrentProgramDirectory, boolean storeInJavaHomeDir, long... libraryFileSizes)
-    {
-        try
-        {
-            boolean[] OSSpecificType = checkRunningOSAndReturnOSSpecificType();
-            String OSSpecificLibraryName = checkRunningOSAndReturnOSSpecificLibraryName("dummyLib");
-            int libraryNameIndexToUse = 0;
-            if ( OSSpecificLibraryName.endsWith(".dll") )
-            {
-                libraryNameIndexToUse = !( is64bit() && !isMac() ) ? 0 : 1;
-            }
-            else if ( OSSpecificLibraryName.endsWith(".so") )
-            {
-                libraryNameIndexToUse = !( is64bit() && !isMac() ) ? 2 : 3;
-            }
-            else if ( OSSpecificLibraryName.endsWith(".jnilib") )
-                libraryNameIndexToUse = 4;
-
-            String currentProgramDirectory = "";
-            File libraryFile = null;
-
-            if (useCurrentProgramDirectory && !storeInJavaHomeDir)
-            {
-                currentProgramDirectory = findCurrentProgramDirectory();
-                libraryFile = new File(currentProgramDirectory + libraryNames[libraryNameIndexToUse]);
-            }
-            else if (storeInJavaHomeDir)
-            {
-                currentProgramDirectory = findJavaHomeBinDirectory();
-
-                File librariesDir = new File(currentProgramDirectory + "bin/");
-                if ( !librariesDir.isDirectory() ) librariesDir.mkdir();
-
-                libraryFile = new File(currentProgramDirectory + "bin/" + libraryNames[libraryNameIndexToUse]);
-            }
-            else
-            {
-                currentProgramDirectory = findCurrentProgramDirectory();
-
-                File librariesDir = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH);
-                if ( !librariesDir.isDirectory() ) librariesDir.mkdir();
-
-                libraryFile = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH + libraryNames[libraryNameIndexToUse]);
-            }
-
-            int OSSPecificPathIndex = 0;
-            for (boolean position : OSSpecificType)
-            {
-                if (position) break;
-                OSSPecificPathIndex++;
-            }
-
-            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_LIBRARIES_FILE_PATH +  EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] + libraryNames[libraryNameIndexToUse]) );
-            if ( !libraryFile.isFile() || ( !checkLibraryFileSize(libraryFile.length(), libraryFileSizes) ) )
-            {
-                libraryFile.createNewFile();
-                IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(libraryFile) ) );
-
-                if (DEBUG_BUILD)
-                {
-                    println("Native " + ( ( !is64bit() ) ? "32 bit" : "64 bit" ) + " library " + libraryNames[libraryNameIndexToUse] + " copied!");
                     println();
                 }
             }
@@ -644,20 +383,4 @@ public final class LoadNativeLibrary
                 osArch.equals("x64") ||
                 osArch.equals("ia64");
     }
-
-    /**
-    *  Checks if the actual library size is the one expected. Package access.
-    */
-    static boolean checkLibraryFileSize(long actualLibraryFileSize, long... libraryFileSizes)
-    {
-        if (libraryFileSizes == null) return false;
-
-        for (long libraryFileSize : libraryFileSizes)
-            if (libraryFileSize == actualLibraryFileSize)
-                return true;
-
-        return false;
-    }
-
-
 }
