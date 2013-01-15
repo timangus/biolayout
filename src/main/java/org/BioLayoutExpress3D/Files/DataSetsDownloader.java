@@ -1,12 +1,14 @@
 package org.BioLayoutExpress3D.Files;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import org.BioLayoutExpress3D.Connections.*;
 import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 /**
 *
@@ -148,7 +150,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
         if (dataSetNames.length == 1)
         {
             dataSetUrl = (repository.isEmpty() ? (BIOLAYOUT_EXPRESS_3D_DOMAIN_URL + BIOLAYOUT_SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[0] + dataSetNames[0];
-            dataSetFileName = LoadNativeLibrary.findCurrentProgramDirectory() + dataSetNames[0];
+            dataSetFileName = Paths.get(DataFolder.get(), dataSetNames[0]).toString();
 
             if ( !new File( IOUtils.getPrefix(dataSetFileName) ).exists() )
             {
@@ -176,7 +178,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
             for (int i = 0; i < dataSetNames.length; i++)
             {
                 dataSetUrl = (repository.isEmpty() ? (BIOLAYOUT_EXPRESS_3D_DOMAIN_URL + BIOLAYOUT_SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[i] + dataSetNames[i];
-                dataSetFileName = LoadNativeLibrary.findCurrentProgramDirectory() + dataSetNames[i];
+                dataSetFileName = Paths.get(DataFolder.get(), dataSetNames[i]).toString();
 
                 if ( !new File( IOUtils.getPrefix(dataSetFileName) ).exists() )
                 {
@@ -263,7 +265,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
     */
     public String getDataSetName()
     {
-        return IOUtils.getPrefix(LoadNativeLibrary.findCurrentProgramDirectory() + dataSetNames[0]);
+        return IOUtils.getPrefix(Paths.get(DataFolder.get(), dataSetNames[0]).toString());
     }
 
     /**

@@ -27,6 +27,7 @@ import static org.BioLayoutExpress3D.StaticLibraries.EnumUtils.*;
 import static org.BioLayoutExpress3D.Environment.AnimationEnvironment.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 /**
 *
@@ -2738,7 +2739,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to Clear the Online Graphs Cache from your system ?", "Clear Online Graphs Cache", JOptionPane.YES_NO_OPTION);
             if (option == JOptionPane.YES_OPTION)
             {
-                File cacheDirectory = new File( LoadNativeLibrary.findCurrentProgramDirectory() );
+                File cacheDirectory = new File( DataFolder.get() );
                 File[] filesToDelete = cacheDirectory.listFiles( new BioLayoutExpress3DFileFilter(true) );
                 for (File file : filesToDelete)
                 {

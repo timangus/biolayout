@@ -8,6 +8,7 @@ import org.BioLayoutExpress3D.Graph.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 /**
 *
@@ -72,7 +73,9 @@ public final class LayoutClusterMCL
         {
             if (DEBUG_BUILD) println("Creating MCL Temporary File");
 
-            tempInput = ( USE_INSTALL_DIR_FOR_MCL_TEMP_FILE.get() ) ? new File(LoadNativeLibrary.findCurrentProgramDirectory() + CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "MCL_Input.tmp") : File.createTempFile("MCL_Input", "tmp");
+            tempInput = ( USE_INSTALL_DIR_FOR_MCL_TEMP_FILE.get() ) ?
+                    new File(DataFolder.get(), CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "MCL_Input.tmp") :
+                    File.createTempFile("MCL_Input", "tmp");
             tempInput.deleteOnExit();
 
             MCL_windowDialog = new MCLWindowDialog(layoutFrame, graph, tempInput);
@@ -89,7 +92,7 @@ public final class LayoutClusterMCL
     public void checkMCLExecutable()
     {
         // has to use the exec(String[]) method instead of the old exec(String) so as to avoid the Tokenizer of the second one omitting all whitespaces in file paths!!!
-        String[] executableFileName = { new File( LoadNativeLibrary.findCurrentProgramDirectory() + CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "mcl" + ( (IS_WIN) ? ".exe" : "" ) ).getAbsolutePath() };
+        String[] executableFileName = { new File( DataFolder.get(), CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "mcl" + ( (IS_WIN) ? ".exe" : "" ) ).getAbsolutePath() };
         checkExecutable(executableFileName);
     }
 

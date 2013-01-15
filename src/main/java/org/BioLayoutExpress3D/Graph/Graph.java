@@ -18,6 +18,7 @@ import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.gl2.TileRenderer;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.awt.ImageUtil;
+import java.nio.file.Paths;
 import javax.media.opengl.awt.GLCanvas;
 import static javax.media.opengl.GL2.*;
 import org.BioLayoutExpress3D.CoreUI.*;
@@ -27,6 +28,7 @@ import org.BioLayoutExpress3D.Graph.Selection.*;
 import org.BioLayoutExpress3D.Models.Lathe3D.*;
 import org.BioLayoutExpress3D.Network.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 import org.BioLayoutExpress3D.GPUComputing.OpenGLContext.*;
 import static org.BioLayoutExpress3D.Graph.GraphRenderer3DFinalVariables.*;
 import static org.BioLayoutExpress3D.Graph.GraphRendererCommonVariables.*;
@@ -546,7 +548,9 @@ public class Graph extends GLCanvas implements GraphInterface
     */
     private void chooseInitialAbstractPath(String fileNameRemark)
     {
-        String screenshotFileName = ( USE_INSTALL_DIR_FOR_SCREENSHOTS.get() ) ? LoadNativeLibrary.findCurrentProgramDirectory() + SCREENSHOTS_DIRECTORY : layoutFrame.getFileNameAbsolutePathLoaded() + SCREENSHOTS_DIRECTORY;
+        String screenshotFileName = ( USE_INSTALL_DIR_FOR_SCREENSHOTS.get() ) ?
+                Paths.get(DataFolder.get(), SCREENSHOTS_DIRECTORY).toString() :
+                layoutFrame.getFileNameAbsolutePathLoaded() + SCREENSHOTS_DIRECTORY;
         chooseScreenshotDirectoryName(screenshotFileName);
         screenshotFileName += "/" + layoutFrame.getFileNameLoaded() + " " + fileNameRemark + " at " + getCalendarInformation();
         imageToFileChooser.setSelectedFile( new File(screenshotFileName) );

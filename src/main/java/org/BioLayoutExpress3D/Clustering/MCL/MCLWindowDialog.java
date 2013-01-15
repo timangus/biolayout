@@ -11,6 +11,7 @@ import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.Graph.*;
 import org.BioLayoutExpress3D.Network.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -154,7 +155,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
     {
             String[] temp_MCL_commands = null;
             String[] MCL_commands = {
-                                      new File( LoadNativeLibrary.findCurrentProgramDirectory() + CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "mcl" + ( (IS_WIN) ? ".exe" : "" ) ).getAbsolutePath(),
+                                      new File( DataFolder.get(), CopyMCLExecutable.EXTRACT_TO_MCL_FILE_PATH + "mcl" + ( (IS_WIN) ? ".exe" : "" ) ).getAbsolutePath(),
                                       fileInput.getAbsolutePath(),
                                       "-I", Float.toString( MCL_INFLATION_VALUE.get() )
                                     };

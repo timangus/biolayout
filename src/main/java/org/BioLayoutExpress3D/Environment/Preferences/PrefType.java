@@ -2,9 +2,11 @@ package org.BioLayoutExpress3D.Environment.Preferences;
 
 import java.io.*;
 import java.util.*;
+import java.nio.file.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 /**
 *
@@ -81,9 +83,9 @@ public abstract class PrefType
         {
             hasNotCheckedForConfigFile = false;
 
-            configFileNamePath = LoadNativeLibrary.findCurrentProgramDirectory();
+            configFileNamePath = Paths.get(DataFolder.get(), CONFIG_FILE_NAME).toString();
 
-            if ( !new File(configFileNamePath + CONFIG_FILE_NAME).exists() )
+            if ( !new File(configFileNamePath).exists() )
             {
                 if (DEBUG_BUILD) println("\nNow creating the default config file\n");
 
@@ -103,14 +105,21 @@ public abstract class PrefType
 
         try
         {
-            fileout = new PrintWriter(configFileNamePath + CONFIG_FILE_NAME);
+            File file = new File(configFileNamePath);
+            File directory = new File(file.getParent());
+            if (!directory.exists() && !directory.mkdirs())
+            {
+                throw new IOException("Couldn't make parent directory " + directory.getAbsolutePath());
+            }
+
+            fileout = new PrintWriter(configFileNamePath);
             fileout.println(CONFIG_FILE_FIRST_COMMENT_LINE);
             fileout.println();
             fileout.flush();
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("Error writing the " + configFileNamePath + CONFIG_FILE_NAME + " file:\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("Error writing the " + configFileNamePath + " file:\n" + ioe.getMessage());
         }
         finally
         {
@@ -130,7 +139,7 @@ public abstract class PrefType
 
         try
         {
-            br = new BufferedReader( new FileReader(configFileNamePath + CONFIG_FILE_NAME) );
+            br = new BufferedReader( new FileReader(configFileNamePath) );
             String line = "", option = "", equals = "", selection = "";
             int numberOfTokens = 0;
             Scanner scanner = null;
@@ -150,7 +159,7 @@ public abstract class PrefType
                     if (DEBUG_BUILD)
                     {
                         println("Wrong no. of arguments for " + line);
-                        println("Creating the default config " + configFileNamePath + CONFIG_FILE_NAME + " file");
+                        println("Creating the default config " + configFileNamePath + " file");
                     }
 
                     createDefaultConfigFile();
@@ -180,7 +189,7 @@ public abstract class PrefType
         {
             if (DEBUG_BUILD)
             {
-                println("Error loading preference from config file: " + configFileNamePath + CONFIG_FILE_NAME + "\n" + ioe.getMessage());
+                println("Error loading preference from config file: " + configFileNamePath + "\n" + ioe.getMessage());
                 println();
             }
 
@@ -213,7 +222,7 @@ public abstract class PrefType
 
         try
         {
-            br = new BufferedReader( new FileReader(configFileNamePath + CONFIG_FILE_NAME) );
+            br = new BufferedReader( new FileReader(configFileNamePath) );
             ArrayList<String> allLines = new ArrayList<String>();
             String line = "";
 
@@ -248,7 +257,7 @@ public abstract class PrefType
                 PrintWriter fileout = null;
                 try
                 {
-                    fileout = new PrintWriter( new BufferedWriter( new FileWriter(configFileNamePath + CONFIG_FILE_NAME, false) ) );
+                    fileout = new PrintWriter( new BufferedWriter( new FileWriter(configFileNamePath, false) ) );
                     fileout.println(CONFIG_FILE_FIRST_COMMENT_LINE);
                     for (String newLine : newAllLines)
                         fileout.println(newLine);
@@ -256,7 +265,7 @@ public abstract class PrefType
                 }
                 catch (IOException ioe)
                 {
-                    if (DEBUG_BUILD) println("Error writing the updated " + configFileNamePath + CONFIG_FILE_NAME + " file:\n" + ioe.getMessage());
+                    if (DEBUG_BUILD) println("Error writing the updated " + configFileNamePath + " file:\n" + ioe.getMessage());
                 }
                 finally
                 {
@@ -268,13 +277,13 @@ public abstract class PrefType
                 PrintWriter fileout = null;
                 try
                 {
-                    fileout = new PrintWriter( new BufferedWriter( new FileWriter(configFileNamePath + CONFIG_FILE_NAME, true) ) );
+                    fileout = new PrintWriter( new BufferedWriter( new FileWriter(configFileNamePath, true) ) );
                     fileout.println(prefName + EQUALS_SYMBOL + newSelection);
                     fileout.flush();
                 }
                 catch (IOException ioe)
                 {
-                    if (DEBUG_BUILD) println("Error writing the updated " + configFileNamePath + CONFIG_FILE_NAME + " file:\n" + ioe.getMessage());
+                    if (DEBUG_BUILD) println("Error writing the updated " + configFileNamePath + " file:\n" + ioe.getMessage());
                 }
                 finally
                 {
@@ -284,7 +293,7 @@ public abstract class PrefType
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("Error saving preference to config file " + configFileNamePath + CONFIG_FILE_NAME + " file:\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("Error saving preference to config file " + configFileNamePath + " file:\n" + ioe.getMessage());
 
             createDefaultConfigFile();
         }

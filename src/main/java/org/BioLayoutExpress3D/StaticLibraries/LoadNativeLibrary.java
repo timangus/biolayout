@@ -3,8 +3,10 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.io.*;
 import java.lang.reflect.*;
 import com.jogamp.gluegen.runtime.*;
+import java.nio.file.Paths;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 /**
 *
@@ -47,93 +49,70 @@ public final class LoadNativeLibrary
     {
         try
         {
-            boolean[] OSSpecificType = checkRunningOSAndReturnOSSpecificType();
-            String OSSpecificLibraryName = checkRunningOSAndReturnOSSpecificLibraryName(libraryName);
-            String currentProgramDirectory = findCurrentProgramDirectory();
-            File librariesDir = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH);
-            if ( !librariesDir.isDirectory() ) librariesDir.mkdir();
-
-            int OSSPecificPathIndex = 0;
-            for (boolean position : OSSpecificType)
+            String extractedLibraryPath = extractNativeLibrary(libraryName);
+            if (extractedLibraryPath != null)
             {
-                if (position) break;
-                OSSPecificPathIndex++;
+                System.load(extractedLibraryPath);
+
+                if (DEBUG_BUILD)
+                {
+                    println(extractedLibraryPath + " loaded!");
+                    println();
+                }
+
+                return true;
             }
-
-            File libraryFile = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH + OSSpecificLibraryName);
-            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_LIBRARIES_FILE_PATH + EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificLibraryName) );
-            if ( !libraryFile.isFile() )
-            {
-                libraryFile.createNewFile();
-                IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(libraryFile) ) );
-            }
-
-            String libraryAbsolutePath = libraryFile.getAbsolutePath();
-            System.load(libraryAbsolutePath);
-
-            if (DEBUG_BUILD)
-            {
-                println("Native " + ( ( !is64bit() ) ? "32 bit" : "64 bit" ) + " library " + OSSpecificLibraryName + " loaded!");
-                println();
-            }
-
-            return true;
-        }
-        catch (FileNotFoundException ex)
-        {
-            if (DEBUG_BUILD) println("Problem with not finding the native library file:\n" + ex.getMessage());
         }
         catch (UnsatisfiedLinkError ex)
         {
             if (DEBUG_BUILD) println("Problem with loading the native library:\n" + ex.getMessage());
-        }
-        catch (IOException ex)
-        {
-            if (DEBUG_BUILD) println("IO exception with:\n" + ex.getMessage());
-        }
-        catch (RuntimeException ex)
-        {
-            if (DEBUG_BUILD) println("Runtime exception with:\n" + ex.getMessage());
         }
 
         return false;
     }
 
     /**
-    *  Unpacks the native library to a selected folder.
+    *  Unpacks the native library to a writable folder.
     */
-    public static boolean copyNativeLibrary(String libraryName)
+    public static String extractNativeLibrary(String libraryName)
     {
         try
         {
             boolean[] OSSpecificType = checkRunningOSAndReturnOSSpecificType();
             String OSSpecificLibraryName = checkRunningOSAndReturnOSSpecificLibraryName(libraryName);
-            String currentProgramDirectory = findCurrentProgramDirectory();
-            File librariesDir = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH);
-            if ( !librariesDir.isDirectory() ) librariesDir.mkdir();
-            File libraryFile = new File(currentProgramDirectory + EXTRACT_TO_LIBRARIES_FILE_PATH + OSSpecificLibraryName);
+            String extractDirectory = DataFolder.get();
+
+            File librariesDir = new File(extractDirectory, EXTRACT_TO_LIBRARIES_FILE_PATH);
+            if ( !librariesDir.isDirectory() )
+            {
+                librariesDir.mkdir();
+            }
 
             int OSSPecificPathIndex = 0;
             for (boolean position : OSSpecificType)
             {
-                if (position) break;
+                if (position)
+                    break;
+
                 OSSPecificPathIndex++;
             }
 
-            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_LIBRARIES_FILE_PATH + EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificLibraryName) );
-            if ( !libraryFile.isFile() )
-            {
-                libraryFile.createNewFile();
-                IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(libraryFile) ) );
+            File libraryFile = new File(librariesDir, OSSpecificLibraryName);
+            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(
+                    EXTRACT_FROM_LIBRARIES_FILE_PATH +
+                    EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] +
+                    OSSpecificLibraryName) );
 
-                if (DEBUG_BUILD)
-                {
-                    println("Native " + ( ( !is64bit() ) ? "32 bit" : "64 bit" ) + " library " + OSSpecificLibraryName + " copied!");
-                    println();
-                }
+            libraryFile.createNewFile();
+            IOUtils.streamAndClose(in, new BufferedOutputStream(new FileOutputStream(libraryFile)));
+
+            if (DEBUG_BUILD)
+            {
+                println("Native " + ((!is64bit()) ? "32 bit" : "64 bit") + " library " + OSSpecificLibraryName + " copied!");
+                println();
             }
 
-            return true;
+            return libraryFile.getAbsolutePath();
         }
         catch (FileNotFoundException ex)
         {
@@ -148,7 +127,7 @@ public final class LoadNativeLibrary
             if (DEBUG_BUILD) println("Runtime exception with:\n" + ex.getMessage());
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -195,7 +174,7 @@ public final class LoadNativeLibrary
     public static String findJavaLibraryPath()
     {
         String fileSeparator = System.getProperty("file.separator");
-        String javaLibraryPath = findCurrentProgramDirectory() + EXTRACT_TO_LIBRARIES_FILE_PATH;
+        String javaLibraryPath = Paths.get(DataFolder.get(), EXTRACT_TO_LIBRARIES_FILE_PATH).toString();
         String[] allSeparatedPaths = javaLibraryPath.split("/");
         javaLibraryPath = "";
         for (String path : allSeparatedPaths)

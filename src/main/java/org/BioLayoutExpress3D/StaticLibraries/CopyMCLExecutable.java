@@ -3,6 +3,7 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.io.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 /**
 *
@@ -45,51 +46,60 @@ public final class CopyMCLExecutable
         {
             boolean[] OSSpecificType = LoadNativeLibrary.checkRunningOSAndReturnOSSpecificType();
             String[] OSSpecificMCLExecutableNames = returnOSSpecificMCLExecutableName(OSSpecificType);
-            String currentProgramDirectory = LoadNativeLibrary.findCurrentProgramDirectory();
-            File MCLDir = new File(currentProgramDirectory + EXTRACT_TO_MCL_FILE_PATH);
-            if ( !MCLDir.isDirectory() ) MCLDir.mkdir();
+            String extractDirectory = DataFolder.get();
+
+            File MCLDir = new File(extractDirectory, EXTRACT_TO_MCL_FILE_PATH);
+            if ( !MCLDir.isDirectory() )
+            {
+                MCLDir.mkdir();
+            }
 
             int OSSPecificPathIndex = 0;
             for (boolean position : OSSpecificType)
             {
-                if (position) break;
+                if (position)
+                    break;
+
                 OSSPecificPathIndex++;
             }
 
-            File MCLExecutableFile = new File(currentProgramDirectory + EXTRACT_TO_MCL_FILE_PATH + OSSpecificMCLExecutableNames[0]);
-            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_MCL_FILE_PATH + EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificMCLExecutableNames[0]) );
-            if ( !MCLExecutableFile.isFile() )
+            File MCLExecutableFile = new File(MCLDir, OSSpecificMCLExecutableNames[0]);
+            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(
+                    EXTRACT_FROM_MCL_FILE_PATH +
+                    EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] +
+                    OSSpecificMCLExecutableNames[0]) );
+
+            MCLExecutableFile.createNewFile();
+
+            // necessary to set the unix-based executable permission, no use for windows platforms
+            if (OSSpecificType[2] || OSSpecificType[3] || OSSpecificType[4])
             {
-                MCLExecutableFile.createNewFile();
+                MCLExecutableFile.setExecutable(true);
+            }
 
-                // necessary to set the unix-based executable permission, no use for windows platforms
-                if (OSSpecificType[2] || OSSpecificType[3] || OSSpecificType[4])
-                    MCLExecutableFile.setExecutable(true);
+            IOUtils.streamAndClose(in, new BufferedOutputStream(new FileOutputStream(MCLExecutableFile)));
 
-                IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(MCLExecutableFile) ) );
-
-                if (DEBUG_BUILD)
-                {
-                    println();
-                    println("MCL executable " + OSSpecificMCLExecutableNames[0] + " copied!");
-                }
+            if (DEBUG_BUILD)
+            {
+                println();
+                println("MCL executable " + OSSpecificMCLExecutableNames[0] + " copied!");
             }
 
             if (OSSpecificMCLExecutableNames.length > 1)
             {
-                File CygwinLibraryFile = new File(currentProgramDirectory + EXTRACT_TO_MCL_FILE_PATH + OSSpecificMCLExecutableNames[1]);
-                in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(EXTRACT_FROM_MCL_FILE_PATH + EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] + OSSpecificMCLExecutableNames[1]) );
-                if ( !CygwinLibraryFile.isFile() )
-                {
-                    CygwinLibraryFile.createNewFile();
+                File CygwinLibraryFile = new File(MCLDir, OSSpecificMCLExecutableNames[1]);
+                in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(
+                        EXTRACT_FROM_MCL_FILE_PATH +
+                        EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] +
+                        OSSpecificMCLExecutableNames[1]) );
 
-                    IOUtils.streamAndClose( in, new BufferedOutputStream( new FileOutputStream(CygwinLibraryFile) ) );
+                CygwinLibraryFile.createNewFile();
 
-                    if (DEBUG_BUILD)
-                    {
-                        println("Cygwin library " + OSSpecificMCLExecutableNames[1] + " copied!");
-                        println();
-                    }
+                IOUtils.streamAndClose(in, new BufferedOutputStream(new FileOutputStream(CygwinLibraryFile)));
+
+                if (DEBUG_BUILD) {
+                    println("Cygwin library " + OSSpecificMCLExecutableNames[1] + " copied!");
+                    println();
                 }
             }
 

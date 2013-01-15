@@ -261,30 +261,30 @@ public final class Layout
         // falling back on loading extracted versions which we create from our jar
         System.setProperty("jogamp.gluegen.UseTempJarCache", "false");
 
-        if( !LoadNativeLibrary.copyNativeLibrary("gluegen-rt") )
+        if( LoadNativeLibrary.extractNativeLibrary("gluegen-rt") == null )
             return false;
 
-        if( !LoadNativeLibrary.copyNativeLibrary("jogl_desktop") )
+        if( LoadNativeLibrary.extractNativeLibrary("jogl_desktop") == null )
             return false;
 
-        if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_awt") )
+        if( LoadNativeLibrary.extractNativeLibrary("nativewindow_awt") == null )
             return false;
 
         String osName = System.getProperty("os.name");
 
         if( osName.startsWith("Windows") )
         {
-            if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_win32") )
+            if( LoadNativeLibrary.extractNativeLibrary("nativewindow_win32") == null )
                 return false;
         }
         else if( osName.startsWith("Linux") )
         {
-            if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_x11") )
+            if( LoadNativeLibrary.extractNativeLibrary("nativewindow_x11") == null )
                 return false;
         }
         else if( osName.startsWith("Mac") || osName.startsWith("Darwin") )
         {
-            if( !LoadNativeLibrary.copyNativeLibrary("nativewindow_macosx") )
+            if( LoadNativeLibrary.extractNativeLibrary("nativewindow_macosx") == null )
                 return false;
         }
         else
