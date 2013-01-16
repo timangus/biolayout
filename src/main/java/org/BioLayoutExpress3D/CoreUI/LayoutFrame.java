@@ -85,7 +85,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private SignalingPetriNetLoadSimulation signalingPetriNetLoadSimulation = null;
     private LayoutGraphPropertiesDialog layoutGraphPropertiesDialog = null;
     private LayoutGraphStatisticsDialog layoutGraphStatisticsDialog = null;
-    private ExpressionData expresionData = null;
+    private ExpressionData expressionData = null;
     private ExpressionViewerFrame expressionViewerFrame;
     private ClassViewerFrame classViewerFrame = null;
     private LayoutAnimationControlDialog layoutAnimationControlDialog = null;
@@ -207,8 +207,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
         splashScreen.setText(" Creating Menus & All UIs...");
         layoutClusterMCL = new LayoutClusterMCL(this, graph);
         layoutGraphStatisticsDialog = new LayoutGraphStatisticsDialog(this, graph);
-        expresionData = new ExpressionData(this);
-        expressionViewerFrame = new ExpressionViewerFrame(this, expresionData);
+        expressionData = new ExpressionData(this);
+        expressionViewerFrame = new ExpressionViewerFrame(this, expressionData);
         classViewerFrame = new ClassViewerFrame(this);
         SPNSimulationDialog = new SignalingPetriNetSimulationDialog(nc, this);
         layoutAnimationControlDialog = new LayoutAnimationControlDialog(this);
@@ -288,7 +288,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         saver = new CoreSaver(nc, this);
         importClassSetsParser = new ImportClassSetsParser(nc, this);
         exportClassSets = new ExportClassSets(this);
-        exportCorrelationNodesEdgesTable = new ExportCorrelationNodesEdgesTable(this, expresionData);
+        exportCorrelationNodesEdgesTable = new ExportCorrelationNodesEdgesTable(this, expressionData);
 
         layoutPrintServices = new LayoutPrintServices();
 
@@ -1113,7 +1113,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 clearNetworkAndGraph();
 
                 expressionLoader = new ExpressionLoader(layoutClassSetsManager);
-                expressionLoader.init(file, expresionData, expressionLoaderDialog.getStartColumn() );
+                expressionLoader.init(file, expressionData, expressionLoaderDialog.getStartColumn() );
                 expressionLoader.parse(this);
 
                 EXPRESSION_FILE = file.getName();
@@ -1126,13 +1126,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 File correlationFile = new File(IOUtils.getPrefix( file.getAbsolutePath() )+ "." + metricName);
                 if ( !correlationFile.exists() )
                 {
-                    expresionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
+                    expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
                     file = correlationFile;
                 }
                 else
                 {
                     // there seems to be saved expression correlations here, let's check they are good for our requirements
-                    ExpressionParser checker = new ExpressionParser(nc, this, expresionData);
+                    ExpressionParser checker = new ExpressionParser(nc, this, expressionData);
                     checker.init(correlationFile, fileExtension);
 
                     if ( checker.checkFile(CURRENT_METRIC.ordinal(), STORED_CORRELATION_THRESHOLD) )
@@ -1145,21 +1145,21 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         // the file is not good, close file before deletion, delete it & rebuild it
                         checker.close();
                         correlationFile.delete();
-                        expresionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
+                        expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
                         file = correlationFile;
                     }
                 }
 
-                ExpressionParser scanner = new ExpressionParser(nc, this, expresionData);
+                ExpressionParser scanner = new ExpressionParser(nc, this, expressionData);
                 scanner.init(file, fileExtension);
                 scanner.scan();
 
-                ExpressionLoaderSummaryDialog expressionLoaderSummaryDialog = new ExpressionLoaderSummaryDialog( this, expresionData.getCounts(), expresionData.getTotalRows() );
+                ExpressionLoaderSummaryDialog expressionLoaderSummaryDialog = new ExpressionLoaderSummaryDialog( this, expressionData.getCounts(), expressionData.getTotalRows() );
                 expressionLoaderSummaryDialog.setVisible(true);
 
                 if ( isNotSkipped = expressionLoaderSummaryDialog.proceed() )
                 {
-                    parser = new ExpressionParser(nc, this, expresionData);
+                    parser = new ExpressionParser(nc, this, expressionData);
 
                     if ( !exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().isEnabled() )
                         exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().setEnabled(true);
@@ -1277,7 +1277,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         if (DEBUG_BUILD) println("Loading Expression Data");
 
                         expressionLoader = new ExpressionLoader(layoutClassSetsManager);
-                        expressionLoader.init(expressionFile, expresionData, EXPRESSION_DATA_START);
+                        expressionLoader.init(expressionFile, expressionData, EXPRESSION_DATA_START);
                         isSuccessful = expressionLoader.parse(this);
 
                         expressionLoader.reInit();
@@ -1893,7 +1893,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
     public ExpressionData getExpressionData()
     {
-        return expresionData;
+        return expressionData;
     }
 
     public ExpressionViewerFrame getExpressionViewerFrame()
