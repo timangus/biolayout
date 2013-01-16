@@ -1766,24 +1766,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
             this.dispose();
             System.exit(0);
         }
-        else if ( layoutGraphPropertiesDialog.getHasNewPreferencesBeenApplied() )
-        {
-            int option = JOptionPane.showConfirmDialog(this, "Do you want to save your preferences before exiting BioLayout Express 3D ?", "Save Preferences & Exit BioLayout Express 3D", JOptionPane.YES_NO_CANCEL_OPTION);
-            if (option == JOptionPane.YES_OPTION)
-            {
-                LayoutPreferences.getLayoutPreferencesSingleton().savePreferences();
-
-                fileDragNDrop.remove(graph, true);
-                this.dispose();
-                System.exit(0);
-            }
-            else if (option == JOptionPane.NO_OPTION)
-            {
-                fileDragNDrop.remove(graph, true);
-                this.dispose();
-                System.exit(0);
-            }
-        }
         else
         {
             String addedExitMessage = "";
@@ -1795,6 +1777,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 allExitMessageIndices.remove(0);
                 addedExitMessage = ALL_EXIT_MESSAGES[randomIndex] + "\n";
             }
+
+            // Always save preferences
+            LayoutPreferences.getLayoutPreferencesSingleton().savePreferences();
 
             int option = JOptionPane.showConfirmDialog(this, addedExitMessage + "Do you really want to exit BioLayout Express 3D ?", "Exit BioLayout Express 3D", JOptionPane.OK_CANCEL_OPTION);
             if (option == JOptionPane.OK_OPTION)
