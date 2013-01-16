@@ -8,6 +8,7 @@ import org.BioLayoutExpress3D.DebugConsole.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 /**
 *
@@ -131,9 +132,10 @@ public final class Layout
 
         Properties properties = new Properties();
         properties.put("Detected JVM bitness", (IS_64BIT ? "64 bit" : "32 bit"));
-        properties.put("Number or cores", RUNTIME.availableProcessors());
+        properties.put("Number or cores", Integer.toString(RUNTIME.availableProcessors()));
         properties.put("Maximum JVM memory usage", (RUNTIME.maxMemory() / ONE_MB) + " MB");
         properties.put("Total JVM memory usage", (RUNTIME.totalMemory() / ONE_MB) + " MB");
+        properties.put("Settings folder", DataFolder.get());
         output += propertiesToString(properties);
 
         // Java properties
