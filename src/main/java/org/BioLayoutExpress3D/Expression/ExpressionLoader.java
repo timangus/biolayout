@@ -6,6 +6,7 @@ import org.BioLayoutExpress3D.Analysis.*;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
 import org.BioLayoutExpress3D.Network.*;
+import org.BioLayoutExpress3D.Utils.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -19,12 +20,12 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 public final class ExpressionLoader
 {
     private File file = null;
-    private BufferedReader fileReaderBuffered = null;
-    private BufferedReader fileReaderCounter = null;
     private ExpressionData expressionData = null;
     private LayoutClassSetsManager layoutClassSetsManager = null;
     private String[] annotationColumnLabels = null;
-    private int dataStart = 0;
+    private int firstDataColumn = 0;
+    private int firstDataRow = 0;
+    private boolean transpose = false;
     boolean isSuccessful = false;
 
     public ExpressionLoader(LayoutClassSetsManager layoutClassSetsManager)
@@ -32,256 +33,225 @@ public final class ExpressionLoader
         this.layoutClassSetsManager = layoutClassSetsManager;
     }
 
-    public boolean init(File file, ExpressionData expressionData, int startColumn)
+    public boolean init(File file, ExpressionData expressionData,
+            int firstDataColumn, int firstDataRow, boolean transpose)
     {
-        this.dataStart = startColumn - 1;
+        this.firstDataColumn = firstDataColumn;
+        this.firstDataRow = firstDataRow;
+        this.transpose = transpose;
         this.file = file;
         this.expressionData = expressionData;
 
-        return reInit();
+        return true;
     }
 
-    public boolean reInit()
+    class ParseProgressIndicator implements TextDelimitedMatrix.ProgressIndicator
     {
-        try
-        {
-            fileReaderBuffered = new BufferedReader( new FileReader(file) );
-            fileReaderCounter = new BufferedReader( new FileReader(file) );
+        private LayoutProgressBarDialog layoutProgressBarDialog;
 
-            return true;
+        public ParseProgressIndicator(LayoutProgressBarDialog layoutProgressBarDialog)
+        {
+            this.layoutProgressBarDialog = layoutProgressBarDialog;
         }
-        catch (Exception exc)
-        {
-            if (DEBUG_BUILD) println("Exception in reInit:\n" + exc.getMessage());
 
-            return false;
+        @Override
+        public void notify(int percent)
+        {
+            layoutProgressBarDialog.incrementProgress(percent);
         }
     }
 
     public boolean parse(LayoutFrame layoutFrame)
     {
-
-        isSuccessful = false;
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
         layoutProgressBarDialog.prepareProgressBar(100, "Reading Expression Data: ");
         layoutProgressBarDialog.startProgressBar();
 
-        int totalRows = 0;
-        int totalColumns = 0;
-        int counter = 0;
+        ParseProgressIndicator ppi = new ParseProgressIndicator(layoutProgressBarDialog);
+
+        TextDelimitedMatrix tdm;
 
         try
         {
-            String line = "";
-            String[] columnHeaders = null;
-            while ( ( line = fileReaderCounter.readLine() ) != null)
-            {
-                if (totalRows == 0)
-                {
-                    columnHeaders = line.split("\t");
-                    for (int i = dataStart; i < columnHeaders.length; i++)
-                        totalColumns++;
-                }
+            tdm = new TextDelimitedMatrix(file, "\t", ppi);
 
-                totalRows++;
+            layoutProgressBarDialog.setText("Parsing " + tdm.numLines() + " lines");
+
+            if (!tdm.parse())
+            {
+                return false;
             }
 
-            int totalAnnotationColumns = dataStart - 1;
+            tdm.setTranspose(transpose);
+            int numColumns = tdm.numColumns();
+            int numRows = tdm.numRows();
+
+            int totalAnnotationColumns = firstDataColumn - 1;
             annotationColumnLabels = new String[totalAnnotationColumns];
-            layoutProgressBarDialog.setText("Parsing: " + totalRows + " Rows, " + totalColumns + " Data Columns & " + totalAnnotationColumns + " Annotation Columns");
-            expressionData.initialize(totalRows - 1, totalColumns, totalAnnotationColumns);
+            expressionData.initialize(
+                    numRows - firstDataRow,
+                    numColumns - firstDataColumn,
+                    totalAnnotationColumns);
 
-            int percent = 0;
-            String[] lineSplit = null;
-            int currentColumn = 0;
-            float currentValue = 0.0f;
-            String annotation = "";
-            while ( ( line = fileReaderBuffered.readLine() ) != null)
+            layoutProgressBarDialog.setText("Loading data");
+
+            for (int row = 0; row < numRows; row++)
             {
-                percent = (int)rint(100.0 * counter / (double)totalRows);
+                int percent = (100 * row) / numRows;
                 layoutProgressBarDialog.incrementProgress(percent);
-                lineSplit = line.split("\t");
 
-                if (counter == 0)
+                for (int column = 0; column < numColumns; column++)
                 {
-                    currentColumn = 0;
-                    for (int i = dataStart; i < lineSplit.length; i++)
-                    {
-                        expressionData.setColumnName(currentColumn, lineSplit[i]);
-                        currentColumn++;
-                    }
+                    String value = tdm.valueAt(column, row);
+                    int dataColumn = column - firstDataColumn;
+                    int dataRow = row - firstDataRow;
 
-                    for (int i = 1; i < dataStart; i++)
+                    if (row == 0)
                     {
-                        annotation = cleanString(lineSplit[i]);
-                        layoutClassSetsManager.createNewClassSet(annotation);
-                        annotationColumnLabels[i - 1] = annotation;
+                        if (column >= firstDataColumn)
+                        {
+                            // Data column names
+                            expressionData.setColumnName(dataColumn, value);
+                        }
+                        else if (column >= 1)
+                        {
+                            // Annotation classes
+                            String annotation = cleanString(value);
+                            layoutClassSetsManager.createNewClassSet(annotation);
+                            annotationColumnLabels[column - 1] = annotation;
+                        }
                     }
-
+                    else if (row >= firstDataRow)
+                    {
+                        if (column == 0)
+                        {
+                            // Row names
+                            expressionData.setRowID(dataRow, value);
+                            expressionData.setIdentityMap(value, dataRow);
+                        }
+                        else if (column >= firstDataColumn)
+                        {
+                            // The data itself
+                            float currentValue = Float.parseFloat(value.replace(',', '.'));
+                            expressionData.setExpressionDataValue(dataRow, dataColumn, currentValue);
+                            expressionData.addToSumX_cache(dataRow, currentValue);
+                            expressionData.addToSumX2_cache(dataRow, currentValue * currentValue);
+                        }
+                    }
                 }
-                else
-                {
-                    // to get rid of the NodeName being in "NodeName" format
-                    if ( lineSplit[0].startsWith("\"") )
-                        lineSplit[0] = lineSplit[0].substring(1, lineSplit[0].length());
-
-                    if ( lineSplit[0].endsWith("\"") )
-                        lineSplit[0] = lineSplit[0].substring(0, lineSplit[0].length() - 1);
-
-                    expressionData.setRowID(counter - 1, lineSplit[0]);
-                    expressionData.setIdentityMap(lineSplit[0], counter - 1);
-
-                    currentColumn = 0;
-                    for (int i = dataStart; i < lineSplit.length; i++)
-                    {
-                        currentValue = Float.parseFloat( lineSplit[i].replace(',', '.') );
-                        expressionData.setExpressionDataValue(counter - 1, currentColumn, currentValue);
-                        expressionData.addToSumX_cache(counter - 1, currentValue);
-                        expressionData.addToSumX2_cache(counter - 1, currentValue * currentValue);
-                        currentColumn++;
-                    }
-                }
-
-                counter++;
+            }
+        }
+        catch (NumberFormatException nfe)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("NumberFormatException in ExpressionLoader.parse():\n" + nfe.getMessage());
             }
 
-            isSuccessful = true;
+            return false;
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in ExpressionLoader.parse():\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException in ExpressionLoader.parse():\n" + ioe.getMessage());
+            }
+
+            return false;
         }
         finally
         {
-            try
-            {
-                fileReaderCounter.close();
-                fileReaderBuffered.close();
-            }
-            catch (IOException ioe)
-            {
-                if (DEBUG_BUILD) println("IOException while closing streams in ExpressionLoader.parse():\n" + ioe.getMessage());
-            }
-            finally
-            {
-                layoutProgressBarDialog.endProgressBar();
-            }
+            layoutProgressBarDialog.endProgressBar();
         }
 
-        return isSuccessful;
+        return true;
     }
 
     public boolean parseAnnotations(LayoutFrame layoutFrame, NetworkContainer nc)
     {
-        isSuccessful = false;
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
-        layoutProgressBarDialog.prepareProgressBar(100, "Reading Expression Annotations: ");
+        layoutProgressBarDialog.prepareProgressBar(100, "Reading Expression Data: ");
         layoutProgressBarDialog.startProgressBar();
 
-        int totalRows = 0;
-        int totalColumns = 0;
-        int counter = 0;
+        ParseProgressIndicator ppi = new ParseProgressIndicator(layoutProgressBarDialog);
+
+        TextDelimitedMatrix tdm;
+
         int chipGeneCount = 0;
 
         try
         {
-            String line = "";
-            String[] columnHeaders = null;
-            while ( ( line = fileReaderCounter.readLine() ) != null)
-            {
-                if (totalRows == 0)
-                {
-                    columnHeaders = line.split("\t");
-                    for (int i = dataStart; i < columnHeaders.length; i++)
-                        totalColumns++;
-                }
+            tdm = new TextDelimitedMatrix(file, "\t", ppi);
 
-                totalRows++;
+            layoutProgressBarDialog.setText("Parsing " + tdm.numLines() + " lines");
+
+            if (!tdm.parse())
+            {
+                return false;
             }
 
-            int totalAnnotationColumns = dataStart - 1;
-            layoutProgressBarDialog.setText("Parsing: " + totalRows + " Rows, " + totalColumns + " Data Columns & " + totalAnnotationColumns + " Annotation Columns");
+            tdm.setTranspose(transpose);
+            int numColumns = tdm.numColumns();
+            int numRows = tdm.numRows();
 
-            int percent = 0;
-            String[] lineSplit = null;
-            Vertex vertex = null;
-            LayoutClasses layoutClasses = null;
-            String annotation = "";
-            while ( ( line = fileReaderBuffered.readLine() ) != null)
+            layoutProgressBarDialog.setText("Loading annotations");
+
+            for (int row = firstDataRow; row < numRows; row++)
             {
-                percent = (int)rint(100.0 * counter / (double)totalRows);
+                int percent = (100 * row) / numRows;
                 layoutProgressBarDialog.incrementProgress(percent);
-                lineSplit = line.split("\t");
 
-                if (counter == 0)
+                Vertex vertex = null;
+
+                for (int column = 0; column < firstDataColumn; column++)
                 {
-                    // do nothing
-                }
-                else
-                {
-                    // to get rid of the NodeName being in "NodeName" format
-                    if ( lineSplit[0].startsWith("\"") )
-                        lineSplit[0] = lineSplit[0].substring(1, lineSplit[0].length());
+                    String value = tdm.valueAt(column, row);
 
-                    if ( lineSplit[0].endsWith("\"") )
-                        lineSplit[0] = lineSplit[0].substring(0, lineSplit[0].length() - 1);
-
-                    vertex = nc.getVerticesMap().get(lineSplit[0]);
-                    if (vertex != null)
+                    if (column == 0)
+                    {
+                        vertex = nc.getVerticesMap().get(value);
+                    }
+                    else if (vertex != null)
                     {
                         chipGeneCount++;
-                        for (int i = 1; i < dataStart; i++)
-                        {
-                            annotation = cleanString(lineSplit[i]);
-                            layoutClasses = layoutClassSetsManager.getClassSetByName(annotationColumnLabels[i - 1]);
+                        String annotation = cleanString(value);
+                        LayoutClasses layoutClasses =
+                                layoutClassSetsManager.getClassSetByName(annotationColumnLabels[column - 1]);
 
-                            if ( annotation.isEmpty() )
-                            {
-                                // if the annotation is empty set it to the noclass class
-                                layoutClasses.setClass(vertex, 0);
-                            }
-                            else
-                            {
-                                VertexClass vc = layoutClasses.createClass(annotation);
-                                layoutClasses.setClass(vertex, vc);
-                                AnnotationTypeManagerBG.getInstanceSingleton().add(vertex.getVertexName(), layoutClasses.getClassSetName(), vc.getName());
-                            }
+                        if (annotation.isEmpty())
+                        {
+                            // if the annotation is empty set it to the noclass class
+                            layoutClasses.setClass(vertex, 0);
+                        }
+                        else
+                        {
+                            VertexClass vc = layoutClasses.createClass(annotation);
+                            layoutClasses.setClass(vertex, vc);
+                            AnnotationTypeManagerBG.getInstanceSingleton().add(vertex.getVertexName(),
+                                    layoutClasses.getClassSetName(), vc.getName());
                         }
                     }
                 }
-
-                counter++;
             }
-
-            AnnotationTypeManagerBG.getInstanceSingleton().setChipGeneCount(chipGeneCount);
-            layoutProgressBarDialog.endProgressBar();
-
-            isSuccessful = true;
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in ExpressionLoader.parseAnnot():\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException in ExpressionLoader.parseAnnotations():\n" + ioe.getMessage());
+            }
+
+            return false;
         }
         finally
         {
-            try
-            {
-                fileReaderCounter.close();
-                fileReaderBuffered.close();
-            }
-            catch (IOException ioe)
-            {
-                if (DEBUG_BUILD) println("IOException while closing streams in ExpressionLoader.parseAnnot():\n" + ioe.getMessage());
-            }
-            finally
-            {
-                layoutProgressBarDialog.endProgressBar();
-            }
+            AnnotationTypeManagerBG.getInstanceSingleton().setChipGeneCount(chipGeneCount);
+            layoutProgressBarDialog.endProgressBar();
         }
 
-        return isSuccessful;
+        return true;
     }
 
     private String cleanString(String string)

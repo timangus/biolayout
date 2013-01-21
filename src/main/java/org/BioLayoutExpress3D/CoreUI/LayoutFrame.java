@@ -1113,58 +1113,67 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 clearNetworkAndGraph();
 
                 expressionLoader = new ExpressionLoader(layoutClassSetsManager);
-                expressionLoader.init(file, expressionData, expressionLoaderDialog.getStartColumn() );
-                expressionLoader.parse(this);
+                expressionLoader.init(file, expressionData,
+                        expressionLoaderDialog.getFirstDataColumn(),
+                        expressionLoaderDialog.getFirstDataRow(),
+                        expressionLoaderDialog.transpose() );
+                isSuccessful = expressionLoader.parse(this);
 
-                EXPRESSION_FILE = file.getName();
-                EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-                EXPRESSION_DATA_START = expressionLoaderDialog.getStartColumn();
-                DATA_TYPE = DataTypes.EXPRESSION;
-
-                if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
-                String metricName = CURRENT_METRIC.toString().toLowerCase();
-                File correlationFile = new File(IOUtils.getPrefix( file.getAbsolutePath() )+ "." + metricName);
-                if ( !correlationFile.exists() )
+                if (isSuccessful)
                 {
-                    expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
-                    file = correlationFile;
-                }
-                else
-                {
-                    // there seems to be saved expression correlations here, let's check they are good for our requirements
-                    ExpressionParser checker = new ExpressionParser(nc, this, expressionData);
-                    checker.init(correlationFile, fileExtension);
+                    EXPRESSION_FILE = file.getName();
+                    EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
+                    EXPRESSION_DATA_FIRST_COLUMN = expressionLoaderDialog.getFirstDataColumn();
+                    EXPRESSION_DATA_FIRST_ROW = expressionLoaderDialog.getFirstDataRow();
+                    EXPRESSION_DATA_TRANSPOSE = expressionLoaderDialog.transpose();
+                    DATA_TYPE = DataTypes.EXPRESSION;
 
-                    if ( checker.checkFile(CURRENT_METRIC.ordinal(), STORED_CORRELATION_THRESHOLD) )
+                    if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
+                    String metricName = CURRENT_METRIC.toString().toLowerCase();
+                    File correlationFile = new File(IOUtils.getPrefix( file.getAbsolutePath() )+ "." + metricName);
+                    if ( !correlationFile.exists() )
                     {
-                        // the file looks good, let's use it
+                        expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD, EXPRESSION_DATA_TRANSPOSE);
                         file = correlationFile;
                     }
                     else
                     {
-                        // the file is not good, close file before deletion, delete it & rebuild it
-                        checker.close();
-                        correlationFile.delete();
-                        expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
-                        file = correlationFile;
+                        // there seems to be saved expression correlations here, let's check they are good for our requirements
+                        ExpressionParser checker = new ExpressionParser(nc, this, expressionData);
+                        checker.init(correlationFile, fileExtension);
+
+                        if ( checker.checkFile(CURRENT_METRIC.ordinal(), STORED_CORRELATION_THRESHOLD, EXPRESSION_DATA_TRANSPOSE) )
+                        {
+                            // the file looks good, let's use it
+                            file = correlationFile;
+                        }
+                        else
+                        {
+                            // the file is not good, close file before deletion, delete it & rebuild it
+                            checker.close();
+                            correlationFile.delete();
+                            expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD, EXPRESSION_DATA_TRANSPOSE);
+                            file = correlationFile;
+                        }
+                    }
+
+                    ExpressionParser scanner = new ExpressionParser(nc, this, expressionData);
+                    scanner.init(file, fileExtension);
+                    scanner.scan();
+
+                    ExpressionLoaderSummaryDialog expressionLoaderSummaryDialog = new ExpressionLoaderSummaryDialog( this, expressionData.getCounts(), expressionData.getTotalRows() );
+                    expressionLoaderSummaryDialog.setVisible(true);
+
+                    if ( isNotSkipped = expressionLoaderSummaryDialog.proceed() )
+                    {
+                        parser = new ExpressionParser(nc, this, expressionData);
+
+                        if ( !exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().isEnabled() )
+                            exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().setEnabled(true);
                     }
                 }
 
-                ExpressionParser scanner = new ExpressionParser(nc, this, expressionData);
-                scanner.init(file, fileExtension);
-                scanner.scan();
-
-                ExpressionLoaderSummaryDialog expressionLoaderSummaryDialog = new ExpressionLoaderSummaryDialog( this, expressionData.getCounts(), expressionData.getTotalRows() );
-                expressionLoaderSummaryDialog.setVisible(true);
-
-                if ( isNotSkipped = expressionLoaderSummaryDialog.proceed() )
-                {
-                    parser = new ExpressionParser(nc, this, expressionData);
-
-                    if ( !exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().isEnabled() )
-                        exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().setEnabled(true);
-                }
-                else
+                if (!isSuccessful || !isNotSkipped)
                 {
                     // make sure previous network is deleted from the renderers if expression parsing is skipped,
                     // as the calls to clear() has cleaned it from network component memory
@@ -1260,7 +1269,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 // loading annotations now
                 if ( DATA_TYPE.equals(DataTypes.EXPRESSION) )
                 {
-                    expressionLoader.reInit();
                     isSuccessful = isSuccessful && expressionLoader.parseAnnotations(this, nc);
                 }
                 // else loading presaved data that points to expression data
@@ -1277,10 +1285,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         if (DEBUG_BUILD) println("Loading Expression Data");
 
                         expressionLoader = new ExpressionLoader(layoutClassSetsManager);
-                        expressionLoader.init(expressionFile, expressionData, EXPRESSION_DATA_START);
+                        expressionLoader.init(expressionFile, expressionData,
+                                EXPRESSION_DATA_FIRST_COLUMN,
+                                EXPRESSION_DATA_FIRST_ROW,
+                                EXPRESSION_DATA_TRANSPOSE);
                         isSuccessful = expressionLoader.parse(this);
 
-                        expressionLoader.reInit();
                         isSuccessful = isSuccessful && expressionLoader.parseAnnotations(this, nc);
                         DATA_TYPE = DataTypes.EXPRESSION;
                         EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);

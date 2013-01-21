@@ -23,32 +23,47 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     */
     public static final long serialVersionUID = 111222333444555706L;
 
-    private static final int NUMBER_OF_ROWS_TO_DISPLAY = 6;
-
     private FloatNumberField correlationField = null;
-    private JComboBox dataStart = null;
+    private JComboBox firstDataColumn = null;
+    private JComboBox firstDataRow = null;
     private JComboBox correlationMetric = null;
+    private JCheckBox transposeCheckBox = null;
     private JEditorPane textArea = null;
     private File expressionFile = null;
 
-    private int startColumn = 1;
     private boolean proceed = false;
 
     private AbstractAction okAction = null;
     private AbstractAction cancelAction = null;
+    private AbstractAction transposeChangedAction = null;
+
+    private boolean creatingDialogElements = false;
+
+    class DataBounds
+    {
+        public int firstColumn;
+        public int firstRow;
+
+        public DataBounds(int firstColumn, int firstRow)
+        {
+            this.firstColumn = firstColumn;
+            this.firstRow = firstRow;
+        }
+    }
+
+    private DataBounds dataBounds;
 
     public ExpressionLoaderDialog(JFrame frame, File expressionFile)
     {
         super(frame, "Load Expression Data", true);
 
         this.expressionFile = expressionFile;
+        this.dataBounds = new DataBounds(0, 0);
 
         initActions(frame);
         initComponents();
-        createDialogElements( guessStart(expressionFile) );
+        createDialogElements( transposeCheckBox.isSelected(), true );
 
-        this.pack();
-        this.setSize(700, 300);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
     }
@@ -57,7 +72,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     {
         JPanel topPanel = new JPanel(true);
         JPanel centrePanel = new JPanel(true);
-        JPanel downPanel = new JPanel(true);
+        JPanel bottomPanel = new JPanel(true);
 
         Container container = this.getContentPane();
         container.setLayout( new BorderLayout() );
@@ -73,22 +88,33 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
         }
         correlationMetric.setSelectedIndex(0);
-        correlationMetric.setToolTipText("Corr. Metric");
+        correlationMetric.setToolTipText("Correlation Metric");
 
         correlationField = new FloatNumberField(0, 5);
         correlationField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
         correlationField.setValue(STORED_CORRELATION_THRESHOLD);
-        correlationField.setToolTipText("Min Correlation");
-        dataStart = new JComboBox();
-        dataStart.addActionListener(this);
-        dataStart.setToolTipText("Data Columns Start");
+        correlationField.setToolTipText("Minimum Correlation");
 
+        transposeCheckBox = new JCheckBox(transposeChangedAction);
+        transposeCheckBox.setText("Transpose");
+
+        firstDataColumn = new JComboBox();
+        firstDataColumn.addActionListener(this);
+        firstDataColumn.setToolTipText("First Data Column");
+
+        firstDataRow = new JComboBox();
+        firstDataRow.addActionListener(this);
+        firstDataRow.setToolTipText("First Data Row");
+
+        topPanel.add(new JLabel("Minimum Correlation:"));
         topPanel.add(correlationField);
-        topPanel.add( new JLabel("Min Correlation    ") );
+        topPanel.add(new JLabel("Correlation Metric:"));
         topPanel.add(correlationMetric);
-        topPanel.add( new JLabel("Corr. Metric    ") );
-        topPanel.add(dataStart);
-        topPanel.add( new JLabel("Data Columns Start    ") );
+        topPanel.add(new JLabel("First Data Column:"));
+        topPanel.add(firstDataColumn);
+        topPanel.add(new JLabel("First Data Row:"));
+        topPanel.add(firstDataRow);
+        topPanel.add(transposeCheckBox);
 
         centrePanel.setLayout(new BorderLayout());
         textArea = new JEditorPane("text/html", "");
@@ -96,19 +122,19 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.setPreferredSize( new Dimension(500, 200) );
+        scrollPane.setPreferredSize( new Dimension(500, 400) );
         centrePanel.add(scrollPane, BorderLayout.CENTER);
 
         JButton okButton = new JButton(okAction);
         okButton.setToolTipText("OK");
         JButton cancelButton = new JButton(cancelAction);
         cancelButton.setToolTipText("Cancel");
-        downPanel.add(okButton);
-        downPanel.add(cancelButton);
+        bottomPanel.add(okButton);
+        bottomPanel.add(cancelButton);
 
         container.add(topPanel, BorderLayout.NORTH);
         container.add(centrePanel, BorderLayout.CENTER);
-        container.add(downPanel, BorderLayout.SOUTH);
+        container.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void initActions(final JFrame frame)
@@ -141,7 +167,6 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                 }
 
                 CURRENT_METRIC = CorrelationTypes.values()[correlationMetric.getSelectedIndex()];
-                startColumn = dataStart.getSelectedIndex() + 2;
                 proceed = true;
                 setVisible(false);
             }
@@ -161,138 +186,245 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                 setVisible(false);
             }
         };
+
+        transposeChangedAction = new AbstractAction("TransposeToggle")
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                refreshDataPreview(true);
+            }
+        };
     }
 
-    private void createDialogElements(int dataStart)
+    private void guessDataBounds(TextDelimitedMatrix tdm)
     {
-        try
+        firstDataColumn.removeAllItems();
+        firstDataRow.removeAllItems();
+
+        int mostNumericsInColumn = 0;
+        int mostNumericColumn = 0;
+
+        for (int column = 0; column < tdm.numColumns(); column++)
         {
-            BufferedReader reader = new BufferedReader( new FileReader(expressionFile) );
-            String line = "";
-            String options = null;
-            int linecount = 0;
-            int columns = 0;
+            int numericFieldCount = 0;
 
-            StringBuilder pageText = new StringBuilder();
-            pageText.append("<HTML><TABLE BORDER=\"1\">\n");
-
-            String[] split = null;
-            while ( ( (line = reader.readLine() ) != null ) && (linecount <= NUMBER_OF_ROWS_TO_DISPLAY) )
+            for (int row = 0; row < tdm.numRows(); row++)
             {
-                split = line.split("\t");
-                columns = split.length;
+                String value = tdm.valueAt(column, row);
 
-                // add the 'columns' line
-                if (linecount == 0)
+                if (column == 0)
                 {
-                    pageText.append("<TR>");
-                    for (int i = 0; i < columns; i++)
-                    {
-                        options = "BGCOLOR=\"#FFFFFF\"";
-                        pageText.append("<TD NOWRAP ").append(options).append(">" + "Column ").append(Integer.toString(i + 1)).append("</TD>");
-                    }
-                    pageText.append("</TR>\n");
+                    firstDataRow.addItem((row + 1) + ": " + value);
                 }
 
-                pageText.append("<TR>");
-                for (int i = 0; i < columns; i++)
+                if (isNumeric(value))
                 {
-                    // to get rid of the names being in 'name' format
-                    if ( split[i].startsWith("\"") )
-                        split[i] = split[i].substring( 1, split[i].length() );
+                    numericFieldCount++;
+                }
+            }
 
-                    if ( split[i].endsWith("\"") )
-                        split[i] = split[i].substring( 0, split[i].length() - 1 );
+            if (numericFieldCount > mostNumericsInColumn)
+            {
+                mostNumericsInColumn = numericFieldCount;
+                mostNumericColumn = column;
+            }
+        }
 
-                    if (linecount == 0)
+        int mostNumericsInRow = 0;
+        int mostNumericRow = 0;
+
+        for (int row = 0; row < tdm.numRows(); row++)
+        {
+            int numericFieldCount = 0;
+
+            for (int column = 0; column < tdm.numColumns(); column++)
+            {
+                String value = tdm.valueAt(column, row);
+
+                if (row == 0)
+                {
+                    firstDataColumn.addItem((column + 1) + ": " + value);
+                }
+
+                if (isNumeric(value))
+                {
+                    numericFieldCount++;
+                }
+            }
+
+            if (numericFieldCount > mostNumericsInRow)
+            {
+                mostNumericsInRow = numericFieldCount;
+                mostNumericRow = row;
+            }
+        }
+
+        firstDataColumn.setSelectedIndex(mostNumericColumn);
+        firstDataRow.setSelectedIndex(mostNumericRow);
+
+        dataBounds = new DataBounds(mostNumericColumn, mostNumericRow);
+    }
+
+    private void createDialogElements(boolean transpose, boolean guessDataBounds)
+    {
+        if (creatingDialogElements)
+        {
+            // Already doing this
+            return;
+        }
+
+        final int NUM_PREVIEW_COLUMNS = 128;
+        final int NUM_PREVIEW_ROWS = 16;
+
+        TextDelimitedMatrix tdm;
+
+        try
+        {
+            creatingDialogElements = true;
+            setCursor(BIOLAYOUT_WAIT_CURSOR);
+
+            if (transpose)
+            {
+                tdm = new TextDelimitedMatrix(expressionFile, "\t",
+                        NUM_PREVIEW_ROWS, NUM_PREVIEW_COLUMNS);
+            } else
+            {
+                tdm = new TextDelimitedMatrix(expressionFile, "\t",
+                        NUM_PREVIEW_COLUMNS, NUM_PREVIEW_ROWS);
+            }
+
+
+            if (!tdm.parse())
+            {
+                return;
+            }
+
+            tdm.setTranspose(transpose);
+            int numColumns = tdm.numColumns();
+            int numRows = tdm.numRows();
+
+            if (guessDataBounds)
+            {
+                guessDataBounds(tdm);
+            }
+
+            StringBuilder pageText = new StringBuilder();
+            pageText.append("<HTML>");
+
+            Font font = this.getContentPane().getFont();
+            String fontFamily = font.getFamily();
+            int fontSize = font.getSize();
+            pageText.append("<BODY STYLE=\"");
+            pageText.append("font-family: " + fontFamily + ";");
+            pageText.append("font-size: 10px;");
+            pageText.append("\">");
+
+            pageText.append("<TABLE STYLE=\"background-color: black\" " +
+                    "WIDTH=\"100%\" CELLSPACING=\"1\" CELLPADDING=\"2\">\n");
+
+            pageText.append("<TR><TD NOWRAP BGCOLOR=\"#FFFFFF\"></TD>");
+            for (int column = 0; column < numColumns; column++)
+            {
+                pageText.append("<TD NOWRAP ");
+                pageText.append("BGCOLOR=\"#FFFFFF\"");
+                pageText.append(">" + "Column ");
+                pageText.append(Integer.toString(column + 1));
+                pageText.append("</TD>");
+            }
+
+            if (tdm.hasUnparsedColumns())
+            {
+                pageText.append("<TD NOWRAP BGCOLOR=\"#FFFFFF\">More columns</TD>");
+            }
+            pageText.append("</TR>\n");
+
+            for (int row = 0; row < numRows; row++)
+            {
+                pageText.append("<TR>");
+
+                pageText.append("<TD NOWRAP ");
+                pageText.append("BGCOLOR=\"#FFFFFF\"");
+                pageText.append(">" + "Row ");
+                pageText.append(Integer.toString(row + 1));
+                pageText.append("</TD>");
+
+                for (int column = 0; column < numColumns; column++)
+                {
+                    String options;
+
+                    if (column >= dataBounds.firstColumn && row >= dataBounds.firstRow)
                     {
-                        options = "BGCOLOR=\"#6699FF\"";
+                        options = "BGCOLOR=\"#CCFFCC\"";
                     }
                     else
                     {
-                        options = "BGCOLOR=\"#CCFFCC\"";
-
-                        if (i == 0)
-                            options = "BGCOLOR=\"#FFCCCC\"";
-
-                        if (i >= dataStart)
-                            options = "BGCOLOR=\"#CCCCFF\"";
+                        options = "BGCOLOR=\"#FFCCCC\"";
                     }
 
-                    pageText.append("<TD NOWRAP ").append(options).append(">").append(split[i]).append("</TD>");
+                    String value = tdm.valueAt(column, row);
+
+                    pageText.append("<TD NOWRAP ");
+                    pageText.append(options);
+                    pageText.append(">");
+                    pageText.append(value);
+                    pageText.append("</TD>");
                 }
+
+                if (tdm.hasUnparsedColumns())
+                {
+                    pageText.append("<TD NOWRAP BGCOLOR=\"#FFFFFF\">...</TD>");
+                }
+
                 pageText.append("</TR>\n");
-                linecount++;
             }
 
-            pageText.append("</TABLE></HTML>\n");
-
-            textArea.setText( pageText.toString() );
-            reader.close();
-        }
-        catch (IOException ioe)
-        {
-           if (DEBUG_BUILD) println("IOException in ExpressionLoaderDialog.createDialogElements():\n" + ioe.getMessage());
-        }
-    }
-
-    private int guessStart(File file)
-    {
-        int maxColumns = 0;
-        int totalColumns = 0;
-
-        try
-        {
-            BufferedReader reader = new BufferedReader( new FileReader(file) );
-            String line = "";
-            String[] split = null;
-            int lineCount = 0;
-            String[] headers = null;
-
-            while( ( ( line = reader.readLine() ) != null ) && (lineCount <= NUMBER_OF_ROWS_TO_DISPLAY) )
+            if (tdm.hasUnparsedRows())
             {
-                split = line.split("\t");
-                totalColumns = split.length;
+                pageText.append("<TR>");
 
-                if (lineCount == 0)
+                // Row label column
+                pageText.append("<TD NOWRAP BGCOLOR=\"#FFFFFF\">More rows</TD>");
+
+                // Data columns
+                for (int column = 0; column < numColumns; column++)
                 {
-                    headers = new String[totalColumns];
-                    for (int i = 0; i < totalColumns; i++)
-                    {
-                        // to get rid of the names being in 'name' format
-                        if ( split[i].startsWith("\"") )
-                            split[i] = split[i].substring(1, split[i].length());
-
-                        if ( split[i].endsWith("\"") )
-                            split[i] = split[i].substring(0, split[i].length() - 1);
-
-                        headers[i] = split[i];
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < split.length; i++)
-                        if ( !isNumeric(split[i]) )
-                            if (i > maxColumns)
-                                maxColumns = i;
+                    pageText.append("<TD NOWRAP BGCOLOR=\"#FFFFFF\">...</TD>");
                 }
 
-                lineCount++;
+                // Bottom right corner
+                if (tdm.hasUnparsedColumns())
+                {
+                    pageText.append("<TD NOWRAP BGCOLOR=\"#FFFFFF\">...</TD>");
+                }
+
+                pageText.append("</TR>\n");
             }
 
-            // skip first column as it has the unique identifiers
-            for (int i = 1; i < totalColumns; i++)
-                dataStart.addItem("Column " + Integer.toString(i + 1) + ": " + headers[i]);
+            pageText.append("</TABLE>");
+            pageText.append("</BODY>");
+            pageText.append("</HTML>");
 
-            dataStart.setSelectedIndex(maxColumns);
-            reader.close();
+            textArea.setText(pageText.toString());
+            textArea.setCaretPosition(0);
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in ExpressionLoaderDialog.guessStart():\n" + ioe.getMessage());
+           if (DEBUG_BUILD)
+           {
+               println("IOException when parsing expression file:\n" + ioe.getMessage());
+           }
         }
+        finally
+        {
+            if (guessDataBounds)
+            {
+                this.pack();
+            }
 
-        return (maxColumns + 1);
+            setCursor(BIOLAYOUT_NORMAL_CURSOR);
+            creatingDialogElements = false;
+        }
     }
 
     private boolean isNumeric(String value)
@@ -310,11 +442,20 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         }
     }
 
+    private void refreshDataPreview(boolean guessDataBounds)
+    {
+        createDialogElements(transposeCheckBox.isSelected(), guessDataBounds);
+    }
+
     @Override
     public void actionPerformed (ActionEvent e)
     {
-        if ( e.getSource().equals(dataStart) )
-            createDialogElements(dataStart.getSelectedIndex() + 1);
+        if ( e.getSource().equals(firstDataColumn) || e.getSource().equals(firstDataRow))
+        {
+            dataBounds = new DataBounds(firstDataColumn.getSelectedIndex(),
+                    firstDataRow.getSelectedIndex());
+            refreshDataPreview(false);
+        }
     }
 
     public boolean proceed()
@@ -322,10 +463,18 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         return proceed;
     }
 
-    public int getStartColumn()
+    public int getFirstDataColumn()
     {
-        return startColumn;
+        return firstDataColumn.getSelectedIndex();
     }
 
+    public int getFirstDataRow()
+    {
+        return firstDataRow.getSelectedIndex();
+    }
 
+    public boolean transpose()
+    {
+        return transposeCheckBox.isSelected();
+    }
 }

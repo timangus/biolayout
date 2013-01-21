@@ -40,6 +40,8 @@ public final class ExpressionData
     */
     private static final int MAX_ARRAY_SIZE = MAX_ARRAY_RAM_USAGE / 4;
 
+    public static final int FILE_MAGIC_NUMBER = 0xB73D0001;
+
     private LayoutFrame layoutFrame = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
     private int rowIndex = 0;
@@ -172,7 +174,8 @@ public final class ExpressionData
     /**
     *  Builds the correlation network.
     */
-    public void buildCorrelationNetwork(LayoutProgressBarDialog layoutProgressBarDialog, File correlationFile, String metricName, float threshold)
+    public void buildCorrelationNetwork(LayoutProgressBarDialog layoutProgressBarDialog, File correlationFile,
+            String metricName, float threshold, boolean transpose)
     {
         this.layoutProgressBarDialog = layoutProgressBarDialog;
         this.rowIndex = 0;
@@ -216,8 +219,10 @@ public final class ExpressionData
                 sumColumns_X2_cacheArray[i] = (totalColumns * sumX2_cacheArray[i]);
             }
 
-            outOstream.writeInt( CURRENT_METRIC.ordinal() );
+            outOstream.writeInt(FILE_MAGIC_NUMBER);
+            outOstream.writeInt(CURRENT_METRIC.ordinal());
             outOstream.writeFloat(threshold);
+            outOstream.writeInt(transpose ? 1 : 0);
 
             if (USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() && USE_MULTICORE_PROCESS)
             {

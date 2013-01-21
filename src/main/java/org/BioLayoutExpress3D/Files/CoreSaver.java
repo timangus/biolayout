@@ -289,7 +289,13 @@ public final class CoreSaver
             if ( DATA_TYPE.equals(DataTypes.EXPRESSION) )
             {
                 String saveFilePath = saveFile.getAbsolutePath().substring(0, saveFile.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-                fileWriter.write("//EXPRESSION_DATA\t\"" + ( !saveFilePath.equals(EXPRESSION_FILE_PATH) ? EXPRESSION_FILE_PATH : "" ) + EXPRESSION_FILE + "\"\t" + EXPRESSION_DATA_START + "\t" + Float.toString(CURRENT_CORRELATION_THRESHOLD) + "\n");
+                fileWriter.write("//EXPRESSION_DATA_V2\t\"" +
+                        ( !saveFilePath.equals(EXPRESSION_FILE_PATH) ? EXPRESSION_FILE_PATH : "" ) +
+                        EXPRESSION_FILE + "\"\t" +
+                        EXPRESSION_DATA_FIRST_COLUMN + "\t" +
+                        EXPRESSION_DATA_FIRST_ROW + "\t" +
+                        EXPRESSION_DATA_TRANSPOSE + "\t" +
+                        Float.toString(CURRENT_CORRELATION_THRESHOLD) + "\n");
             }
 
             savePairWiseData(layoutProgressBarDialog, fileWriter);
