@@ -24,7 +24,6 @@ public final class LayoutOnlineServices extends HttpConnection
     */
     private static final String PHP_LINK_BUILD_PART = "?build=";
     private static final String PHP_LINK_VERSION_PART = "&version=";
-    private static final String PHP_LINK_WEBSTART_PART = "&webstart=";
 
     /**
     *  Constant variables used for downloading.
@@ -67,7 +66,9 @@ public final class LayoutOnlineServices extends HttpConnection
             @Override
             public void run()
             {
-                sendLinkWithHttpConnection( BIOLAYOUT_APPLICATION_USAGE_URL + PHP_LINK_BUILD_PART + ( (DEBUG_BUILD) ? "Debug" : "Release" ) + PHP_LINK_VERSION_PART + (TITLE_VERSION + TITLE_VERSION_NUMBER).replace(" ", "") + PHP_LINK_WEBSTART_PART + ( (WEBSTART) ? "Yes" : "No" ) );
+                sendLinkWithHttpConnection( BIOLAYOUT_APPLICATION_USAGE_URL + PHP_LINK_BUILD_PART +
+                        ( (DEBUG_BUILD) ? "Debug" : "Release" ) + PHP_LINK_VERSION_PART +
+                        (TITLE_VERSION + TITLE_VERSION_NUMBER).replace(" ", ""));
             }
 
 

@@ -189,18 +189,11 @@ public final class LoadNativeLibrary
     */
     public static String findCurrentProgramDirectory()
     {
-        if (WEBSTART)
-        {
-            return ("/" + System.getProperty("java.io.tmpdir") + "/").replace("\\", "/");
-        }
-        else
-        {
-            String JARPath = LoadNativeLibrary.class.getProtectionDomain().getCodeSource().getLocation().toString();
-            int firstIndex = JARPath.indexOf('/');
-            int lastIndex = JARPath.lastIndexOf('/');
+        String JARPath = LoadNativeLibrary.class.getProtectionDomain().getCodeSource().getLocation().toString();
+        int firstIndex = JARPath.indexOf('/');
+        int lastIndex = JARPath.lastIndexOf('/');
 
-            return "/" + JARPath.substring(firstIndex + 1, lastIndex + 1).replaceAll("%20", " ");
-        }
+        return "/" + JARPath.substring(firstIndex + 1, lastIndex + 1).replaceAll("%20", " ");
     }
 
     /**

@@ -235,8 +235,6 @@ public final class Layout
             System.err.println();
             System.err.println(" -fileOutput on|off      : fileOutput used for file logging (default off)");
             System.err.println();
-            System.err.println(" -webStart on|off        : webStart used for the WebStart version (default off)");
-            System.err.println();
         }
         System.err.println(" -loadFromRepository rep : loadFromRepository used to load datasets\n\t\t\t   from a web repository");
         System.err.println();
@@ -360,11 +358,6 @@ public final class Layout
                     fileOutput = "on".equals( args[++i].toLowerCase() );
                     if (DEBUG_BUILD) System.out.println("Now starting with file log output enabled: " + Boolean.toString(fileOutput));
                 }
-                else if ("-webStart".equals(args[i]))
-                {
-                    WEBSTART = "on".equals( args[++i].toLowerCase() );
-                    if (DEBUG_BUILD) System.out.println("Now starting with WebStart option enabled: " + Boolean.toString(WEBSTART));
-                }
                 else if ("-loadFromRepository".equals(args[i]))
                 {
                     repository = args[++i];
@@ -472,7 +465,9 @@ public final class Layout
             reportMemoryUsage();
         }
 
-        new Layout( ( !fileName.isEmpty() ) ? fileName : "", ( WEBSTART || !dataSets.isEmpty() ), repository, dataSets, hasChosenUseNativeCodeCommandLine, useNativeCode, hasChosenUseShadersProcessCommandLine, useShadersProcess );
+        new Layout( ( !fileName.isEmpty() ) ? fileName : "", !dataSets.isEmpty(),
+                repository, dataSets, hasChosenUseNativeCodeCommandLine, useNativeCode,
+                hasChosenUseShadersProcessCommandLine, useShadersProcess );
     }
 
 

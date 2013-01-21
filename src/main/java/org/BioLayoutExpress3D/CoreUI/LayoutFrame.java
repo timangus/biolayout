@@ -544,22 +544,20 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
         };
 
-        if (!WEBSTART)
-        {
-            helpMenuCheckForUpdatesAction = new AbstractAction("Check For Updates")
-            {
-                /**
-                *  Serial version UID variable for the AbstractAction class.
-                */
-                public static final long serialVersionUID = 111222333444555690L;
 
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    layoutOnlineServices.checkNowForApplicationUpdates(false);
-                }
-            };
-        }
+        helpMenuCheckForUpdatesAction = new AbstractAction("Check For Updates")
+        {
+            /**
+            *  Serial version UID variable for the AbstractAction class.
+            */
+            public static final long serialVersionUID = 111222333444555690L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                layoutOnlineServices.checkNowForApplicationUpdates(false);
+            }
+        };
 
         blockAllAction = new AbstractAction("Block All")
         {
@@ -692,7 +690,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setHelpMenuOpenGLDriverCapsAction( layoutOpenGLDriverCapsDialog.getOpenGLDriverCapsAction() );
         layoutMenuBar.setHelpMenuOpenCLDriverCapsAction( layoutOpenCLDriverCapsDialog.getOpenCLDriverCapsAction() );
         layoutMenuBar.setHelpMenuJavaPlatformCapsAction( layoutJavaPlatformCapsDialog.getJavaPlatformCapsAction() );
-        if (!WEBSTART) layoutMenuBar.setHelpMenuCheckForUpdatesAction(helpMenuCheckForUpdatesAction);
+        layoutMenuBar.setHelpMenuCheckForUpdatesAction(helpMenuCheckForUpdatesAction);
         layoutMenuBar.setHelpMenuAboutAction( layoutAboutDialog.getAboutAction() );
 
         // Adds the 2D/3D menus in 2D/3D mode
@@ -949,33 +947,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 JOptionPane.showMessageDialog(this, "Data Set Downloading failed, probable connection error!", "Error: Data Set Downloading failed", JOptionPane.ERROR_MESSAGE);
             }
             else
-                loadDataSet( new File( dataSetsDownloader.getDataSetName() ) );
-        }
-        else if (WEBSTART)
-        {
-            DataSetsDownloader dataSetsDownloader = new DataSetsDownloader(layoutProgressBarDialog);
-            boolean hasConnectedControlFileDataRetrieval = false;
-            boolean hasConnectedDataSetRetrieval = false;
-
-            if ( hasConnectedControlFileDataRetrieval = dataSetsDownloader.retrieveDataSetsControlFileDataFromRepository() )
-                 hasConnectedDataSetRetrieval = dataSetsDownloader.retrieveDataSetsFromRepository();
-
-            if (DEBUG_BUILD) println("Has successfully connected for data set control file data retrieval: " + hasConnectedControlFileDataRetrieval);
-            if (DEBUG_BUILD) println("Has successfully connected for data set retrieval: " + hasConnectedDataSetRetrieval);
-
-            if (!hasConnectedControlFileDataRetrieval)
-            {
-                layoutProgressBarDialog.endProgressBar();
-                layoutProgressBarDialog.stopProgressBar();
-                JOptionPane.showMessageDialog(this, "Data Set Control File Downloading failed, probable connection error!", "Error: Data Set Control File Downloading failed", JOptionPane.ERROR_MESSAGE);
-            }
-            else if (!hasConnectedDataSetRetrieval)
-            {
-                layoutProgressBarDialog.endProgressBar();
-                layoutProgressBarDialog.stopProgressBar();
-                JOptionPane.showMessageDialog(this, "Data Set Downloading failed, probable connection error!", "Error: Data Set Downloading failed", JOptionPane.ERROR_MESSAGE);
-            }
-            else if (hasConnectedControlFileDataRetrieval && hasConnectedDataSetRetrieval)
                 loadDataSet( new File( dataSetsDownloader.getDataSetName() ) );
         }
 

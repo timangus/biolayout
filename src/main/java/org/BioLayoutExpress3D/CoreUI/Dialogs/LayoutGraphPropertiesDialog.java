@@ -126,7 +126,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox generalShowNavigationToolBar = null;
     private JCheckBox generalShowPopupOverlayPlot = null;
     private JCheckBox generalCollapseNodesByVolume = null;
-    private JButton generalClearOnlineGraphsCache = null;
 
     private JCheckBox layoutResizeNodesAndArrowheadsToKvalue = null;
     private JCheckBox layoutUseEdgeWeightsForLayout = null;
@@ -918,12 +917,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalCollapseNodesByVolume.setActionCommand(CHANGE_ACTION_COMMAND);
         generalCollapseNodesByVolume.addActionListener(this);
         generalCollapseNodesByVolume.setToolTipText("Collapse Nodes By Volume");
-        if (WEBSTART)
-        {
-            generalClearOnlineGraphsCache = new JButton("Clear Online Graphs Cache");
-            generalClearOnlineGraphsCache.addActionListener(this);
-            generalClearOnlineGraphsCache.setToolTipText("Clear Online Graphs Cache");
-        }
 
         Border paneEdge = BorderFactory.createEmptyBorder(0, 10, 10, 10);
 
@@ -1004,8 +997,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalOptionsPanel1.add(generalShowNavigationToolBar);
         generalOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
         generalOptionsPanel1.add(generalShowPopupOverlayPlot);
-        if (WEBSTART)
-            generalOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 40) ) );
 
         JPanel generalOptionsPanel2 = new JPanel(true);
         generalOptionsPanel2.setLayout( new BoxLayout(generalOptionsPanel2, BoxLayout.Y_AXIS) );
@@ -1019,9 +1010,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalOptionsPanel2.add(generalWriteAllCorrelationDataToTextFile);
         generalOptionsPanel2.add( Box.createRigidArea( new Dimension(10, 10) ) );
         generalOptionsPanel2.add(generalCollapseNodesByVolume);
-        generalOptionsPanel2.add( Box.createRigidArea( new Dimension(10, (WEBSTART) ? 20 : 0) ) );
-        if (WEBSTART)
-            generalOptionsPanel2.add(generalClearOnlineGraphsCache);
 
         generalOptionsTopPanel.add(generalOptionsPanel1);
         generalOptionsTopPanel.add( Box.createRigidArea( new Dimension(15, 15) ) );
@@ -2733,20 +2721,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                                                     "Please disable either option to have a graph being visibly rendered.",
                                                     "Both Nodes And Edges Rendering Disabled",
                                                     JOptionPane.INFORMATION_MESSAGE);
-        }
-        else if ( e.getSource().equals(generalClearOnlineGraphsCache) && WEBSTART )
-        {
-            int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to Clear the Online Graphs Cache from your system ?", "Clear Online Graphs Cache", JOptionPane.YES_NO_OPTION);
-            if (option == JOptionPane.YES_OPTION)
-            {
-                File cacheDirectory = new File( DataFolder.get() );
-                File[] filesToDelete = cacheDirectory.listFiles( new BioLayoutExpress3DFileFilter(true) );
-                for (File file : filesToDelete)
-                {
-                    file.delete();
-                    if (DEBUG_BUILD) println("Online graph cached file to delete: " + file.getName());
-                }
-            }
         }
         else if ( e.getActionCommand().equals("OK") )
         {
