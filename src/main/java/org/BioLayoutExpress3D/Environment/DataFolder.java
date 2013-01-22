@@ -1,6 +1,7 @@
 package org.BioLayoutExpress3D.Environment;
 
-import java.nio.file.Paths;
+import java.io.File;
+import org.BioLayoutExpress3D.Utils.Path;
 import org.BioLayoutExpress3D.StaticLibraries.LoadNativeLibrary;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
@@ -38,6 +39,12 @@ public class DataFolder
             folder = LoadNativeLibrary.findCurrentProgramDirectory();
         }
 
+        File f = new File(folder);
+        if (!f.exists())
+        {
+            f.mkdirs();
+        }
+
         return folder;
     }
 
@@ -47,7 +54,7 @@ public class DataFolder
 
         if (!APPDATA.isEmpty())
         {
-            return Paths.get(APPDATA, BASENAME).toString();
+            return Path.combine(APPDATA, BASENAME);
         }
 
         return null;
@@ -59,7 +66,7 @@ public class DataFolder
 
         if (!userHome.isEmpty())
         {
-            return Paths.get(userHome, "Library", "Application Support", BASENAME).toString();
+            return Path.combine(userHome, "Library", "Application Support", BASENAME);
         }
 
         return null;
@@ -71,7 +78,7 @@ public class DataFolder
 
         if (!userHome.isEmpty())
         {
-            return Paths.get(userHome, BASENAME_UNIX).toString();
+            return Path.combine(userHome, BASENAME_UNIX);
         }
 
         return null;

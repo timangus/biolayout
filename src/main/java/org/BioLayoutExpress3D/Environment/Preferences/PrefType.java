@@ -2,11 +2,11 @@ package org.BioLayoutExpress3D.Environment.Preferences;
 
 import java.io.*;
 import java.util.*;
-import java.nio.file.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 import org.BioLayoutExpress3D.Environment.DataFolder;
+import org.BioLayoutExpress3D.Utils.Path;
 
 /**
 *
@@ -83,7 +83,7 @@ public abstract class PrefType
         {
             hasNotCheckedForConfigFile = false;
 
-            configFileNamePath = Paths.get(DataFolder.get(), CONFIG_FILE_NAME).toString();
+            configFileNamePath = Path.combine(DataFolder.get(), CONFIG_FILE_NAME);
 
             if ( !new File(configFileNamePath).exists() )
             {

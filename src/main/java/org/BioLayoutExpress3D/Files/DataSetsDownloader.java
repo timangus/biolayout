@@ -1,7 +1,7 @@
 package org.BioLayoutExpress3D.Files;
 
 import java.io.*;
-import java.nio.file.Paths;
+import org.BioLayoutExpress3D.Utils.Path;
 import java.util.*;
 import org.BioLayoutExpress3D.Connections.*;
 import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
@@ -150,7 +150,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
         if (dataSetNames.length == 1)
         {
             dataSetUrl = (repository.isEmpty() ? (BIOLAYOUT_EXPRESS_3D_DOMAIN_URL + BIOLAYOUT_SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[0] + dataSetNames[0];
-            dataSetFileName = Paths.get(DataFolder.get(), dataSetNames[0]).toString();
+            dataSetFileName = Path.combine(DataFolder.get(), dataSetNames[0]);
 
             if ( !new File( IOUtils.getPrefix(dataSetFileName) ).exists() )
             {
@@ -178,7 +178,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
             for (int i = 0; i < dataSetNames.length; i++)
             {
                 dataSetUrl = (repository.isEmpty() ? (BIOLAYOUT_EXPRESS_3D_DOMAIN_URL + BIOLAYOUT_SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[i] + dataSetNames[i];
-                dataSetFileName = Paths.get(DataFolder.get(), dataSetNames[i]).toString();
+                dataSetFileName = Path.combine(DataFolder.get(), dataSetNames[i]);
 
                 if ( !new File( IOUtils.getPrefix(dataSetFileName) ).exists() )
                 {
@@ -265,7 +265,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
     */
     public String getDataSetName()
     {
-        return IOUtils.getPrefix(Paths.get(DataFolder.get(), dataSetNames[0]).toString());
+        return IOUtils.getPrefix(Path.combine(DataFolder.get(), dataSetNames[0]));
     }
 
     /**

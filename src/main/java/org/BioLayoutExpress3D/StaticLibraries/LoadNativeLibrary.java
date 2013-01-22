@@ -3,7 +3,7 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.io.*;
 import java.lang.reflect.*;
 import com.jogamp.gluegen.runtime.*;
-import java.nio.file.Paths;
+import org.BioLayoutExpress3D.Utils.Path;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 import org.BioLayoutExpress3D.Environment.DataFolder;
@@ -174,7 +174,7 @@ public final class LoadNativeLibrary
     public static String findJavaLibraryPath()
     {
         String fileSeparator = System.getProperty("file.separator");
-        String javaLibraryPath = Paths.get(DataFolder.get(), EXTRACT_TO_LIBRARIES_FILE_PATH).toString();
+        String javaLibraryPath = Path.combine(DataFolder.get(), EXTRACT_TO_LIBRARIES_FILE_PATH);
         String[] allSeparatedPaths = javaLibraryPath.split("/");
         javaLibraryPath = "";
         for (String path : allSeparatedPaths)
