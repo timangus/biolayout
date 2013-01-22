@@ -203,6 +203,7 @@ public final class GlobalEnvironment
     public static final PrefBool SHOW_NAVIGATION_TOOLBAR = new PrefBool(true, "show_navigation_toolbar", true);
     public static final PrefBool SHOW_POPUP_OVERLAY_PLOT = new PrefBool(true, "show_popup_overlay_plot", true);
     public static final PrefBool COLLAPSE_NODES_BY_VOLUME = new PrefBool(false, "collapse_nodes_by_volume", true);
+    public static final PrefBool CONFIRM_PREFERENCES_SAVE  = new PrefBool(true, "confirm_preferences_save", true);
 
     public static final boolean RANDOM_INITIAL_LAYOUT_COORDS = true;
     public static final double REFERENCE_K_VALUE = 30.0;

@@ -1740,51 +1740,55 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
     private void closeApplication()
     {
-        // if no dataset loaded, exit immediately
-        if ( nc.getVertices().isEmpty() && !layoutGraphPropertiesDialog.getHasNewPreferencesBeenApplied() )
-        {
-            fileDragNDrop.remove(graph, true);
-            this.dispose();
-            System.exit(0);
-        }
-        else if ( layoutGraphPropertiesDialog.getHasNewPreferencesBeenApplied() )
-        {
-            int option = JOptionPane.showConfirmDialog(this, "Do you want to save your preferences before exiting BioLayout Express 3D ?", "Save Preferences & Exit BioLayout Express 3D", JOptionPane.YES_NO_CANCEL_OPTION);
-            if (option == JOptionPane.YES_OPTION)
-            {
-                LayoutPreferences.getLayoutPreferencesSingleton().savePreferences();
+        boolean savePreferences = true;
 
-                fileDragNDrop.remove(graph, true);
-                this.dispose();
-                System.exit(0);
+        if ( layoutGraphPropertiesDialog.getHasNewPreferencesBeenApplied() && CONFIRM_PREFERENCES_SAVE.get())
+        {
+            int option = JOptionPane.showConfirmDialog(this,
+                    "Do you want to save your preferences before exiting BioLayout Express 3D?",
+                    "Save Preferences & Exit BioLayout Express 3D", JOptionPane.YES_NO_CANCEL_OPTION);
+
+            if (option == JOptionPane.CANCEL_OPTION)
+            {
+                return;
             }
             else if (option == JOptionPane.NO_OPTION)
             {
-                fileDragNDrop.remove(graph, true);
-                this.dispose();
-                System.exit(0);
+                savePreferences = false;
             }
         }
-        else
+        else if (!nc.getVertices().isEmpty())
         {
             String addedExitMessage = "";
-            if ( (java.lang.Math.random() >= MESSAGE_APPEARANCE_PROBABILITY) && (CALENDAR.get(Calendar.DAY_OF_WEEK) ==  Calendar.FRIDAY) )
+            if ( (java.lang.Math.random() >= MESSAGE_APPEARANCE_PROBABILITY) &&
+                    (CALENDAR.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) )
             {
                 if ( allExitMessageIndices.isEmpty() )
+                {
                     allExitMessageIndices = createRandomIndexIntegerArrayList(ALL_EXIT_MESSAGES.length);
+                }
+
                 int randomIndex = allExitMessageIndices.get(0);
                 allExitMessageIndices.remove(0);
                 addedExitMessage = ALL_EXIT_MESSAGES[randomIndex] + "\n";
             }
 
-            int option = JOptionPane.showConfirmDialog(this, addedExitMessage + "Do you really want to exit BioLayout Express 3D ?", "Exit BioLayout Express 3D", JOptionPane.OK_CANCEL_OPTION);
-            if (option == JOptionPane.OK_OPTION)
+            if (JOptionPane.showConfirmDialog(this, addedExitMessage +
+                    "Do you really want to exit BioLayout Express 3D?",
+                    "Exit BioLayout Express 3D", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
             {
-                fileDragNDrop.remove(graph, true);
-                this.dispose();
-                System.exit(0);
+                return;
             }
         }
+
+        if (savePreferences)
+        {
+            LayoutPreferences.getLayoutPreferencesSingleton().savePreferences();
+        }
+
+        fileDragNDrop.remove(graph, true);
+        this.dispose();
+        System.exit(0);
     }
 
     public void setMaterialAntiAliasShading(boolean selected)

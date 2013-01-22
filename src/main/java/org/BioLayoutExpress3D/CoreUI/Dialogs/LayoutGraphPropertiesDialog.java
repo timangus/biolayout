@@ -126,6 +126,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox generalShowNavigationToolBar = null;
     private JCheckBox generalShowPopupOverlayPlot = null;
     private JCheckBox generalCollapseNodesByVolume = null;
+    private JCheckBox generalConfirmPreferencesSave = null;
 
     private JCheckBox layoutResizeNodesAndArrowheadsToKvalue = null;
     private JCheckBox layoutUseEdgeWeightsForLayout = null;
@@ -917,6 +918,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalCollapseNodesByVolume.setActionCommand(CHANGE_ACTION_COMMAND);
         generalCollapseNodesByVolume.addActionListener(this);
         generalCollapseNodesByVolume.setToolTipText("Collapse Nodes By Volume");
+        generalConfirmPreferencesSave = new JCheckBox("Confirm Preferences Save On Exit");
+        generalConfirmPreferencesSave.setActionCommand(CHANGE_ACTION_COMMAND);
+        generalConfirmPreferencesSave.addActionListener(this);
+        generalConfirmPreferencesSave.setToolTipText("Confirm Preferences Save On Exit");
 
         Border paneEdge = BorderFactory.createEmptyBorder(0, 10, 10, 10);
 
@@ -997,6 +1002,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalOptionsPanel1.add(generalShowNavigationToolBar);
         generalOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
         generalOptionsPanel1.add(generalShowPopupOverlayPlot);
+        generalOptionsPanel1.add( Box.createRigidArea( new Dimension(10, 10) ) );
+        generalOptionsPanel1.add(generalConfirmPreferencesSave);
 
         JPanel generalOptionsPanel2 = new JPanel(true);
         generalOptionsPanel2.setLayout( new BoxLayout(generalOptionsPanel2, BoxLayout.Y_AXIS) );
@@ -2873,6 +2880,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalShowNavigationToolBar.setSelected( SHOW_NAVIGATION_TOOLBAR.get() );
         generalShowPopupOverlayPlot.setSelected( SHOW_POPUP_OVERLAY_PLOT.get() );
         generalCollapseNodesByVolume.setSelected( COLLAPSE_NODES_BY_VOLUME.get() );
+        generalConfirmPreferencesSave.setSelected( CONFIRM_PREFERENCES_SAVE.get() );
         parallelismUseExpressionCorrelationCalculationNCoreParallelism.setSelected( USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() );
         parallelismUseExpressionCorrelationCalculationNCoreParallelism.setEnabled(USE_MULTICORE_PROCESS);
         parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.setSelected( USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() );
@@ -3298,6 +3306,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             SHOW_NAVIGATION_TOOLBAR.set( generalShowNavigationToolBar.isSelected() );
             SHOW_POPUP_OVERLAY_PLOT.set( generalShowPopupOverlayPlot.isSelected() );
             COLLAPSE_NODES_BY_VOLUME.set( generalCollapseNodesByVolume.isSelected() );
+            CONFIRM_PREFERENCES_SAVE.set( generalConfirmPreferencesSave.isSelected() );
             USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.set( parallelismUseExpressionCorrelationCalculationNCoreParallelism.isSelected() );
             USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.set( parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.isSelected() );
             USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.set( parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing.isSelected() );
