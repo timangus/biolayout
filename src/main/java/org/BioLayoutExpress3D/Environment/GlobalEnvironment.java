@@ -214,7 +214,7 @@ public final class GlobalEnvironment
     public static final PrefInt NUMBER_OF_LAYOUT_ITERATIONS = new PrefInt(100, "number_of_layout_iterations", true);
     public static final PrefFloat KVALUE_MODIFIER = new PrefFloat(1.0f, "kvalue_modifier", true);
     public static final PrefInt BURST_LAYOUT_ITERATIONS = new PrefInt(20, "burst_layout_iterations", true);
-    public static final PrefInt MINIMUM_COMPONENT_SIZE = new PrefInt(3, "minimum_component_size", true);
+    public static final PrefInt MINIMUM_COMPONENT_SIZE = new PrefInt(1, "minimum_component_size", true);
 
     public static final String DEFAULT_SURFACE_IMAGE_FILES_PATH = IMAGE_FILES_PATH + "SurfaceImages/";
     private static final String DEFAULT_SURFACE_IMAGE_FILE_NAME = "SurfaceImagesData.txt";
@@ -245,7 +245,7 @@ public final class GlobalEnvironment
     public static boolean MANUAL_SHAPE_3D = false;
     public static final PrefBool TRANSPARENT = new PrefBool(true, "transparent", true);
     public static final PrefFloat TRANSPARENT_ALPHA = new PrefFloat(0.5f, "transparent_alpha", true);
-    public static final PrefInt NODE_TESSELATION = new PrefInt(10, "node_tesselation", true);
+    public static final PrefInt NODE_TESSELATION = new PrefInt(20, "node_tesselation", true);
     public static final int NODE_TESSELATION_MIN_VALUE = 3;
     public static final int NODE_TESSELATION_MAX_VALUE = 30;
     public static final int NODE_TESSELATION_EXTRA_KEYS_VALUE_THRESHOLD = 20;
@@ -255,14 +255,14 @@ public final class GlobalEnvironment
     public static final PrefBool SHOW_3D_ENVIRONMENT_MAPPING = new PrefBool(false, "show_3d_environment_mapping", true);
     public static final PrefInt TILE_SCREEN_FACTOR = new PrefInt(5, "tile_screen_factor", true);
     public static final PrefBool FAST_SELECTION_MODE = new PrefBool(true, "fast_selection_mode", true);
-    public static final PrefBool WIREFRAME_SELECTION_MODE = new PrefBool(false, "wireframe_selection_mode", true);
-    public static final PrefBool ADVANCED_KEYBOARD_RENDERING_CONTROL = new PrefBool(false, "advanced_keyboard_rendering_control", true);
+    public static final PrefBool WIREFRAME_SELECTION_MODE = new PrefBool(true, "wireframe_selection_mode", true);
+    public static final PrefBool ADVANCED_KEYBOARD_RENDERING_CONTROL = new PrefBool(true, "advanced_keyboard_rendering_control", true);
     public static final PrefBool ANAGLYPH_STEREOSCOPIC_3D_VIEW = new PrefBool(false, "anaglyph_stereoscopic_3d_view", true);
     public static GraphAnaglyphGlassesTypes GRAPH_ANAGLYPH_GLASSES_TYPE = GraphAnaglyphGlassesTypes.RED_BLUE;
     public static final PrefString ANAGLYPH_GLASSES_TYPE = new PrefString(GraphAnaglyphGlassesTypes.RED_BLUE.toString(), "anaglyph_glasses_type", true);
     public static GraphIntraOcularDistanceTypes GRAPH_INTRA_OCULAR_DISTANCE_TYPE = GraphIntraOcularDistanceTypes._0_001;
     public static final PrefString INTRA_OCULAR_DISTANCE_TYPE = new PrefString(GraphIntraOcularDistanceTypes._0_001.toString(), "intra_ocular_distance", true);
-    public static final PrefFloat[] LIGHT_POSITION = { new PrefFloat(0.0f, "light_position_x", true), new PrefFloat(4.0f, "light_position_y", true), new PrefFloat(1.0f, "light_position_z", true) };
+    public static final PrefFloat[] LIGHT_POSITION = { new PrefFloat(10.0f, "light_position_x", true), new PrefFloat(10.0f, "light_position_y", true), new PrefFloat(5.0f, "light_position_z", true) };
     public static final PrefBool DEPTH_FOG = new PrefBool(true, "depth_fog", true);
     public static final PrefBool USE_MOTION_BLUR_FOR_SCENE = new PrefBool(false, "use_motion_blur_for_scene", true);
     public static final PrefFloat MOTION_BLUR_SIZE = new PrefFloat(0.6f, "motion_blur_size", true);
@@ -331,7 +331,7 @@ public final class GlobalEnvironment
     public static final PrefFloat OBJ_MODEL_LOADER_ROTATE_Y = new PrefFloat(0.0f, "obj_model_loader_rotate_y", true);
     public static final PrefFloat OBJ_MODEL_LOADER_ROTATE_Z = new PrefFloat(0.0f, "obj_model_loader_rotate_z", true);
 
-    public static final PrefFloat MCL_INFLATION_VALUE = new PrefFloat(3.0f, "mcl_inflation_value", true);
+    public static final PrefFloat MCL_INFLATION_VALUE = new PrefFloat(2.2f, "mcl_inflation_value", true);
     public static final PrefFloat MCL_PRE_INFLATION_VALUE = new PrefFloat(3.0f, "mcl_pre_inflation_value", true);
     public static final PrefInt MCL_SCHEME = new PrefInt(6, "mcl_scheme", true);
     public static final PrefInt MCL_SMALLEST_CLUSTER = new PrefInt(3, "mcl_smallest_cluster", true);
