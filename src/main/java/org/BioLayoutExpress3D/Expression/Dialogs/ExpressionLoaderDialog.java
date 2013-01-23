@@ -113,17 +113,24 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         preprocessingComboBox.setSelectedIndex(0);
         preprocessingComboBox.setToolTipText("Preprocessing");
 
-        topPanel.add(new JLabel("Minimum Correlation:"));
-        topPanel.add(correlationField);
-        topPanel.add(new JLabel("Correlation Metric:"));
-        topPanel.add(correlationMetric);
-        topPanel.add(new JLabel("First Data Column:"));
-        topPanel.add(firstDataColumn);
-        topPanel.add(new JLabel("First Data Row:"));
-        topPanel.add(firstDataRow);
-        topPanel.add(transposeCheckBox);
-        topPanel.add(new JLabel("Preprocessing:"));
-        topPanel.add(preprocessingComboBox);
+        JPanel topPanelLine1 = new JPanel();
+        topPanelLine1.add(new JLabel("Minimum Correlation:"));
+        topPanelLine1.add(correlationField);
+        topPanelLine1.add(new JLabel("Correlation Metric:"));
+        topPanelLine1.add(correlationMetric);
+        topPanelLine1.add(new JLabel("Preprocessing:"));
+        topPanelLine1.add(preprocessingComboBox);
+        topPanelLine1.add(transposeCheckBox);
+
+        JPanel topPanelLine2 = new JPanel();
+        topPanelLine2.add(new JLabel("First Data Column:"));
+        topPanelLine2.add(firstDataColumn);
+        topPanelLine2.add(new JLabel("First Data Row:"));
+        topPanelLine2.add(firstDataRow);
+
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.PAGE_AXIS));
+        topPanel.add(topPanelLine1);
+        topPanel.add(topPanelLine2);
 
         centrePanel.setLayout(new BorderLayout());
         textArea = new JEditorPane("text/html", "");
