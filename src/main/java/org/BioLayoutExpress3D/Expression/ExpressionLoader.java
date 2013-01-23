@@ -128,7 +128,6 @@ public final class ExpressionLoader
                         {
                             // Row names
                             expressionData.setRowID(dataRow, value);
-                            expressionData.setIdentityMap(value, dataRow);
                         }
                         else if (column >= firstDataColumn)
                         {

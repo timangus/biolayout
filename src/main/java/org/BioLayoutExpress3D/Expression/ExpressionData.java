@@ -831,12 +831,27 @@ public final class ExpressionData
         return rowIDsArray[index];
     }
 
+    private String uniqueID(String id)
+    {
+        String originalId = id;
+        int collisionAvoidanceSuffix = 1;
+        while (identityMap.containsKey(id))
+        {
+            id = originalId + "." + collisionAvoidanceSuffix;
+            collisionAvoidanceSuffix++;
+        }
+
+        return id;
+    }
+
     /**
     *  Sets the row ID data structure.
     */
     public void setRowID(int index, String id)
     {
+        id = uniqueID(id);
         rowIDsArray[index] = id;
+        identityMap.put(id, index);
     }
 
     /**
@@ -846,14 +861,6 @@ public final class ExpressionData
     {
         Integer value = identityMap.get(key);
         return (value == null) ? 0 : value;
-    }
-
-    /**
-    *  Sets the identityMap data structure.
-    */
-    public void setIdentityMap(String key, Integer value)
-    {
-        identityMap.put(key, value);
     }
 
     /**
