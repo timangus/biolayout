@@ -365,11 +365,22 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
                     if (column >= dataBounds.firstColumn && row >= dataBounds.firstRow)
                     {
-                        options = "BGCOLOR=\"#CCFFCC\"";
+                        options = "BGCOLOR=\"#CCCCFF\"";
                     }
                     else
                     {
-                        options = "BGCOLOR=\"#FFCCCC\"";
+                        if (row == 0)
+                        {
+                            options = "BGCOLOR=\"#6699FF\"";
+                        }
+                        else if (column == 0)
+                        {
+                            options = "BGCOLOR=\"#FFCCCC\"";
+                        }
+                        else
+                        {
+                            options = "BGCOLOR=\"#CCFFCC\"";
+                        }
                     }
 
                     String value = tdm.valueAt(column, row);
