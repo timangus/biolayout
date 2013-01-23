@@ -75,6 +75,7 @@ public class ExpressionParser extends CoreParser
             iistream.readInt();    // metric
             iistream.readFloat();  // correlation threshold
             iistream.readInt();    // transpose
+            iistream.readInt();    // preprocess
 
             int nodeId = 0;
             int percent = 0;
@@ -158,6 +159,7 @@ public class ExpressionParser extends CoreParser
             iistream.readInt();    // metric
             iistream.readFloat();  // correlation threshold
             iistream.readInt();    // transpose
+            iistream.readInt();    // preprocess
 
             int nodeId = 0;
             int otherId = 0;
@@ -191,12 +193,13 @@ public class ExpressionParser extends CoreParser
         }
     }
 
-    public boolean checkFile(int givenMetric, float givenThreshold, boolean givenTranspose)
+    public boolean checkFile(int givenMetric, float givenThreshold, boolean givenTranspose, int givenPreprocess)
     {
-        int magicNumber= 0;
+        int magicNumber = 0;
         int metric = -1;
         float savedThreshold = -1.0f;
         int transpose = -1;
+        int preprocess = -1;
         int givenTransposeAsInt = givenTranspose ? 1 : 0;
 
         try
@@ -205,6 +208,7 @@ public class ExpressionParser extends CoreParser
             metric = iistream.readInt();
             savedThreshold = iistream.readFloat();
             transpose = iistream.readInt();
+            preprocess = iistream.readInt();
         }
         catch (IOException ioe)
         {
@@ -214,13 +218,20 @@ public class ExpressionParser extends CoreParser
         }
 
         if ( magicNumber != ExpressionData.FILE_MAGIC_NUMBER)
+        {
             return false;
+        }
 
-        if ( (metric == -1) || (savedThreshold == -1) || (transpose == -1) )
+        if ( (metric == -1) || (savedThreshold == -1) || (transpose == -1) || (preprocess == -1) )
+        {
             return false;
+        }
 
-        if ( (givenMetric == metric) && (givenThreshold >= savedThreshold) && (givenTransposeAsInt == transpose) )
+        if ( (givenMetric == metric) && (givenThreshold >= savedThreshold) &&
+                (givenTransposeAsInt == transpose) && (givenPreprocess == preprocess) )
+        {
             return true;
+        }
 
         return false;
     }

@@ -40,7 +40,7 @@ public final class ExpressionData
     */
     private static final int MAX_ARRAY_SIZE = MAX_ARRAY_RAM_USAGE / 4;
 
-    public static final int FILE_MAGIC_NUMBER = 0xB73D0001;
+    public static final int FILE_MAGIC_NUMBER = 0xB73D0002;
 
     private LayoutFrame layoutFrame = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
@@ -223,6 +223,7 @@ public final class ExpressionData
             outOstream.writeInt(CURRENT_METRIC.ordinal());
             outOstream.writeFloat(threshold);
             outOstream.writeInt(transpose ? 1 : 0);
+            outOstream.writeInt(CURRENT_PREPROCESSING.ordinal());
 
             if (USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() && USE_MULTICORE_PROCESS)
             {
@@ -735,20 +736,21 @@ public final class ExpressionData
         System.gc();
     }
 
-    /**
-    *  Adds the given value to the given index of the sumX_cache data structure.
-    */
-    public void addToSumX_cache(int index, float value)
+    public void sumRows()
     {
-        sumX_cacheArray[index] += value;
-    }
+        for (int row = 0; row < totalRows; row++)
+        {
+            sumX_cacheArray[row] = 0.0f;
+            sumX2_cacheArray[row] = 0.0f;
 
-    /**
-    *  Adds the given value to the given index of the sumX2_cacheArray data structure.
-    */
-    public void addToSumX2_cache(int index, float value)
-    {
-        sumX2_cacheArray[index] += value;
+            for (int column = 0; column < totalColumns; column++)
+            {
+                float value = getExpressionDataValue(row, column);
+
+                sumX_cacheArray[row] += value;
+                sumX2_cacheArray[row] += (value * value);
+            }
+        }
     }
 
     /**
@@ -894,5 +896,98 @@ public final class ExpressionData
         return totalAnnotationColunms;
     }
 
+    private void preprocessMeanCentred(LayoutProgressBarDialog layoutProgressBarDialog)
+    {
+        for (int row = 0; row < totalRows; row++)
+        {
+            float mean = sumX_cacheArray[row] / totalColumns;
 
+            for (int column = 0; column < totalColumns; column++)
+            {
+                 float value = getExpressionDataValue(row, column);
+                 value = value - mean;
+                 setExpressionDataValue(row, column, value);
+            }
+
+            int percent = (100 * row) / totalRows;
+            layoutProgressBarDialog.incrementProgress(percent);
+        }
+
+        layoutProgressBarDialog.setText("Summing");
+        sumRows();
+    }
+
+    private void preprocessUnitVarianceScaled(LayoutProgressBarDialog layoutProgressBarDialog)
+    {
+        for (int row = 0; row < totalRows; row++)
+        {
+            float mean = sumX_cacheArray[row] / totalColumns;
+            float variance = sumX2_cacheArray[row] / totalColumns;
+            float stddev = (float)sqrt(variance);
+
+            for (int column = 0; column < totalColumns; column++)
+            {
+                 float value = getExpressionDataValue(row, column);
+                 value = (value - mean) / stddev;
+                 setExpressionDataValue(row, column, value);
+            }
+
+            int percent = (100 * row) / totalRows;
+            layoutProgressBarDialog.incrementProgress(percent);
+        }
+
+        layoutProgressBarDialog.setText("Summing");
+        sumRows();
+    }
+
+    private void preprocessParetoScaled(LayoutProgressBarDialog layoutProgressBarDialog)
+    {
+        for (int row = 0; row < totalRows; row++)
+        {
+            float mean = sumX_cacheArray[row] / totalColumns;
+            float variance = sumX2_cacheArray[row] / totalColumns;
+            float stddev = (float)sqrt(variance);
+            float pareto = (float)sqrt(stddev);
+
+            for (int column = 0; column < totalColumns; column++)
+            {
+                 float value = getExpressionDataValue(row, column);
+                 value = (value - mean) / pareto;
+                 setExpressionDataValue(row, column, value);
+            }
+
+            int percent = (100 * row) / totalRows;
+            layoutProgressBarDialog.incrementProgress(percent);
+        }
+
+        layoutProgressBarDialog.setText("Summing");
+        sumRows();
+    }
+
+    public void preprocess(LayoutProgressBarDialog layoutProgressBarDialog, PreprocessingType preprocessingType)
+    {
+        layoutProgressBarDialog.prepareProgressBar(100, "Preprocessing");
+        layoutProgressBarDialog.startProgressBar();
+
+        switch (preprocessingType)
+        {
+            default:
+            case NONE:
+                break;
+
+            case MEAN_CENTRED:
+                preprocessMeanCentred(layoutProgressBarDialog);
+                break;
+
+            case UNIT_VARIANCE_SCALED:
+                preprocessUnitVarianceScaled(layoutProgressBarDialog);
+                break;
+
+            case PARETO_SCALED:
+                preprocessParetoScaled(layoutProgressBarDialog);
+                break;
+        }
+
+        layoutProgressBarDialog.endProgressBar();
+    }
 }

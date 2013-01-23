@@ -8,6 +8,7 @@ import org.BioLayoutExpress3D.Utils.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.Expression.ExpressionEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.StaticLibraries.Utils;
 
 /**
 *
@@ -28,6 +29,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     private JComboBox firstDataRow = null;
     private JComboBox correlationMetric = null;
     private JCheckBox transposeCheckBox = null;
+    private JComboBox preprocessingComboBox = null;
     private JEditorPane textArea = null;
     private File expressionFile = null;
 
@@ -78,14 +80,10 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         container.setLayout( new BorderLayout() );
 
         correlationMetric = new JComboBox();
-        String correlationType = "";
-        CorrelationTypes[] allCorrelationTypes = CorrelationTypes.values();
-        for (int i = 0; i < allCorrelationTypes.length; i++)
+        for (CorrelationTypes type : CorrelationTypes.values())
         {
-            correlationType = allCorrelationTypes[i].toString().toLowerCase();
-            correlationType = Character.toUpperCase( correlationType.charAt(0) ) + correlationType.substring(1);
-            correlationMetric.addItem(correlationType);
-
+            String s = Utils.titleCaseOf(type.toString());
+            correlationMetric.addItem(s);
         }
         correlationMetric.setSelectedIndex(0);
         correlationMetric.setToolTipText("Correlation Metric");
@@ -106,6 +104,15 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         firstDataRow.addActionListener(this);
         firstDataRow.setToolTipText("First Data Row");
 
+        preprocessingComboBox = new JComboBox();
+        for (PreprocessingType type : PreprocessingType.values())
+        {
+            String s = Utils.titleCaseOf(type.toString());
+            preprocessingComboBox.addItem(s);
+        }
+        preprocessingComboBox.setSelectedIndex(0);
+        preprocessingComboBox.setToolTipText("Preprocessing");
+
         topPanel.add(new JLabel("Minimum Correlation:"));
         topPanel.add(correlationField);
         topPanel.add(new JLabel("Correlation Metric:"));
@@ -115,6 +122,8 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         topPanel.add(new JLabel("First Data Row:"));
         topPanel.add(firstDataRow);
         topPanel.add(transposeCheckBox);
+        topPanel.add(new JLabel("Preprocessing:"));
+        topPanel.add(preprocessingComboBox);
 
         centrePanel.setLayout(new BorderLayout());
         textArea = new JEditorPane("text/html", "");
@@ -167,6 +176,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                 }
 
                 CURRENT_METRIC = CorrelationTypes.values()[correlationMetric.getSelectedIndex()];
+                CURRENT_PREPROCESSING = PreprocessingType.values()[preprocessingComboBox.getSelectedIndex()];
                 proceed = true;
                 setVisible(false);
             }

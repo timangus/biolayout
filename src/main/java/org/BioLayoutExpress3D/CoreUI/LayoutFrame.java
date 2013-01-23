@@ -1099,6 +1099,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     EXPRESSION_DATA_TRANSPOSE = expressionLoaderDialog.transpose();
                     DATA_TYPE = DataTypes.EXPRESSION;
 
+                    expressionData.preprocess(layoutProgressBarDialog, CURRENT_PREPROCESSING);
+
                     if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
                     String metricName = CURRENT_METRIC.toString().toLowerCase();
                     File correlationFile = new File(IOUtils.getPrefix( file.getAbsolutePath() )+ "." + metricName);
@@ -1113,7 +1115,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         ExpressionParser checker = new ExpressionParser(nc, this, expressionData);
                         checker.init(correlationFile, fileExtension);
 
-                        if ( checker.checkFile(CURRENT_METRIC.ordinal(), STORED_CORRELATION_THRESHOLD, EXPRESSION_DATA_TRANSPOSE) )
+                        if ( checker.checkFile(CURRENT_METRIC.ordinal(), STORED_CORRELATION_THRESHOLD,
+                                EXPRESSION_DATA_TRANSPOSE, CURRENT_PREPROCESSING.ordinal()) )
                         {
                             // the file looks good, let's use it
                             file = correlationFile;

@@ -15,6 +15,16 @@ public final class ExpressionEnvironment
     */
     public static enum CorrelationTypes { PEARSON, SPEARMAN }
     public static CorrelationTypes CURRENT_METRIC = CorrelationTypes.PEARSON;
+
+    public static enum PreprocessingType
+    {
+        NONE,
+        MEAN_CENTRED,
+        UNIT_VARIANCE_SCALED,
+        PARETO_SCALED,
+    }
+    public static PreprocessingType CURRENT_PREPROCESSING = PreprocessingType.NONE;
+
     public static final float DEFAULT_CORRELATION_THRESHOLD = 0.85f;
     public static final float DEFAULT_STORED_CORRELATION_THRESHOLD = 0.70f;
     public static float       CURRENT_CORRELATION_THRESHOLD = DEFAULT_CORRELATION_THRESHOLD;

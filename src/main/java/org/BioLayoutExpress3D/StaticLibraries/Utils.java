@@ -233,5 +233,37 @@ public final class Utils
         return '#' + s;
     }
 
+    /**
+    *  Converts "one_two_three" to "One Two Three"
+    */
+    public static String titleCaseOf(String s, String delimiters, char delimiter)
+    {
+        StringBuilder out = new StringBuilder();
+        boolean nextTitleCase = true;
 
+        s = s.toLowerCase();
+
+        for (char c : s.toCharArray())
+        {
+            if (delimiters.indexOf(c) >= 0)
+            {
+                nextTitleCase = true;
+                c = delimiter;
+            }
+            else if (nextTitleCase)
+            {
+                c = Character.toTitleCase(c);
+                nextTitleCase = false;
+            }
+
+            out.append(c);
+        }
+
+        return out.toString();
+    }
+
+    public static String titleCaseOf(String s)
+    {
+        return titleCaseOf(s, " _", ' ');
+    }
 }

@@ -135,12 +135,12 @@ public final class ExpressionLoader
                             // The data itself
                             float currentValue = Float.parseFloat(value.replace(',', '.'));
                             expressionData.setExpressionDataValue(dataRow, dataColumn, currentValue);
-                            expressionData.addToSumX_cache(dataRow, currentValue);
-                            expressionData.addToSumX2_cache(dataRow, currentValue * currentValue);
                         }
                     }
                 }
             }
+
+            expressionData.sumRows();
         }
         catch (NumberFormatException nfe)
         {
