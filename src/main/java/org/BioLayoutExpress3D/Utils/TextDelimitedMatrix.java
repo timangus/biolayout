@@ -87,7 +87,7 @@ public class TextDelimitedMatrix
 
                 int numColumnsToParse;
 
-                if (maxColumns > 0)
+                if (maxColumns > 0 && maxColumns < columnCount)
                 {
                     numColumnsToParse = maxColumns;
                 }
