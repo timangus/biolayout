@@ -430,15 +430,28 @@ public final class FileDragNDrop
         try
         {
             br = new BufferedReader( flavor.getReaderForText(droppedItem) );
-            while ( ( fileName = br.readLine() ) != null )
+            String line;
+            while ( ( line = br.readLine() ) != null )
             {
-                if (DEBUG_BUILD) println("Unix fileName: " + fileName);
+                if (DEBUG_BUILD)
+                {
+                    println("Dropped Item line: " + line);
+                }
+
+                fileName = line;
 
                 // Remove 'file://' from file name
                 fileName = fileName.substring(7).replace("%20", " ");
                 // Remove 'localhost' from MaxOSX file names
                 if ( fileName.substring(0, 9).equals("localhost") )
+                {
                     fileName = fileName.substring(9);
+                }
+
+                if (DEBUG_BUILD)
+                {
+                    println("Unix fileName: " + fileName);
+                }
             }
         }
         finally
