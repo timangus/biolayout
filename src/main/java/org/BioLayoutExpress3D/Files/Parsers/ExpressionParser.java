@@ -72,10 +72,6 @@ public class ExpressionParser extends CoreParser
         try
         {
             iistream.readInt();    // magic number
-            iistream.readInt();    // metric
-            iistream.readFloat();  // correlation threshold
-            iistream.readInt();    // transpose
-            iistream.readInt();    // preprocess
 
             int nodeId = 0;
             int percent = 0;
@@ -156,10 +152,6 @@ public class ExpressionParser extends CoreParser
         try
         {
             iistream.readInt();    // magic number
-            iistream.readInt();    // metric
-            iistream.readFloat();  // correlation threshold
-            iistream.readInt();    // transpose
-            iistream.readInt();    // preprocess
 
             int nodeId = 0;
             int otherId = 0;
@@ -193,22 +185,13 @@ public class ExpressionParser extends CoreParser
         }
     }
 
-    public boolean checkFile(int givenMetric, float givenThreshold, boolean givenTranspose, int givenPreprocess)
+    public boolean checkFile()
     {
         int magicNumber = 0;
-        int metric = -1;
-        float savedThreshold = -1.0f;
-        int transpose = -1;
-        int preprocess = -1;
-        int givenTransposeAsInt = givenTranspose ? 1 : 0;
 
         try
         {
             magicNumber = iistream.readInt();
-            metric = iistream.readInt();
-            savedThreshold = iistream.readFloat();
-            transpose = iistream.readInt();
-            preprocess = iistream.readInt();
         }
         catch (IOException ioe)
         {
@@ -217,18 +200,7 @@ public class ExpressionParser extends CoreParser
             return false;
         }
 
-        if ( magicNumber != ExpressionData.FILE_MAGIC_NUMBER)
-        {
-            return false;
-        }
-
-        if ( (metric == -1) || (savedThreshold == -1) || (transpose == -1) || (preprocess == -1) )
-        {
-            return false;
-        }
-
-        if ( (givenMetric == metric) && (givenThreshold >= savedThreshold) &&
-                (givenTransposeAsInt == transpose) && (givenPreprocess == preprocess) )
+        if ( magicNumber == ExpressionData.FILE_MAGIC_NUMBER)
         {
             return true;
         }

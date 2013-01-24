@@ -233,37 +233,54 @@ public final class Utils
         return '#' + s;
     }
 
-    /**
-    *  Converts "one_two_three" to "One Two Three"
-    */
-    public static String titleCaseOf(String s, String delimiters, char delimiter)
+    private static String titleCaseOf(String s, boolean capitalise, String delimiterRegex, String newDelimiter)
     {
         StringBuilder out = new StringBuilder();
-        boolean nextTitleCase = true;
 
         s = s.toLowerCase();
 
-        for (char c : s.toCharArray())
+        String[] words = s.split(delimiterRegex);
+        for (int i = 0; i < words.length; i++)
         {
-            if (delimiters.indexOf(c) >= 0)
+            String word = words[i];
+
+            if (capitalise)
             {
-                nextTitleCase = true;
-                c = delimiter;
-            }
-            else if (nextTitleCase)
-            {
-                c = Character.toTitleCase(c);
-                nextTitleCase = false;
+                word = word.substring(0, 1).toUpperCase() + word.substring(1);
             }
 
-            out.append(c);
+            out.append(word);
+
+            if (i < words.length - 1)
+            {
+                out.append(newDelimiter);
+            }
         }
 
         return out.toString();
     }
 
+    /**
+    *  Converts "ONE_TWO_THREE" to "One Two Three"
+    */
     public static String titleCaseOf(String s)
     {
-        return titleCaseOf(s, " _", ' ');
+        return titleCaseOf(s, true, "_", " ");
+    }
+
+    /**
+    *  Converts "ONE_TWO_THREE" to "OneTwoThree"
+    */
+    public static String camelCaseOf(String s)
+    {
+        return titleCaseOf(s, true, "_", "");
+    }
+
+    /**
+    *  Converts "ONE_TWO_THREE" to "one-two-three"
+    */
+    public static String hyphenatedOf(String s)
+    {
+        return titleCaseOf(s, false, "_", "-");
     }
 }

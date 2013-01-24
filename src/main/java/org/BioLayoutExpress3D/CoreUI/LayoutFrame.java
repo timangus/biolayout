@@ -1103,10 +1103,26 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
                     if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
                     String metricName = CURRENT_METRIC.toString().toLowerCase();
-                    File correlationFile = new File(IOUtils.getPrefix( file.getAbsolutePath() )+ "." + metricName);
+
+                    String correlationFilename = IOUtils.getPrefix(file.getAbsolutePath());
+                    correlationFilename += "-datastart-" + EXPRESSION_DATA_FIRST_COLUMN + "x" + EXPRESSION_DATA_FIRST_ROW;
+                    correlationFilename += "-threshold-" + STORED_CORRELATION_THRESHOLD;
+                    if (EXPRESSION_DATA_TRANSPOSE)
+                    {
+                        correlationFilename += "-transpose";
+                    }
+                    if (CURRENT_PREPROCESSING != PreprocessingType.NONE)
+                    {
+                        correlationFilename += "-" + Utils.hyphenatedOf(CURRENT_PREPROCESSING.toString());
+                    }
+                    correlationFilename += "-" + metricName;
+                    correlationFilename += ".correlationcache";
+
+                    File correlationFile = new File(correlationFilename);
                     if ( !correlationFile.exists() )
                     {
-                        expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD, EXPRESSION_DATA_TRANSPOSE);
+                        expressionData.buildCorrelationNetwork(layoutProgressBarDialog,
+                                correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
                         file = correlationFile;
                     }
                     else
@@ -1115,18 +1131,20 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         ExpressionParser checker = new ExpressionParser(nc, this, expressionData);
                         checker.init(correlationFile, fileExtension);
 
-                        if ( checker.checkFile(CURRENT_METRIC.ordinal(), STORED_CORRELATION_THRESHOLD,
-                                EXPRESSION_DATA_TRANSPOSE, CURRENT_PREPROCESSING.ordinal()) )
+                        if ( checker.checkFile())
                         {
                             // the file looks good, let's use it
                             file = correlationFile;
                         }
                         else
                         {
-                            // the file is not good, close file before deletion, delete it & rebuild it
+                            // We should only get here if the correlationcache file is created by a different version
+                            //
+                            // The file is not good, close file before deletion, delete it & rebuild it
                             checker.close();
                             correlationFile.delete();
-                            expressionData.buildCorrelationNetwork(layoutProgressBarDialog, correlationFile, metricName, STORED_CORRELATION_THRESHOLD, EXPRESSION_DATA_TRANSPOSE);
+                            expressionData.buildCorrelationNetwork(layoutProgressBarDialog,
+                                    correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
                             file = correlationFile;
                         }
                     }
