@@ -1105,17 +1105,17 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     String metricName = CURRENT_METRIC.toString().toLowerCase();
 
                     String correlationFilename = IOUtils.getPrefix(file.getAbsolutePath());
-                    correlationFilename += "-datastart-" + EXPRESSION_DATA_FIRST_COLUMN + "x" + EXPRESSION_DATA_FIRST_ROW;
-                    correlationFilename += "-threshold-" + STORED_CORRELATION_THRESHOLD;
+                    correlationFilename += "_datastart-" + EXPRESSION_DATA_FIRST_COLUMN + "x" + EXPRESSION_DATA_FIRST_ROW;
+                    correlationFilename += "_threshold-" + STORED_CORRELATION_THRESHOLD;
                     if (EXPRESSION_DATA_TRANSPOSE)
                     {
-                        correlationFilename += "-transpose";
+                        correlationFilename += "_transpose";
                     }
                     if (CURRENT_PREPROCESSING != PreprocessingType.NONE)
                     {
-                        correlationFilename += "-" + Utils.hyphenatedOf(CURRENT_PREPROCESSING.toString());
+                        correlationFilename += "_" + Utils.hyphenatedOf(CURRENT_PREPROCESSING.toString());
                     }
-                    correlationFilename += "-" + metricName;
+                    correlationFilename += "_" + metricName;
                     correlationFilename += ".correlationcache";
 
                     File correlationFile = new File(correlationFilename);
