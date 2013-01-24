@@ -198,7 +198,6 @@ public final class GlobalEnvironment
     public static final PrefBool VALIDATE_XML_FILES = new PrefBool(false, "validate_xml_files", true);
     public static final PrefBool USE_INSTALL_DIR_FOR_SCREENSHOTS = new PrefBool(false, "use_install_dir_for_screenshots", true);
     public static final PrefBool USE_INSTALL_DIR_FOR_MCL_TEMP_FILE = new PrefBool(false, "use_install_dir_for_mcl_temp_file", true);
-    public static final PrefBool WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE = new PrefBool(false, "write_all_correlation_data_to_file", true);
     public static final PrefBool SHOW_GRAPH_PROPERTIES_TOOLBAR = new PrefBool(true, "show_graph_properties_toolbar", true);
     public static final PrefBool SHOW_NAVIGATION_TOOLBAR = new PrefBool(true, "show_navigation_toolbar", true);
     public static final PrefBool SHOW_POPUP_OVERLAY_PLOT = new PrefBool(true, "show_popup_overlay_plot", true);

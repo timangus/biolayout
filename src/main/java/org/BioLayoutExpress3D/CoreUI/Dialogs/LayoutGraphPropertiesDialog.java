@@ -121,7 +121,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox generalValidateXMLFiles = null;
     private JCheckBox generalUseInstallDirForScreenshots = null;
     private JCheckBox generalUseInstallDirForMCLTempFile = null;
-    private JCheckBox generalWriteAllCorrelationDataToTextFile = null;
     private JCheckBox generalShowGraphPropertiesToolBar = null;
     private JCheckBox generalShowNavigationToolBar = null;
     private JCheckBox generalShowPopupOverlayPlot = null;
@@ -910,10 +909,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalValidateXMLFiles.setActionCommand(CHANGE_ACTION_COMMAND);
         generalValidateXMLFiles.addActionListener(this);
         generalValidateXMLFiles.setToolTipText("Validate XML files when loading");
-        generalWriteAllCorrelationDataToTextFile = new JCheckBox("Write All Correlation Data To Text File");
-        generalWriteAllCorrelationDataToTextFile.setActionCommand(CHANGE_ACTION_COMMAND);
-        generalWriteAllCorrelationDataToTextFile.addActionListener(this);
-        generalWriteAllCorrelationDataToTextFile.setToolTipText("Write All Correlation Data To Text File");
         generalCollapseNodesByVolume = new JCheckBox("Collapse Nodes By Volume");
         generalCollapseNodesByVolume.setActionCommand(CHANGE_ACTION_COMMAND);
         generalCollapseNodesByVolume.addActionListener(this);
@@ -1013,8 +1008,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalOptionsPanel2.add(generalShowLayoutIterations);
         generalOptionsPanel2.add( Box.createRigidArea( new Dimension(10, 10) ) );
         generalOptionsPanel2.add(generalValidateXMLFiles);
-        generalOptionsPanel2.add( Box.createRigidArea( new Dimension(10, 10) ) );
-        generalOptionsPanel2.add(generalWriteAllCorrelationDataToTextFile);
         generalOptionsPanel2.add( Box.createRigidArea( new Dimension(10, 10) ) );
         generalOptionsPanel2.add(generalCollapseNodesByVolume);
 
@@ -2875,7 +2868,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalShowNavigationWizardOnStartup.setSelected( SHOW_NAVIGATION_WIZARD_ON_STARTUP.get() );
         generalShowLayoutIterations.setSelected( SHOW_LAYOUT_ITERATIONS.get() );
         generalValidateXMLFiles.setSelected( VALIDATE_XML_FILES.get() );
-        generalWriteAllCorrelationDataToTextFile.setSelected( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() );
         generalShowGraphPropertiesToolBar.setSelected( SHOW_GRAPH_PROPERTIES_TOOLBAR.get() );
         generalShowNavigationToolBar.setSelected( SHOW_NAVIGATION_TOOLBAR.get() );
         generalShowPopupOverlayPlot.setSelected( SHOW_POPUP_OVERLAY_PLOT.get() );
@@ -3297,7 +3289,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             SHOW_NAVIGATION_WIZARD_ON_STARTUP.set( generalShowNavigationWizardOnStartup.isSelected() );
             SHOW_LAYOUT_ITERATIONS.set( generalShowLayoutIterations.isSelected() );
             VALIDATE_XML_FILES.set( generalValidateXMLFiles.isSelected() );
-            WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.set( generalWriteAllCorrelationDataToTextFile.isSelected() );
             if ( generalShowGraphPropertiesToolBar.isSelected() != SHOW_GRAPH_PROPERTIES_TOOLBAR.get() )
                 layoutFrame.removeAddGraphPropertiesToolBar( !generalShowGraphPropertiesToolBar.isSelected() );
             SHOW_GRAPH_PROPERTIES_TOOLBAR.set( generalShowGraphPropertiesToolBar.isSelected() );

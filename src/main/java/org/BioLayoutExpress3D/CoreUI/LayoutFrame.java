@@ -1099,6 +1099,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     EXPRESSION_DATA_TRANSPOSE = expressionLoaderDialog.transpose();
                     DATA_TYPE = DataTypes.EXPRESSION;
 
+                    boolean generateTextFile = expressionLoaderDialog.saveCorrelationTextFile();
+
                     expressionData.preprocess(layoutProgressBarDialog, CURRENT_PREPROCESSING);
 
                     if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
@@ -1119,19 +1121,23 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     correlationFilename += ".correlationcache";
 
                     File correlationFile = new File(correlationFilename);
-                    if ( !correlationFile.exists() )
+                    if (!correlationFile.exists())
                     {
                         expressionData.buildCorrelationNetwork(layoutProgressBarDialog,
-                                correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
+                                correlationFile, metricName, STORED_CORRELATION_THRESHOLD,
+                                generateTextFile);
                         file = correlationFile;
                     }
                     else
                     {
+                        File correlationTextFile = new File(correlationFilename + ".txt");
+                        boolean forceGeneration = generateTextFile && !correlationTextFile.exists();
+
                         // there seems to be saved expression correlations here, let's check they are good for our requirements
                         ExpressionParser checker = new ExpressionParser(nc, this, expressionData);
                         checker.init(correlationFile, fileExtension);
 
-                        if ( checker.checkFile())
+                        if (!forceGeneration && checker.checkFile())
                         {
                             // the file looks good, let's use it
                             file = correlationFile;
@@ -1144,7 +1150,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
                             checker.close();
                             correlationFile.delete();
                             expressionData.buildCorrelationNetwork(layoutProgressBarDialog,
-                                    correlationFile, metricName, STORED_CORRELATION_THRESHOLD);
+                                    correlationFile, metricName, STORED_CORRELATION_THRESHOLD,
+                                    generateTextFile);
                             file = correlationFile;
                         }
                     }

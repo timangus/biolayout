@@ -175,7 +175,7 @@ public final class ExpressionData
     *  Builds the correlation network.
     */
     public void buildCorrelationNetwork(LayoutProgressBarDialog layoutProgressBarDialog, File correlationFile,
-            String metricName, float threshold)
+            String metricName, float threshold, boolean writeCorrelationTextFile)
     {
         this.layoutProgressBarDialog = layoutProgressBarDialog;
         this.rowIndex = 0;
@@ -188,7 +188,7 @@ public final class ExpressionData
         this.nf2 = NumberFormat.getNumberInstance();
         this.nf2.setMaximumFractionDigits(2);
 
-        if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
+        if ( writeCorrelationTextFile )
         {
             this.nf3 = NumberFormat.getNumberInstance();
             this.nf3.setMaximumFractionDigits(5);
@@ -205,8 +205,10 @@ public final class ExpressionData
         try
         {
             outOstream = new ObjectOutputStream( new BufferedOutputStream( new FileOutputStream(correlationFileTmp) ) );
-            if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
+            if ( writeCorrelationTextFile )
+            {
                 outPrintWriter = new PrintWriter(correlationFileTextTmp);
+            }
 
             WEIGHTED_EDGES = true;
             layoutProgressBarDialog.prepareProgressBar(100, "Calculating " + metricName + " Graph:");
@@ -223,28 +225,37 @@ public final class ExpressionData
 
             if (USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() && USE_MULTICORE_PROCESS)
             {
-                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold, outOstream, outPrintWriter);
+                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
+                        outOstream, outPrintWriter, writeCorrelationTextFile);
             }
             else if (USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED)
             {
                 FloatBuffer expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataBuffer : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksBuffer : expressionDataBuffer );
-                performOpenCLGPUComputingCorrelationCalculation(expressionData, threshold, outOstream, outPrintWriter);
+                performOpenCLGPUComputingCorrelationCalculation(expressionData, threshold, outOstream,
+                        outPrintWriter, writeCorrelationTextFile);
             }
             else if (USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && USE_SHADERS_PROCESS)
             {
                 FloatBuffer expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataBuffer : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksBuffer : expressionDataBuffer );
-                performGLSLGPUComputingCorrelationCalculation(expressionData, threshold, outOstream, outPrintWriter);
+                performGLSLGPUComputingCorrelationCalculation(expressionData, threshold, outOstream,
+                        outPrintWriter, writeCorrelationTextFile);
             }
             else
             {
                 if (!USE_MULTICORE_PROCESS)
-                    performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream, outPrintWriter);
+                {
+                    performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream,
+                            outPrintWriter, writeCorrelationTextFile);
+                }
                 else
-                    calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold, outOstream, outPrintWriter);
+                {
+                    calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
+                            outOstream, outPrintWriter, writeCorrelationTextFile);
+                }
             }
 
             outOstream.flush();
-            if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
+            if ( writeCorrelationTextFile )
                 outPrintWriter.flush();
         }
         catch (IOException ioe)
@@ -264,13 +275,20 @@ public final class ExpressionData
                 JOptionPane.showMessageDialog(layoutFrame, "IOException in closing the Correlation network outOstream stream\n" + ioe.getMessage(), "Error: IOException in closing the Correlation network outOstream stream", JOptionPane.ERROR_MESSAGE);
             }
 
-            if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
-                if (outPrintWriter != null) outPrintWriter.close();
+            if ( writeCorrelationTextFile )
+            {
+                if (outPrintWriter != null)
+                {
+                    outPrintWriter.close();
+                }
+            }
 
             // good, we are done
             correlationFileTmp.renameTo(correlationFile);
-            if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
+            if ( writeCorrelationTextFile )
+            {
                 correlationFileTextTmp.renameTo( new File(correlationFile.getAbsolutePath() + ".txt") );
+            }
 
             clearAllCachedDataStructures();
             layoutProgressBarDialog.endProgressBar();
@@ -280,7 +298,8 @@ public final class ExpressionData
     /**
     *  Calculates the correlation values in a single thread and writes them to a binary file.
     */
-    private void performSingleCoreCorrelationCalculationAndWriteToFile(float threshold, ObjectOutputStream outOstream, PrintWriter outPrintWriter) throws IOException
+    private void performSingleCoreCorrelationCalculationAndWriteToFile(float threshold, ObjectOutputStream outOstream,
+            PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
         float[] expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksArray : expressionDataArray );
         float correlation = 0.0f;
@@ -299,7 +318,7 @@ public final class ExpressionData
                     outOstream.writeFloat(correlation);
                 }
 
-                if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
+                if ( writeCorrelationTextFile )
                     outPrintWriter.println( rowIDsArray[i] + "\t" + rowIDsArray[j] + "\t" + nf3.format(correlation) );
             }
 
@@ -310,7 +329,8 @@ public final class ExpressionData
     /**
     *  Calculates the steps needed, memory allocated per step and executes the correlation calculation with N-Core parallelism.
     */
-    private void calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(float threshold, ObjectOutputStream outOstream, PrintWriter outPrintWriter) throws IOException
+    private void calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(float threshold,
+            ObjectOutputStream outOstream, PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
         // below is code to break the correlation calculation into steps according to how much memory we are allocating for the intermediate step results
         boolean isPowerOfTwo = org.BioLayoutExpress3D.StaticLibraries.Math.isPowerOfTwo(NUMBER_OF_AVAILABLE_PROCESSORS);
@@ -355,7 +375,8 @@ public final class ExpressionData
 
             if (DEBUG_BUILD) println("Now starting the N-Core parallelization process with the variables below:\nstartRow: " + (startRow + 1) + " endRow: " + (endRow + 1) + " arraySize: " + arraySize + " rowsSearchProcessedStopped: " + rowsSearchProcessedStopped);
             performMultiCoreCorrelationCalculation(isPowerOfTwo, startRow, endRow, stepResults, cachedRowsResultsIndicesToSkip);
-            writeAllStepResultsToFile(threshold, startRow, endRow, stepNumber, stepResults, outOstream, outPrintWriter);
+            writeAllStepResultsToFile(threshold, startRow, endRow, stepNumber, stepResults,
+                    outOstream, outPrintWriter, writeCorrelationTextFile);
 
             // clean memory before continuing
             stepResults = null;
@@ -571,17 +592,20 @@ public final class ExpressionData
     /**
     *  Writes all step results to a binary file.
     */
-    private void writeAllStepResultsToFile(float threshold, int startRow, int endRow, int stepNumber, float[] stepResults,
-                                           ObjectOutputStream outOstream, PrintWriter outPrintWriter) throws IOException
+    private void writeAllStepResultsToFile(float threshold, int startRow, int endRow,
+            int stepNumber, float[] stepResults, ObjectOutputStream outOstream,
+            PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
         String currentLayoutProgressBarText = layoutProgressBarDialog.getText();
-        currentLayoutProgressBarText = currentLayoutProgressBarText.substring(1, currentLayoutProgressBarText.indexOf(")") + 1);
-        layoutProgressBarDialog.setText(currentLayoutProgressBarText + "  (Now saving intermediate step " + stepNumber + " results to file)");
+        currentLayoutProgressBarText = currentLayoutProgressBarText.substring(1,
+                currentLayoutProgressBarText.indexOf(")") + 1);
 
         int index = 0;
         float correlation = 0.0f;
         for (int i = startRow; i <= endRow; i++)
         {
+            int percent = ((i - startRow) * 100) / (endRow - startRow);
+
             outOstream.writeInt(i);
 
             for (int j = (i + 1); j < totalRows; j++)
@@ -593,18 +617,22 @@ public final class ExpressionData
                     outOstream.writeFloat(correlation);
                 }
 
-                if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
+                if ( writeCorrelationTextFile )
                     outPrintWriter.println( rowIDsArray[i] + "\t" + rowIDsArray[j] + "\t" + nf3.format(correlation) );
             }
 
             outOstream.writeInt(i);
+
+            layoutProgressBarDialog.setText(currentLayoutProgressBarText +
+                    "  (Saving " + percent + "%)");
         }
     }
 
     /**
     *  Main method of the OpenCL GPU correlation calculation data parallel execution code.
     */
-    private void performOpenCLGPUComputingCorrelationCalculation(FloatBuffer expressionBuffer, float threshold, ObjectOutputStream outOstream, PrintWriter outPrintWriter) throws IOException
+    private void performOpenCLGPUComputingCorrelationCalculation(FloatBuffer expressionBuffer, float threshold,
+            ObjectOutputStream outOstream, PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
         org.BioLayoutExpress3D.GPUComputing.OpenCLContext.ExpressionData.ExpressionDataComputing expressionDataComputingContext = new org.BioLayoutExpress3D.GPUComputing.OpenCLContext.ExpressionData.ExpressionDataComputing( layoutFrame, true, COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU.get() );
         expressionDataComputingContext.initializeExpressionDataComputingVariables(this, layoutProgressBarDialog, nf1, nf2, nf3, totalRows, totalColumns, rowIDsArray, sumX_cacheBuffer, sumX_sumX2_cacheBuffer, sumColumns_X2_cacheBuffer, expressionBuffer, threshold, outOstream, outPrintWriter, EXPRESSION_DATA_GPU_COMPUTING_MAX_ERROR_THRESHOLD);
@@ -614,9 +642,15 @@ public final class ExpressionData
         if ( expressionDataComputingContext.getErrorOccured() )
         {
             if (USE_MULTICORE_PROCESS)
-                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold, outOstream, outPrintWriter);
+            {
+                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
+                        outOstream, outPrintWriter, writeCorrelationTextFile);
+            }
             else
-                performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream, outPrintWriter);
+            {
+                performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream,
+                        outPrintWriter, writeCorrelationTextFile);
+            }
         }
 
         expressionDataComputingContext = null;
@@ -625,7 +659,8 @@ public final class ExpressionData
     /**
     *  Main method of the GLSL GPU correlation calculation data parallel execution code.
     */
-    private void performGLSLGPUComputingCorrelationCalculation(FloatBuffer expressionBuffer, float threshold, ObjectOutputStream outOstream, PrintWriter outPrintWriter) throws IOException
+    private void performGLSLGPUComputingCorrelationCalculation(FloatBuffer expressionBuffer, float threshold,
+            ObjectOutputStream outOstream, PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
         // MAX_ALLOWED_TEXTURE_SIZE = 3584
         // TEXTURE_2D_ARB_R_32, MAX_ALLOWED_TEXTURE_SIZE, 14182, 52
@@ -674,9 +709,15 @@ public final class ExpressionData
         if ( expressionDataComputingContext.getErrorOccured() )
         {
             if (USE_MULTICORE_PROCESS)
-                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold, outOstream, outPrintWriter);
+            {
+                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
+                        outOstream, outPrintWriter, writeCorrelationTextFile);
+            }
             else
-                performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream, outPrintWriter);
+            {
+                performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream,
+                        outPrintWriter, writeCorrelationTextFile);
+            }
         }
 
         expressionDataComputingContext = null;

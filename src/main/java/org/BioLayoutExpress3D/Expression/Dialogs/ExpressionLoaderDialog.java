@@ -31,6 +31,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     private JCheckBox transposeCheckBox = null;
     private JComboBox preprocessingComboBox = null;
     private JEditorPane textArea = null;
+    private JCheckBox saveCorrelationTextFileCheckBox = null;
     private File expressionFile = null;
 
     private boolean proceed = false;
@@ -113,6 +114,9 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         preprocessingComboBox.setSelectedIndex(0);
         preprocessingComboBox.setToolTipText("Preprocessing");
 
+        saveCorrelationTextFileCheckBox = new JCheckBox();
+        saveCorrelationTextFileCheckBox.setText("Save Text File");
+
         JPanel topPanelLine1 = new JPanel();
         topPanelLine1.add(new JLabel("Minimum Correlation:"));
         topPanelLine1.add(correlationField);
@@ -121,6 +125,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         topPanelLine1.add(new JLabel("Preprocessing:"));
         topPanelLine1.add(preprocessingComboBox);
         topPanelLine1.add(transposeCheckBox);
+        topPanelLine1.add(saveCorrelationTextFileCheckBox);
 
         JPanel topPanelLine2 = new JPanel();
         topPanelLine2.add(new JLabel("First Data Column:"));
@@ -504,5 +509,10 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     public boolean transpose()
     {
         return transposeCheckBox.isSelected();
+    }
+
+    public boolean saveCorrelationTextFile()
+    {
+        return saveCorrelationTextFileCheckBox.isSelected();
     }
 }
