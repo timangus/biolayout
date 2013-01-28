@@ -814,9 +814,6 @@ public class ExpressionDataComputing extends OpenGLContext
                         outOstream.writeInt(j);
                         outOstream.writeFloat(correlation);
                     }
-
-                    if ( WRITE_ALL_CORRELATION_DATA_TO_TEXT_FILE.get() )
-                        outPrintWriter.println( rowIDsArray[i] + "\t" + rowIDsArray[j] + "\t" + nf3.format(correlation) );
                 }
             }
 

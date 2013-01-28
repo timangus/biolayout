@@ -1825,22 +1825,28 @@ final class GraphRenderer3D implements GraphInterface // package access
 
         int edgeIndex = 0;
         int displayListIndex = 0;
-        gl.glNewList(allEdgesDisplayLists.get(displayListIndex), GL_COMPILE);
-
-        if (!useProportionalEdgesSizeToWeightRendering)
-        {
-            gl.glLineWidth(lineWidth);
-            gl.glBegin(GL_LINES); // GL_TRIANGLES
-        }
 
         if (DEBUG_BUILD) println("GraphRenderer3D visibleEdges size: " + visibleEdges.size());
         for (GraphEdge edge : visibleEdges)
         {
-            if ( (++edgeIndex % EDGES_PER_DISPLAY_LIST) == 0 )
+            if ( (edgeIndex % EDGES_PER_DISPLAY_LIST) == 0 )
             {
-                gl.glEndList();
-                gl.glNewList(allEdgesDisplayLists.get(++displayListIndex), GL_COMPILE);
+                if (displayListIndex > 0)
+                {
+                    gl.glEndList();
+                }
+
+                gl.glNewList(allEdgesDisplayLists.get(displayListIndex), GL_COMPILE);
+
+                if (displayListIndex == 0 && !useProportionalEdgesSizeToWeightRendering)
+                {
+                    gl.glLineWidth(lineWidth);
+                    gl.glBegin(GL_LINES); // GL_TRIANGLES
+                }
+
+                displayListIndex++;
             }
+            edgeIndex++;
 
             if (useProportionalEdgesSizeToWeightRendering)
             {
