@@ -42,22 +42,25 @@ public class Materials
     */
     private boolean usingTexture = false;
 
+    private String materialFilename;
+    private boolean loadFromFileOrFromJar;
+
     /**
     *  The Materials class constructor.
     */
-    public Materials(Component component, String directoryFilename, String materialFilename, boolean loadFromFileOrFromJar)
+    public Materials(String materialFilename, boolean loadFromFileOrFromJar)
     {
         materialsMap = new HashMap<String, Material>();
-        parseMaterialFile(component, directoryFilename, materialFilename, loadFromFileOrFromJar);
+        this.materialFilename = materialFilename;
+        this.loadFromFileOrFromJar = loadFromFileOrFromJar;
     }
 
     /*
     *  Parses the MTL file line-by-line, building Material
     *  objects which are collected in the materialsMap ArrayList.
     */
-    private void parseMaterialFile(Component component, String directoryFilename, String materialFilename, boolean loadFromFileOrFromJar)
+    public boolean parse()
     {
-        String fullMaterialPathAndFilename = directoryFilename + materialFilename;
         BufferedReader materialBufferedReader = null;
         String line = "";
         Material currentMaterial = null;
@@ -65,8 +68,8 @@ public class Materials
         try
         {
             materialBufferedReader = (loadFromFileOrFromJar)
-                                    ? new BufferedReader( new FileReader(fullMaterialPathAndFilename) )
-                                    : new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream(fullMaterialPathAndFilename) ) );
+                                    ? new BufferedReader( new FileReader(materialFilename) )
+                                    : new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream(materialFilename) ) );
 
             while ( ( line = materialBufferedReader.readLine() ) != null)
             {
@@ -112,8 +115,12 @@ public class Materials
         }
         catch (IOException ioExc)
         {
-            if (DEBUG_BUILD) println("IOException while parsing the material file " + materialFilename + " in Materials.parseMaterialFile(): " + ioExc.getMessage());
-            JOptionPane.showMessageDialog(component, "Material filename: " + ioExc.getMessage(), "Error while parsing the material file!", JOptionPane.ERROR_MESSAGE);
+            if (DEBUG_BUILD)
+            {
+                println("IOException while parsing the material file " + materialFilename + " in Materials.parseMaterialFile(): " + ioExc.getMessage());
+            }
+
+            return false;
         }
         finally
         {
@@ -126,6 +133,8 @@ public class Materials
                 if (DEBUG_BUILD) println("IOException while closing the stream in Materials.parseMaterialFile():\n" + ioe.getMessage());
             }
         }
+
+        return true;
     }
 
 

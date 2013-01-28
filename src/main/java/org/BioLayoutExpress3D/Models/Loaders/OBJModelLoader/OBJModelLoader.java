@@ -200,7 +200,13 @@ public class OBJModelLoader extends ModelShape
                         numberOfFaces++;
                     }
                     else if ( line.startsWith("mtllib ") ) // load material
-                        materials = new Materials(component, directoryFilename, line.substring(7), loadFromFileOrFromJar);
+                    {
+                        materials = new Materials(directoryFilename + line.substring(7), loadFromFileOrFromJar);
+                        if (!materials.parse())
+                        {
+                            materials = null;
+                        }
+                    }
                     else if ( line.startsWith("usemtl ") ) // use material
                         faceMaterials.addUse(line.substring(7), numberOfFaces);
                     else if (line.charAt(0) == 'g') // group name
