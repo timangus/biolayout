@@ -29,9 +29,13 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     private JComboBox firstDataRow = null;
     private JComboBox correlationMetric = null;
     private JCheckBox transposeCheckBox = null;
-    private JComboBox preprocessingComboBox = null;
+    private JComboBox linearTransformComboBox = null;
+    private JComboBox scaleTransformComboBox = null;
     private JEditorPane textArea = null;
     private JCheckBox saveCorrelationTextFileCheckBox = null;
+    private JCheckBox filterCheckBox = null;
+    private FloatNumberField filterField = null;
+    private static final float DEFAULT_FILTER_VALUE = 0.0f;
     private File expressionFile = null;
 
     private boolean proceed = false;
@@ -39,6 +43,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     private AbstractAction okAction = null;
     private AbstractAction cancelAction = null;
     private AbstractAction transposeChangedAction = null;
+    private AbstractAction filterChangedAction = null;
 
     private boolean creatingDialogElements = false;
 
@@ -71,15 +76,21 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         this.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - this.getHeight() ) / 2 );
     }
 
-    private void initComponents()
+    private JPanel generalTab()
     {
-        JPanel topPanel = new JPanel(true);
-        JPanel centrePanel = new JPanel(true);
-        JPanel bottomPanel = new JPanel(true);
+        JPanel tab = new JPanel(true);
+        JPanel tabLine1 = new JPanel();
+        JPanel tabLine2 = new JPanel();
 
-        Container container = this.getContentPane();
-        container.setLayout( new BorderLayout() );
+        // Minimum correlation
+        correlationField = new FloatNumberField(0, 5);
+        correlationField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
+        correlationField.setValue(STORED_CORRELATION_THRESHOLD);
+        correlationField.setToolTipText("Minimum Correlation");
+        tabLine1.add(new JLabel("Minimum Correlation:"));
+        tabLine1.add(correlationField);
 
+        // Correlation metric
         correlationMetric = new JComboBox();
         for (CorrelationTypes type : CorrelationTypes.values())
         {
@@ -88,54 +99,97 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         }
         correlationMetric.setSelectedIndex(0);
         correlationMetric.setToolTipText("Correlation Metric");
+        tabLine1.add(new JLabel("Correlation Metric:"));
+        tabLine1.add(correlationMetric);
 
-        correlationField = new FloatNumberField(0, 5);
-        correlationField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
-        correlationField.setValue(STORED_CORRELATION_THRESHOLD);
-        correlationField.setToolTipText("Minimum Correlation");
+        // Save text file
+        saveCorrelationTextFileCheckBox = new JCheckBox();
+        saveCorrelationTextFileCheckBox.setText("Save Cache As Text File");
+        tabLine1.add(saveCorrelationTextFileCheckBox);
 
-        transposeCheckBox = new JCheckBox(transposeChangedAction);
-        transposeCheckBox.setText("Transpose");
-
+        // Data bounds
         firstDataColumn = new JComboBox();
         firstDataColumn.addActionListener(this);
         firstDataColumn.setToolTipText("First Data Column");
-
+        tabLine2.add(new JLabel("First Data Column:"));
+        tabLine2.add(firstDataColumn);
         firstDataRow = new JComboBox();
         firstDataRow.addActionListener(this);
         firstDataRow.setToolTipText("First Data Row");
+        tabLine2.add(new JLabel("First Data Row:"));
+        tabLine2.add(firstDataRow);
 
-        preprocessingComboBox = new JComboBox();
-        for (PreprocessingType type : PreprocessingType.values())
+        tab.setLayout(new BoxLayout(tab, BoxLayout.PAGE_AXIS));
+        tab.add(tabLine1);
+        tab.add(tabLine2);
+
+        return tab;
+    }
+
+    private JPanel preprocessingTab()
+    {
+        JPanel tab = new JPanel(true);
+        JPanel tabLine1 = new JPanel();
+        JPanel tabLine2 = new JPanel();
+
+        // Scale transform
+        scaleTransformComboBox = new JComboBox();
+        for (ScaleTransformType type : ScaleTransformType.values())
         {
             String s = Utils.titleCaseOf(type.toString());
-            preprocessingComboBox.addItem(s);
+            scaleTransformComboBox.addItem(s);
         }
-        preprocessingComboBox.setSelectedIndex(0);
-        preprocessingComboBox.setToolTipText("Preprocessing");
+        scaleTransformComboBox.setSelectedIndex(0);
+        scaleTransformComboBox.setToolTipText("Scale Transform");
+        tabLine1.add(new JLabel("Scale Transform:"));
+        tabLine1.add(scaleTransformComboBox);
 
-        saveCorrelationTextFileCheckBox = new JCheckBox();
-        saveCorrelationTextFileCheckBox.setText("Save Text File");
+        // Linear transform
+        linearTransformComboBox = new JComboBox();
+        for (LinearTransformType type : LinearTransformType.values())
+        {
+            String s = Utils.titleCaseOf(type.toString());
+            linearTransformComboBox.addItem(s);
+        }
+        linearTransformComboBox.setSelectedIndex(0);
+        linearTransformComboBox.setToolTipText("Linear Transform");
+        tabLine1.add(new JLabel("Linear Transform:"));
+        tabLine1.add(linearTransformComboBox);
 
-        JPanel topPanelLine1 = new JPanel();
-        topPanelLine1.add(new JLabel("Minimum Correlation:"));
-        topPanelLine1.add(correlationField);
-        topPanelLine1.add(new JLabel("Correlation Metric:"));
-        topPanelLine1.add(correlationMetric);
-        topPanelLine1.add(new JLabel("Preprocessing:"));
-        topPanelLine1.add(preprocessingComboBox);
-        topPanelLine1.add(transposeCheckBox);
-        topPanelLine1.add(saveCorrelationTextFileCheckBox);
+        // Transpose
+        transposeCheckBox = new JCheckBox(transposeChangedAction);
+        transposeCheckBox.setText("Transpose");
+        tabLine1.add(transposeCheckBox);
 
-        JPanel topPanelLine2 = new JPanel();
-        topPanelLine2.add(new JLabel("First Data Column:"));
-        topPanelLine2.add(firstDataColumn);
-        topPanelLine2.add(new JLabel("First Data Row:"));
-        topPanelLine2.add(firstDataRow);
+        // Filter
+        filterCheckBox = new JCheckBox(filterChangedAction);
+        filterCheckBox.setText("Filter Rows With Standard Deviation Less Than");
+        filterCheckBox.setSelected(false);
+        filterField = new FloatNumberField(0, 5);
+        filterField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
+        filterField.setEnabled(false);
+        filterField.setValue(DEFAULT_FILTER_VALUE);
+        tabLine2.add(filterCheckBox);
+        tabLine2.add(filterField);
 
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.PAGE_AXIS));
-        topPanel.add(topPanelLine1);
-        topPanel.add(topPanelLine2);
+        tab.setLayout(new BoxLayout(tab, BoxLayout.PAGE_AXIS));
+        tab.add(tabLine1);
+        tab.add(tabLine2);
+
+        return tab;
+    }
+
+    private void initComponents()
+    {
+        JTabbedPane tabbedPane = new JTabbedPane();
+        JPanel centrePanel = new JPanel(true);
+        JPanel bottomPanel = new JPanel(true);
+
+        Container container = this.getContentPane();
+        container.setLayout( new BorderLayout() );
+
+        tabbedPane.addTab("General", generalTab());
+        tabbedPane.addTab("Preprocessing", preprocessingTab());
 
         centrePanel.setLayout(new BorderLayout());
         textArea = new JEditorPane("text/html", "");
@@ -153,7 +207,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         bottomPanel.add(okButton);
         bottomPanel.add(cancelButton);
 
-        container.add(topPanel, BorderLayout.NORTH);
+        container.add(tabbedPane, BorderLayout.NORTH);
         container.add(centrePanel, BorderLayout.CENTER);
         container.add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -187,8 +241,19 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                     return;
                 }
 
+                if (filterCheckBox.isSelected())
+                {
+                    if (filterField.isEmpty() || filterField.getValue() < 0.0f)
+                    {
+                        JOptionPane.showMessageDialog(frame, "A positive filter value must be given.", "Invalid filter value", JOptionPane.INFORMATION_MESSAGE);
+                        filterField.setValue(DEFAULT_FILTER_VALUE);
+                        return;
+                    }
+                }
+
                 CURRENT_METRIC = CorrelationTypes.values()[correlationMetric.getSelectedIndex()];
-                CURRENT_PREPROCESSING = PreprocessingType.values()[preprocessingComboBox.getSelectedIndex()];
+                CURRENT_LINEAR_TRANSFORM = LinearTransformType.values()[linearTransformComboBox.getSelectedIndex()];
+                CURRENT_SCALE_TRANSFORM = ScaleTransformType.values()[scaleTransformComboBox.getSelectedIndex()];
                 proceed = true;
                 setVisible(false);
             }
@@ -215,6 +280,15 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
             public void actionPerformed(ActionEvent e)
             {
                 refreshDataPreview(true);
+            }
+        };
+
+        filterChangedAction = new AbstractAction("FilterToggle")
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                filterField.setEnabled(filterCheckBox.isSelected());
             }
         };
     }
@@ -514,5 +588,15 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     public boolean saveCorrelationTextFile()
     {
         return saveCorrelationTextFileCheckBox.isSelected();
+    }
+
+    public float filterValue()
+    {
+        if (!filterCheckBox.isSelected())
+        {
+            return -1.0f;
+        }
+
+        return filterField.getValue();
     }
 }

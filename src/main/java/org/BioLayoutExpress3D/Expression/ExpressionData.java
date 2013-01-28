@@ -69,6 +69,7 @@ public final class ExpressionData
     private float[] expressionRanksArray = null;
     private HashMap<String, Integer> identityMap = null;
     private int[][] countsArray = null;
+    private boolean[] rowsToFilter = null;
 
     // variables needed for N-CP
     private final CyclicBarrierTimer cyclicBarrierTimer = (USE_MULTICORE_PROCESS) ? new CyclicBarrierTimer() : null;
@@ -104,6 +105,7 @@ public final class ExpressionData
         sumColumns_X2_cacheArray = sumColumns_X2_cacheBuffer.array();
         expressionDataBuffer = FloatBuffer.allocate(totalRows * totalColumns);
         expressionDataArray = expressionDataBuffer.array();
+        rowsToFilter = new boolean[totalRows];
 
         identityMap.clear();
         clearCounts();
@@ -307,22 +309,30 @@ public final class ExpressionData
         {
             updateSingleCoreGUI();
 
-            outOstream.writeInt(i);
-
-            for (int j = (i + 1); j < totalRows; j++)
+            if (!rowsToFilter[i])
             {
-                correlation = calculateCorrelation(i, j, expressionData);
-                if (correlation >= threshold)
+                outOstream.writeInt(i);
+
+                for (int j = (i + 1); j < totalRows; j++)
                 {
-                    outOstream.writeInt(j);
-                    outOstream.writeFloat(correlation);
+                    if (!rowsToFilter[j])
+                    {
+                        correlation = calculateCorrelation(i, j, expressionData);
+                        if (correlation >= threshold)
+                        {
+                            outOstream.writeInt(j);
+                            outOstream.writeFloat(correlation);
+                        }
+
+                        if (writeCorrelationTextFile)
+                        {
+                            outPrintWriter.println(rowIDsArray[i] + "\t" + rowIDsArray[j] + "\t" + nf3.format(correlation));
+                        }
+                    }
                 }
 
-                if ( writeCorrelationTextFile )
-                    outPrintWriter.println( rowIDsArray[i] + "\t" + rowIDsArray[j] + "\t" + nf3.format(correlation) );
+                outOstream.writeInt(i);
             }
-
-            outOstream.writeInt(i);
         }
     }
 
@@ -606,22 +616,31 @@ public final class ExpressionData
         {
             int percent = ((i - startRow) * 100) / (endRow - startRow);
 
-            outOstream.writeInt(i);
-
-            for (int j = (i + 1); j < totalRows; j++)
+            if (!rowsToFilter[i])
             {
-                correlation = stepResults[index++];
-                if (correlation >= threshold)
+                outOstream.writeInt(i);
+
+                for (int j = (i + 1); j < totalRows; j++)
                 {
-                    outOstream.writeInt(j);
-                    outOstream.writeFloat(correlation);
+                    if (!rowsToFilter[j])
+                    {
+                        correlation = stepResults[index++];
+                        if (correlation >= threshold)
+                        {
+                            outOstream.writeInt(j);
+                            outOstream.writeFloat(correlation);
+                        }
+
+                        if (writeCorrelationTextFile)
+                        {
+                            outPrintWriter.println(rowIDsArray[i] + "\t" + rowIDsArray[j] +
+                                    "\t" + nf3.format(correlation));
+                        }
+                    }
                 }
 
-                if ( writeCorrelationTextFile )
-                    outPrintWriter.println( rowIDsArray[i] + "\t" + rowIDsArray[j] + "\t" + nf3.format(correlation) );
+                outOstream.writeInt(i);
             }
-
-            outOstream.writeInt(i);
 
             layoutProgressBarDialog.setText(currentLayoutProgressBarText +
                     "  (Saving " + percent + "%)");
@@ -940,7 +959,7 @@ public final class ExpressionData
         return totalAnnotationColunms;
     }
 
-    private void preprocessMeanCentred(LayoutProgressBarDialog layoutProgressBarDialog)
+    private void linearTransformMeanCentred(LayoutProgressBarDialog layoutProgressBarDialog)
     {
         for (int row = 0; row < totalRows; row++)
         {
@@ -961,7 +980,7 @@ public final class ExpressionData
         sumRows();
     }
 
-    private void preprocessUnitVarianceScaled(LayoutProgressBarDialog layoutProgressBarDialog)
+    private void linearTransformUnitVarianceScaled(LayoutProgressBarDialog layoutProgressBarDialog)
     {
         for (int row = 0; row < totalRows; row++)
         {
@@ -984,7 +1003,7 @@ public final class ExpressionData
         sumRows();
     }
 
-    private void preprocessParetoScaled(LayoutProgressBarDialog layoutProgressBarDialog)
+    private void linearTransformParetoScaled(LayoutProgressBarDialog layoutProgressBarDialog)
     {
         for (int row = 0; row < totalRows; row++)
         {
@@ -1008,30 +1027,124 @@ public final class ExpressionData
         sumRows();
     }
 
-    public void preprocess(LayoutProgressBarDialog layoutProgressBarDialog, PreprocessingType preprocessingType)
+    interface IRescaleDelegate { public float f(float x); }
+    class RescaleLog2 implements IRescaleDelegate
+    {
+        @Override public float f(float x) { return (float)(log(x) / log(2)); }
+    }
+
+    class RescaleLog10 implements IRescaleDelegate
+    {
+        @Override public float f(float x) { return (float)(log(x) / log(10)); }
+    }
+
+    class RescaleAntiLog2 implements IRescaleDelegate
+    {
+        @Override public float f(float x) { return (float)pow(2.0, x); }
+    }
+
+    class RescaleAntiLog10 implements IRescaleDelegate
+    {
+        @Override public float f(float x) { return (float)pow(10.0, x); }
+    }
+
+    private void rescale(LayoutProgressBarDialog layoutProgressBarDialog, IRescaleDelegate d)
+    {
+        for (int row = 0; row < totalRows; row++)
+        {
+            for (int column = 0; column < totalColumns; column++)
+            {
+                float value = getExpressionDataValue(row, column);
+                value = d.f(value);
+
+                if (value == Float.POSITIVE_INFINITY)
+                {
+                    value = Float.MAX_VALUE;
+                }
+                else if (value == Float.NEGATIVE_INFINITY)
+                {
+                    value = Float.MIN_VALUE;
+                }
+                else if (Float.isNaN(value))
+                {
+                    value = 0.0f;
+                }
+
+                setExpressionDataValue(row, column, value);
+            }
+
+            int percent = (100 * row) / totalRows;
+            layoutProgressBarDialog.incrementProgress(percent);
+        }
+
+        layoutProgressBarDialog.setText("Summing");
+        sumRows();
+    }
+
+    private void filter(float filterValue)
+    {
+        for (int row = 0; row < totalRows; row++)
+        {
+            float variance = sumX2_cacheArray[row] / totalColumns;
+            float stddev = (float)sqrt(variance);
+
+            rowsToFilter[row] = (stddev < filterValue);
+        }
+    }
+
+    public void preprocess(LayoutProgressBarDialog layoutProgressBarDialog, LinearTransformType linearTransformType,
+            ScaleTransformType scaleTransformType, float filterValue)
     {
         layoutProgressBarDialog.prepareProgressBar(100, "Preprocessing");
         layoutProgressBarDialog.startProgressBar();
 
-        switch (preprocessingType)
+        switch (scaleTransformType)
+        {
+            default:
+            case NONE:
+                break;
+
+            case LOG2:
+                rescale(layoutProgressBarDialog, new RescaleLog2());
+                break;
+
+            case LOG10:
+                rescale(layoutProgressBarDialog, new RescaleLog10());
+                break;
+
+            case ANTILOG2:
+                rescale(layoutProgressBarDialog, new RescaleAntiLog2());
+                break;
+
+            case ANTILOG10:
+                rescale(layoutProgressBarDialog, new RescaleAntiLog10());
+                break;
+        }
+
+        switch (linearTransformType)
         {
             default:
             case NONE:
                 break;
 
             case MEAN_CENTRED:
-                preprocessMeanCentred(layoutProgressBarDialog);
+                linearTransformMeanCentred(layoutProgressBarDialog);
                 break;
 
             case UNIT_VARIANCE_SCALED:
-                preprocessUnitVarianceScaled(layoutProgressBarDialog);
+                linearTransformUnitVarianceScaled(layoutProgressBarDialog);
                 break;
 
             case PARETO_SCALED:
-                preprocessParetoScaled(layoutProgressBarDialog);
+                linearTransformParetoScaled(layoutProgressBarDialog);
                 break;
         }
 
         layoutProgressBarDialog.endProgressBar();
+
+        if (filterValue >= 0.0f)
+        {
+            filter(filterValue);
+        }
     }
 }

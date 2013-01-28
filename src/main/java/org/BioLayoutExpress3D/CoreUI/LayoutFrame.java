@@ -1100,8 +1100,10 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     DATA_TYPE = DataTypes.EXPRESSION;
 
                     boolean generateTextFile = expressionLoaderDialog.saveCorrelationTextFile();
+                    float filterValue = expressionLoaderDialog.filterValue();
 
-                    expressionData.preprocess(layoutProgressBarDialog, CURRENT_PREPROCESSING);
+                    expressionData.preprocess(layoutProgressBarDialog, CURRENT_LINEAR_TRANSFORM,
+                            CURRENT_SCALE_TRANSFORM, filterValue);
 
                     if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
                     String metricName = CURRENT_METRIC.toString().toLowerCase();
@@ -1109,14 +1111,27 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     String correlationFilename = IOUtils.getPrefix(file.getAbsolutePath());
                     correlationFilename += "_datastart-" + EXPRESSION_DATA_FIRST_COLUMN + "x" + EXPRESSION_DATA_FIRST_ROW;
                     correlationFilename += "_threshold-" + STORED_CORRELATION_THRESHOLD;
+
                     if (EXPRESSION_DATA_TRANSPOSE)
                     {
                         correlationFilename += "_transpose";
                     }
-                    if (CURRENT_PREPROCESSING != PreprocessingType.NONE)
+
+                    if (CURRENT_LINEAR_TRANSFORM != LinearTransformType.NONE)
                     {
-                        correlationFilename += "_" + Utils.hyphenatedOf(CURRENT_PREPROCESSING.toString());
+                        correlationFilename += "_" + Utils.hyphenatedOf(CURRENT_LINEAR_TRANSFORM.toString());
                     }
+
+                    if (CURRENT_SCALE_TRANSFORM != ScaleTransformType.NONE)
+                    {
+                        correlationFilename += "_" + Utils.hyphenatedOf(CURRENT_SCALE_TRANSFORM.toString());
+                    }
+
+                    if (filterValue >= 0.0f)
+                    {
+                        correlationFilename += "_stddev-" + filterValue;
+                    }
+
                     correlationFilename += "_" + metricName;
                     correlationFilename += ".correlationcache";
 

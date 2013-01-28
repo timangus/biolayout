@@ -16,14 +16,24 @@ public final class ExpressionEnvironment
     public static enum CorrelationTypes { PEARSON, SPEARMAN }
     public static CorrelationTypes CURRENT_METRIC = CorrelationTypes.PEARSON;
 
-    public static enum PreprocessingType
+    public static enum LinearTransformType
     {
         NONE,
         MEAN_CENTRED,
         UNIT_VARIANCE_SCALED,
         PARETO_SCALED,
     }
-    public static PreprocessingType CURRENT_PREPROCESSING = PreprocessingType.NONE;
+    public static LinearTransformType CURRENT_LINEAR_TRANSFORM = LinearTransformType.NONE;
+
+    public static enum ScaleTransformType
+    {
+        NONE,
+        LOG2,
+        LOG10,
+        ANTILOG2,
+        ANTILOG10,
+    }
+    public static ScaleTransformType CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
 
     public static final float DEFAULT_CORRELATION_THRESHOLD = 0.85f;
     public static final float DEFAULT_STORED_CORRELATION_THRESHOLD = 0.70f;
