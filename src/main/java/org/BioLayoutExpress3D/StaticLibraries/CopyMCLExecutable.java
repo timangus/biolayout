@@ -42,83 +42,56 @@ public final class CopyMCLExecutable
     */
     public static boolean copyMCLExecutable()
     {
-        try
+        boolean[] OSSpecificType = LoadNativeLibrary.checkRunningOSAndReturnOSSpecificType();
+        String[] OSSpecificMCLExecutableNames = returnOSSpecificMCLExecutableName(OSSpecificType);
+
+        int OSSPecificPathIndex = 0;
+        for (boolean position : OSSpecificType)
         {
-            boolean[] OSSpecificType = LoadNativeLibrary.checkRunningOSAndReturnOSSpecificType();
-            String[] OSSpecificMCLExecutableNames = returnOSSpecificMCLExecutableName(OSSpecificType);
-            String extractDirectory = DataFolder.get();
-
-            File MCLDir = new File(extractDirectory, EXTRACT_TO_MCL_FILE_PATH);
-            if ( !MCLDir.isDirectory() )
+            if (position)
             {
-                MCLDir.mkdir();
+                break;
             }
 
-            int OSSPecificPathIndex = 0;
-            for (boolean position : OSSpecificType)
-            {
-                if (position)
-                    break;
+            OSSPecificPathIndex++;
+        }
 
-                OSSPecificPathIndex++;
-            }
+        String baseResourcePath = EXTRACT_FROM_MCL_FILE_PATH +
+                EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex];
 
-            File MCLExecutableFile = new File(MCLDir, OSSpecificMCLExecutableNames[0]);
-            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(
-                    EXTRACT_FROM_MCL_FILE_PATH +
-                    EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] +
-                    OSSpecificMCLExecutableNames[0]) );
-
-            MCLExecutableFile.createNewFile();
-
-            // necessary to set the unix-based executable permission, no use for windows platforms
-            if (OSSpecificType[2] || OSSpecificType[3] || OSSpecificType[4])
-            {
-                MCLExecutableFile.setExecutable(true);
-            }
-
-            IOUtils.streamAndClose(in, new BufferedOutputStream(new FileOutputStream(MCLExecutableFile)));
-
+        String resourceName = baseResourcePath + OSSpecificMCLExecutableNames[0];
+        String extractedFileName = LoadNativeLibrary.extractResource(resourceName, EXTRACT_TO_MCL_FILE_PATH);
+        if ( extractedFileName != null)
+        {
+            File extractedFile = new File(extractedFileName);
+            extractedFile.setExecutable(true);
+        }
+        else
+        {
             if (DEBUG_BUILD)
             {
-                println();
-                println("MCL executable " + OSSpecificMCLExecutableNames[0] + " copied!");
+                println("Failed to extract " + resourceName);
             }
 
-            if (OSSpecificMCLExecutableNames.length > 1)
+            return false;
+        }
+
+        if (OSSpecificMCLExecutableNames.length > 1)
+        {
+            resourceName = baseResourcePath + OSSpecificMCLExecutableNames[1];
+            if (LoadNativeLibrary.extractResource(resourceName, EXTRACT_TO_MCL_FILE_PATH) == null)
             {
-                File CygwinLibraryFile = new File(MCLDir, OSSpecificMCLExecutableNames[1]);
-                in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(
-                        EXTRACT_FROM_MCL_FILE_PATH +
-                        EXTRACT_FROM_MCL_OS_SPECIFIC_PATH[OSSPecificPathIndex] +
-                        OSSpecificMCLExecutableNames[1]) );
-
-                CygwinLibraryFile.createNewFile();
-
-                IOUtils.streamAndClose(in, new BufferedOutputStream(new FileOutputStream(CygwinLibraryFile)));
-
-                if (DEBUG_BUILD) {
-                    println("Cygwin library " + OSSpecificMCLExecutableNames[1] + " copied!");
-                    println();
+                if (DEBUG_BUILD)
+                {
+                    println("Failed to extract " + resourceName);
                 }
+
+                return false;
             }
-
-            return true;
-        }
-        catch (FileNotFoundException ex)
-        {
-            if (DEBUG_BUILD) println("Problem with not finding the MCL executable (or Cygwin library) file:\n" + ex.getMessage());
-        }
-        catch (IOException ex)
-        {
-            if (DEBUG_BUILD) println("IO exception with:\n" + ex.getMessage());
-        }
-        catch (RuntimeException ex)
-        {
-            if (DEBUG_BUILD) println("Runtime exception with:\n" + ex.getMessage());
         }
 
-        return false;
+
+        return true;
     }
 
     /**

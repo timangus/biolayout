@@ -7,6 +7,7 @@ import java.text.*;
 import java.util.*;
 import java.util.zip.*;
 import java.lang.reflect.*;
+import java.security.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -282,5 +283,34 @@ public final class Utils
     public static String hyphenatedOf(String s)
     {
         return titleCaseOf(s, false, "_", "-");
+    }
+
+    public static byte[] hashStream(InputStream is)
+    {
+        try
+        {
+            MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+            DigestInputStream dis = new DigestInputStream(is, sha1);
+
+            while (dis.read() != -1) { }
+
+            return sha1.digest();
+        }
+        catch (IOException io)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("IOException:\n" + io.getMessage());
+            }
+        }
+        catch (NoSuchAlgorithmException nsa)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("NoSuchAlgorithmException:\n" + nsa.getMessage());
+            }
+        }
+
+        return null;
     }
 }

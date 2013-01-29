@@ -3,6 +3,7 @@ package org.BioLayoutExpress3D.StaticLibraries;
 import java.io.*;
 import java.lang.reflect.*;
 import com.jogamp.gluegen.runtime.*;
+import java.util.Arrays;
 import org.BioLayoutExpress3D.Utils.Path;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
@@ -71,48 +72,83 @@ public final class LoadNativeLibrary
         return false;
     }
 
-    /**
-    *  Unpacks the native library to a writable folder.
-    */
     public static String extractNativeLibrary(String libraryName)
+    {
+        boolean[] OSSpecificType = checkRunningOSAndReturnOSSpecificType();
+        String OSSpecificLibraryName = checkRunningOSAndReturnOSSpecificLibraryName(libraryName);
+
+        int OSSPecificPathIndex = 0;
+        for (boolean position : OSSpecificType)
+        {
+            if (position)
+            {
+                break;
+            }
+
+            OSSPecificPathIndex++;
+        }
+
+        String resourceName = EXTRACT_FROM_LIBRARIES_FILE_PATH +
+                 EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] +
+                 OSSpecificLibraryName;
+
+        return extractResource(resourceName, EXTRACT_TO_LIBRARIES_FILE_PATH);
+    }
+
+    /**
+    *  Unpacks a resource file
+    */
+    public static String extractResource(String resourceName, String extractDirectoryName)
     {
         try
         {
-            boolean[] OSSpecificType = checkRunningOSAndReturnOSSpecificType();
-            String OSSpecificLibraryName = checkRunningOSAndReturnOSSpecificLibraryName(libraryName);
-            String extractDirectory = DataFolder.get();
+            String fqExtractDirectoryName = Path.combine(DataFolder.get(), extractDirectoryName);
 
-            File librariesDir = new File(extractDirectory, EXTRACT_TO_LIBRARIES_FILE_PATH);
-            if ( !librariesDir.isDirectory() )
+            File extractDirectory = new File(fqExtractDirectoryName);
+            if ( !extractDirectory.isDirectory() )
             {
-                librariesDir.mkdir();
+                extractDirectory.mkdir();
             }
 
-            int OSSPecificPathIndex = 0;
-            for (boolean position : OSSpecificType)
-            {
-                if (position)
-                    break;
+            String baseOutFileName = new File(resourceName).getName();
+            String outFileName = Path.combine(fqExtractDirectoryName, baseOutFileName);
 
-                OSSPecificPathIndex++;
+            File outFile = new File(outFileName);
+
+            if (outFile.exists())
+            {
+                byte[] inHash = Utils.hashStream(new BufferedInputStream(
+                        LoadNativeLibrary.class.getResourceAsStream(resourceName)));
+                byte[] outHash = Utils.hashStream(new FileInputStream(outFile));
+
+                if (!Arrays.equals(inHash, outHash))
+                {
+                    outFile.delete();
+                }
+                else
+                {
+                    if (DEBUG_BUILD)
+                    {
+                        println(outFileName + " exists with correct hash");
+                    }
+                }
             }
 
-            File libraryFile = new File(librariesDir, OSSpecificLibraryName);
-            BufferedInputStream in = new BufferedInputStream( LoadNativeLibrary.class.getResourceAsStream(
-                    EXTRACT_FROM_LIBRARIES_FILE_PATH +
-                    EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH[OSSPecificPathIndex] +
-                    OSSpecificLibraryName) );
-
-            libraryFile.createNewFile();
-            IOUtils.streamAndClose(in, new BufferedOutputStream(new FileOutputStream(libraryFile)));
-
-            if (DEBUG_BUILD)
+            if (!outFile.exists())
             {
-                println("Native " + ((!is64bit()) ? "32 bit" : "64 bit") + " library " + OSSpecificLibraryName + " copied!");
-                println();
+                outFile.createNewFile();
+                BufferedInputStream in = new BufferedInputStream(
+                        LoadNativeLibrary.class.getResourceAsStream(resourceName));
+                IOUtils.streamAndClose(in, new BufferedOutputStream(new FileOutputStream(outFile)));
+
+                if (DEBUG_BUILD)
+                {
+                    println(resourceName + " extracted to " + outFileName);
+                }
             }
 
-            return libraryFile.getAbsolutePath();
+
+            return outFile.getAbsolutePath();
         }
         catch (FileNotFoundException ex)
         {
@@ -219,12 +255,6 @@ public final class LoadNativeLibrary
         boolean isMac = !isWin && ( osName.startsWith("Mac") || osName.startsWith("Darwin") );
         boolean is64 = is64bit();
 
-        if (DEBUG_BUILD)
-        {
-            println();
-            println("OS non-specific " + osName + " library file...");
-        }
-
         return new boolean[] { (isWin || isXP || isVista || isWin7) && !is64, (isWin || isXP || isVista || isWin7) && is64, isLinux && !is64, isLinux && is64, isMac };
     }
 
@@ -243,20 +273,12 @@ public final class LoadNativeLibrary
         boolean isLinux = osName.startsWith("Linux");
         boolean isMac = !isWin && ( osName.startsWith("Mac") || osName.startsWith("Darwin") );
 
-        if (DEBUG_BUILD)
-        {
-            println();
-            println("OS non-specific " + osName + " native library...");
-        }
-
         if (isWin || isXP || isVista || isWin7)
             OSSpecificLibraryName = libraryName + ".dll";
         else if (isLinux)
             OSSpecificLibraryName = "lib" + libraryName + ".so";
         else if (isMac)
             OSSpecificLibraryName = "lib" + libraryName + ".jnilib";
-
-        if (DEBUG_BUILD) println("OS specific library name: " + OSSpecificLibraryName);
 
         return OSSpecificLibraryName;
     }
