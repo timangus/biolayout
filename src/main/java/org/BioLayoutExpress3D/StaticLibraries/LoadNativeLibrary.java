@@ -147,7 +147,6 @@ public final class LoadNativeLibrary
                 }
             }
 
-
             return outFile.getAbsolutePath();
         }
         catch (FileNotFoundException ex)
