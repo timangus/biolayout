@@ -62,9 +62,9 @@ public final class CoreSaver
     {
         fileNameExtensionFilterLayout = new FileNameExtensionFilter( "Save as a Layout File", SupportedOutputFileTypes.LAYOUT.toString().toLowerCase() );
         fileNameExtensionFilterTGF = new FileNameExtensionFilter( "Save as a TGF File", SupportedOutputFileTypes.TGF.toString().toLowerCase() );
-        fileNameExtensionFilterCollapsedLayout = new FileNameExtensionFilter( "Save as a Collapsed Layout File (Remove Redudancies)", SupportedOutputFileTypes.LAYOUT.toString().toLowerCase() );
+        fileNameExtensionFilterCollapsedLayout = new FileNameExtensionFilter( "Save as a Collapsed Layout File (Remove Redundancies)", SupportedOutputFileTypes.LAYOUT.toString().toLowerCase() );
         fileNameExtensionFilterCollapsedTGF = new FileNameExtensionFilter( "Save as a Collapsed TGF File (Remove Redudancies)", SupportedOutputFileTypes.TGF.toString().toLowerCase() );
-        fileNameExtensionFilterCollapsedClusterNodesTGF = new FileNameExtensionFilter( "Save as a Collapsed TGF File (With Collapsed Cluster Nodes & Remove Redudancies)", SupportedOutputFileTypes.TGF.toString().toLowerCase() );
+        fileNameExtensionFilterCollapsedClusterNodesTGF = new FileNameExtensionFilter( "Save as a Collapsed TGF File (With Collapsed Cluster Nodes & Remove Redundancies)", SupportedOutputFileTypes.TGF.toString().toLowerCase() );
 
         String saveFilePath = FILE_CHOOSER_PATH.get().substring(0, FILE_CHOOSER_PATH.get().lastIndexOf( System.getProperty("file.separator") ) + 1);
         fileChooser = new JFileChooser(saveFilePath);
