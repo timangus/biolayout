@@ -21,6 +21,7 @@
         <minJavaVersion>1.6</minJavaVersion>
         <jogampVersion>2.0-rc11</jogampVersion>
         <joclVersion>0.1.7</joclVersion>
+        <sbgnVersion>milestone2</sbgnVersion>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -106,7 +107,29 @@
             <artifactId>jocl</artifactId>
             <version>${joclVersion}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.sbgn</groupId>
+            <artifactId>sbgn</artifactId>
+            <version>${sbgnVersion}</version>
+        </dependency>
     </dependencies>
+
+    <!-- This allows us to treat local jars (e.g. libsbgn) as
+         normal dependencies -->
+    <repositories>
+        <repository>
+            <id>jars</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>file://${project.basedir}/jars</url>
+        </repository>
+    </repositories>
 
     <build>
         <!-- The name for the jar that doesn't include the dependencies -->
