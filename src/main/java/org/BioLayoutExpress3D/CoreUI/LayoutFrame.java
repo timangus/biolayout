@@ -119,6 +119,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private ImportClassSetsParser importClassSetsParser = null;
     private ExportClassSets exportClassSets = null;
     private ExportCorrelationNodesEdgesTable exportCorrelationNodesEdgesTable = null;
+    private ExportSbgn exportSbgn = null;
 
     private ArrayList<Integer> allExitMessageIndices = null;
     private boolean navigationWizardShownOnce = false;
@@ -289,6 +290,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         importClassSetsParser = new ImportClassSetsParser(nc, this);
         exportClassSets = new ExportClassSets(this);
         exportCorrelationNodesEdgesTable = new ExportCorrelationNodesEdgesTable(this, expressionData);
+        exportSbgn = new ExportSbgn(this);
 
         layoutPrintServices = new LayoutPrintServices();
 
@@ -625,6 +627,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setFileMenuExportClassSetsAsFileAction( exportClassSets.getExportClassSetsFromGraphSelectionAction() );
         layoutMenuBar.setFileMenuExportClassSetsAsFileAction( exportClassSets.getExportClassSetsFromVisibleGraphAction() );
         layoutMenuBar.setFileMenuExportAction( exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction() );
+        layoutMenuBar.setFileMenuExportAction( exportSbgn.getExportSbgnAction() );
         layoutMenuBar.setFileMenuPrintPageSetupAction( layoutPrintServices.getPrintGraphPageSetupDialogAction() );
         layoutMenuBar.setFileMenuPrintGraphAction( graph.getGraphActions().getPrintGraphAction() );
         layoutMenuBar.setFileMenuExitAction(fileMenuExitAction);
@@ -1576,6 +1579,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         SPNSimulationDialog.getSignalingPetriNetSimulationDialogAction().setEnabled( nc.getIsPetriNet() );
         signalingPetriNetLoadSimulation.getSignalingPetriNetLoadSimulationAction().setEnabled( nc.getIsPetriNet() );
+        exportSbgn.getExportSbgnAction().setEnabled( nc.getIsPetriNet() );
 
         layoutAnimationControlDialog.setIsExpressionProfileAnimationMode( DATA_TYPE.equals(DataTypes.EXPRESSION) );
         layoutAnimationControlDialog.getAnimationControlDialogAction().setEnabled( DATA_TYPE.equals(DataTypes.EXPRESSION) );
@@ -1746,6 +1750,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         if ( exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().isEnabled() )
             exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().setEnabled(false);
+
+        if ( exportSbgn.getExportSbgnAction().isEnabled() )
+            exportSbgn.getExportSbgnAction().setEnabled(false);
 
         layoutGraphPropertiesDialog.setEnabledProportionalEdgesSizeToWeight(false);
         layoutGraphPropertiesDialog.setEnabledNodeNameTextFieldAndSelectNodesTab(false, null, 0);
@@ -1972,6 +1979,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
     public ExportCorrelationNodesEdgesTable getExportCorrelationNodesEdgesTable()
     {
         return exportCorrelationNodesEdgesTable;
+    }
+
+    public ExportSbgn getExportSbgn()
+    {
+        return exportSbgn;
     }
 
     public NetworkRootContainer getNetworkRootContainer()
