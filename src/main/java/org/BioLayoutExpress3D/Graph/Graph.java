@@ -485,9 +485,8 @@ public class Graph extends GLCanvas implements GraphInterface
 
     /**
     *  Customizes the given node name.
-    *  Package access for GraphRenderer2D & GraphRenderer3D.
     */
-    String customizeNodeName(String originalNodeName)
+    public static String customizeNodeName(String originalNodeName)
     {
         if ( CUSTOMIZE_NODE_NAMES_SHOW_FULL_NAME.get() )
             return originalNodeName;

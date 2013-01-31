@@ -1647,7 +1647,7 @@ final class GraphRenderer2D implements GraphInterface // package access
 
                     gl.glColor3f(Color.BLACK.getRed() / 255.0f, Color.BLACK.getGreen() / 255.0f, Color.BLACK.getBlue() / 255.0f);
                     gl.glRasterPos2d(coordX, coordY);
-                    nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
+                    nodeName = Graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
                     if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
                         graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                     GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
@@ -1691,7 +1691,7 @@ final class GraphRenderer2D implements GraphInterface // package access
 
                     gl.glColor3f(Color.BLACK.getRed() / 255.0f, Color.BLACK.getGreen() / 255.0f, Color.BLACK.getBlue() / 255.0f);
                     gl.glRasterPos2d(coordX, coordY);
-                    nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
+                    nodeName = Graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
                     // if-else commands below have to be like this to be able to properly selectively render names
                     if ( node.isShowNodeName() && !ANIMATION_SHOW_NODE_ANIMATION_VALUE.get() )
                     {

@@ -2140,7 +2140,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);
                     gl.glColor3fv(CURRENT_COLOR, 0);
                     gl.glRasterPos3f( (point.x / 100.0f - 5.0f), (point.y / 100.0f - 5.0f), (point.z / 100.0f - 5.0f) );
-                    nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
+                    nodeName = Graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
                     if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
                         graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                     GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN
@@ -2176,7 +2176,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                     if ( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ) graph.createGrayScaleColor(CURRENT_COLOR);
                     gl.glColor3fv(CURRENT_COLOR, 0);
                     gl.glRasterPos3f( (point.x / 100.0f - 5.0f), (point.y / 100.0f - 5.0f), (point.z / 100.0f - 5.0f) );
-                    nodeName = graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
+                    nodeName = Graph.customizeNodeName( nc.getNodeName( node.getNodeName() ) );
                     // if-else commands below have to be like this to be able to properly selectively render names
                     if ( node.isShowNodeName() && !ANIMATION_SHOW_NODE_ANIMATION_VALUE.get() )
                     {
