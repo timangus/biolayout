@@ -28,6 +28,7 @@ clean-products:
 	rm -f $(LIBRARY)
 
 $(NATIVE_DIR)/%.o: %.c $(CLASS_FILES)
+	mkdir -p $(shell dirname $@) # Java 6 doesn't create dirs
 	$(JAVAH) -classpath $(CLASSES_DIR) -o $(@:%.o=%.h) \
 		$(subst /,.,$(@:$(NATIVE_DIR)/%.o=%))
 	$(CC) $(CFLAGS_LOCAL) -c -o $@ $<
