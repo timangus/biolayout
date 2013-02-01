@@ -12,6 +12,8 @@ import java.util.List;
 import org.sbgn.*;
 import org.sbgn.bindings.*;
 import javax.xml.bind.JAXBException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.DataStructures.Tuple2;
 import org.BioLayoutExpress3D.DataStructures.Tuple6;
@@ -164,6 +166,219 @@ public final class ExportSbgn
         LABEL_TO_GLYPH_CLASS = Collections.unmodifiableMap(map);
     }
 
+    private class ProteinComponent
+    {
+        private int n;
+        private String name;
+        private List<String> modList;
+
+        public ProteinComponent(int n, String name, List<String> modList)
+        {
+            this.n = n;
+            this.name = name;
+            this.modList = modList;
+        }
+
+        public int getNumber() { return n; }
+        public String getName() { return name; }
+        public List<String> getModList() { return modList; }
+    }
+
+    private class ProteinComponentList
+    {
+        private String alias;
+        private List<ProteinComponent> components;
+
+        public ProteinComponentList(String alias, List<ProteinComponent> components)
+        {
+            this.alias = alias;
+            this.components = components;
+        }
+
+        public String getAlias() { return alias; }
+        public List<ProteinComponent> getComponents() { return components; }
+    }
+
+    private ProteinComponentList parseMepnLabel(String mepnLabel)
+    {
+        String alias = "";
+        Pattern aliasRegex = Pattern.compile("[^\\n]+(\\n\\s*\\(([^\\)]*)\\))");
+        Matcher aliasMatcher = aliasRegex.matcher(mepnLabel);
+        String strippedLabel = mepnLabel;
+        if (aliasMatcher.find())
+        {
+            alias = aliasMatcher.group(2);
+            strippedLabel = mepnLabel.replace(aliasMatcher.group(1), "");
+        }
+
+        List<ProteinComponent> list = new ArrayList<ProteinComponent>();
+
+        String[] components = strippedLabel.split("\\s*:\\s*");
+
+        // Match this pattern: <n>PROT1[A]
+        Pattern regex = Pattern.compile("(?:<([^>]+)>)?([^\\[]*)(?:\\[([^\\]]+)\\])?");
+        for (String component : components)
+        {
+            Matcher m = regex.matcher(component);
+            int n = 1; // Assume 1 until told otherwise
+            String name = null;
+            List<String> modList = new ArrayList<String>();
+
+            String s;
+            while (m.find())
+            {
+                s = m.group(1);
+                if (s != null && !s.isEmpty())
+                {
+                    try { n = Integer.parseInt(s); }
+                    catch(NumberFormatException e) { n = -1; }
+                }
+
+                s = m.group(2);
+                if (s != null && !s.isEmpty())
+                {
+                    name = s;
+                }
+
+                s = m.group(3);
+                if (s != null && !s.isEmpty())
+                {
+                    modList.add(s);
+                }
+            }
+
+            ProteinComponent pc = new ProteinComponent(n, name, modList);
+            list.add(pc);
+        }
+
+        return new ProteinComponentList(alias, list);
+    }
+
+    private void configureComponentGlyph(String type, ProteinComponent pc, Glyph glyph)
+    {
+        if (pc.getNumber() > 1)
+        {
+            glyph.setClazz(type + " multimer");
+        }
+        else
+        {
+            glyph.setClazz(type);
+        }
+
+        Label label = new Label();
+        label.setText(pc.getName());
+        glyph.setLabel(label);
+    }
+
+    private List<Bbox> subDivideBbox(Bbox parent, int subdivisions, float targetAspect)
+    {
+        List<Bbox> list = new ArrayList<Bbox>();
+        float parentAspect = parent.getW() / parent.getH();
+
+        if (subdivisions > 1)
+        {
+            Bbox first = new Bbox();
+            Bbox second = new Bbox();
+            if (parentAspect < targetAspect)
+            {
+                // Top half
+                first.setW(parent.getW());
+                first.setH(parent.getH() * 0.5f);
+                first.setX(parent.getX());
+                first.setY(parent.getY());
+
+                // Bottom half
+                second.setW(parent.getW());
+                second.setH(parent.getH() * 0.5f);
+                second.setX(parent.getX());
+                second.setY(parent.getY() + second.getH());
+            }
+            else
+            {
+                // Left
+                first.setW(parent.getW() * 0.5f);
+                first.setH(parent.getH());
+                first.setX(parent.getX());
+                first.setY(parent.getY());
+
+                // Right
+                second.setW(parent.getW() * 0.5f);
+                second.setH(parent.getH());
+                second.setX(parent.getX() + second.getW());
+                second.setY(parent.getY());
+            }
+
+            list.addAll(subDivideBbox(first, subdivisions / 2, targetAspect));
+            list.addAll(subDivideBbox(second, subdivisions / 2, targetAspect));
+        }
+        else
+        {
+            list.add(parent);
+        }
+
+        return list;
+    }
+
+    private List<Bbox> subDivideGlyph(Glyph glyph, int subdivisions)
+    {
+        final float TARGET_ASPECT = 4.0f;
+
+        int pow2 = 1;
+        while (pow2 < subdivisions)
+        {
+            pow2 <<= 1;
+        }
+
+        List<Bbox> list = subDivideBbox(glyph.getBbox(), pow2, TARGET_ASPECT);
+        List<Bbox> scaledList = new ArrayList<Bbox>(list.size());
+
+        for (Bbox bbox : list)
+        {
+            final float SUB_SCALE = 0.6f;
+            float xOffset = 0.5f * (bbox.getW() - (bbox.getW() * SUB_SCALE));
+            float yOffset = 0.5f * (bbox.getH() - (bbox.getH() * SUB_SCALE));
+
+            Bbox scaledBbox = new Bbox();
+            scaledBbox.setW(bbox.getW() * SUB_SCALE);
+            scaledBbox.setH(bbox.getH() * SUB_SCALE);
+            scaledBbox.setX(bbox.getX() + xOffset);
+            scaledBbox.setY(bbox.getY() + yOffset);
+
+            scaledList.add(scaledBbox);
+        }
+
+        return scaledList;
+    }
+
+    private void configureComplexGlyph(String type, ProteinComponentList pcl, Glyph glyph)
+    {
+        if (pcl.getComponents().size() > 1)
+        {
+            glyph.setClazz("complex");
+            List<Glyph> subGlyphs = glyph.getGlyph();
+            List<Bbox> subBboxes = subDivideGlyph(glyph, pcl.getComponents().size());
+
+            int index = 0;
+            for (ProteinComponent pc : pcl.getComponents())
+            {
+                Glyph subGlyph = new Glyph();
+                subGlyph.setId(glyph.getId() + "." + (index + 1));
+                subGlyph.setBbox(subBboxes.get(index));
+                configureComponentGlyph(type, pc, subGlyph);
+
+                subGlyphs.add(subGlyph);
+
+                index++;
+            }
+
+            //FIXME: use pcl.getAlias();
+        }
+        else
+        {
+            configureComponentGlyph(type, pcl.getComponents().get(0), glyph);
+        }
+    }
+
     private boolean specialiseSbgnGlyph(String mepnShape, String mepnLabel, Glyph glyph)
     {
         if (mepnShape.equals("ellipse"))
@@ -175,39 +390,61 @@ public final class ExportSbgn
                 return true;
             }
 
-            //FIXME: probably need to account for "Generic entity" in here too
+            // Assume every other ellipse is an...
+            glyph.setClazz("unspecified entity");
+
+            Label label = new Label();
+            label.setText(mepnLabel);
+            glyph.setLabel(label);
+            return true;
         }
         else if (mepnShape.equals("diamond"))
         {
             //FIXME: implement
+            // Ion/simple molecule
+            // Also, some annotated edges e.g. Catalyses ---<>--->
         }
         else if (mepnShape.equals("hexagon"))
         {
             //FIXME: implement
+            // Simple biochemical
         }
         else if (mepnShape.equals("octagon"))
         {
             //FIXME: implement
+            // Pathway output/module
         }
-        else if (mepnShape.equals("parallelogram"))
+        else if (mepnShape.equals("parallelogram") || mepnShape.equals("rectangle"))
         {
-            //FIXME: implement
-        }
-        else if (mepnShape.equals("rectangle"))
-        {
-            //FIXME: implement
+            // Gene/DNA sequence
+            ProteinComponentList pcl = parseMepnLabel(mepnLabel);
+
+            if (pcl.getComponents().size() > 0)
+            {
+                configureComplexGlyph("nucleic acid feature", pcl, glyph);
+                return true;
+            }
         }
         else if (mepnShape.equals("roundrectangle"))
         {
-            //FIXME: implement
+            // Peptide/protein/protein complex
+            ProteinComponentList pcl = parseMepnLabel(mepnLabel);
+
+            if (pcl.getComponents().size() > 0)
+            {
+                configureComplexGlyph("macromolecule", pcl, glyph);
+                return true;
+            }
         }
         else if (mepnShape.equals("trapezoid"))
         {
             //FIXME: implement
+            // Drug
         }
         else if (mepnShape.equals("trapezoid2"))
         {
             //FIXME: implement
+            // Energy/molecular transfer
         }
 
         return false;
