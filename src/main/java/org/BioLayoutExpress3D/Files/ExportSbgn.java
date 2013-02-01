@@ -216,8 +216,6 @@ public final class ExportSbgn
     private Glyph translateNodeToSbgnGlyph(GraphNode graphNode, String id)
     {
         float x, y;
-        float size = graphNode.getNodeSize() * SCALE;
-        float halfSize = size * 0.5f;
 
         if (nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get())
         {
@@ -234,15 +232,23 @@ public final class ExportSbgn
         Glyph glyph = new Glyph();
         glyph.setId(id);
 
-        Bbox bbox = new Bbox();
-        bbox.setX(x - halfSize);
-        bbox.setW(size);
-        bbox.setY(y - halfSize);
-        bbox.setH(size);
-        glyph.setBbox(bbox);
-
-        String mepnShape = gnc.getAllGraphmlNodesMap().get(graphNode.getNodeName()).sixth;
+        Tuple6<float[], String[], String[], String[], String[], String> nodeData =
+                gnc.getAllGraphmlNodesMap().get(graphNode.getNodeName());
+        String mepnShape = nodeData.sixth;
+        float mepnWidth = nodeData.first[1];
+        float mepnHeight = nodeData.first[0];
+        float mepnAspect = mepnWidth / mepnHeight;
         String mepnLabel = Graph.customizeNodeName(nc.getNodeName(graphNode.getNodeName()));
+
+        float width = mepnWidth * SCALE;
+        float height = mepnHeight * SCALE;
+
+        Bbox bbox = new Bbox();
+        bbox.setX(x - (width * 0.5f));
+        bbox.setW(width);
+        bbox.setY(y - (height * 0.5f));
+        bbox.setH(height);
+        glyph.setBbox(bbox);
 
         if (!specialiseSbgnGlyph(mepnShape, mepnLabel, glyph))
         {
