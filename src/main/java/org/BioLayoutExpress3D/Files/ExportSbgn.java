@@ -256,7 +256,7 @@ public final class ExportSbgn
 
     private void configureComponentGlyph(String type, ProteinComponent pc, Glyph glyph)
     {
-        final float INFO_X = 15.0f;
+        final float INFO_X = 0.3f * SCALE;
         Bbox glyphBbox = glyph.getBbox();
 
         if (pc.getNumber() > 1)
@@ -367,7 +367,7 @@ public final class ExportSbgn
 
     private List<Bbox> subDivideGlyph(Glyph glyph, ProteinComponentList pcl)
     {
-        final float ALIAS_VERTICAL_SPACE = 50.0f;
+        final float ALIAS_VERTICAL_SPACE = 1.0f * SCALE;
         final float TARGET_ASPECT = 3.0f;
         int subdivisions = pcl.getComponents().size();
 
