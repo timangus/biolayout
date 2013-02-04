@@ -281,13 +281,13 @@ public final class ExportSbgn
             Bbox second = new Bbox();
             if (parentAspect < targetAspect)
             {
-                // Top half
+                // Top
                 first.setW(parent.getW());
                 first.setH(parent.getH() * 0.5f);
                 first.setX(parent.getX());
                 first.setY(parent.getY());
 
-                // Bottom half
+                // Bottom
                 second.setW(parent.getW());
                 second.setH(parent.getH() * 0.5f);
                 second.setX(parent.getX());
@@ -321,7 +321,7 @@ public final class ExportSbgn
 
     private List<Bbox> subDivideGlyph(Glyph glyph, int subdivisions)
     {
-        final float TARGET_ASPECT = 4.0f;
+        final float TARGET_ASPECT = 3.0f;
 
         int pow2 = 1;
         while (pow2 < subdivisions)
@@ -346,6 +346,22 @@ public final class ExportSbgn
 
             scaledList.add(scaledBbox);
         }
+
+        Collections.sort(scaledList, new java.util.Comparator<Bbox>()
+        {
+            @Override
+            public int compare(Bbox a, Bbox b)
+            {
+                if (a.getY() == b.getY())
+                {
+                    return (a.getX() < b.getX()) ? -1 : 1;
+                }
+                else
+                {
+                    return (a.getY() < b.getY()) ? -1 : 1;
+                }
+            }
+        });
 
         return scaledList;
     }
