@@ -256,13 +256,55 @@ public final class ExportSbgn
 
     private void configureComponentGlyph(String type, ProteinComponent pc, Glyph glyph)
     {
+        final float INFO_X = 15.0f;
+        Bbox glyphBbox = glyph.getBbox();
+
         if (pc.getNumber() > 1)
         {
+            Glyph multimerGlyph = new Glyph();
+            multimerGlyph.setId(glyph.getId() + ".multimer");
+            multimerGlyph.setClazz("unit of information");
+
+            // N:x
+            Bbox bbox = new Bbox();
+            bbox.setX(glyphBbox.getX() + INFO_X);
+            bbox.setY(glyphBbox.getY());
+            multimerGlyph.setBbox(bbox);
+
+            Label label = new Label();
+            label.setText("N:" + pc.getNumber());
+            multimerGlyph.setLabel(label);
+
+            glyph.getGlyph().add(multimerGlyph);
+
             glyph.setClazz(type + " multimer");
         }
         else
         {
             glyph.setClazz(type);
+        }
+
+        int modIndex = 1;
+        List<String> modList = pc.getModList();
+        for (String mod : modList)
+        {
+            // Mods
+            Glyph multimerGlyph = new Glyph();
+            multimerGlyph.setId(glyph.getId() + ".mod" + modIndex);
+            multimerGlyph.setClazz("state variable");
+
+            Bbox bbox = new Bbox();
+            bbox.setX(glyphBbox.getX() + (INFO_X * modIndex));
+            bbox.setY(glyphBbox.getY() + glyphBbox.getH());
+            multimerGlyph.setBbox(bbox);
+
+            Label label = new Label();
+            label.setText(mod);
+            multimerGlyph.setLabel(label);
+
+            glyph.getGlyph().add(multimerGlyph);
+
+            modIndex++;
         }
 
         String name = pc.getName();
