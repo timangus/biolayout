@@ -495,14 +495,37 @@ public final class ExportSbgn
         }
         else if (mepnShape.equals("diamond"))
         {
-            //FIXME: implement
-            // Ion/simple molecule
-            // Also, some annotated edges e.g. Catalyses ---<>--->
+            if (mepnLabel == "A" || mepnLabel == "C" || mepnLabel == "I")
+            {
+                // Centre of a special edge
+                //FIXME: implement
+            }
+            else
+            {
+                // Ion/simple molecule
+                glyph.setClazz("simple chemical");
+
+                if (mepnLabel.length() > 0)
+                {
+                    Label label = new Label();
+                    label.setText(mepnLabel);
+                    glyph.setLabel(label);
+                }
+            }
         }
         else if (mepnShape.equals("hexagon"))
         {
-            //FIXME: implement
             // Simple biochemical
+            glyph.setClazz("simple chemical");
+
+            if (mepnLabel.length() > 0)
+            {
+                Label label = new Label();
+                label.setText(mepnLabel);
+                glyph.setLabel(label);
+            }
+
+            return true;
         }
         else if (mepnShape.equals("octagon"))
         {
@@ -533,8 +556,17 @@ public final class ExportSbgn
         }
         else if (mepnShape.equals("trapezoid"))
         {
-            //FIXME: implement
             // Drug
+            glyph.setClazz("unspecified entity");
+
+            if (mepnLabel.length() > 0)
+            {
+                Label label = new Label();
+                label.setText("Drug: " + mepnLabel);
+                glyph.setLabel(label);
+            }
+
+            return true;
         }
         else if (mepnShape.equals("trapezoid2"))
         {
