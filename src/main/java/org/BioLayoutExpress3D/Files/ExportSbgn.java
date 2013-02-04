@@ -201,7 +201,7 @@ public final class ExportSbgn
 
     private ProteinComponentList parseMepnLabel(String mepnLabel)
     {
-        String alias = "";
+        String alias = null;
         Pattern aliasRegex = Pattern.compile("[^\\n]+(\\n\\s*\\(([^\\)]*)\\))");
         Matcher aliasMatcher = aliasRegex.matcher(mepnLabel);
         String strippedLabel = mepnLabel;
@@ -265,9 +265,13 @@ public final class ExportSbgn
             glyph.setClazz(type);
         }
 
-        Label label = new Label();
-        label.setText(pc.getName());
-        glyph.setLabel(label);
+        String name = pc.getName();
+        if (name != null && name.length() > 0)
+        {
+            Label label = new Label();
+            label.setText(name);
+            glyph.setLabel(label);
+        }
     }
 
     private List<Bbox> subDivideBbox(Bbox parent, int subdivisions, float targetAspect)
@@ -319,9 +323,11 @@ public final class ExportSbgn
         return list;
     }
 
-    private List<Bbox> subDivideGlyph(Glyph glyph, int subdivisions)
+    private List<Bbox> subDivideGlyph(Glyph glyph, ProteinComponentList pcl)
     {
+        final float ALIAS_VERTICAL_SPACE = 50.0f;
         final float TARGET_ASPECT = 3.0f;
+        int subdivisions = pcl.getComponents().size();
 
         int pow2 = 1;
         while (pow2 < subdivisions)
@@ -329,7 +335,36 @@ public final class ExportSbgn
             pow2 <<= 1;
         }
 
-        List<Bbox> list = subDivideBbox(glyph.getBbox(), pow2, TARGET_ASPECT);
+        Bbox parentBbox = glyph.getBbox();
+        Bbox componentsBbox = new Bbox();
+        String alias = pcl.getAlias();
+        if (alias != null)
+        {
+            componentsBbox.setX(parentBbox.getX());
+            componentsBbox.setY(parentBbox.getY());
+            componentsBbox.setW(parentBbox.getW());
+            componentsBbox.setH(parentBbox.getH() - ALIAS_VERTICAL_SPACE);
+
+            Bbox labelBbox = new Bbox();
+            labelBbox.setX(componentsBbox.getX());
+            labelBbox.setY(componentsBbox.getY() + componentsBbox.getH());
+            labelBbox.setW(componentsBbox.getW());
+            labelBbox.setH(ALIAS_VERTICAL_SPACE);
+
+            Label label = new Label();
+            label.setText(alias);
+            label.setBbox(labelBbox);
+            glyph.setLabel(label);
+        }
+        else
+        {
+            componentsBbox.setX(parentBbox.getX());
+            componentsBbox.setY(parentBbox.getY());
+            componentsBbox.setW(parentBbox.getW());
+            componentsBbox.setH(parentBbox.getH());
+        }
+
+        List<Bbox> list = subDivideBbox(componentsBbox, pow2, TARGET_ASPECT);
         List<Bbox> scaledList = new ArrayList<Bbox>(list.size());
 
         for (Bbox bbox : list)
@@ -372,7 +407,7 @@ public final class ExportSbgn
         {
             glyph.setClazz("complex");
             List<Glyph> subGlyphs = glyph.getGlyph();
-            List<Bbox> subBboxes = subDivideGlyph(glyph, pcl.getComponents().size());
+            List<Bbox> subBboxes = subDivideGlyph(glyph, pcl);
 
             int index = 0;
             for (ProteinComponent pc : pcl.getComponents())
@@ -386,8 +421,6 @@ public final class ExportSbgn
 
                 index++;
             }
-
-            //FIXME: use pcl.getAlias();
         }
         else
         {
@@ -409,9 +442,13 @@ public final class ExportSbgn
             // Assume every other ellipse is an...
             glyph.setClazz("unspecified entity");
 
-            Label label = new Label();
-            label.setText(mepnLabel);
-            glyph.setLabel(label);
+            if (mepnLabel.length() > 0)
+            {
+                Label label = new Label();
+                label.setText(mepnLabel);
+                glyph.setLabel(label);
+            }
+
             return true;
         }
         else if (mepnShape.equals("diamond"))
