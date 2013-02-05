@@ -902,14 +902,14 @@ public final class ExportSbgn
 
     private void specialiseSbgnArc(String[] arrowHeads, Glyph source, Glyph target, Arc arc)
     {
-        if (!LABEL_TO_GLYPH_CLASS.containsValue(target.getClazz()))
+        if (LABEL_TO_GLYPH_CLASS.containsValue(source.getClazz()))
         {
-            // Treat everything that isn't pointing to a process as production
+            // Treat everything that's coming from a process as production
             arc.setClazz("production");
         }
         else
         {
-            // Fallback when we don't know what it is
+            // Everything else
             arc.setClazz("consumption");
         }
     }
