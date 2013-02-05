@@ -38,6 +38,7 @@ public final class ExportSbgn
     // Constant to adjust to an appropriate scale for SBGN files
     final static float SCALE = 40.0f;
     final static String PROCESS_EDGE_GLYPH_INDICATOR = "pegi";
+    final static String ENERGY_TRANSFER_GLYPH_INDICATOR = "em/t";
 
     private LayoutFrame layoutFrame = null;
     private JFileChooser fileChooser = null;
@@ -593,8 +594,11 @@ public final class ExportSbgn
         }
         else if (mepnShape.equals("trapezoid2"))
         {
-            //FIXME: implement
             // Energy/molecular transfer
+            // This isn't a real class, but a marker for later
+            glyph.setClazz(ENERGY_TRANSFER_GLYPH_INDICATOR + mepnLabel);
+
+            return true;
         }
 
         return false;
@@ -660,6 +664,26 @@ public final class ExportSbgn
         return getCentreOf(glyph.getBbox());
     }
 
+    private static void setArcStartToGlyph(Arc arc, Glyph glyph)
+    {
+        arc.setSource(glyph);
+        Point2D.Float point = getCentreOf(glyph);
+        Arc.Start start = new Arc.Start();
+        start.setX(point.x);
+        start.setY(point.y);
+        arc.setStart(start);
+    }
+
+    private static void setArcEndToGlyph(Arc arc, Glyph glyph)
+    {
+        arc.setTarget(glyph);
+        Point2D.Float point = getCentreOf(glyph);
+        Arc.End end = new Arc.End();
+        end.setX(point.x);
+        end.setY(point.y);
+        arc.setEnd(end);
+    }
+
     private static String processEdgeGlyphToSbgnArcClass(Glyph glyph)
     {
         String clazz = glyph.getClazz();
@@ -700,6 +724,36 @@ public final class ExportSbgn
         return newArc;
     }
 
+    private static List<Arc> arcsGoingTo(Glyph glyph, List<Arc> arcList)
+    {
+        List<Arc> out = new ArrayList();
+
+        for (Arc arc : arcList)
+        {
+            if (arc.getTarget() == glyph)
+            {
+                out.add(arc);
+            }
+        }
+
+        return out;
+    }
+
+    private static List<Arc> arcsComingFrom(Glyph glyph, List<Arc> arcList)
+    {
+        List<Arc> out = new ArrayList();
+
+        for (Arc arc : arcList)
+        {
+            if (arc.getSource() == glyph)
+            {
+                out.add(arc);
+            }
+        }
+
+        return out;
+    }
+
     private void transformProcessEdgeGlyphs(Map map)
     {
         List<Arc> arcList = map.getArc();
@@ -710,21 +764,9 @@ public final class ExportSbgn
 
             if (glyph.getClazz().startsWith(PROCESS_EDGE_GLYPH_INDICATOR))
             {
-                List<Arc> sourceArcList = new ArrayList<Arc>();
-                List<Arc> targetArcList = new ArrayList<Arc>();
-
                 // Build lists of Arcs going to and coming from this glyph
-                for (Arc arc : arcList)
-                {
-                    if (arc.getSource() == glyph)
-                    {
-                        targetArcList.add(arc);
-                    }
-                    else if (arc.getTarget() == glyph)
-                    {
-                        sourceArcList.add(arc);
-                    }
-                }
+                List<Arc> sourceArcList = arcsGoingTo(glyph, arcList);
+                List<Arc> targetArcList = arcsComingFrom(glyph, arcList);
 
                 // For each pair of Arcs that share the glyph
                 for (Arc source : sourceArcList)
@@ -743,6 +785,110 @@ public final class ExportSbgn
                 glyphIt.remove();
             }
         }
+    }
+
+    private void transformEnergyTransferGlyphs(Map map)
+    {
+        List<Glyph> glyphList = map.getGlyph();
+        List<Arc> arcList = map.getArc();
+        List<Glyph> glyphsToAdd = new ArrayList<Glyph>();
+        List<Arc> arcsToAdd = new ArrayList<Arc>();
+        List<Glyph> glyphsToRemove = new ArrayList<Glyph>();
+        List<Arc> arcsToRemove = new ArrayList<Arc>();
+
+        for (Glyph glyph : glyphList)
+        {
+            if (glyph.getClazz().startsWith(ENERGY_TRANSFER_GLYPH_INDICATOR))
+            {
+                List<Arc> arcs = arcsComingFrom(glyph, arcList);
+
+                if (arcs.size() != 1)
+                {
+                    continue;
+                }
+
+                String originalLabel = glyph.getClazz().replace(ENERGY_TRANSFER_GLYPH_INDICATOR, "");
+                Pattern r = Pattern.compile("^\\s*(\\w+?)\\s*->\\s*(\\w+?)\\s*$");
+                Matcher m = r.matcher(originalLabel);
+
+                if (!m.matches())
+                {
+                    continue;
+                }
+
+                String leftText = m.group(1);
+                String rightText = m.group(2);
+
+                Arc arc = arcs.get(0);
+                Glyph target = (Glyph)arc.getTarget();
+
+                // Replace original glyph with two smaller ones
+                Bbox originalBbox = glyph.getBbox();
+                final float NEW_GLYPH_SCALE = 1.0f;
+                float simpleChemicalWidth = originalBbox.getH() * NEW_GLYPH_SCALE;
+                float horizontalShift = simpleChemicalWidth * 0.5f;
+
+                Glyph leftGlyph = new Glyph();
+                Arc leftArc = new Arc();
+                {
+                    Bbox leftBbox = new Bbox();
+                    leftBbox.setW(simpleChemicalWidth);
+                    leftBbox.setH(simpleChemicalWidth);
+                    leftBbox.setX(originalBbox.getX() - horizontalShift);
+                    leftBbox.setY(originalBbox.getY());
+
+                    leftGlyph.setId(glyph.getId() + ".left");
+                    leftGlyph.setBbox(leftBbox);
+                    leftGlyph.setClazz("simple chemical");
+
+                    Label leftLabel = new Label();
+                    leftLabel.setText(leftText);
+                    leftGlyph.setLabel(leftLabel);
+
+                    leftArc.setId(arc.getId() + ".left");
+                    setArcStartToGlyph(leftArc, leftGlyph);
+                    setArcEndToGlyph(leftArc, target);
+                    leftArc.setClazz("production");
+                }
+
+                Glyph rightGlyph = new Glyph();
+                Arc rightArc = new Arc();
+                {
+                    Bbox rightBbox = new Bbox();
+                    rightBbox.setW(simpleChemicalWidth);
+                    rightBbox.setH(simpleChemicalWidth);
+                    rightBbox.setX(originalBbox.getX() + originalBbox.getW() -
+                            simpleChemicalWidth + horizontalShift);
+                    rightBbox.setY(originalBbox.getY());
+
+                    rightGlyph.setId(glyph.getId() + ".right");
+                    rightGlyph.setBbox(rightBbox);
+                    rightGlyph.setClazz("simple chemical");
+
+                    Label rightLabel = new Label();
+                    rightLabel.setText(rightText);
+                    rightGlyph.setLabel(rightLabel);
+
+                    rightArc.setId(arc.getId() + ".right");
+                    setArcStartToGlyph(rightArc, target);
+                    setArcEndToGlyph(rightArc, rightGlyph);
+                    rightArc.setClazz("production");
+                }
+
+                glyphsToAdd.add(leftGlyph);
+                arcsToAdd.add(leftArc);
+                glyphsToAdd.add(rightGlyph);
+                arcsToAdd.add(rightArc);
+
+                glyphsToRemove.add(glyph);
+                arcsToRemove.add(arc);
+            }
+        }
+
+        glyphList.addAll(glyphsToAdd);
+        glyphList.removeAll(glyphsToRemove);
+        arcList.addAll(arcsToAdd);
+        arcList.removeAll(arcsToRemove);
     }
 
     private void specialiseSbgnArc(String[] arrowHeads, Glyph source, Glyph target, Arc arc)
@@ -862,6 +1008,7 @@ public final class ExportSbgn
         }
 
         transformProcessEdgeGlyphs(map);
+        transformEnergyTransferGlyphs(map);
 
         return sbgn;
     }
