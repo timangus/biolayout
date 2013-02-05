@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import javax.swing.*;
@@ -900,9 +901,30 @@ public final class ExportSbgn
         arcList.removeAll(arcsToRemove);
     }
 
-    private void specialiseSbgnArc(String[] arrowHeads, Glyph source, Glyph target, Arc arc)
+    private void specialiseSbgnArc(List<String> arrowHeads, Glyph source, Glyph target, Arc arc)
     {
-        if (LABEL_TO_GLYPH_CLASS.containsValue(source.getClazz()))
+        if (arrowHeads.contains("standard"))
+        {
+            if (LABEL_TO_GLYPH_CLASS.containsValue(target.getClazz()))
+            {
+                arc.setClazz("stimulation");
+            }
+            else
+            {
+                arc.setClazz("production");
+            }
+        }
+        else if (arrowHeads.contains("transparent_circle"))
+        {
+            arc.setClazz("catalysis");
+        }
+        else if (arrowHeads.contains("t_shape") ||
+                arrowHeads.contains("diamond") ||
+                arrowHeads.contains("white_diamond"))
+        {
+            arc.setClazz("inhibition");
+        }
+        else if (LABEL_TO_GLYPH_CLASS.containsValue(source.getClazz()))
         {
             // Treat everything that's coming from a process as production
             arc.setClazz("production");
@@ -983,7 +1005,7 @@ public final class ExportSbgn
         end.setY(endY);
         arc.setEnd(end);
 
-        specialiseSbgnArc(arrowHeads, source, target, arc);
+        specialiseSbgnArc(Arrays.asList(arrowHeads), source, target, arc);
 
         return arc;
     }
