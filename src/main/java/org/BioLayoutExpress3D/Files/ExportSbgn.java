@@ -800,19 +800,22 @@ public final class ExportSbgn
         {
             if (glyph.getClazz().startsWith(ENERGY_TRANSFER_GLYPH_INDICATOR))
             {
-                List<Arc> arcs = arcsComingFrom(glyph, arcList);
+                List<Arc> arcs = new ArrayList<Arc>();
 
-                if (arcs.size() != 1)
-                {
-                    continue;
-                }
+                arcs.addAll(arcsComingFrom(glyph, arcList));
+                arcs.addAll(arcsGoingTo(glyph, arcList));
 
                 String originalLabel = glyph.getClazz().replace(ENERGY_TRANSFER_GLYPH_INDICATOR, "");
-                Pattern r = Pattern.compile("^\\s*(\\w+?)\\s*->\\s*(\\w+?)\\s*$");
+                Pattern r = Pattern.compile("^\\s*(.+?)\\s*->\\s*(.+?)\\s*$");
                 Matcher m = r.matcher(originalLabel);
 
-                if (!m.matches())
+                if (arcs.size() != 1 || !m.matches())
                 {
+                    // This doesn't look like energy transfer
+                    glyph.setClazz("unspecified entity");
+                    Label label = new Label();
+                    label.setText("Unknown energy/molecular transfer: " + originalLabel);
+                    glyph.setLabel(label);
                     continue;
                 }
 
@@ -821,6 +824,12 @@ public final class ExportSbgn
 
                 Arc arc = arcs.get(0);
                 Glyph target = (Glyph)arc.getTarget();
+
+                if (glyph == target)
+                {
+                    // Sometimes it points the other way
+                    target = (Glyph)arc.getSource();
+                }
 
                 // Replace original glyph with two smaller ones
                 Bbox originalBbox = glyph.getBbox();
