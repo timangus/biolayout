@@ -201,6 +201,11 @@ public final class ExportSbgn
         public List<ProteinComponent> getComponents() { return components; }
     }
 
+    private static boolean stringIsNotWhitespace(String s)
+    {
+        return s.trim().length() > 0;
+    }
+
     private ProteinComponentList parseMepnLabel(String mepnLabel)
     {
         String alias = null;
@@ -230,20 +235,23 @@ public final class ExportSbgn
             while (m.find())
             {
                 s = m.group(1);
-                if (s != null && !s.isEmpty())
+                if (s != null && stringIsNotWhitespace(s))
                 {
                     try { n = Integer.parseInt(s); }
-                    catch(NumberFormatException e) { n = -1; }
+                    catch(NumberFormatException e)
+                    {
+                        n = -1;
+                    }
                 }
 
                 s = m.group(2);
-                if (s != null && !s.isEmpty())
+                if (s != null && stringIsNotWhitespace(s))
                 {
                     name = s;
                 }
 
                 s = m.group(3);
-                if (s != null && !s.isEmpty())
+                if (s != null && stringIsNotWhitespace(s))
                 {
                     modList.add(s);
                 }
@@ -260,8 +268,9 @@ public final class ExportSbgn
     {
         final float INFO_X = 0.3f * SCALE;
         Bbox glyphBbox = glyph.getBbox();
+        int multimer = pc.getNumber();
 
-        if (pc.getNumber() > 1)
+        if (multimer != 1)
         {
             Glyph multimerGlyph = new Glyph();
             multimerGlyph.setId(glyph.getId() + ".multimer");
@@ -274,7 +283,14 @@ public final class ExportSbgn
             multimerGlyph.setBbox(bbox);
 
             Label label = new Label();
-            label.setText("N:" + pc.getNumber());
+            if (multimer < 0)
+            {
+                label.setText("N:?");
+            }
+            else
+            {
+                label.setText("N:" + multimer);
+            }
             multimerGlyph.setLabel(label);
 
             glyph.getGlyph().add(multimerGlyph);
@@ -370,7 +386,7 @@ public final class ExportSbgn
     private List<Bbox> subDivideGlyph(Glyph glyph, ProteinComponentList pcl)
     {
         final float ALIAS_VERTICAL_SPACE = 1.0f * SCALE;
-        final float TARGET_ASPECT = 3.0f;
+        final float TARGET_ASPECT = 2.0f;
         int subdivisions = pcl.getComponents().size();
 
         int pow2 = 1;
