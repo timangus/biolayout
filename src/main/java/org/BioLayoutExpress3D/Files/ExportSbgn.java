@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.util.HashMap;
@@ -35,7 +36,8 @@ import org.BioLayoutExpress3D.Utils.Point3D;
 public final class ExportSbgn
 {
     // Constant to adjust to an appropriate scale for SBGN files
-    final float SCALE = 40.0f;
+    final static float SCALE = 40.0f;
+    final static String PROCESS_EDGE_GLYPH_INDICATOR = "pegi";
 
     private LayoutFrame layoutFrame = null;
     private JFileChooser fileChooser = null;
@@ -443,7 +445,7 @@ public final class ExportSbgn
         return scaledList;
     }
 
-    private void configureComplexGlyph(String type, ProteinComponentList pcl, Glyph glyph)
+    private void configureComponentGlyph(String type, ProteinComponentList pcl, Glyph glyph)
     {
         if (pcl.getComponents().size() > 1)
         {
@@ -495,10 +497,13 @@ public final class ExportSbgn
         }
         else if (mepnShape.equals("diamond"))
         {
-            if (mepnLabel == "A" || mepnLabel == "C" || mepnLabel == "I")
+            if (mepnLabel.equals("A") || mepnLabel.equals("C") || mepnLabel.equals("I"))
             {
-                // Centre of a special edge
-                //FIXME: implement
+                // In theory this only occurs in mEPN 2010 diagrams
+                // This isn't a real class, but a marker for later when the edges are being processed
+                glyph.setClazz(PROCESS_EDGE_GLYPH_INDICATOR + mepnLabel);
+
+                return true;
             }
             else
             {
@@ -511,6 +516,8 @@ public final class ExportSbgn
                     label.setText(mepnLabel);
                     glyph.setLabel(label);
                 }
+
+                return true;
             }
         }
         else if (mepnShape.equals("hexagon"))
@@ -539,7 +546,7 @@ public final class ExportSbgn
 
             if (pcl.getComponents().size() > 0)
             {
-                configureComplexGlyph("nucleic acid feature", pcl, glyph);
+                configureComponentGlyph("nucleic acid feature", pcl, glyph);
                 return true;
             }
         }
@@ -550,7 +557,7 @@ public final class ExportSbgn
 
             if (pcl.getComponents().size() > 0)
             {
-                configureComplexGlyph("macromolecule", pcl, glyph);
+                configureComponentGlyph("macromolecule", pcl, glyph);
                 return true;
             }
         }
@@ -617,7 +624,7 @@ public final class ExportSbgn
         if (!specialiseSbgnGlyph(mepnShape, mepnLabel, glyph))
         {
             // Fallback when we don't know what it is
-            glyph.setClazz("simple chemical");
+            glyph.setClazz("unspecified entity");
 
             Label label = new Label();
             label.setText("***FIXME*** " + mepnLabel);
@@ -627,15 +634,113 @@ public final class ExportSbgn
         return glyph;
     }
 
-    private boolean specialiseSbgnArc(String[] arrowHeads, Glyph source, Glyph target, Arc arc)
+    private static Point2D.Float getCentreOf(Bbox bbox)
     {
-        if (!target.getClazz().equals("process")) //FIXME: probably flawed logic
-        {
-            arc.setClazz("production");
-            return true;
-        }
+        return new Point2D.Float(bbox.getX() + (bbox.getW() * 0.5f), bbox.getY() + (bbox.getH() * 0.5f));
+    }
 
-        return false;
+    private static Point2D.Float getCentreOf(Glyph glyph)
+    {
+        return getCentreOf(glyph.getBbox());
+    }
+
+    private static String processEdgeGlyphToSbgnArcClass(Glyph glyph)
+    {
+        String clazz = glyph.getClazz();
+        String mepnSpecifier = clazz.replace(PROCESS_EDGE_GLYPH_INDICATOR, "");
+
+        switch (mepnSpecifier.charAt(0))
+        {
+            default:
+            case 'A': return "stimulation";
+            case 'C': return "catalysis";
+            case 'I': return "inhibition";
+        }
+    }
+
+    private Arc mergeArcs(Arc source, Glyph intermediate, Arc target)
+    {
+        Arc newArc = new Arc();
+        newArc.setId(source.getId() + "." + target.getId());
+        newArc.setSource(source.getSource());
+        newArc.setStart(source.getStart());
+        newArc.setTarget(target.getTarget());
+        newArc.setEnd(target.getEnd());
+
+        List<Arc.Next> newArcNextList = newArc.getNext();
+        newArcNextList.addAll(source.getNext());
+
+        //FIXME: if this point is on the line made by adjacent points, don't need to add it
+        Arc.Next intermediateNext = new Arc.Next();
+        Point2D.Float point = getCentreOf(intermediate);
+        intermediateNext.setX(point.x);
+        intermediateNext.setY(point.y);
+        newArcNextList.add(intermediateNext);
+
+        newArcNextList.addAll(target.getNext());
+
+        newArc.setClazz(processEdgeGlyphToSbgnArcClass(intermediate));
+
+        return newArc;
+    }
+
+    private void transformProcessEdgeGlyphs(Map map)
+    {
+        List<Arc> arcList = map.getArc();
+
+        for (Iterator<Glyph> glyphIt = map.getGlyph().iterator(); glyphIt.hasNext();)
+        {
+            Glyph glyph = glyphIt.next();
+
+            if (glyph.getClazz().startsWith(PROCESS_EDGE_GLYPH_INDICATOR))
+            {
+                List<Arc> sourceArcList = new ArrayList<Arc>();
+                List<Arc> targetArcList = new ArrayList<Arc>();
+
+                // Build lists of Arcs going to and coming from this glyph
+                for (Arc arc : arcList)
+                {
+                    if (arc.getSource() == glyph)
+                    {
+                        targetArcList.add(arc);
+                    }
+                    else if (arc.getTarget() == glyph)
+                    {
+                        sourceArcList.add(arc);
+                    }
+                }
+
+                // For each pair of Arcs that share the glyph
+                for (Arc source : sourceArcList)
+                {
+                    for (Arc target : targetArcList)
+                    {
+                        arcList.add(mergeArcs(source, glyph, target));
+                    }
+                }
+
+                // Remove original Arcs
+                arcList.removeAll(sourceArcList);
+                arcList.removeAll(targetArcList);
+
+                // Remove original glyph
+                glyphIt.remove();
+            }
+        }
+    }
+
+    private void specialiseSbgnArc(String[] arrowHeads, Glyph source, Glyph target, Arc arc)
+    {
+        if (!target.getClazz().equals("process"))
+        {
+            // Treat everything that isn't pointing to a process as production
+            arc.setClazz("production");
+        }
+        else
+        {
+            // Fallback when we don't know what it is
+            arc.setClazz("consumption");
+        }
     }
 
     private Arc translateEdgeToSbgnArc(GraphEdge graphEdge, String id, Glyph source, Glyph target)
@@ -707,11 +812,7 @@ public final class ExportSbgn
         end.setY(endY);
         arc.setEnd(end);
 
-        if (!specialiseSbgnArc(arrowHeads, source, target, arc))
-        {
-            // Fallback when we don't know what it is
-            arc.setClazz("consumption");
-        }
+        specialiseSbgnArc(arrowHeads, source, target, arc);
 
         return arc;
     }
@@ -743,6 +844,8 @@ public final class ExportSbgn
 
             map.getArc().add(arc);
         }
+
+        transformProcessEdgeGlyphs(map);
 
         return sbgn;
     }
