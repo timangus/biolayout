@@ -2,6 +2,7 @@ package org.BioLayoutExpress3D.Files;
 
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Line2D;
 import java.awt.Color;
 import java.io.*;
 import java.util.ArrayList;
@@ -828,6 +829,84 @@ public final class ExportSbgn
         return out;
     }
 
+    private boolean pointsAreColinear(List<Point2D.Float> points, int first, int middle, int last)
+    {
+        final float EPSILON = 1.0f;
+
+        Line2D.Float line = new Line2D.Float(points.get(first), points.get(last));
+        return (float)line.ptLineDist(points.get(middle)) < EPSILON;
+    }
+
+    private List<Point2D.Float> simplifyArcs(List<Point2D.Float> points)
+    {
+        List<Point2D.Float> results = new ArrayList<Point2D.Float>();
+        int first = 0;
+
+        while (first < points.size())
+        {
+            int middle = first + 1;
+            int last = first + 2;
+
+            results.add(points.get(first));
+
+            // While middle lies on line made by first to last
+            while (last < points.size() && pointsAreColinear(points, first, middle, last))
+            {
+                middle++;
+                last++;
+            }
+
+            first = middle;
+        }
+
+        return results;
+    }
+
+    private void simplifyArcs(Map map)
+    {
+        List<Arc> arcList = map.getArc();
+
+        for (Arc arc : arcList)
+        {
+            if (arc.getNext().size() > 0)
+            {
+                List<Point2D.Float> points = new ArrayList<Point2D.Float>();
+                points.add(new Point2D.Float(arc.getStart().getX(), arc.getStart().getY()));
+                for (Arc.Next next : arc.getNext())
+                {
+                    points.add(new Point2D.Float(next.getX(), next.getY()));
+                }
+                points.add(new Point2D.Float(arc.getEnd().getX(), arc.getEnd().getY()));
+
+                List<Point2D.Float> results = simplifyArcs(points);
+
+                if (results.size() != points.size())
+                {
+                    println("simplified");
+                    Arc.Start start = new Arc.Start();
+                    start.setX(results.get(0).x);
+                    start.setY(results.get(0).y);
+                    arc.setStart(start);
+
+                    arc.getNext().clear();
+                    for (int i = 1; i < results.size() - 1; i++)
+                    {
+                        Arc.Next next = new Arc.Next();
+                        next.setX(results.get(i).x);
+                        next.setY(results.get(i).y);
+                        arc.getNext().add(next);
+                    }
+
+
+                    Arc.End end = new Arc.End();
+                    end.setX(results.get(results.size() - 1).x);
+                    end.setY(results.get(results.size() - 1).y);
+                    arc.setEnd(end);
+                }
+            }
+        }
+    }
+
     private void transformProcessEdgeGlyphs(Map map)
     {
         List<Arc> arcList = map.getArc();
@@ -1105,6 +1184,7 @@ public final class ExportSbgn
 
         transformProcessEdgeGlyphs(map);
         transformEnergyTransferGlyphs(map);
+        simplifyArcs(map);
 
         return sbgn;
     }
