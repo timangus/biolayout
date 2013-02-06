@@ -2,6 +2,7 @@ package org.BioLayoutExpress3D.Files;
 
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.awt.Color;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -490,9 +491,41 @@ public final class ExportSbgn
         }
     }
 
-    private boolean specialiseSbgnGlyph(String mepnShape, String mepnLabel, Glyph glyph)
+    private boolean specialiseSpnDistSpacerOrOutput(String mepnShape, String mepnLabel, Color mepnBackColor, Glyph glyph)
     {
-        if (mepnShape.equals("ellipse"))
+        if (mepnLabel.isEmpty())
+        {
+            if ((mepnShape.equals("diamond") && mepnBackColor.equals(Color.BLACK)) ||
+                (mepnShape.equals("ellipse") && mepnBackColor.equals(Color.WHITE)))
+            {
+                glyph.setClazz("process");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean specialiseSpnTokenInput(String mepnShape, String mepnLabel, Color mepnBackColor, Glyph glyph)
+    {
+        if (mepnLabel.isEmpty() && mepnBackColor.equals(Color.BLACK) &&
+            (mepnShape.equals("rectangle") || mepnShape.equals("roundedrectangle")))
+        {
+            glyph.setClazz("source and sink");
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean specialiseSbgnGlyph(String mepnShape, String mepnLabel, Color mepnBackColor, Glyph glyph)
+    {
+        if (specialiseSpnTokenInput(mepnShape, mepnLabel, mepnBackColor, glyph) ||
+                specialiseSpnDistSpacerOrOutput(mepnShape, mepnLabel, mepnBackColor, glyph))
+        {
+            return true;
+        }
+        else if (mepnShape.equals("ellipse"))
         {
             String glyphClass = LABEL_TO_GLYPH_CLASS.get(mepnLabel);
             if (glyphClass != null)
@@ -631,6 +664,12 @@ public final class ExportSbgn
         float mepnHeight = nodeData.first[0];
         float mepnAspect = mepnWidth / mepnHeight;
         String mepnLabel = Graph.customizeNodeName(nc.getNodeName(graphNode.getNodeName()));
+        Color mepnBackColor;
+        try { mepnBackColor = Color.decode(nodeData.second[1]); }
+        catch (Exception e)
+        {
+            mepnBackColor = Color.WHITE;
+        }
 
         float width = mepnWidth * SCALE;
         float height = mepnHeight * SCALE;
@@ -642,7 +681,7 @@ public final class ExportSbgn
         bbox.setH(height);
         glyph.setBbox(bbox);
 
-        if (!specialiseSbgnGlyph(mepnShape, mepnLabel, glyph))
+        if (!specialiseSbgnGlyph(mepnShape, mepnLabel, mepnBackColor, glyph))
         {
             // Fallback when we don't know what it is
             glyph.setClazz("unspecified entity");
