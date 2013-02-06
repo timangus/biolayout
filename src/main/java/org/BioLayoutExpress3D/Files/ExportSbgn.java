@@ -171,13 +171,13 @@ public final class ExportSbgn
         LABEL_TO_GLYPH_CLASS = Collections.unmodifiableMap(map);
     }
 
-    private class ProteinComponent
+    private class Component
     {
         private int n;
         private String name;
         private List<String> modList;
 
-        public ProteinComponent(int n, String name, List<String> modList)
+        public Component(int n, String name, List<String> modList)
         {
             this.n = n;
             this.name = name;
@@ -189,19 +189,19 @@ public final class ExportSbgn
         public List<String> getModList() { return modList; }
     }
 
-    private class ProteinComponentList
+    private class ComponentList
     {
         private String alias;
-        private List<ProteinComponent> components;
+        private List<Component> components;
 
-        public ProteinComponentList(String alias, List<ProteinComponent> components)
+        public ComponentList(String alias, List<Component> components)
         {
             this.alias = alias;
             this.components = components;
         }
 
         public String getAlias() { return alias; }
-        public List<ProteinComponent> getComponents() { return components; }
+        public List<Component> getComponents() { return components; }
     }
 
     private static boolean stringIsNotWhitespace(String s)
@@ -209,7 +209,7 @@ public final class ExportSbgn
         return s.trim().length() > 0;
     }
 
-    private ProteinComponentList parseMepnLabel(String mepnLabel)
+    private ComponentList parseMepnLabel(String mepnLabel)
     {
         String alias = null;
         Pattern aliasRegex = Pattern.compile("[^\\n]+(\\n\\s*\\(([^\\)]*)\\))");
@@ -221,7 +221,7 @@ public final class ExportSbgn
             strippedLabel = mepnLabel.replace(aliasMatcher.group(1), "");
         }
 
-        List<ProteinComponent> list = new ArrayList<ProteinComponent>();
+        List<Component> list = new ArrayList<Component>();
 
         String[] components = strippedLabel.split("\\s*:\\s*");
 
@@ -260,14 +260,14 @@ public final class ExportSbgn
                 }
             }
 
-            ProteinComponent pc = new ProteinComponent(n, name, modList);
+            Component pc = new Component(n, name, modList);
             list.add(pc);
         }
 
-        return new ProteinComponentList(alias, list);
+        return new ComponentList(alias, list);
     }
 
-    private void configureComponentGlyph(String type, ProteinComponent pc, Glyph glyph)
+    private void configureComponentGlyph(String type, Component pc, Glyph glyph)
     {
         final float INFO_X = 0.3f * SCALE;
         Bbox glyphBbox = glyph.getBbox();
@@ -386,11 +386,11 @@ public final class ExportSbgn
         return list;
     }
 
-    private List<Bbox> subDivideGlyph(Glyph glyph, ProteinComponentList pcl)
+    private List<Bbox> subDivideGlyph(Glyph glyph, ComponentList cl)
     {
         final float ALIAS_VERTICAL_SPACE = 1.0f * SCALE;
         final float TARGET_ASPECT = 2.0f;
-        int subdivisions = pcl.getComponents().size();
+        int subdivisions = cl.getComponents().size();
 
         int pow2 = 1;
         while (pow2 < subdivisions)
@@ -400,7 +400,7 @@ public final class ExportSbgn
 
         Bbox parentBbox = glyph.getBbox();
         Bbox componentsBbox = new Bbox();
-        String alias = pcl.getAlias();
+        String alias = cl.getAlias();
         if (alias != null)
         {
             componentsBbox.setX(parentBbox.getX());
@@ -464,16 +464,16 @@ public final class ExportSbgn
         return scaledList;
     }
 
-    private void configureComponentGlyph(String type, ProteinComponentList pcl, Glyph glyph)
+    private void configureComponentGlyph(String type, ComponentList cl, Glyph glyph)
     {
-        if (pcl.getComponents().size() > 1)
+        if (cl.getComponents().size() > 1)
         {
             glyph.setClazz("complex");
             List<Glyph> subGlyphs = glyph.getGlyph();
-            List<Bbox> subBboxes = subDivideGlyph(glyph, pcl);
+            List<Bbox> subBboxes = subDivideGlyph(glyph, cl);
 
             int index = 0;
-            for (ProteinComponent pc : pcl.getComponents())
+            for (Component pc : cl.getComponents())
             {
                 Glyph subGlyph = new Glyph();
                 subGlyph.setId(glyph.getId() + "." + (index + 1));
@@ -487,7 +487,7 @@ public final class ExportSbgn
         }
         else
         {
-            configureComponentGlyph(type, pcl.getComponents().get(0), glyph);
+            configureComponentGlyph(type, cl.getComponents().get(0), glyph);
         }
     }
 
@@ -512,10 +512,35 @@ public final class ExportSbgn
             (mepnShape.equals("rectangle") || mepnShape.equals("roundedrectangle")))
         {
             glyph.setClazz("source and sink");
+            makeSquarePreserveArea(glyph.getBbox());
             return true;
         }
 
         return false;
+    }
+
+    private void specialiseSimpleBiochemical(String mepnLabel, Glyph glyph)
+    {
+        makeSquarePreserveArea(glyph.getBbox());
+
+        if (mepnLabel.length() > 0)
+        {
+            ComponentList cl = parseMepnLabel(mepnLabel);
+
+            if (cl.getComponents().size() == 1)
+            {
+                configureComponentGlyph("simple chemical", cl.getComponents().get(0), glyph);
+            }
+            else
+            {
+                // Multiple components? Just use the label directly
+                Label label = new Label();
+                label.setText(mepnLabel);
+                glyph.setLabel(label);
+
+                glyph.setClazz("simple chemical");
+            }
+        }
     }
 
     private boolean specialiseSbgnGlyph(String mepnShape, String mepnLabel, Color mepnBackColor, Glyph glyph)
@@ -559,14 +584,7 @@ public final class ExportSbgn
             else
             {
                 // Ion/simple molecule
-                glyph.setClazz("simple chemical");
-
-                if (mepnLabel.length() > 0)
-                {
-                    Label label = new Label();
-                    label.setText(mepnLabel);
-                    glyph.setLabel(label);
-                }
+                specialiseSimpleBiochemical(mepnLabel, glyph);
 
                 return true;
             }
@@ -574,14 +592,7 @@ public final class ExportSbgn
         else if (mepnShape.equals("hexagon"))
         {
             // Simple biochemical
-            glyph.setClazz("simple chemical");
-
-            if (mepnLabel.length() > 0)
-            {
-                Label label = new Label();
-                label.setText(mepnLabel);
-                glyph.setLabel(label);
-            }
+            specialiseSimpleBiochemical(mepnLabel, glyph);
 
             return true;
         }
@@ -593,22 +604,22 @@ public final class ExportSbgn
         else if (mepnShape.equals("parallelogram") || mepnShape.equals("rectangle"))
         {
             // Gene/DNA sequence
-            ProteinComponentList pcl = parseMepnLabel(mepnLabel);
+            ComponentList cl = parseMepnLabel(mepnLabel);
 
-            if (pcl.getComponents().size() > 0)
+            if (cl.getComponents().size() > 0)
             {
-                configureComponentGlyph("nucleic acid feature", pcl, glyph);
+                configureComponentGlyph("nucleic acid feature", cl, glyph);
                 return true;
             }
         }
         else if (mepnShape.equals("roundrectangle"))
         {
             // Peptide/protein/protein complex
-            ProteinComponentList pcl = parseMepnLabel(mepnLabel);
+            ComponentList cl = parseMepnLabel(mepnLabel);
 
-            if (pcl.getComponents().size() > 0)
+            if (cl.getComponents().size() > 0)
             {
-                configureComponentGlyph("macromolecule", pcl, glyph);
+                configureComponentGlyph("macromolecule", cl, glyph);
                 return true;
             }
         }
@@ -702,6 +713,18 @@ public final class ExportSbgn
     private static Point2D.Float getCentreOf(Glyph glyph)
     {
         return getCentreOf(glyph.getBbox());
+    }
+
+    private static void makeSquarePreserveArea(Bbox bbox)
+    {
+        float diameter = (float) java.lang.Math.sqrt(bbox.getW() * bbox.getH());
+        float halfDiameter = diameter * 0.5f;
+        Point2D.Float centre = getCentreOf(bbox);
+
+        bbox.setX(centre.x - halfDiameter);
+        bbox.setY(centre.y - halfDiameter);
+        bbox.setW(diameter);
+        bbox.setH(diameter);
     }
 
     private static void setArcStartToGlyph(Arc arc, Glyph glyph)
@@ -888,11 +911,7 @@ public final class ExportSbgn
 
                     leftGlyph.setId(glyph.getId() + ".left");
                     leftGlyph.setBbox(leftBbox);
-                    leftGlyph.setClazz("simple chemical");
-
-                    Label leftLabel = new Label();
-                    leftLabel.setText(leftText);
-                    leftGlyph.setLabel(leftLabel);
+                    specialiseSimpleBiochemical(leftText, leftGlyph);
 
                     leftArc.setId(arc.getId() + ".left");
                     setArcStartToGlyph(leftArc, leftGlyph);
@@ -912,11 +931,7 @@ public final class ExportSbgn
 
                     rightGlyph.setId(glyph.getId() + ".right");
                     rightGlyph.setBbox(rightBbox);
-                    rightGlyph.setClazz("simple chemical");
-
-                    Label rightLabel = new Label();
-                    rightLabel.setText(rightText);
-                    rightGlyph.setLabel(rightLabel);
+                    specialiseSimpleBiochemical(rightText, rightGlyph);
 
                     rightArc.setId(arc.getId() + ".right");
                     setArcStartToGlyph(rightArc, target);
