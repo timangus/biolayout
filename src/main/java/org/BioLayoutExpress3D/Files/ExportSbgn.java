@@ -709,7 +709,7 @@ public final class ExportSbgn
             glyph.setClazz("unspecified entity");
 
             Label label = new Label();
-            label.setText("***FIXME*** " + mepnLabel);
+            label.setText("Unknown entity: " + mepnLabel);
             glyph.setLabel(label);
         }
 
