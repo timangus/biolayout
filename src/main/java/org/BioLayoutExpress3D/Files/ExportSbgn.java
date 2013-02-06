@@ -598,8 +598,19 @@ public final class ExportSbgn
         }
         else if (mepnShape.equals("octagon"))
         {
-            //FIXME: implement
             // Pathway output/module
+            glyph.setClazz("submap");
+
+            if (mepnLabel.length() > 0)
+            {
+                Label label = new Label();
+                label.setText(mepnLabel);
+                glyph.setLabel(label);
+            }
+
+            //FIXME: add tags to incident edges
+
+            return true;
         }
         else if (mepnShape.equals("parallelogram") || mepnShape.equals("rectangle"))
         {
