@@ -1172,7 +1172,29 @@ public final class ExportSbgn
         }
 
         int edgeId = 1;
-        for (GraphEdge graphEdge : in.getGraphEdges())
+        List<GraphEdge> sortedGraphEdges = new ArrayList<GraphEdge>(in.getGraphEdges());
+        Collections.sort(sortedGraphEdges, new java.util.Comparator<GraphEdge>()
+        {
+            @Override
+            public int compare(GraphEdge a, GraphEdge b)
+            {
+                int aSourceNodeId = a.getNodeFirst().getNodeID();
+                int aTargetNodeId = a.getNodeSecond().getNodeID();
+                int bSourceNodeId = b.getNodeFirst().getNodeID();
+                int bTargetNodeId = b.getNodeSecond().getNodeID();
+
+                if (aSourceNodeId == bSourceNodeId)
+                {
+                    return aTargetNodeId - bTargetNodeId;
+                }
+                else
+                {
+                    return aSourceNodeId - bSourceNodeId;
+                }
+            }
+        });
+
+        for (GraphEdge graphEdge : sortedGraphEdges)
         {
             String id = "a" + Integer.toString(edgeId++);
             Glyph source = sbgnGlyphs.get(graphEdge.getNodeFirst().getNodeID());
