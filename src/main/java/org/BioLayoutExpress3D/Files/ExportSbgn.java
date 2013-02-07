@@ -638,12 +638,12 @@ public final class ExportSbgn
         else if (mepnShape.equals("trapezoid"))
         {
             // Drug
-            glyph.setClazz("unspecified entity");
+            glyph.setClazz("perturbing agent");
 
             if (mepnLabel.length() > 0)
             {
                 Label label = new Label();
-                label.setText("Drug: " + mepnLabel);
+                label.setText(mepnLabel);
                 glyph.setLabel(label);
             }
 
