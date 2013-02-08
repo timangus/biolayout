@@ -119,10 +119,16 @@ public final class LoadNativeLibrary
             {
                 byte[] inHash = Utils.hashStream(new BufferedInputStream(
                         LoadNativeLibrary.class.getResourceAsStream(resourceName)));
-                byte[] outHash = Utils.hashStream(new FileInputStream(outFile));
+                FileInputStream fis = new FileInputStream(outFile);
+                byte[] outHash = Utils.hashStream(fis);
 
                 if (!Arrays.equals(inHash, outHash))
                 {
+                    if (DEBUG_BUILD)
+                    {
+                        println(outFileName + " exists but has incorrect hash, deleting");
+                    }
+                    fis.close();
                     outFile.delete();
                 }
                 else
