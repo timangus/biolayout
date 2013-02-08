@@ -688,18 +688,10 @@ public class FRLayoutComputing extends OpenCLContext
             // calc on CPU
             if (singleCoreOrNCPComparisonMethod)
             {
-                if (!javaOrNativeComparisonMethod && USE_NATIVE_CODE) // use native code
-                {
-                    startTime = System.nanoTime();
-                    frLayout.calculateSingleCoreNativeFRLayout(is2DOr3DFRLayout);
-                    endTime = System.nanoTime();
-                }
-                else // use Java code
-                {
-                    startTime = System.nanoTime();
-                    frLayout.calculateSingleCoreJavaFRLayout(is2DOr3DFRLayout);
-                    endTime = System.nanoTime();
-                }
+                startTime = System.nanoTime();
+                frLayout.calculateSingleCoreJavaFRLayout(is2DOr3DFRLayout);
+                endTime = System.nanoTime();
+
                 totalTimeCPU = (endTime - startTime) / 1000000000.0; // for secs
             }
             else

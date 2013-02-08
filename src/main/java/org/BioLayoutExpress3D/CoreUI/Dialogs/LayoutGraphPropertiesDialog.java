@@ -1617,8 +1617,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         parallelismPanel.setLayout( new BoxLayout(parallelismPanel, BoxLayout.Y_AXIS) );
 
         final String[] SELECTED_CORRELATION_CALCULATION_GPU_COMPUTING_CPU_COMPARISON_METHODS = (!USE_MULTICORE_PROCESS)
-                                                                                               ? ( (!USE_NATIVE_CODE) ? new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } : new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[1] } )
-                                                                                               : ( (!USE_NATIVE_CODE) ? new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } : GPU_COMPUTING_CPU_COMPARISON_METHODS );
+                                                                                               ? ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } )
+                                                                                               : ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } );
 
         parallelismUseExpressionCorrelationCalculationNCoreParallelism = new JRadioButton("Use Expression Correlation Calculation CPU N-Core Parallelism");
         parallelismUseExpressionCorrelationCalculationNCoreParallelism.setActionCommand(CHANGE_ACTION_COMMAND);
@@ -1668,8 +1668,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         expressionParallelismGroup.add(parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing);
 
         final String[] SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS = (!USE_MULTICORE_PROCESS)
-                                                                              ? ( ( !USE_NATIVE_CODE || USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() ) ? new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } : new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[1] } )
-                                                                              : ( ( !USE_NATIVE_CODE || USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() ) ? new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } : GPU_COMPUTING_CPU_COMPARISON_METHODS );
+                                                                              ? ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } )
+                                                                              : ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } );
 
         parallelismUseLayoutNCoreParallelism = new JRadioButton("Use Layout CPU N-Core Parallelism");
         parallelismUseLayoutNCoreParallelism.setToolTipText("Use Layout CPU N-Core Parallelism");
@@ -2670,8 +2670,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         else if ( e.getSource().equals(parallelismUseAtomicSynchronizationForLayoutNCoreParallelism) )
         {
             final String[] SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS = (!USE_MULTICORE_PROCESS)
-                                                                                  ? ( ( !USE_NATIVE_CODE || parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.isSelected() ) ? new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } : new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[1] } )
-                                                                                  : ( ( !USE_NATIVE_CODE || parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.isSelected() ) ? new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } : GPU_COMPUTING_CPU_COMPARISON_METHODS );
+                                                                                  ? ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } )
+                                                                                  : ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } );
 
             parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.removeAllItems();
             for (int i = 0;i < SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS.length; i++)

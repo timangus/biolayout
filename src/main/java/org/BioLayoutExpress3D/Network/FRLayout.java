@@ -242,11 +242,6 @@ public final class FRLayout
                 cachedVertexNormalizedWeightIndicesToSkipArray = cachedVertexNormalizedWeightIndicesToSkipBuffer.array();
         }
         cachedVertexNormalizedWeightMatrixArray = cachedVertexNormalizedWeightMatrixBuffer.array();
-
-        if (USE_NATIVE_CODE)
-            setAllValuesNative(BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE, BOOLEAN_PACKED_DATA_BIT_SIZE, FIXED_POINT_DECIMAL_PART_LENGTH, TEMPERATURE_SCALING,
-                               canvasXSize, canvasYSize, canvasZSize, displacementMatrixDimensionality,
-                               temperature, kValue, kSquareValue, kDoubled, useEdgeWeights);
     }
 
     /**
@@ -298,18 +293,6 @@ public final class FRLayout
 
         displacementMatrixArray = displacementMatrixBuffer.array();
     }
-
-    /**
-    *  Sets all values for the native side (native method).
-    */
-    private native void setAllValuesNative(int BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE, int BOOLEAN_PACKED_DATA_BIT_SIZE, byte FIXED_POINT_DECIMAL_PART_LENGTH, float TEMPERATURE_SCALING,
-                                           int canvasXSize, int canvasYSize, int canvasZSize, int displacementMatrixDimensionality,
-                                           float temperature, float kValue, float kSquareValue, float kDoubled, boolean useEdgeWeights);
-
-    /**
-    *  Sets the temperature value for the native side (native method).
-    */
-    private native void setTemperatureValueNative(float temperature);
 
     /**
     *  Creates the vertex indices matrix.
@@ -373,15 +356,10 @@ public final class FRLayout
             if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) )
                 cachedVertexNormalizedWeightIndicesToSkipArray = cachedVertexNormalizedWeightIndicesToSkipBuffer.array();
         }
-
-        if (USE_NATIVE_CODE)
-            setAllValuesNative(BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE, BOOLEAN_PACKED_DATA_BIT_SIZE, FIXED_POINT_DECIMAL_PART_LENGTH, TEMPERATURE_SCALING,
-                               canvasXSize, canvasYSize, canvasZSize, displacementMatrixDimensionality,
-                               temperature, kValue, kSquareValue, kDoubled, useEdgeWeights);
     }
 
     /**
-    *  Performs all iterations of the FRLayout algorithm in 2D (wrapper method for selecting between native and Java versions of the layout algorithm).
+    *  Performs all iterations of the FRLayout algorithm in 2D.
     */
     public void allIterationsCalcBiDirForce2D(int iterations, int componentID, LayoutProgressBarDialog layoutProgressBarDialog)
     {
@@ -391,23 +369,11 @@ public final class FRLayout
         if ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && (numberOfVertices > MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION) )
             performOpenCLGPUFRLayoutCalculationGetErrorOccured = performOpenCLGPUFRLayoutCalcBiDirForce2D(iterations);
 
-        if ( performOpenCLGPUFRLayoutCalculationGetErrorOccured || !( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) || (numberOfVertices <= MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION) )
+        if (performOpenCLGPUFRLayoutCalculationGetErrorOccured || !(OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get()) || (numberOfVertices <= MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION))
         {
-            if ( USE_NATIVE_CODE && (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
-                allIterationsCalcBiDirForce2DNative(vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                    cachedVertexNormalizedWeightMatrixArray, displacementMatrixArray, displacementValuesArray,
-                                                    numberOfVertices, iterations);
-            else
-                allIterationsCalcBiDirForce2DJava(iterations, performOpenCLGPUFRLayoutCalculationGetErrorOccured, componentID);
+            allIterationsCalcBiDirForce2DJava(iterations, performOpenCLGPUFRLayoutCalculationGetErrorOccured, componentID);
         }
     }
-
-    /**
-    *  Performs all iterations of the FRLayout algorithm in 2D (native method).
-    */
-    private native void allIterationsCalcBiDirForce2DNative(int[] vertexIndicesMatrixArray, float[] cachedVertexPointCoordsMatrixArray, int[] cachedVertexConnectionMatrixArray, int[] cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                            short[] cachedVertexNormalizedWeightMatrixArray, float[] displacementMatrixArray, int[] displacementValuesArray,
-                                                            int numberOfVertices, int iterations);
 
     /**
     *  Main method of the OpenCL GPU FRLayout in 2D data parallel execution code.
@@ -504,29 +470,9 @@ public final class FRLayout
     }
 
     /**
-    *  Iterates the FRLlayout algorithm in 2D (wrapper method for selecting between native and Java versions of the layout algorithm).
+    *  Iterates the FRLayout algorithm in 2D.
     */
     public void iterateCalcBiDirForce2D()
-    {
-        if ( USE_NATIVE_CODE && ( !( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) ) )
-            iterateCalcBiDirForce2DNative(vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                          cachedVertexNormalizedWeightMatrixArray, displacementMatrixArray, displacementValuesArray,
-                                          numberOfVertices);
-        else
-            iterateCalcBiDirForce2DJava();
-    }
-
-    /**
-    *  Iterates the FRLayout algorithm in 2D (native method).
-    */
-    private native void iterateCalcBiDirForce2DNative(int[] vertexIndicesMatrixArray, float[] cachedVertexPointCoordsMatrixArray, int[] cachedVertexConnectionMatrixArray, int[] cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                      short[] cachedVertexNormalizedWeightMatrixArray, float[] displacementMatrixArray, int[] displacementValuesArray,
-                                                      int numberOfVertices);
-
-    /**
-    *  Iterates the FRLayout algorithm in 2D (Java method).
-    */
-    private void iterateCalcBiDirForce2DJava()
     {
         int vertexID = 0;
         if ( !( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
@@ -661,51 +607,50 @@ public final class FRLayout
                         }
                         else
                         {
-                            if (!javaOrNativeComparisonMethod && USE_NATIVE_CODE) // use native code
+                            if (isPowerOfTwo)
                             {
-                                iterateCalcBiDirForce2DThreadNative(isPowerOfTwo, vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                                    cachedVertexNormalizedWeightMatrixArray, displacementMatrixArray, displacementValuesArray,
-                                                                    cachedVertexNormalizedWeightIndicesToSkipArray, NUMBER_OF_AVAILABLE_PROCESSORS, numberOfVertices, threadId);
-                            }
-                            else // use Java code
-                            {
-                                if (isPowerOfTwo)
+                                while (--from >= 0)
+                                // for (int from = 0; from < numberOfVertices; from++)
                                 {
-                                    while (--from >= 0)
-                                    // for (int from = 0; from < numberOfVertices; from++)
+                                    // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
+                                    if ((from & (NUMBER_OF_AVAILABLE_PROCESSORS - 1)) == threadId)
                                     {
-                                        // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
-                                        if ( ( from & (NUMBER_OF_AVAILABLE_PROCESSORS - 1) ) == threadId )
+                                        to = numberOfVertices;
+                                        while (--to >= from + 1)
+                                        // for (int to = from + 1; to < numberOfVertices; to++)
                                         {
-                                            to = numberOfVertices;
-                                            while (--to >= from + 1)
-                                            // for (int to = from + 1; to < numberOfVertices; to++)
-                                                calcBiDirForce2D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
+                                            calcBiDirForce2D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        if (useEdgeWeights)
                                         {
-                                            if (useEdgeWeights)
-                                                cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
+                                            cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
                                         }
                                     }
                                 }
-                                else
+                            }
+                            else
+                            {
+                                while (--from >= 0)
+                                // for (int from = 0; from < numberOfVertices; from++)
                                 {
-                                    while (--from >= 0)
-                                    // for (int from = 0; from < numberOfVertices; from++)
+                                    // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
+                                    if ((from % NUMBER_OF_AVAILABLE_PROCESSORS) == threadId)
                                     {
-                                        // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
-                                        if ( (from % NUMBER_OF_AVAILABLE_PROCESSORS) == threadId )
+                                        to = numberOfVertices;
+                                        while (--to >= from + 1)
+                                        // for (int to = from + 1; to < numberOfVertices; to++)
                                         {
-                                            to = numberOfVertices;
-                                            while (--to >= from + 1)
-                                            // for (int to = from + 1; to < numberOfVertices; to++)
-                                                calcBiDirForce2D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
+                                            calcBiDirForce2D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        if (useEdgeWeights)
                                         {
-                                            if (useEdgeWeights)
-                                                cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
+                                            cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
                                         }
                                     }
                                 }
@@ -732,13 +677,6 @@ public final class FRLayout
 
         };
     }
-
-    /**
-    *  Iterates the FRLayout algorithm in 2D inside a Java thread (native method).
-    */
-    private native void iterateCalcBiDirForce2DThreadNative(boolean isPowerOfTwo, int[] vertexIndicesMatrixArray, float[] cachedVertexPointCoordsMatrixArray, int[] cachedVertexConnectionMatrixArray, int[] cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                            short[] cachedVertexNormalizedWeightMatrixArray, float[] displacementMatrixArray, int[] displacementValuesArray,
-                                                            int[] cachedVertexNormalizedWeightIndicesToSkipArray, int NUMBER_OF_AVAILABLE_PROCESSORS, int numberOfVertices, int threadId);
 
     /**
     *  Calculates the 2D bi-directional force of the FRLayout algorithm.
@@ -957,7 +895,7 @@ public final class FRLayout
     }
 
     /**
-    *  Performs all iterations of the FRLayout algorithm in 3D (wrapper method for selecting between native and Java versions of the layout algorithm).
+    *  Performs all iterations of the FRLayout algorithm in 3D.
     */
     public void allIterationsCalcBiDirForce3D(int iterations, int componentID, LayoutProgressBarDialog layoutProgressBarDialog)
     {
@@ -967,23 +905,11 @@ public final class FRLayout
         if ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && (numberOfVertices > MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION) )
             performOpenCLGPUFRLayoutCalculationGetErrorOccured = performOpenCLGPUFRLayoutCalcBiDirForce3D(iterations);
 
-        if ( performOpenCLGPUFRLayoutCalculationGetErrorOccured || !( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) || (numberOfVertices <= MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION) )
+        if (performOpenCLGPUFRLayoutCalculationGetErrorOccured || !(OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get()) || (numberOfVertices <= MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION))
         {
-            if ( USE_NATIVE_CODE && (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
-                allIterationsCalcBiDirForce3DNative(vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                    cachedPseudoVertexMatrixArray, cachedVertexNormalizedWeightMatrixArray, displacementValuesArray,
-                                                    numberOfVertices, iterations);
-            else
-                allIterationsCalcBiDirForce3DJava(iterations, performOpenCLGPUFRLayoutCalculationGetErrorOccured, componentID);
+            allIterationsCalcBiDirForce3DJava(iterations, performOpenCLGPUFRLayoutCalculationGetErrorOccured, componentID);
         }
     }
-
-    /**
-    *  Performs all iterations of the FRLayout algorithm in 3D (native method).
-    */
-    private native void allIterationsCalcBiDirForce3DNative(int[] vertexIndicesMatrixArray, float[] cachedVertexPointCoordsMatrixArray, int[] cachedVertexConnectionMatrixArray, int[] cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                            int[] cachedPseudoVertexMatrixArray, short[] cachedVertexNormalizedWeightMatrixArray, int[] displacementValuesArray,
-                                                            int numberOfVertices, int iterations);
 
     /**
     *  Main method of the OpenCL GPU FRLayout in 3D data parallel execution code.
@@ -1080,29 +1006,9 @@ public final class FRLayout
     }
 
     /**
-    *  Iterates the FRLayout algorithm in 3D (wrapper method for selecting between native and Java versions of the layout algorithm).
+    *  Iterates the FRLayout algorithm in 3D.
     */
     public void iterateCalcBiDirForce3D()
-    {
-        if ( USE_NATIVE_CODE && ( !( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) ) )
-            iterateCalcBiDirForce3DNative(vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                          cachedPseudoVertexMatrixArray, cachedVertexNormalizedWeightMatrixArray, displacementValuesArray,
-                                          numberOfVertices);
-        else
-            iterateCalcBiDirForce3DJava();
-    }
-
-    /**
-    *  Iterates the FRLayout algorithm in 3D (native method).
-    */
-    private native void iterateCalcBiDirForce3DNative(int[] vertexIndicesMatrixArray, float[] cachedVertexPointCoordsMatrixArray, int[] cachedVertexConnectionMatrixArray, int[] cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                      int[] cachedPseudoVertexMatrixArray, short[] cachedVertexNormalizedWeightMatrixArray, int[] displacementValuesArray,
-                                                      int numberOfVertices);
-
-    /**
-    *  Iterates the FRLayout algorithm in 3D (Java method).
-    */
-    private void iterateCalcBiDirForce3DJava()
     {
         int vertexID = 0;
         if ( !( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
@@ -1237,51 +1143,50 @@ public final class FRLayout
                         }
                         else
                         {
-                            if (!javaOrNativeComparisonMethod && USE_NATIVE_CODE) // use native code
+                            if (isPowerOfTwo)
                             {
-                                iterateCalcBiDirForce3DThreadNative(isPowerOfTwo, vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                                    cachedPseudoVertexMatrixArray, cachedVertexNormalizedWeightMatrixArray, displacementValuesArray,
-                                                                    cachedVertexNormalizedWeightIndicesToSkipArray, NUMBER_OF_AVAILABLE_PROCESSORS, numberOfVertices, threadId);
-                            }
-                            else // use Java code
-                            {
-                                if (isPowerOfTwo)
+                                while (--from >= 0)
+                                // for (int from = 0; from < numberOfVertices; from++)
                                 {
-                                    while (--from >= 0)
-                                    // for (int from = 0; from < numberOfVertices; from++)
+                                    // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
+                                    if ((from & (NUMBER_OF_AVAILABLE_PROCESSORS - 1)) == threadId)
                                     {
-                                        // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
-                                        if ( ( from & (NUMBER_OF_AVAILABLE_PROCESSORS - 1) ) == threadId )
+                                        to = numberOfVertices;
+                                        while (--to >= from + 1)
+                                        // for (int to = from + 1; to < numberOfVertices; to++)
                                         {
-                                            to = numberOfVertices;
-                                            while (--to >= from + 1)
-                                            // for (int to = from + 1; to < numberOfVertices; to++)
-                                                calcBiDirForce3D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
+                                            calcBiDirForce3D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        if (useEdgeWeights)
                                         {
-                                            if (useEdgeWeights)
-                                                cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
+                                            cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
                                         }
                                     }
                                 }
-                                else
+                            }
+                            else
+                            {
+                                while (--from >= 0)
+                                // for (int from = 0; from < numberOfVertices; from++)
                                 {
-                                    while (--from >= 0)
-                                    // for (int from = 0; from < numberOfVertices; from++)
+                                    // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
+                                    if ((from % NUMBER_OF_AVAILABLE_PROCESSORS) == threadId)
                                     {
-                                        // distribute every (from % NUMBER_OF_AVAILABLE_PROCESSORS) execution to the given threadId
-                                        if ( (from % NUMBER_OF_AVAILABLE_PROCESSORS) == threadId )
+                                        to = numberOfVertices;
+                                        while (--to >= from + 1)
+                                        // for (int to = from + 1; to < numberOfVertices; to++)
                                         {
-                                            to = numberOfVertices;
-                                            while (--to >= from + 1)
-                                            // for (int to = from + 1; to < numberOfVertices; to++)
-                                                calcBiDirForce3D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
+                                            calcBiDirForce3D(vertexIndicesMatrixArray[from], vertexIndicesMatrixArray[to], cachedVertexNormalizedWeightIndex);
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        if (useEdgeWeights)
                                         {
-                                            if (useEdgeWeights)
-                                                cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
+                                            cachedVertexNormalizedWeightIndex[0] += cachedVertexNormalizedWeightIndicesToSkipArray[from];
                                         }
                                     }
                                 }
@@ -1308,13 +1213,6 @@ public final class FRLayout
 
         };
     }
-
-    /**
-    *  Iterates the FRLayout algorithm in 3D inside a Java thread (native method).
-    */
-    private native void iterateCalcBiDirForce3DThreadNative(boolean isPowerOfTwo, int[] vertexIndicesMatrixArray, float[] cachedVertexPointCoordsMatrixArray, int[] cachedVertexConnectionMatrixArray, int[] cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                                            int[] cachedPseudoVertexMatrixArray, short[] cachedVertexNormalizedWeightMatrixArray, int[] displacementValuesArray,
-                                                            int[] cachedVertexNormalizedWeightIndicesToSkipArray, int NUMBER_OF_AVAILABLE_PROCESSORS, int numberOfVertices, int threadId);
 
     /**
     *  Calculates the 3D bi-directional force of the FRLayout algorithm.
@@ -1675,25 +1573,6 @@ public final class FRLayout
     }
 
     /**
-    *  Calculates the FRLayout algorithm using Single Core (native version).
-    */
-    public void calculateSingleCoreNativeFRLayout(boolean is2DOr3DFRLayout)
-    {
-        if (is2DOr3DFRLayout)
-        {
-            iterateCalcBiDirForce2DNative(vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                          cachedVertexNormalizedWeightMatrixArray, displacementMatrixArray, displacementValuesArray,
-                                          numberOfVertices);
-        }
-        else
-        {
-            iterateCalcBiDirForce3DNative(vertexIndicesMatrixArray, cachedVertexPointCoordsMatrixArray, cachedVertexConnectionMatrixArray, cachedVertexConnectionRowSkipSizeValuesMatrixArray,
-                                          cachedPseudoVertexMatrixArray, cachedVertexNormalizedWeightMatrixArray, displacementValuesArray,
-                                          numberOfVertices);
-        }
-    }
-
-    /**
     *  Sets the calculated force to vertices.
     */
     public void setForceToVertex(boolean is2DOr3DFRLayout)
@@ -1838,8 +1717,6 @@ public final class FRLayout
     */
     public void setTemperature(float temperature)
     {
-        if (USE_NATIVE_CODE)
-            setTemperatureValueNative(temperature);
         this.temperature = temperature;
     }
 

@@ -22,7 +22,7 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 *
 * The ExpressionData conveys the core of the correlation data calculations.
 *
-* @author Anton Enright, code updates/heavy optimizations/modifications/JNI/C native code/N-Core parallelization support/GPU Computing Thanos Theo, 2008-2009-2010-2011
+* @author Anton Enright, code updates/heavy optimizations/modifications/N-Core parallelization support/GPU Computing Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
 *
 */
@@ -434,53 +434,9 @@ public final class ExpressionData
     }
 
     /**
-    *  Performs all correlation calculations (wrapper method for selecting between native and Java versions of the correlation calculation).
+    *  Performs all correlation calculations.
     */
     private void allCorrelationCalculations(int threadId, boolean isPowerOfTwo, int startRow, int endRow, float[] stepResults, int[] cachedRowsResultsIndicesToSkip)
-    {
-        if (USE_NATIVE_CODE)
-            allCorrelationCalculationsNative(threadId, isPowerOfTwo, startRow, endRow, stepResults, cachedRowsResultsIndicesToSkip,
-                                             totalColumns, totalRows, sumColumns_X2_cacheArray, sumX_sumX2_cacheArray, sumX_cacheArray,
-                                             CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksArray : expressionDataArray ), NUMBER_OF_AVAILABLE_PROCESSORS);
-        else
-            allCorrelationCalculationsJava(threadId, isPowerOfTwo, startRow, endRow, stepResults, cachedRowsResultsIndicesToSkip);
-    }
-
-    /**
-    *  Performs all correlation calculations N-CP version (native method).
-    */
-    private native void allCorrelationCalculationsNative(int threadId, boolean isPowerOfTwo, int startRow, int endRow, float[] stepResults, int[] cachedRowsResultsIndicesToSkip,
-                                                         int totalColumns, int totalRows, float[] sumColumns_X2_cacheArray, float[] sumX_sumX2_cacheArray, float[] sumX_cacheArray,
-                                                         float[] expressionDataArray, int NUMBER_OF_AVAILABLE_PROCESSORS);
-
-    /**
-    *  Performs all correlation calculations for CPU side ExpressionDataComputing, Single Core usage, OpenCL version (native method).
-    */
-    public native void allCorrelationCalculationsForExpressionDataComputingSingleCoreNative(boolean usePairIndices, int totalColumns, int[] indexXYArray, float[] sumColumns_X2_cacheArray, float[] sumX_sumX2_cacheArray,
-                                                                                            float[] sumX_cacheArray, float[] expressionDataArray, float[] dataResultsCPU, int N);
-
-    /**
-    *  Performs all correlation calculations for CPU side ExpressionDataComputing, Single Core usage, GLSL version (native method).
-    */
-    public native void allCorrelationCalculationsForExpressionDataComputingSingleCoreNative(int totalColumns, float[] indexXArray, float[] indexYArray, float[] sumColumns_X2_cacheArray, float[] sumX_sumX2_cacheArray,
-                                                                                            float[] sumX_cacheArray, float[] expressionDataArray, float[] dataResultsCPU, int N);
-
-    /**
-    *  Performs all correlation calculations for CPU side ExpressionDataComputing, N-CP usage, OpenCL version (native method).
-    */
-    public native void allCorrelationCalculationsForExpressionDataComputingNCPNative(int threadId, int totalLoopsPerProcess, boolean usePairIndices, int totalColumns, int[] indexXYArray, float[] sumColumns_X2_cacheArray, float[] sumX_sumX2_cacheArray,
-                                                                                     float[] sumX_cacheArray, float[] expressionDataArray, float[] dataResultsCPU, int N, int NUMBER_OF_AVAILABLE_PROCESSORS);
-
-    /**
-    *  Performs all correlation calculations for CPU side ExpressionDataComputing, N-CP usage, GLSL version (native method).
-    */
-    public native void allCorrelationCalculationsForExpressionDataComputingNCPNative(int threadId, int totalLoopsPerProcess, int totalColumns, float[] indexXArray, float[] indexYArray, float[] sumColumns_X2_cacheArray, float[] sumX_sumX2_cacheArray,
-                                                                                     float[] sumX_cacheArray, float[] expressionDataArray, float[] dataResultsCPU, int N, int NUMBER_OF_AVAILABLE_PROCESSORS);
-
-    /**
-    *  Performs all correlation calculations (Java method).
-    */
-    private void allCorrelationCalculationsJava(int threadId, boolean isPowerOfTwo, int startRow, int endRow, float[] stepResults, int[] cachedRowsResultsIndicesToSkip)
     {
         float[] expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksArray : expressionDataArray );
         int rowResultIndex = 0;

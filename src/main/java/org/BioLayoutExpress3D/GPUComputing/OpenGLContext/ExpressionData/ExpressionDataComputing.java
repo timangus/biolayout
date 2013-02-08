@@ -624,20 +624,14 @@ public class ExpressionDataComputing extends OpenGLContext
             if (singleCoreOrNCPComparisonMethod)
             {
                 long startTime = 0, endTime = 0;
-                if (!javaOrNativeComparisonMethod && USE_NATIVE_CODE) // use native code
+
+                startTime = System.nanoTime();
+                for (int i = 0; i < N; i++)
                 {
-                    startTime = System.nanoTime();
-                    expressionData.allCorrelationCalculationsForExpressionDataComputingSingleCoreNative(totalColumns, indexXArray, indexYArray, dataSumColumns_X2_cacheArray,
-                                                                                                        dataSumX_sumX2_cacheArray, dataSumX_cacheArray, dataExpressionArray, dataResultsCPUArray, N);
-                    endTime = System.nanoTime();
+                    dataResultsCPUArray[i] = expressionData.calculateCorrelation((int) indexXArray[i], (int) indexYArray[i], dataExpressionArray);
                 }
-                 else // use Java code
-                {
-                    startTime = System.nanoTime();
-                    for (int i = 0; i < N; i++)
-                        dataResultsCPUArray[i] = expressionData.calculateCorrelation( (int)indexXArray[i], (int)indexYArray[i], dataExpressionArray );
-                    endTime = System.nanoTime();
-                }
+                endTime = System.nanoTime();
+
                 totalTimeCPU = (endTime - startTime) / 1000000000.0; // for secs
             }
             else
@@ -747,16 +741,10 @@ public class ExpressionDataComputing extends OpenGLContext
                     ncpThreadBarrier.await();
                     try
                     {
-                        if (!javaOrNativeComparisonMethod && USE_NATIVE_CODE) // use native code
+                        int extraLoops = (threadId == (NUMBER_OF_AVAILABLE_PROCESSORS - 1)) ? (N % NUMBER_OF_AVAILABLE_PROCESSORS) : 0;
+                        for (int i = threadId * totalLoopsPerProcess; i < (threadId + 1) * totalLoopsPerProcess + extraLoops; i++)
                         {
-                            expressionData.allCorrelationCalculationsForExpressionDataComputingNCPNative(threadId, totalLoopsPerProcess, totalColumns, indexXArray, indexYArray, dataSumColumns_X2_cacheArray,
-                                                                                                         dataSumX_sumX2_cacheArray, dataSumX_cacheArray, dataExpressionArray, dataResultsCPUArray, N, NUMBER_OF_AVAILABLE_PROCESSORS);
-                        }
-                        else
-                        {
-                            int extraLoops = ( threadId == (NUMBER_OF_AVAILABLE_PROCESSORS - 1) ) ? (N % NUMBER_OF_AVAILABLE_PROCESSORS) : 0;
-                            for (int i = threadId * totalLoopsPerProcess; i < (threadId + 1) * totalLoopsPerProcess + extraLoops; i++)
-                                dataResultsCPUArray[i] = expressionData.calculateCorrelation( (int)indexXArray[i], (int)indexYArray[i], dataExpressionArray );
+                            dataResultsCPUArray[i] = expressionData.calculateCorrelation((int) indexXArray[i], (int) indexYArray[i], dataExpressionArray);
                         }
                     }
                     finally

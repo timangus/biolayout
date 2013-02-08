@@ -45,14 +45,9 @@ public final class Layout
     /**
     *  Constructor of the Layout class.
     */
-    private Layout(String fileName, boolean onlineConnect, String repository, String dataSets, boolean hasChosenUseNativeCodeCommandLine, boolean useNativeCode, boolean hasChosenUseShadersProcessCommandLine, boolean useShadersProcess)
+    private Layout(String fileName, boolean onlineConnect, String repository, String dataSets,
+            boolean hasChosenUseShadersProcessCommandLine, boolean useShadersProcess)
     {
-        if (hasChosenUseNativeCodeCommandLine)
-        {
-            if (USE_NATIVE_CODE) // only if native code on pass selection, so as to avoid JVM crashes
-                USE_NATIVE_CODE = useNativeCode;
-        }
-
         if (hasChosenUseShadersProcessCommandLine)
             USE_SHADERS_PROCESS = useShadersProcess;
 
@@ -240,8 +235,6 @@ public final class Layout
         System.err.println();
         System.err.println(" -loadDataSets datasets  : loadDataSets used to load datasets\n\t\t\t   from a web repository");
         System.err.println();
-        System.err.println(" -useNativeCode on|off   : use native code, default machine/OS autodetect");
-        System.err.println();
         System.err.println(" -useShaders on|off      : use shaders support for the renderer (default on)");
         System.err.println();
         System.err.println(" -nimbusLAF on|off       : set the Nimbus look and feel (default off)");
@@ -309,19 +302,6 @@ public final class Layout
     }
 
     /**
-    *  Static method to initialize the native algorithm implementations.
-    */
-    private static boolean initNativeLibrary()
-    {
-        if ( !LoadNativeLibrary.loadNativeLibrary("biolayout") )
-            return false;
-
-        LoadNativeLibrary.setJavaLibraryPath();
-
-        return true;
-    }
-
-    /**
     *  The void main entry point of the BioLayoutExpress3D framework.
     */
     public static void main(String[] args)
@@ -335,8 +315,8 @@ public final class Layout
         boolean fileOutput = false;
         String repository = "";
         String dataSets = "";
-        // use this complex way for parsing the USE_NATIVE_CODE/USE_SHADERS_PROCESS value so as to avoid a weird OpenGL flicker effect in Windows OSs
-        // which only happens when the USE_NATIVE_CODE/USE_SHADERS_PROCESS variables are being accessed within void main!!!
+        // use this complex way for parsing the USE_SHADERS_PROCESS value so as to avoid a weird OpenGL flicker effect in Windows OSs
+        // which only happens when the USE_SHADERS_PROCESS variables are being accessed within void main!!!
         boolean hasChosenUseNativeCodeCommandLine = false;
         boolean useNativeCode = false;
         boolean hasChosenUseShadersProcessCommandLine = false;
@@ -449,16 +429,6 @@ public final class Layout
             if (DEBUG_BUILD) println("Error: JOCL Library not installed or found!\n");
         }
 
-        if ( initNativeLibrary() )
-        {
-            USE_NATIVE_CODE = true;
-            if (DEBUG_BUILD) println("Using native code\n");
-        }
-        else
-        {
-            if (DEBUG_BUILD) println("Not using native code\n");
-        }
-
         if (DEBUG_BUILD)
         {
             reportMachineSettings();
@@ -466,8 +436,7 @@ public final class Layout
         }
 
         new Layout( ( !fileName.isEmpty() ) ? fileName : "", !dataSets.isEmpty(),
-                repository, dataSets, hasChosenUseNativeCodeCommandLine, useNativeCode,
-                hasChosenUseShadersProcessCommandLine, useShadersProcess );
+                repository, dataSets, hasChosenUseShadersProcessCommandLine, useShadersProcess );
     }
 
 

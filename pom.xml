@@ -25,7 +25,6 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <native.makefile.dir>src/main/c/</native.makefile.dir>
         <generated.sources.dir>${project.build.directory}/generated-sources/java</generated.sources.dir>
         <buildconfig.template.file>src/main/java/org/BioLayoutExpress3D/BuildConfig.template</buildconfig.template.file>
         <buildconfig.file>${generated.sources.dir}/org/BioLayoutExpress3D/BuildConfig.java</buildconfig.file>
@@ -44,41 +43,6 @@
             <properties>
                 <debug.build>false</debug.build>
             </properties>
-        </profile>
-
-        <!-- Only build the native parts on Linux -->
-        <profile>
-            <id>linux</id>
-            <activation>
-                <os>
-                    <family>Linux</family>
-                </os>
-            </activation>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.1</version>
-                        <executions>
-                            <execution>
-                                <id>exe</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>make</executable>
-                                    <arguments>
-                                        <argument>-C${native.makefile.dir}</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
 

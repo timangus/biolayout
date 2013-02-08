@@ -45,8 +45,6 @@ public final class GlobalEnvironment
     public static final boolean USE_MULTICORE_PROCESS = (NUMBER_OF_AVAILABLE_PROCESSORS > 1);
     public static final char DECIMAL_SEPARATOR_CHARACTER = DecimalFormatSymbols.getInstance().getDecimalSeparator();
     public static final String DECIMAL_SEPARATOR_STRING = Character.valueOf(DECIMAL_SEPARATOR_CHARACTER).toString();
-    public static boolean USE_NATIVE_CODE = false;
-    public static boolean WEBSTART = false;
 
     // OpenGL & GLSL specific variables
     public static final PrefBool FIRST_RUN_DETECT_OPENGL_SUPPORT_AND_EXTENSIONS = new PrefBool(true, "first_run_detect_opengl_support_and_extensions", true);
