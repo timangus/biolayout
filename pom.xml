@@ -510,6 +510,27 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>sign</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>${project.build.directory}/${outFilename}.jar</archive>
+                    <keystore>keystore.jks</keystore>
+                    <alias>selfsigned</alias>
+                    <storepass>password</storepass>
+                    <keypass>password</keypass>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>
