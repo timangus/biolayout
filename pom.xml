@@ -26,7 +26,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <native.makefile.dir>src/main/c/</native.makefile.dir>
-        <generated.sources.dir>target/generated-sources/java</generated.sources.dir>
+        <generated.sources.dir>${project.build.directory}/generated-sources/java</generated.sources.dir>
         <buildconfig.template.file>src/main/java/org/BioLayoutExpress3D/BuildConfig.template</buildconfig.template.file>
         <buildconfig.file>${generated.sources.dir}/org/BioLayoutExpress3D/BuildConfig.java</buildconfig.file>
         <debug.build>true</debug.build>
@@ -185,8 +185,8 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>target/${outFilename}-32bit.exe</outfile>
-                            <jar>target/${outFilename}.jar</jar>
+                            <outfile>${project.build.directory}/${outFilename}-32bit.exe</outfile>
+                            <jar>${project.build.directory}/${outFilename}.jar</jar>
                             <icon>${icon}</icon>
                             <errTitle>${project.name}</errTitle>
                             <jre>
@@ -214,8 +214,8 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>target/${outFilename}-64bit.exe</outfile>
-                            <jar>target/${outFilename}.jar</jar>
+                            <outfile>${project.build.directory}/${outFilename}-64bit.exe</outfile>
+                            <jar>${project.build.directory}/${outFilename}.jar</jar>
                             <icon>${icon}</icon>
                             <errTitle>${project.name}</errTitle>
                             <jre>
