@@ -135,9 +135,16 @@ public final class LayoutFrame extends JFrame implements GraphListener
     /**
     *  Initializes the frame. This method is specified to return the 'this' reference upon which it is invoked. This allows the method invocation to be chained.
     */
-    public LayoutFrame initializeFrame(final boolean startWithAutomaticFileLoading)
+    public LayoutFrame initializeFrame(boolean useDefaults, Map<String, String> preferences,
+            final boolean startWithAutomaticFileLoading)
     {
-        LayoutPreferences.getLayoutPreferencesSingleton().loadPreferences();
+        if (!useDefaults)
+        {
+            LayoutPreferences.getLayoutPreferencesSingleton().loadPreferences();
+        }
+
+        LayoutPreferences.getLayoutPreferencesSingleton().useSpecifiedPreferences(preferences);
+
         loadRestOfPreferences();
 
         Insets insets = this.getInsets();

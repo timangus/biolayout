@@ -71,15 +71,7 @@ public class PrefColor extends PrefType
     {
         if (USE_CONFIG_FILE)
         {
-            try
-            {
-                String value = loadPrefFromConfigFile();
-                currentValue = (value != null) ? value : defaultValue;
-            }
-            catch (Exception exc)
-            {
-                currentValue = defaultValue;
-            }
+            usePref( loadPrefFromConfigFile());
         }
         else
             currentValue = Preferences.userRoot().get(prefName, defaultValue);
@@ -109,5 +101,19 @@ public class PrefColor extends PrefType
         color = Color.decode(currentValue);
     }
 
+    @Override
+    public boolean usePref(String value)
+    {
+        try
+        {
+            currentValue = (value != null) ? value : defaultValue;
+            return true;
+        }
+        catch (Exception exc)
+        {
+            currentValue = defaultValue;
+        }
 
+        return false;
+    }
 }

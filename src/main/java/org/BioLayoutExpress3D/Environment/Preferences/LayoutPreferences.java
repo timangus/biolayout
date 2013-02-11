@@ -48,6 +48,30 @@ public class LayoutPreferences
     }
 
     /**
+    *  Uses specified preferences.
+    */
+    public boolean useSpecifiedPreferences(Map<String, String> prefs)
+    {
+        for (Map.Entry<String, String> entry : prefs.entrySet())
+        {
+            for (PrefType prefInterface : globalVariables)
+            {
+                if (prefInterface.getPrefName().equals(entry.getKey()))
+                {
+                    boolean success = prefInterface.usePref(entry.getValue());
+
+                    if (!success)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
     *  Reverts to default preferences.
     */
     public void revertToDefaultPreferences()

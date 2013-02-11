@@ -61,8 +61,7 @@ public class PrefBool extends PrefType
     {
         if (USE_CONFIG_FILE)
         {
-            String value = loadPrefFromConfigFile();
-            currentValue = (value != null) ? Boolean.parseBoolean(value) : defaultValue;
+            usePref(loadPrefFromConfigFile());
         }
         else
             currentValue = Preferences.userRoot().getBoolean(prefName, defaultValue);
@@ -89,5 +88,10 @@ public class PrefBool extends PrefType
         currentValue = defaultValue;
     }
 
-
+    @Override
+    public boolean usePref(String value)
+    {
+        currentValue = (value != null) ? Boolean.parseBoolean(value) : defaultValue;
+        return true;
+    }
 }

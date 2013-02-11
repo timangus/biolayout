@@ -61,8 +61,7 @@ public class PrefString extends PrefType
     {
         if (USE_CONFIG_FILE)
         {
-            String value = loadPrefFromConfigFile();
-            currentValue = (value != null) ? value : defaultValue;
+            usePref(loadPrefFromConfigFile());
         }
         else
             currentValue = Preferences.userRoot().get(prefName, defaultValue);
@@ -89,5 +88,10 @@ public class PrefString extends PrefType
         currentValue = defaultValue;
     }
 
-
+    @Override
+    public boolean usePref(String value)
+    {
+        currentValue = (value != null) ? value : defaultValue;
+        return true;
+    }
 }

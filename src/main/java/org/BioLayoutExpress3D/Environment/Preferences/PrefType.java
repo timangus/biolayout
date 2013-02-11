@@ -361,5 +361,8 @@ public abstract class PrefType
     */
     public abstract void restorePref();
 
-
+    /**
+    *  Abstract method to be implemented in a sub class.
+    */
+    public abstract boolean usePref(String value);
 }

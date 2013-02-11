@@ -61,14 +61,7 @@ public class PrefFloat extends PrefType
     {
         if (USE_CONFIG_FILE)
         {
-            try
-            {
-                currentValue = Float.parseFloat( loadPrefFromConfigFile() );
-            }
-            catch (Exception exc)
-            {
-                currentValue = defaultValue;
-            }
+            usePref(loadPrefFromConfigFile());
         }
         else
             currentValue = Preferences.userRoot().getFloat(prefName, defaultValue);
@@ -95,5 +88,19 @@ public class PrefFloat extends PrefType
         currentValue = defaultValue;
     }
 
+    @Override
+    public boolean usePref(String value)
+    {
+        try
+        {
+            currentValue = Float.parseFloat(value);
+            return true;
+        }
+        catch (Exception exc)
+        {
+            currentValue = defaultValue;
+        }
 
+        return false;
+    }
 }

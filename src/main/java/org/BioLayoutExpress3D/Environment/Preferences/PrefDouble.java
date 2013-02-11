@@ -61,14 +61,7 @@ public class PrefDouble  extends PrefType
     {
         if (USE_CONFIG_FILE)
         {
-            try
-            {
-                currentValue = Double.parseDouble( loadPrefFromConfigFile() );
-            }
-            catch (Exception exc)
-            {
-                currentValue = defaultValue;
-            }
+            usePref(loadPrefFromConfigFile());
         }
         else
             currentValue = Preferences.userRoot().getDouble(prefName, defaultValue);
@@ -95,5 +88,19 @@ public class PrefDouble  extends PrefType
         currentValue = defaultValue;
     }
 
+    @Override
+    public boolean usePref(String value)
+    {
+        try
+        {
+            currentValue = Double.parseDouble(value);
+            return true;
+        }
+        catch (Exception exc)
+        {
+            currentValue = defaultValue;
+        }
 
+        return false;
+    }
 }

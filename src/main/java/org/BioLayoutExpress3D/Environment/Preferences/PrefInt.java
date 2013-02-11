@@ -61,14 +61,7 @@ public class PrefInt extends PrefType
     {
         if (USE_CONFIG_FILE)
         {
-            try
-            {
-                currentValue = Integer.parseInt( loadPrefFromConfigFile() );
-            }
-            catch (Exception exc)
-            {
-                currentValue = defaultValue;
-            }
+            usePref(loadPrefFromConfigFile());
         }
         else
             currentValue = Preferences.userRoot().getInt(prefName, defaultValue);
@@ -95,5 +88,19 @@ public class PrefInt extends PrefType
         currentValue = defaultValue;
     }
 
+    @Override
+    public boolean usePref(String value)
+    {
+        try
+        {
+            currentValue = Integer.parseInt(value);
+            return true;
+        }
+        catch (Exception exc)
+        {
+            currentValue = defaultValue;
+        }
 
+        return false;
+    }
 }

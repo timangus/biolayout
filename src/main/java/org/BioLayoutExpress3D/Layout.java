@@ -46,6 +46,7 @@ public final class Layout
     *  Constructor of the Layout class.
     */
     private Layout(String fileName, boolean onlineConnect, String repository, String dataSets,
+            boolean useDefaults, Map<String, String> preferences,
             boolean hasChosenUseShadersProcessCommandLine, boolean useShadersProcess)
     {
         if (hasChosenUseShadersProcessCommandLine)
@@ -54,13 +55,13 @@ public final class Layout
         if (!onlineConnect)
         {
             if ( fileName.isEmpty() )
-                new LayoutFrame().initializeFrame(false);
+                new LayoutFrame().initializeFrame(useDefaults, preferences, false);
             else
-                new LayoutFrame().initializeFrame(true).loadDataSet( new File(fileName) );
+                new LayoutFrame().initializeFrame(useDefaults, preferences, true).loadDataSet( new File(fileName) );
         }
         else
         {
-            new LayoutFrame().initializeFrame(true).loadOnlineDataSet(repository, dataSets);
+            new LayoutFrame().initializeFrame(useDefaults, preferences, true).loadOnlineDataSet(repository, dataSets);
         }
     }
 
@@ -220,27 +221,22 @@ public final class Layout
     */
     private static void usage(String msg)
     {
-        System.err.println();
         System.err.println(msg);
-        System.err.println();
         System.err.println();
         if (DEBUG_BUILD)
         {
-            System.err.println(" -consoleOutput on|off   : consoleOutput used for console output (default off)");
-            System.err.println();
-            System.err.println(" -fileOutput on|off      : fileOutput used for file logging (default off)");
-            System.err.println();
+            System.err.println(" -consoleOutput [on|off]             : consoleOutput used for console output (default off)");
+            System.err.println(" -fileOutput [on|off]                : fileOutput used for file logging (default off)");
         }
-        System.err.println(" -loadFromRepository rep : loadFromRepository used to load datasets\n\t\t\t   from a web repository");
-        System.err.println();
-        System.err.println(" -loadDataSets datasets  : loadDataSets used to load datasets\n\t\t\t   from a web repository");
-        System.err.println();
-        System.err.println(" -useShaders on|off      : use shaders support for the renderer (default on)");
-        System.err.println();
-        System.err.println(" -nimbusLAF on|off       : set the Nimbus look and feel (default off)");
-        System.err.println();
-        System.err.println(" -help                   : prints out this help page");
-        System.err.println();
+        System.err.println(" -loadFromRepository rep             : loadFromRepository used to load datasets");
+        System.err.println("                                       from a web repository");
+        System.err.println(" -loadDataSets datasets              : loadDataSets used to load datasets");
+        System.err.println("                                       from a web repository");
+        System.err.println(" -useShaders [on|off]                : use shaders support for the renderer (default on)");
+        System.err.println(" -nimbusLAF [on|off]                 : set the Nimbus look and feel (default off)");
+        System.err.println(" -useDefaultPreferences              : use the defaults for all saved preferences");
+        System.err.println(" -usePreference <preference> <value> : use the defaults for all saved preferences");
+        System.err.println(" -help                               : prints out this help page");
 
         System.exit(0);
     }
@@ -322,6 +318,8 @@ public final class Layout
         boolean hasChosenUseShadersProcessCommandLine = false;
         boolean useShadersProcess = false;
         boolean nimbusLAF = false;
+        boolean useDefaultSettings = false;
+        Map<String, String> preferences = new HashMap<String, String>();
 
         int i = 0;
         try
@@ -364,6 +362,22 @@ public final class Layout
                 {
                     nimbusLAF = "on".equals( args[++i].toLowerCase() );
                     if (DEBUG_BUILD) System.out.println("Now starting with Nimbus L&F: " + Boolean.toString(nimbusLAF));
+                }
+                else if ("-usePreference".equals(args[i]))
+                {
+                    String pref = args[++i].toLowerCase();
+                    String value = args[++i];
+
+                    preferences.put(pref, value);
+
+                    if (DEBUG_BUILD)
+                    {
+                        System.out.println("Setting preference " + pref + " to " + value);
+                    }
+                }
+                else if ("-useDefaultPreferences".equals(args[i]))
+                {
+                    useDefaultSettings = true;
                 }
                 else if ("-help".equals(args[i]))
                 {
@@ -435,8 +449,9 @@ public final class Layout
             reportMemoryUsage();
         }
 
-        new Layout( ( !fileName.isEmpty() ) ? fileName : "", !dataSets.isEmpty(),
-                repository, dataSets, hasChosenUseShadersProcessCommandLine, useShadersProcess );
+        Layout layout = new Layout( ( !fileName.isEmpty() ) ? fileName : "", !dataSets.isEmpty(),
+                repository, dataSets, useDefaultSettings, preferences,
+                hasChosenUseShadersProcessCommandLine, useShadersProcess );
     }
 
 
