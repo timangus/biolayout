@@ -496,10 +496,16 @@ public final class ExportSbgn
     {
         if (mepnLabel.isEmpty())
         {
-            if ((mepnShape.equals("diamond") && mepnBackColor.equals(Color.BLACK)) ||
-                (mepnShape.equals("ellipse") && mepnBackColor.equals(Color.WHITE)))
+            if (mepnShape.equals("diamond") && mepnBackColor.equals(Color.BLACK))
             {
+                // Distribution
                 glyph.setClazz("process");
+                return true;
+            }
+            else if (mepnShape.equals("ellipse") && mepnBackColor.equals(Color.WHITE))
+            {
+                // Spacer
+                glyph.setClazz(PROCESS_EDGE_GLYPH_INDICATOR);
                 return true;
             }
         }
@@ -759,12 +765,9 @@ public final class ExportSbgn
         arc.setEnd(end);
     }
 
-    private static String processEdgeGlyphToSbgnArcClass(Glyph glyph)
+    private static String processEdgeGlyphSpecifierToSbgnArcClass(char mepnSpecifier)
     {
-        String clazz = glyph.getClazz();
-        String mepnSpecifier = clazz.replace(PROCESS_EDGE_GLYPH_INDICATOR, "");
-
-        switch (mepnSpecifier.charAt(0))
+        switch (mepnSpecifier)
         {
             default:
             case 'A': return "stimulation";
@@ -794,7 +797,17 @@ public final class ExportSbgn
 
         newArcNextList.addAll(target.getNext());
 
-        newArc.setClazz(processEdgeGlyphToSbgnArcClass(intermediate));
+        String intermediateClazz = intermediate.getClazz();
+        String mepnSpecifier = intermediateClazz.replace(PROCESS_EDGE_GLYPH_INDICATOR, "");
+
+        if (mepnSpecifier.length() == 1)
+        {
+            newArc.setClazz(mepnSpecifier);
+        }
+        else
+        {
+            newArc.setClazz(target.getClazz());
+        }
 
         return newArc;
     }
