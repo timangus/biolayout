@@ -1047,18 +1047,7 @@ public final class ExportSbgn
 
     private void specialiseSbgnArc(List<String> arrowHeads, Glyph source, Glyph target, Arc arc)
     {
-        if (arrowHeads.contains("standard"))
-        {
-            if (LABEL_TO_GLYPH_CLASS.containsValue(target.getClazz()))
-            {
-                arc.setClazz("stimulation");
-            }
-            else
-            {
-                arc.setClazz("production");
-            }
-        }
-        else if (arrowHeads.contains("transparent_circle"))
+        if (arrowHeads.contains("transparent_circle"))
         {
             arc.setClazz("catalysis");
         }
