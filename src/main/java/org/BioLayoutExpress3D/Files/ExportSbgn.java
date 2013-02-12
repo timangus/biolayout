@@ -792,17 +792,6 @@ public final class ExportSbgn
         arc.setEnd(end);
     }
 
-    private static String processEdgeGlyphSpecifierToSbgnArcClass(char mepnSpecifier)
-    {
-        switch (mepnSpecifier)
-        {
-            default:
-            case 'A': return "stimulation";
-            case 'C': return "catalysis";
-            case 'I': return "inhibition";
-        }
-    }
-
     private Arc mergeArcs(Arc source, Glyph intermediate, Arc target)
     {
         Arc newArc = new Arc();
@@ -829,7 +818,13 @@ public final class ExportSbgn
 
         if (mepnSpecifier.length() == 1)
         {
-            newArc.setClazz(mepnSpecifier);
+            switch (mepnSpecifier.charAt(0))
+            {
+                default:
+                case 'A': newArc.setClazz("stimulation");
+                case 'C': newArc.setClazz("catalysis");
+                case 'I': newArc.setClazz("inhibition");
+            }
         }
         else
         {
