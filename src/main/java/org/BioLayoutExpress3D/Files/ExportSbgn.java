@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import org.sbgn.*;
 import org.sbgn.bindings.*;
-import javax.xml.bind.JAXBException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.BioLayoutExpress3D.CoreUI.*;
@@ -1292,8 +1291,23 @@ public final class ExportSbgn
 
             Sbgn sbgn = translateMepnToSbgn(layoutFrame.getGraph());
             SbgnUtil.writeToFile(sbgn, saveFile);
+
+            if (!SbgnUtil.isValid(saveFile))
+            {
+                if (DEBUG_BUILD)
+                {
+                    println("SBGN validation failed on " + saveFile.getAbsolutePath());
+                }
+            }
+            else
+            {
+                if (DEBUG_BUILD)
+                {
+                    println("SBGN validation succeeded " + saveFile.getAbsolutePath());
+                }
+            }
         }
-        catch (JAXBException e)
+        catch (Exception e)
         {
             if (DEBUG_BUILD)
             {
