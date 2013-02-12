@@ -279,8 +279,6 @@ public final class ExportSbgn
 
         if (multimer != 1)
         {
-            c.getInfoList().add(type);
-
             if (multimer < 0)
             {
                 c.getInfoList().add("N:?");
