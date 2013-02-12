@@ -895,7 +895,6 @@ public final class ExportSbgn
 
                 if (results.size() != points.size())
                 {
-                    println("simplified");
                     Arc.Start start = new Arc.Start();
                     start.setX(results.get(0).x);
                     start.setY(results.get(0).y);
