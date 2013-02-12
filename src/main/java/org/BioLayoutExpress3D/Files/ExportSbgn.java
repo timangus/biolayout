@@ -177,17 +177,20 @@ public final class ExportSbgn
     {
         private int n;
         private String name;
+        private List<String> infoList;
         private List<String> modList;
 
-        public Component(int n, String name, List<String> modList)
+        public Component(int n, String name, List<String> infoList, List<String> modList)
         {
             this.n = n;
             this.name = name;
+            this.infoList = infoList;
             this.modList = modList;
         }
 
         public int getNumber() { return n; }
         public String getName() { return name; }
+        public List<String> getInfoList() { return infoList; }
         public List<String> getModList() { return modList; }
     }
 
@@ -262,43 +265,31 @@ public final class ExportSbgn
                 }
             }
 
-            Component pc = new Component(n, name, modList);
-            list.add(pc);
+            Component c = new Component(n, name, new ArrayList<String>(), modList);
+            list.add(c);
         }
 
         return new ComponentList(alias, list);
     }
 
-    private void configureComponentGlyph(String type, Component pc, Glyph glyph)
+    private void configureComponentGlyph(String type, Component c, Glyph glyph)
     {
         final float INFO_X = 0.3f * SCALE;
         Bbox glyphBbox = glyph.getBbox();
-        int multimer = pc.getNumber();
+        int multimer = c.getNumber();
 
         if (multimer != 1)
         {
-            Glyph multimerGlyph = new Glyph();
-            multimerGlyph.setId(glyph.getId() + ".multimer");
-            multimerGlyph.setClazz("unit of information");
+            c.getInfoList().add(type);
 
-            // N:x
-            Bbox bbox = new Bbox();
-            bbox.setX(glyphBbox.getX() + INFO_X);
-            bbox.setY(glyphBbox.getY());
-            multimerGlyph.setBbox(bbox);
-
-            Label label = new Label();
             if (multimer < 0)
             {
-                label.setText("N:?");
+                c.getInfoList().add("N:?");
             }
             else
             {
-                label.setText("N:" + multimer);
+                c.getInfoList().add("N:" + multimer);
             }
-            multimerGlyph.setLabel(label);
-
-            glyph.getGlyph().add(multimerGlyph);
 
             glyph.setClazz(type + " multimer");
         }
@@ -307,9 +298,30 @@ public final class ExportSbgn
             glyph.setClazz(type);
         }
 
+        int infoIndex = 1;
+        for (String info : c.getInfoList())
+        {
+            // Infos
+            Glyph infoGlyph = new Glyph();
+            infoGlyph.setId(glyph.getId() + ".info" + infoIndex);
+            infoGlyph.setClazz("unit of information");
+
+            Bbox bbox = new Bbox();
+            bbox.setX(glyphBbox.getX() + (INFO_X * infoIndex));
+            bbox.setY(glyphBbox.getY());
+            infoGlyph.setBbox(bbox);
+
+            Label label = new Label();
+            label.setText(info);
+            infoGlyph.setLabel(label);
+
+            glyph.getGlyph().add(infoGlyph);
+
+            infoIndex++;
+        }
+
         int modIndex = 1;
-        List<String> modList = pc.getModList();
-        for (String mod : modList)
+        for (String mod : c.getModList())
         {
             // Mods
             Glyph multimerGlyph = new Glyph();
@@ -330,7 +342,7 @@ public final class ExportSbgn
             modIndex++;
         }
 
-        String name = pc.getName();
+        String name = c.getName();
         if (name != null && name.length() > 0)
         {
             Label label = new Label();
@@ -475,12 +487,12 @@ public final class ExportSbgn
             List<Bbox> subBboxes = subDivideGlyph(glyph, cl);
 
             int index = 0;
-            for (Component pc : cl.getComponents())
+            for (Component c : cl.getComponents())
             {
                 Glyph subGlyph = new Glyph();
                 subGlyph.setId(glyph.getId() + "." + (index + 1));
                 subGlyph.setBbox(subBboxes.get(index));
-                configureComponentGlyph(type, pc, subGlyph);
+                configureComponentGlyph(type, c, subGlyph);
 
                 subGlyphs.add(subGlyph);
 
@@ -627,6 +639,20 @@ public final class ExportSbgn
 
             if (cl.getComponents().size() > 0)
             {
+                if (cl.getComponents().size() == 1)
+                {
+                    Component c = cl.getComponents().get(0);
+
+                    if (mepnShape.equals("parallelogram"))
+                    {
+                        c.getInfoList().add("ct:grr");
+                    }
+                    else if (mepnShape.equals("rectangle"))
+                    {
+                        c.getInfoList().add("ct:gene");
+                    }
+                }
+
                 configureComponentGlyph("nucleic acid feature", cl, glyph);
                 return true;
             }
