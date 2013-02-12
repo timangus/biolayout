@@ -1037,7 +1037,7 @@ public final class ExportSbgn
                     leftArc.setId(arc.getId() + ".left");
                     setArcStartToGlyph(leftArc, leftGlyph);
                     setArcEndToGlyph(leftArc, target);
-                    leftArc.setClazz("production");
+                    leftArc.setClazz("consumption");
                 }
 
                 Glyph rightGlyph = new Glyph();
