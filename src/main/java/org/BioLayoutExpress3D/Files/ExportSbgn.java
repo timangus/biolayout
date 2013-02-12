@@ -1076,6 +1076,27 @@ public final class ExportSbgn
         arcList.removeAll(arcsToRemove);
     }
 
+    private boolean glyphIsProcess(Glyph glyph)
+    {
+        List<String> processClazzes = new ArrayList<String>(
+                Arrays.asList(
+                "process",
+                "dissociation",
+                "source and sink"));
+
+        String clazz = glyph.getClazz();
+
+        return processClazzes.contains(clazz);
+    }
+
+    private boolean glyphIsLogicOperator(Glyph glyph)
+    {
+        List<String> logicOperatorClazzes = new ArrayList<String>(Arrays.asList("or", "and", "not"));
+        String clazz = glyph.getClazz();
+
+        return logicOperatorClazzes.contains(clazz);
+    }
+
     private void specialiseSbgnArc(List<String> arrowHeads, Glyph source, Glyph target, Arc arc)
     {
         if (arrowHeads.contains("transparent_circle"))
@@ -1088,7 +1109,15 @@ public final class ExportSbgn
         {
             arc.setClazz("inhibition");
         }
-        else if (LABEL_TO_GLYPH_CLASS.containsValue(source.getClazz()))
+        else if (glyphIsLogicOperator(target))
+        {
+            arc.setClazz("logic arc");
+        }
+        else if (glyphIsLogicOperator(source))
+        {
+            arc.setClazz("stimulation");
+        }
+        else if (glyphIsProcess(source))
         {
             // Treat everything that's coming from a process as production
             arc.setClazz("production");
