@@ -254,13 +254,13 @@ public final class ExportSbgn
                 s = m.group(2);
                 if (s != null && stringIsNotWhitespace(s))
                 {
-                    name = s;
+                    name = s.trim();
                 }
 
                 s = m.group(3);
                 if (s != null && stringIsNotWhitespace(s))
                 {
-                    modList.add(s);
+                    modList.add(s.trim());
                 }
             }
 
