@@ -26,6 +26,7 @@ import org.BioLayoutExpress3D.Graph.*;
 import org.BioLayoutExpress3D.Graph.GraphElements.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import org.BioLayoutExpress3D.Network.GraphmlComponentContainer;
 import org.BioLayoutExpress3D.Network.GraphmlNetworkContainer;
 import org.BioLayoutExpress3D.Network.NetworkRootContainer;
 import org.BioLayoutExpress3D.Utils.Point3D;
@@ -1155,6 +1156,43 @@ public final class ExportSbgn
         return arc;
     }
 
+    private Glyph translateContainerToSbgnGlyph(GraphmlComponentContainer componentContainer, String id)
+    {
+        float x = componentContainer.rectangle2D.x * SCALE;
+        float y = componentContainer.rectangle2D.y * SCALE;
+        float width = componentContainer.rectangle2D.width * SCALE;
+        float height = componentContainer.rectangle2D.height * SCALE;
+
+        Glyph glyph = new Glyph();
+        glyph.setId(id);
+
+        String mepnLabel = componentContainer.name;
+        Color mepnBackColor = componentContainer.color;
+
+        Bbox bbox = new Bbox();
+        bbox.setX(x - (width * 0.5f));
+        bbox.setW(width);
+        bbox.setY(y - (height * 0.5f));
+        bbox.setH(height);
+        glyph.setBbox(bbox);
+
+        glyph.setClazz("compartment");
+
+        Label label = new Label();
+
+        // Label at the top centre of the compartment
+        Bbox labelBbox = new Bbox();
+        labelBbox.setX(x - (width * 0.5f));
+        labelBbox.setW(width);
+        labelBbox.setY(y - (height * 0.5f));
+        labelBbox.setH(100.0f);
+        label.setBbox(labelBbox);
+        label.setText(mepnLabel);
+        glyph.setLabel(label);
+
+        return glyph;
+    }
+
     private Sbgn translateMepnToSbgn(Graph in)
     {
         Sbgn sbgn = new Sbgn();
@@ -1162,6 +1200,18 @@ public final class ExportSbgn
         sbgn.setMap(map);
         map.setLanguage("process description");
         java.util.Map<Integer,Glyph> sbgnGlyphs = new HashMap<Integer,Glyph>();
+
+        if (nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get())
+        {
+            int containerId = 1;
+            for (GraphmlComponentContainer componentContainer : gnc.getAllPathwayComponentContainersFor2D())
+            {
+                String id = "container" + Integer.toString(containerId++);
+                Glyph glyph = translateContainerToSbgnGlyph(componentContainer, id);
+
+                map.getGlyph().add(glyph);
+            }
+        }
 
         for (GraphNode graphNode : in.getGraphNodes())
         {
