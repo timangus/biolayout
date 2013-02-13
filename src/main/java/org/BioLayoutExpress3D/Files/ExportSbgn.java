@@ -972,6 +972,232 @@ public final class ExportSbgn
         }
     }
 
+    private enum GlyphArcDirection { UNKNOWN, LEFT, RIGHT, TOP, BOTTOM }
+    private GlyphArcDirection getGlyphArcDirection(Glyph glyph, Arc arc)
+    {
+        Point2D.Float start = null, end = null;
+        List<Arc.Next> nextList = arc.getNext();
+
+        if (arc.getTarget() == glyph)
+        {
+            // Going in
+            if (nextList.size() > 0)
+            {
+                Arc.Next next = nextList.get(nextList.size() - 1);
+                start = new Point2D.Float(next.getX(), next.getY());
+            }
+            else
+            {
+                Arc.Start arcStart = arc.getStart();
+                start = new Point2D.Float(arcStart.getX(), arcStart.getY());
+            }
+
+            Arc.End arcEnd = arc.getEnd();
+            end = new Point2D.Float(arcEnd.getX(), arcEnd.getY());
+        }
+        else if (arc.getSource() == glyph)
+        {
+            // Coming out
+            Arc.Start arcStart = arc.getStart();
+            end = new Point2D.Float(arcStart.getX(), arcStart.getY());
+
+            if (nextList.size() > 0)
+            {
+                Arc.Next next = nextList.get(0);
+                start = new Point2D.Float(next.getX(), next.getY());
+            }
+            else
+            {
+                Arc.End arcEnd = arc.getEnd();
+                start = new Point2D.Float(arcEnd.getX(), arcEnd.getY());
+            }
+        }
+
+        if (start != null && end != null)
+        {
+            float m = (end.y - start.y) / (end.x - start.x);
+
+            if (java.lang.Math.abs(m) < 1.0f)
+            {
+                // Left/Right
+                if (start.x < end.x)
+                {
+                    return GlyphArcDirection.LEFT;
+                }
+                else
+                {
+                    return GlyphArcDirection.RIGHT;
+                }
+            }
+            else
+            {
+                // Top/Bottom
+                if (start.y < end.y)
+                {
+                    return GlyphArcDirection.TOP;
+                }
+                else
+                {
+                    return GlyphArcDirection.BOTTOM;
+                }
+            }
+        }
+
+        return GlyphArcDirection.UNKNOWN;
+    }
+
+    private void addSubmapTag(Map map, Glyph submap, String label, Bbox bbox, String orientation, Arc arc)
+    {
+        Glyph tag = new Glyph();
+        tag.setId(submap.getId() + ".tag" + label);
+        tag.setClazz("tag");
+        tag.setBbox(bbox);
+        tag.setOrientation(orientation);
+
+        Label tagLabel = new Label();
+        tagLabel.setText(label);
+        tag.setLabel(tagLabel);
+
+        Point2D.Float centre = getCentreOf(bbox);
+
+        if (arc.getSource() == submap)
+        {
+            arc.setSource(tag);
+            Arc.Start start = new Arc.Start();
+            start.setX(centre.x);
+            start.setY(centre.y);
+            arc.setStart(start);
+        }
+        else if (arc.getTarget() == submap)
+        {
+            arc.setTarget(tag);
+            Arc.End end = new Arc.End();
+            end.setX(centre.x);
+            end.setY(centre.y);
+            arc.setEnd(end);
+        }
+        arc.setClazz("equivalence arc");
+
+        map.getGlyph().add(tag);
+    }
+
+    private void addSubmapTags(Map map)
+    {
+        List<Glyph> submaps = new ArrayList<Glyph>();
+        for (Glyph submap : map.getGlyph())
+        {
+            if (submap.getClazz().equals("submap"))
+            {
+                submaps.add(submap);
+            }
+        }
+
+        for (Glyph submap : submaps)
+        {
+            if (!submap.getClazz().equals("submap"))
+            {
+                continue;
+            }
+
+            List<Arc> incidentArcs = new ArrayList<Arc>();
+
+            incidentArcs.addAll(arcsGoingTo(submap, map.getArc()));
+            incidentArcs.addAll(arcsComingFrom(submap, map.getArc()));
+
+            List<Arc> leftArcs = new ArrayList<Arc>();
+            List<Arc> rightArcs = new ArrayList<Arc>();
+            List<Arc> topArcs = new ArrayList<Arc>();
+            List<Arc> bottomArcs = new ArrayList<Arc>();
+
+            for (Arc arc : incidentArcs)
+            {
+                GlyphArcDirection d = getGlyphArcDirection(submap, arc);
+
+                switch (d)
+                {
+                    case LEFT:
+                        leftArcs.add(arc);
+                        break;
+                    case RIGHT:
+                        rightArcs.add(arc);
+                        break;
+                    case TOP:
+                        topArcs.add(arc);
+                        break;
+                    case BOTTOM:
+                        bottomArcs.add(arc);
+                        break;
+                }
+            }
+
+            Bbox submapBbox = submap.getBbox();
+            int labelIndex = 1;
+            float leftDivision = submapBbox.getH() / (leftArcs.size() + 1);
+            float rightDivision = submapBbox.getH() / (rightArcs.size() + 1);
+            float topDivision = submapBbox.getW() / (topArcs.size() + 1);
+            float bottomDivision = submapBbox.getW() / (bottomArcs.size() + 1);
+            float tagWidth = SCALE * 1.2f;
+            float tagHeight = SCALE * 0.6f;
+
+            // Clockwise: left, top, right, bottom
+            for (int i = 0; i < leftArcs.size(); i++)
+            {
+                Bbox tagBbox = new Bbox();
+                tagBbox.setW(tagWidth);
+                tagBbox.setH(tagHeight);
+                tagBbox.setX(submapBbox.getX());
+
+                float y = submapBbox.getY() + submapBbox.getH() - (tagBbox.getH() * 0.5f);
+                tagBbox.setY(y - ((i + 1) * leftDivision));
+
+                addSubmapTag(map, submap, Integer.toString(labelIndex), tagBbox, "right", leftArcs.get(i));
+                labelIndex++;
+            }
+
+            for (int i = 0; i < topArcs.size(); i++)
+            {
+                Bbox tagBbox = new Bbox();
+                tagBbox.setW(tagHeight);
+                tagBbox.setH(tagWidth);
+                tagBbox.setY(submapBbox.getY());
+
+                float x = submapBbox.getX() - (tagBbox.getW() * 0.5f);
+                tagBbox.setX(x + ((i + 1) * topDivision));
+
+                addSubmapTag(map, submap, Integer.toString(labelIndex), tagBbox, "down", topArcs.get(i));
+                labelIndex++;
+            }
+
+            for (int i = 0; i < rightArcs.size(); i++)
+            {
+                Bbox tagBbox = new Bbox();
+                tagBbox.setW(tagWidth);
+                tagBbox.setH(tagHeight);
+                tagBbox.setX(submapBbox.getX() + submapBbox.getW() - tagBbox.getW());
+
+                float y = submapBbox.getY() - (tagBbox.getH() * 0.5f);
+                tagBbox.setY(y + ((i + 1) * rightDivision));
+
+                addSubmapTag(map, submap, Integer.toString(labelIndex), tagBbox, "left", rightArcs.get(i));
+                labelIndex++;
+            }
+
+            for (int i = 0; i < bottomArcs.size(); i++)
+            {
+                Bbox tagBbox = new Bbox();
+                tagBbox.setW(tagHeight);
+                tagBbox.setH(tagWidth);
+                tagBbox.setY(submapBbox.getY() + submapBbox.getH() - tagBbox.getH());
+
+                float x = submapBbox.getX() + submapBbox.getW() - (tagBbox.getW() * 0.5f);
+                tagBbox.setX(x - ((i + 1) * bottomDivision));
+
+                addSubmapTag(map, submap, Integer.toString(labelIndex), tagBbox, "up", bottomArcs.get(i));
+                labelIndex++;
+            }
+        }
+    }
+
     private static Point2D.Float getCentreOf(Bbox bbox)
     {
         return new Point2D.Float(bbox.getX() + (bbox.getW() * 0.5f), bbox.getY() + (bbox.getH() * 0.5f));
@@ -1532,6 +1758,7 @@ public final class ExportSbgn
         simplifyArcs(map);
         addCompartmentRefs(map);
         addCloneMarkers(map);
+        addSubmapTags(map);
 
         return sbgn;
     }
