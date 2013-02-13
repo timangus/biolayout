@@ -397,6 +397,27 @@ public final class ExportSbgn
         return list;
     }
 
+    private static int compareFloats(float a, float b)
+    {
+        final float EPSILON = 0.01f;
+
+        if (java.lang.Math.abs(a - b) < EPSILON)
+        {
+            return 0;
+        }
+        else
+        {
+            if (a < b)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+    }
+
     private List<Bbox> subDivideGlyph(Glyph glyph, ComponentList cl)
     {
         final float ALIAS_VERTICAL_SPACE = 1.0f * SCALE;
@@ -443,15 +464,28 @@ public final class ExportSbgn
 
         for (Bbox bbox : list)
         {
-            final float SUB_SCALE = 0.6f;
-            float xOffset = 0.5f * (bbox.getW() - (bbox.getW() * SUB_SCALE));
-            float yOffset = 0.5f * (bbox.getH() - (bbox.getH() * SUB_SCALE));
+            final float SUB_SCALE = 0.7f;
+
+            boolean left = compareFloats(bbox.getX(), componentsBbox.getX()) == 0;
+            boolean right = compareFloats(bbox.getX() + bbox.getW(),
+                    componentsBbox.getX() + componentsBbox.getW()) == 0;
+            boolean top = compareFloats(bbox.getY(), componentsBbox.getY()) == 0;
+            boolean bottom = compareFloats(bbox.getY() + bbox.getH(),
+                    componentsBbox.getY() + componentsBbox.getH()) == 0;
+
+            float borderWidth = (bbox.getW() - (bbox.getW() * SUB_SCALE));
+            float borderHeight = (bbox.getH() - (bbox.getH() * SUB_SCALE));
+
+            float leftBorder = left ? borderWidth * 0.5f : borderWidth * 0.25f;
+            float rightBorder = right ? borderWidth * 0.5f : borderWidth * 0.25f;
+            float topBorder = top ? borderHeight * 0.5f : borderHeight * 0.25f;
+            float bottomBorder = bottom ? borderHeight * 0.5f : borderHeight * 0.25f;
 
             Bbox scaledBbox = new Bbox();
-            scaledBbox.setW(bbox.getW() * SUB_SCALE);
-            scaledBbox.setH(bbox.getH() * SUB_SCALE);
-            scaledBbox.setX(bbox.getX() + xOffset);
-            scaledBbox.setY(bbox.getY() + yOffset);
+            scaledBbox.setX(bbox.getX() + leftBorder);
+            scaledBbox.setW(bbox.getW() - leftBorder - rightBorder);
+            scaledBbox.setY(bbox.getY() + topBorder);
+            scaledBbox.setH(bbox.getH() - topBorder - bottomBorder);
 
             scaledList.add(scaledBbox);
         }
@@ -461,7 +495,7 @@ public final class ExportSbgn
             @Override
             public int compare(Bbox a, Bbox b)
             {
-                if (a.getY() == b.getY())
+                if (compareFloats(a.getY(), b.getY()) == 0)
                 {
                     return (a.getX() < b.getX()) ? -1 : 1;
                 }
