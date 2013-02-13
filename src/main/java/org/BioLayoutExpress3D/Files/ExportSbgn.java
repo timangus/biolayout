@@ -159,6 +159,7 @@ public final class ExportSbgn
         map.put("Me", "process");
         map.put("Se", "process");
         map.put("Pa", "process");
+        map.put("Ac", "process");
         map.put("Pr", "process");
         map.put("S",  "process");
         map.put("At", "process");
@@ -168,6 +169,7 @@ public final class ExportSbgn
         map.put("Pe", "process");
         map.put("Ox", "process");
         map.put("Sec","process");
+        map.put("M",  "process");
         map.put("/",  "source and sink");
         LABEL_TO_GLYPH_CLASS = Collections.unmodifiableMap(map);
     }
