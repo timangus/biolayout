@@ -196,8 +196,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     */
     private void renderScene3D(GL2 gl, boolean doRenderEnvironmentMapping)
     {
-        if (DEBUG_BUILD) println("Rendering 3D Scene");
-
         if (!TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING)
         {
             if ( SHOW_3D_SHADOWS.get() )
@@ -342,8 +340,6 @@ final class GraphRenderer3D implements GraphInterface // package access
 
         // next display() call will render normally
         selectMode = false;
-
-        if (DEBUG_BUILD) println("GraphRenderer3D hits: " + hits);
 
         // visible result again
         if ( (!pickAdd && !pickFind) || (mouseHasClicked && !pickAdd) )
@@ -3594,8 +3590,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void display(GLAutoDrawable glDrawable)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D display()");
-
         GL2 gl = glDrawable.getGL().getGL2();
         if (deAllocOpenGLMemory)
         {
@@ -4006,8 +4000,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D mouseClicked()");
-
         if ( SwingUtilities.isLeftMouseButton(e) )
         {
             boolean isCtrlDown = (!IS_MAC) ? e.isControlDown() : e.isMetaDown();
@@ -4034,7 +4026,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void mouseEntered(MouseEvent e)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D mouseEntered()");
     }
 
     /**
@@ -4043,7 +4034,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void mouseExited(MouseEvent e)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D mouseExited()");
     }
 
     /**
@@ -4052,8 +4042,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void mousePressed(MouseEvent e)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D mousePressed()");
-
         mouseButton = e.getButton();
         mouseLastX = mouseDragStartX = e.getX();
         mouseLastY = mouseDragStartY = e.getY();
@@ -4082,8 +4070,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void mouseReleased(MouseEvent e)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D mouseReleased()");
-
         isInMotion = false;
 
         if ( pickingBox || (currentMouseMode.equals(MouseModeTypes.SELECT) && pickingBox) )
@@ -4112,8 +4098,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void mouseDragged(MouseEvent e)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D mouseDragged()");
-
         if ( graphPopupIsTiming || GRAPH_POPUP_COMPONENT.isPopupMenuVisible() )
         {
             graphPopupIsTiming = false;
@@ -4163,8 +4147,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void mouseMoved(MouseEvent e)
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D mouseMoved()");
-
         if ( !(autoRotate || autoPulsate) )
         {
             if ( graphPopupIsTiming || GRAPH_POPUP_COMPONENT.isPopupMenuVisible() )
@@ -4435,8 +4417,6 @@ final class GraphRenderer3D implements GraphInterface // package access
     @Override
     public void refreshDisplay()
     {
-        if (DEBUG_BUILD) println("GraphRenderer3D refreshDisplay()");
-
         if (graph != null) graph.display();
     }
 
