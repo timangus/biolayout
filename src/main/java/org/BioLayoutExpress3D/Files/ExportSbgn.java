@@ -747,6 +747,195 @@ public final class ExportSbgn
         return glyph;
     }
 
+    private Glyph findGlyphWithId(Map map, String id)
+    {
+        for (Glyph glyph : map.getGlyph())
+        {
+            if (glyph.getId().equals(id))
+            {
+                return glyph;
+            }
+        }
+
+        return null;
+    }
+
+    // We need a way to classify glyphs into groups for the purpose of adding clone markers; this is it
+    private String metaClassStringForGlyph(Glyph glyph)
+    {
+        String s = "";
+
+        if (glyph.getCompartmentRef() != null)
+        {
+            s += "<" + glyph.getCompartmentRef() + ">";
+        }
+
+        s += glyph.getClazz();
+        if (glyph.getLabel() != null)
+        {
+            s += "(" + glyph.getLabel().getText() + ")";
+        }
+
+        if (glyph.getGlyph() != null && glyph.getGlyph().size() > 0)
+        {
+            List<Glyph> subGlyphs = new ArrayList<Glyph>(glyph.getGlyph());
+
+            // Sort the subglyph list so if they appear in a different order
+            // they're still counted the same in terms of cloning
+            Collections.sort(subGlyphs, new java.util.Comparator<Glyph>()
+            {
+                @Override
+                public int compare(Glyph a, Glyph b)
+                {
+                    if (a.getClazz().equals(b.getClazz()))
+                    {
+                        String aLabel = a.getLabel() != null ? a.getLabel().getText() : "";
+                        String bLabel = b.getLabel() != null ? b.getLabel().getText() : "";
+
+                        return aLabel.compareTo(bLabel);
+                    }
+                    else
+                    {
+                        return a.getClazz().compareTo(b.getClazz());
+                    }
+                }
+            });
+
+            s += "[";
+            boolean first = true;
+            for (Glyph subGlyph : subGlyphs)
+            {
+                if (!first)
+                {
+                    s += ":";
+                }
+                s += metaClassStringForGlyph(subGlyph);
+                first = false;
+            }
+            s += "]";
+        }
+
+        return s;
+    }
+
+    private boolean canBeCloned(Glyph glyph)
+    {
+        List<String> cloneableClazzes = new ArrayList<String>(
+                Arrays.asList(
+                "unspecified entity",
+                "simple chemical",
+                "perturbing agent",
+                "phenotype",
+                "macromolecule",
+                "nucleic acid feature",
+                "simple chemical multimer",
+                "macromolecule multimer",
+                "nucleic acid feature multimer",
+                "complex",
+                "complex multimer"));
+        String clazz = glyph.getClazz();
+
+        return cloneableClazzes.contains(clazz);
+    }
+
+    private void addCloneMarkers(Map map)
+    {
+        java.util.Map<String, List<String>> clonedGlyphs = new HashMap<String, List<String>>();
+
+        for (Glyph glyph : map.getGlyph())
+        {
+            if (!canBeCloned(glyph))
+            {
+                continue;
+            }
+
+            String metaClass = metaClassStringForGlyph(glyph);
+
+            if (!clonedGlyphs.containsKey(metaClass))
+            {
+                clonedGlyphs.put(metaClass, new ArrayList<String>());
+            }
+
+            clonedGlyphs.get(metaClass).add(glyph.getId());
+        }
+
+        for (java.util.Map.Entry<String, List<String>> clonedGlyph : clonedGlyphs.entrySet())
+        {
+            List<String> clones = clonedGlyph.getValue();
+
+            if (clones.size() > 1)
+            {
+                if (DEBUG_BUILD)
+                {
+                    println("Clone meta class: " + clonedGlyph.getKey());
+                }
+
+                // FIXME: for particular classes we need a label as well?
+
+                for (String id : clones)
+                {
+                    Glyph glyph = findGlyphWithId(map, id);
+                    if (glyph != null)
+                    {
+                        glyph.setClone(new Glyph.Clone());
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean glyphBoundedByCompartment(Glyph glyph, Glyph compartment)
+    {
+        Bbox compartmentBbox = compartment.getBbox();
+        Bbox glyphBbox = glyph.getBbox();
+        boolean left = glyphBbox.getX() >= compartmentBbox.getX();
+        boolean right = glyphBbox.getX() + glyphBbox.getW() < compartmentBbox.getX() + compartmentBbox.getW();
+        boolean top = glyphBbox.getY() >= compartmentBbox.getY();
+        boolean bottom = glyphBbox.getY() + glyphBbox.getH() < compartmentBbox.getY() + compartmentBbox.getH();
+
+        return left && right && top && bottom;
+    }
+
+    private void addCompartmentRefs(Map map)
+    {
+        List<Glyph> compartments = new ArrayList<Glyph>();
+        for (Glyph glyph : map.getGlyph())
+        {
+            if (glyph.getClazz().equals("compartment"))
+            {
+                compartments.add(glyph);
+            }
+        }
+
+        for (Glyph glyph : map.getGlyph())
+        {
+            if (glyph.getClazz().equals("compartment"))
+            {
+                continue;
+            }
+
+            for (Glyph compartment : compartments)
+            {
+                if (glyph.getCompartmentRef() != null)
+                {
+                    // The glyph already has a compartmentRef, check if this compartment might be better
+                    Glyph existingCompartment = (Glyph)glyph.getCompartmentRef();
+
+                    if (!glyphBoundedByCompartment(compartment, existingCompartment))
+                    {
+                        continue;
+                    }
+                }
+
+                if (glyphBoundedByCompartment(glyph, compartment))
+                {
+                    println(glyph.getId() + " contained by " + compartment.getId());
+                    glyph.setCompartmentRef(compartment);
+                }
+            }
+        }
+    }
+
     private static Point2D.Float getCentreOf(Bbox bbox)
     {
         return new Point2D.Float(bbox.getX() + (bbox.getW() * 0.5f), bbox.getY() + (bbox.getH() * 0.5f));
@@ -1253,7 +1442,7 @@ public final class ExportSbgn
             int containerId = 1;
             for (GraphmlComponentContainer componentContainer : gnc.getAllPathwayComponentContainersFor2D())
             {
-                String id = "container" + Integer.toString(containerId++);
+                String id = "compartment" + Integer.toString(containerId++);
                 Glyph glyph = translateContainerToSbgnGlyph(componentContainer, id);
 
                 map.getGlyph().add(glyph);
@@ -1305,6 +1494,8 @@ public final class ExportSbgn
         transformProcessEdgeGlyphs(map);
         transformEnergyTransferGlyphs(map);
         simplifyArcs(map);
+        addCompartmentRefs(map);
+        addCloneMarkers(map);
 
         return sbgn;
     }
