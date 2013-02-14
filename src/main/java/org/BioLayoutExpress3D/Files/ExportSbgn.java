@@ -661,8 +661,6 @@ public final class ExportSbgn
                 glyph.setLabel(label);
             }
 
-            //FIXME: add tags to incident edges
-
             return true;
         }
         else if (mepnShape.equals("parallelogram") || mepnShape.equals("rectangle"))
@@ -1252,7 +1250,6 @@ public final class ExportSbgn
         List<Arc.Next> newArcNextList = newArc.getNext();
         newArcNextList.addAll(source.getNext());
 
-        //FIXME: if this point is on the line made by adjacent points, don't need to add it
         Arc.Next intermediateNext = new Arc.Next();
         Point2D.Float point = getCentreOf(intermediate);
         intermediateNext.setX(point.x);
