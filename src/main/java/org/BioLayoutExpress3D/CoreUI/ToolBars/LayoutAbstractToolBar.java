@@ -48,7 +48,6 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     protected static final String NAVIGATION_DIR_NAME = IMAGE_FILES_PATH + "NavigationToolBar/";
     protected static final String NAVIGATION_FILE_NAME = "NavigationToolBarData.txt";
 
-    private boolean useCustomToolBarColor = false;
     protected TexturesLoader texturesLoaderIcons = null;
     protected JButton[] allToolBarButtons = null;
     protected int imageIconWidth = 0;
@@ -56,15 +55,13 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     protected float imageDivisor = 0.0f;
     protected boolean constructorInitializationFinished = false;
 
-    public LayoutAbstractToolBar(String name, int orientation, boolean useCustomToolBarColor)
+    public LayoutAbstractToolBar(String name, int orientation)
     {
         super(name);
 
-        this.useCustomToolBarColor = useCustomToolBarColor;
-
         // set tool tip to be heavyweight so as to be visible on top of the main OpenGL heavyweight canvas
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-        if (useCustomToolBarColor) this.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) this.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         this.setOrientation(orientation);
 
         constructorInitializationFinished = true;
@@ -105,7 +102,7 @@ public abstract class LayoutAbstractToolBar extends JToolBar
         allToolBarButtons[index].setBorderPainted(false);
         allToolBarButtons[index].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
         setToolBarButtonImages(allToolBarButtons[index], actionName);
-        if (useCustomToolBarColor) allToolBarButtons[index].setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) allToolBarButtons[index].setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         allToolBarButtons[index].setContentAreaFilled(false);
         allToolBarButtons[index].setFocusPainted(false);
     }
@@ -122,7 +119,7 @@ public abstract class LayoutAbstractToolBar extends JToolBar
         button.setBorderPainted(false);
         button.setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
         setToolBarButtonImages(button, actionName);
-        if (useCustomToolBarColor) button.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) button.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
     }

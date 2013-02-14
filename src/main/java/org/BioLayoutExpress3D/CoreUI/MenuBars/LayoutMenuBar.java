@@ -73,29 +73,29 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
 
     public LayoutMenuBar()
     {
-        this.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) this.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
 
         texturesLoaderGeneralToolBarIcons = new TexturesLoader(DIR_NAME_1, FILE_NAME_1, false, false, true, MENUBAR_IMAGE_ICON_RESIZE_RATIO, false);
         texturesLoaderNavigationToolBarIcons = new TexturesLoader(DIR_NAME_2, FILE_NAME_2, false, false, true, MENUBAR_IMAGE_ICON_RESIZE_RATIO, false);
 
         fileMenu = new JMenu("File");
-        fileMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) fileMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         editMenu = new JMenu("Edit");
-        editMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) editMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         viewMenu = new JMenu("View");
-        viewMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) viewMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         searchMenu = new JMenu("Search");
-        searchMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) searchMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         simulationMenu = new JMenu("Simulation");
-        simulationMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) simulationMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         toolsMenu = new JMenu("Tools");
-        toolsMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) toolsMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         helpMenu = new JMenu("Help");
-        helpMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) helpMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         _2DMenu = new JMenu("2D");
-        _2DMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) _2DMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         _3DMenu = new JMenu("3D");
-        _3DMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) _3DMenu.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
 
         // set all popup menus to be heavyweight so as to be visible on top of the main OpenGL heavyweight canvas
         fileMenu.getPopupMenu().setLightWeightPopupEnabled(false);

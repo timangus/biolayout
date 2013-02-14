@@ -25,7 +25,7 @@ public final class LayoutGraphPropertiesToolBar extends LayoutAbstractToolBar
 
     public LayoutGraphPropertiesToolBar(int orientation)
     {
-        super(GRAPH_PROPERTIES_TOOLBAR_TITLE, orientation, true);
+        super(GRAPH_PROPERTIES_TOOLBAR_TITLE, orientation);
 
         texturesLoaderIcons = new TexturesLoader(GRAPH_PROPERTIES_DIR_NAME, GRAPH_PROPERTIES_FILE_NAME, false, false, true, TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
         allToolBarButtons = new JButton[NUMBER_OF_GRAPH_PROPERTIES_TOOLBAR_BUTTONS];

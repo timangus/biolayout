@@ -25,7 +25,7 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
 
     public LayoutNavigationToolBar(int orientation)
     {
-        super(NAVIGATION_TOOLBAR_TITLE, orientation, true);
+        super(NAVIGATION_TOOLBAR_TITLE, orientation);
 
         texturesLoaderIcons = new TexturesLoader(NAVIGATION_DIR_NAME, NAVIGATION_FILE_NAME, false, false, true, TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
         allToolBarButtons = new JButton[NUMBER_OF_NAVIGATION_TOOLBAR_BUTTONS];
@@ -35,9 +35,9 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
         imageDivisor = ( IS_MAC || UIManager.getLookAndFeel().getName().equals("Nimbus") ) ? 6.0f : 3.0f;
     }
 
-    public LayoutNavigationToolBar(String name, int orientation, boolean useCustomToolBarColor) // to be used from ModelShapeNavigationToolBar subclass
+    public LayoutNavigationToolBar(String name, int orientation) // to be used from ModelShapeNavigationToolBar subclass
     {
-        super(name, orientation, useCustomToolBarColor);
+        super(name, orientation);
     }
 
     @Override

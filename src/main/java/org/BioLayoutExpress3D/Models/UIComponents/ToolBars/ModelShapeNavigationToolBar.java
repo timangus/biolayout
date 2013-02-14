@@ -26,7 +26,7 @@ public final class ModelShapeNavigationToolBar extends LayoutNavigationToolBar
 
     public ModelShapeNavigationToolBar(int orientation)
     {
-        super("Model Shape " + NAVIGATION_TOOLBAR_TITLE, orientation, false);
+        super("Model Shape " + NAVIGATION_TOOLBAR_TITLE, orientation);
 
         this.setFloatable(false);
 

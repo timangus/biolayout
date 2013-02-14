@@ -29,7 +29,7 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
 
     public LayoutGeneralToolBar(int orientation)
     {
-        super(GENERAL_TOOLBAR_TITLE, orientation, true);
+        super(GENERAL_TOOLBAR_TITLE, orientation);
 
         texturesLoaderIcons = new TexturesLoader(GENERAL_DIR_NAME, GENERAL_FILE_NAME, false, false, true, TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
         allToolBarButtons = new JButton[NUMBER_OF_GENERAL_TOOLBAR_BUTTONS];
@@ -153,7 +153,7 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         allToolBarButtons[_2D_3D.ordinal()].setBorderPainted(false);
         allToolBarButtons[_2D_3D.ordinal()].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
         set2D3DButton();
-        allToolBarButtons[_2D_3D.ordinal()].setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) allToolBarButtons[_2D_3D.ordinal()].setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         allToolBarButtons[_2D_3D.ordinal()].setContentAreaFilled(false);
         allToolBarButtons[_2D_3D.ordinal()].setFocusPainted(false);
 

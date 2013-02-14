@@ -257,13 +257,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         nodeLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0) );
         propertiesPanel.setLayout( new BorderLayout(50, 10) );
-        propertiesPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) propertiesPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
 
         statusLabel.setBorder( BorderFactory.createEtchedBorder(EtchedBorder.LOWERED) );
         statusLabelPanel.add(statusLabel, BorderLayout.EAST);
-        statusLabelPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) statusLabelPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         labelPanel.add(nodeLabel, BorderLayout.WEST);
-        labelPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
+        if (BIOLAYOUT_USE_STATIC_COLOR) labelPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
 
         this.setJMenuBar(layoutMenuBar);
         propertiesPanel.add(statusLabelPanel, BorderLayout.EAST);

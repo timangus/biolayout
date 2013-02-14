@@ -137,6 +137,8 @@ public final class GlobalEnvironment
     public static final Cursor BIOLAYOUT_NORMAL_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
     public static final Cursor BIOLAYOUT_MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
     public static final Cursor BIOLAYOUT_WAIT_CURSOR = new Cursor(Cursor.WAIT_CURSOR);
+
+    public static boolean BIOLAYOUT_USE_STATIC_COLOR = !LoadNativeLibrary.isLinux();
     public static final Color BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR = new Color(196, 217, 249); // new Color(192, 192, 192);
 
     // splash screen loading timings
