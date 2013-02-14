@@ -852,6 +852,8 @@ public final class ExportSbgn
         return s;
     }
 
+    private List<Glyph> glyphsToNotClone = new ArrayList<Glyph>();
+
     private boolean canBeCloned(Glyph glyph)
     {
         List<String> cloneableClazzes = new ArrayList<String>(
@@ -869,7 +871,7 @@ public final class ExportSbgn
                 "complex multimer"));
         String clazz = glyph.getClazz();
 
-        return cloneableClazzes.contains(clazz);
+        return cloneableClazzes.contains(clazz) && !glyphsToNotClone.contains(glyph);
     }
 
     private void addCloneMarkers(Map map)
@@ -1280,7 +1282,7 @@ public final class ExportSbgn
 
     private static List<Arc> arcsGoingTo(Glyph glyph, List<Arc> arcList)
     {
-        List<Arc> out = new ArrayList();
+        List<Arc> out = new ArrayList<Arc>();
 
         for (Arc arc : arcList)
         {
@@ -1295,7 +1297,7 @@ public final class ExportSbgn
 
     private static List<Arc> arcsComingFrom(Glyph glyph, List<Arc> arcList)
     {
-        List<Arc> out = new ArrayList();
+        List<Arc> out = new ArrayList<Arc>();
 
         for (Arc arc : arcList)
         {
@@ -1546,6 +1548,14 @@ public final class ExportSbgn
 
     private void specialiseSbgnArc(List<String> arrowHeads, Glyph source, Glyph target, Arc arc)
     {
+        // This is a bit of a hack; we want to avoid marking things as
+        // clones if they're connected to something else with an arrowless edge
+        if (arrowHeads.size() == 2 && arrowHeads.get(0).equals("none") && arrowHeads.get(1).equals("none"))
+        {
+            glyphsToNotClone.add(source);
+            glyphsToNotClone.add(target);
+        }
+
         if (arrowHeads.contains("transparent_circle"))
         {
             arc.setClazz("catalysis");
@@ -1699,6 +1709,7 @@ public final class ExportSbgn
         sbgn.setMap(map);
         map.setLanguage("process description");
         java.util.Map<Integer,Glyph> sbgnGlyphs = new HashMap<Integer,Glyph>();
+        glyphsToNotClone.clear();
 
         if (nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get())
         {
