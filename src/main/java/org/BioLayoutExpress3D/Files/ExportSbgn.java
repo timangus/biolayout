@@ -1790,6 +1790,9 @@ public final class ExportSbgn
         }
         catch (Exception e)
         {
+            JOptionPane.showMessageDialog(layoutFrame, "Failed export to SBGN. Reason given:\n" + e.getMessage(),
+                    "Export failure", JOptionPane.ERROR_MESSAGE);
+
             if (DEBUG_BUILD)
             {
                 println("Failed to write SBGN file" + e.toString());
