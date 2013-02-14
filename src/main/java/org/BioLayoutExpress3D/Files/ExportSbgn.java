@@ -801,7 +801,7 @@ public final class ExportSbgn
 
         if (glyph.getCompartmentRef() != null)
         {
-            s += "<" + glyph.getCompartmentRef() + ">";
+            s += "<" + ((Glyph)glyph.getCompartmentRef()).getId() + ">";
         }
 
         s += glyph.getClazz();
@@ -955,7 +955,7 @@ public final class ExportSbgn
                     // The glyph already has a compartmentRef, check if this compartment might be better
                     Glyph existingCompartment = (Glyph)glyph.getCompartmentRef();
 
-                    if (!glyphBoundedByCompartment(compartment, existingCompartment))
+                    if (existingCompartment.getCompartmentOrder() > compartment.getCompartmentOrder())
                     {
                         continue;
                     }
@@ -963,7 +963,6 @@ public final class ExportSbgn
 
                 if (glyphBoundedByCompartment(glyph, compartment))
                 {
-                    println(glyph.getId() + " contained by " + compartment.getId());
                     glyph.setCompartmentRef(compartment);
                 }
             }
@@ -1651,7 +1650,7 @@ public final class ExportSbgn
         return arc;
     }
 
-    private Glyph translateContainerToSbgnGlyph(GraphmlComponentContainer componentContainer, String id)
+    private Glyph translateContainerToSbgnGlyph(GraphmlComponentContainer componentContainer, int id)
     {
         float x = componentContainer.rectangle2D.x * SCALE;
         float y = componentContainer.rectangle2D.y * SCALE;
@@ -1659,7 +1658,12 @@ public final class ExportSbgn
         float height = componentContainer.rectangle2D.height * SCALE;
 
         Glyph glyph = new Glyph();
-        glyph.setId(id);
+        glyph.setId("compartment" + Integer.toString(id));
+
+        // We could probably be cleverer about this in that some compartments
+        // will share a depth and arguably should have the same compartment order
+        // This is nevertheless correct though
+        glyph.setCompartmentOrder((float)id);
 
         String mepnLabel = componentContainer.name;
         Color mepnBackColor = componentContainer.color;
@@ -1701,10 +1705,10 @@ public final class ExportSbgn
             int containerId = 1;
             for (GraphmlComponentContainer componentContainer : gnc.getAllPathwayComponentContainersFor2D())
             {
-                String id = "compartment" + Integer.toString(containerId++);
-                Glyph glyph = translateContainerToSbgnGlyph(componentContainer, id);
+                Glyph glyph = translateContainerToSbgnGlyph(componentContainer, containerId);
 
                 map.getGlyph().add(glyph);
+                containerId++;
             }
         }
 
