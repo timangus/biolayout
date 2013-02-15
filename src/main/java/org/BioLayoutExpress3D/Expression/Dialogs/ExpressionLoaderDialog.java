@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
+import java.util.Stack;
 import org.BioLayoutExpress3D.Utils.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.Expression.ExpressionEnvironment.*;
@@ -47,26 +48,26 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
     private boolean creatingDialogElements = false;
 
-    class DataBounds
+    private class DataRect
     {
-        public int firstColumn;
-        public int firstRow;
+        public int x;
+        public int y;
+        public int width;
+        public int height;
 
-        public DataBounds(int firstColumn, int firstRow)
+        public int getArea()
         {
-            this.firstColumn = firstColumn;
-            this.firstRow = firstRow;
+            return width * height;
         }
     }
-
-    private DataBounds dataBounds;
+    private DataRect dataRect;
 
     public ExpressionLoaderDialog(JFrame frame, File expressionFile)
     {
         super(frame, "Load Expression Data", true);
 
         this.expressionFile = expressionFile;
-        this.dataBounds = new DataBounds(0, 0);
+        this.dataRect = new DataRect();
 
         initActions(frame);
         initComponents();
@@ -293,73 +294,94 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         };
     }
 
-    private void guessDataBounds(TextDelimitedMatrix tdm)
+    private DataRect findLargestDataRect(TextDelimitedMatrix tdm)
     {
-        firstDataColumn.removeAllItems();
-        firstDataRow.removeAllItems();
-
-        int mostNumericsInColumn = 0;
-        int mostNumericColumn = 0;
+        int[] heightHistogram = new int[tdm.numColumns()];
 
         for (int column = 0; column < tdm.numColumns(); column++)
         {
-            int numericFieldCount = 0;
-
-            for (int row = 0; row < tdm.numRows(); row++)
+            for (int row = tdm.numRows() - 1; row >= 0; row--)
             {
-                String value = tdm.valueAt(column, row);
-
-                if (column == 0)
+                if (isNumeric(tdm.valueAt(column, row)))
                 {
-                    firstDataRow.addItem((row + 1) + ": " + value);
+                    heightHistogram[column]++;
                 }
-
-                if (isNumeric(value))
-                {
-                    numericFieldCount++;
-                }
-            }
-
-            if (numericFieldCount > mostNumericsInColumn)
-            {
-                mostNumericsInColumn = numericFieldCount;
-                mostNumericColumn = column;
             }
         }
 
-        int mostNumericsInRow = 0;
-        int mostNumericRow = 0;
+        Stack<Integer> heights = new Stack<Integer>();
+        Stack<Integer> indexes = new Stack<Integer>();
+        DataRect dataRect = new DataRect();
 
+        for (int index = 0; index < heightHistogram.length; index++)
+        {
+            if (heights.isEmpty() || heightHistogram[index] > heights.peek())
+            {
+                heights.push(heightHistogram[index]);
+                indexes.push(index);
+            }
+            else if (heightHistogram[index] < heights.peek())
+            {
+                int lastIndex = 0;
+
+                while (!heights.isEmpty() && heightHistogram[index] < heights.peek())
+                {
+                    lastIndex = indexes.pop();
+                    int height = heights.pop();
+                    int width = (index - lastIndex);
+                    int area = height * width;
+                    if (area > dataRect.getArea())
+                    {
+                        dataRect.x = lastIndex;
+                        dataRect.y = tdm.numRows() - height;
+                        dataRect.width = width;
+                        dataRect.height = height;
+                    }
+                }
+
+                heights.push(heightHistogram[index]);
+                indexes.push(lastIndex);
+            }
+        }
+
+        while (!heights.isEmpty())
+        {
+            int lastIndex = indexes.pop();
+            int height = heights.pop();
+            int width = (heightHistogram.length - lastIndex);
+            int area = height * width;
+            if (area > dataRect.getArea())
+            {
+                dataRect.x = lastIndex;
+                dataRect.y = tdm.numRows() - height;
+                dataRect.width = width;
+                dataRect.height = height;
+            }
+        }
+
+        return dataRect;
+    }
+
+    private void guessDataBounds(TextDelimitedMatrix tdm)
+    {
+        firstDataColumn.removeAllItems();
+        for (int column = 0; column < tdm.numColumns(); column++)
+        {
+            firstDataColumn.addItem((column + 1) + ": " + tdm.valueAt(column, 0));
+        }
+
+        firstDataRow.removeAllItems();
         for (int row = 0; row < tdm.numRows(); row++)
         {
-            int numericFieldCount = 0;
-
-            for (int column = 0; column < tdm.numColumns(); column++)
-            {
-                String value = tdm.valueAt(column, row);
-
-                if (row == 0)
-                {
-                    firstDataColumn.addItem((column + 1) + ": " + value);
-                }
-
-                if (isNumeric(value))
-                {
-                    numericFieldCount++;
-                }
-            }
-
-            if (numericFieldCount > mostNumericsInRow)
-            {
-                mostNumericsInRow = numericFieldCount;
-                mostNumericRow = row;
-            }
+            firstDataRow.addItem((row + 1) + ": " + tdm.valueAt(0, row));
         }
 
-        firstDataColumn.setSelectedIndex(mostNumericColumn);
-        firstDataRow.setSelectedIndex(mostNumericRow);
+        DataRect guessedDataRect = findLargestDataRect(tdm);
 
-        dataBounds = new DataBounds(mostNumericColumn, mostNumericRow);
+        firstDataColumn.setSelectedIndex(guessedDataRect.x);
+        firstDataRow.setSelectedIndex(guessedDataRect.y);
+
+        dataRect = guessedDataRect;
     }
 
     private void createDialogElements(boolean transpose, boolean guessDataBounds)
@@ -449,7 +471,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                 {
                     String options;
 
-                    if (column >= dataBounds.firstColumn && row >= dataBounds.firstRow)
+                    if (column >= dataRect.x && row >= dataRect.y)
                     {
                         options = "BGCOLOR=\"#CCCCFF\"";
                     }
@@ -557,10 +579,15 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     @Override
     public void actionPerformed (ActionEvent e)
     {
-        if ( e.getSource().equals(firstDataColumn) || e.getSource().equals(firstDataRow))
+        if (e.getSource().equals(firstDataColumn) || e.getSource().equals(firstDataRow))
         {
-            dataBounds = new DataBounds(firstDataColumn.getSelectedIndex(),
-                    firstDataRow.getSelectedIndex());
+            DataRect newDataRect = new DataRect();
+            newDataRect.x = firstDataColumn.getSelectedIndex();
+            newDataRect.y = firstDataRow.getSelectedIndex();
+            newDataRect.width -= (newDataRect.x - dataRect.x);
+            newDataRect.height -= (newDataRect.y - dataRect.y);
+
+            dataRect = newDataRect;
             refreshDataPreview(false);
         }
     }
