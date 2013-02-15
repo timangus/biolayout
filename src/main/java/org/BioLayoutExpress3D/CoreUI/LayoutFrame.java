@@ -1363,7 +1363,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         if (isSuccessful && isNotSkipped)
         {
-            fileNameLoaded = ( DATA_TYPE.equals(DataTypes.EXPRESSION) ) ? IOUtils.getPrefix( file.getName() ) : file.getName(); // to get rid of the .correlation type extension for file filters in CoreSaver, etc
+            fileNameLoaded = file.getName();
             fileNameAbsolutePath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
             String correlationValueString = ( DATA_TYPE.equals(DataTypes.EXPRESSION) ) ? " at " + CURRENT_CORRELATION_THRESHOLD : ( DATA_TYPE.equals(DataTypes.MATRIX) ? " at " + correlationCutOffValue : "" );
             this.setTitle(VERSION + "  [ " + file.getAbsolutePath() + correlationValueString + " ] " + ( (WEIGHTED_EDGES) ? "(" : "(non-" ) + "weighted graph)");
