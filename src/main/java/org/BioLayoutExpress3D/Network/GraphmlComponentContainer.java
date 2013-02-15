@@ -18,7 +18,7 @@ public class GraphmlComponentContainer implements Comparable<GraphmlComponentCon
     /**
     *  Default GraphmlComponentContainer depth.
     */
-    private static final int DEFAULT_COMPONENT_CONTAINER_DEPTH = 200;
+    private static final int DEFAULT_COMPONENT_CONTAINER_DEPTH = 1;
 
     /**
     *  Default GraphmlComponentContainer alpha.
