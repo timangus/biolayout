@@ -1113,8 +1113,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     boolean generateTextFile = expressionLoaderDialog.saveCorrelationTextFile();
                     float filterValue = expressionLoaderDialog.filterValue();
 
-                    expressionData.preprocess(layoutProgressBarDialog, CURRENT_LINEAR_TRANSFORM,
-                            CURRENT_SCALE_TRANSFORM, filterValue);
+                    expressionData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM, filterValue);
 
                     if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
                     String metricName = CURRENT_METRIC.toString().toLowerCase();
@@ -1125,11 +1124,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     if (EXPRESSION_DATA_TRANSPOSE)
                     {
                         correlationFilename += "_transpose";
-                    }
-
-                    if (CURRENT_LINEAR_TRANSFORM != LinearTransformType.NONE)
-                    {
-                        correlationFilename += "_" + Utils.hyphenatedOf(CURRENT_LINEAR_TRANSFORM.toString());
                     }
 
                     if (CURRENT_SCALE_TRANSFORM != ScaleTransformType.NONE)

@@ -16,14 +16,14 @@ public final class ExpressionEnvironment
     public static enum CorrelationTypes { PEARSON, SPEARMAN }
     public static CorrelationTypes CURRENT_METRIC = CorrelationTypes.PEARSON;
 
-    public static enum LinearTransformType
+    public static enum TransformType
     {
-        NONE,
+        RAW,
+        LOG_SCALE,
         MEAN_CENTRED,
         UNIT_VARIANCE_SCALED,
         PARETO_SCALED,
     }
-    public static LinearTransformType CURRENT_LINEAR_TRANSFORM = LinearTransformType.NONE;
 
     public static enum ScaleTransformType
     {

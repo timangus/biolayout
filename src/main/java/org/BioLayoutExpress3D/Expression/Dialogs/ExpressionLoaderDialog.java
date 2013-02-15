@@ -30,7 +30,6 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     private JComboBox firstDataRow = null;
     private JComboBox correlationMetric = null;
     private JCheckBox transposeCheckBox = null;
-    private JComboBox linearTransformComboBox = null;
     private JComboBox scaleTransformComboBox = null;
     private JEditorPane textArea = null;
     private JCheckBox saveCorrelationTextFileCheckBox = null;
@@ -145,18 +144,6 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         tabLine1.add(new JLabel("Scale Transform:"));
         tabLine1.add(scaleTransformComboBox);
 
-        // Linear transform
-        linearTransformComboBox = new JComboBox();
-        for (LinearTransformType type : LinearTransformType.values())
-        {
-            String s = Utils.titleCaseOf(type.toString());
-            linearTransformComboBox.addItem(s);
-        }
-        linearTransformComboBox.setSelectedIndex(0);
-        linearTransformComboBox.setToolTipText("Linear Transform");
-        tabLine1.add(new JLabel("Linear Transform:"));
-        tabLine1.add(linearTransformComboBox);
-
         // Transpose
         transposeCheckBox = new JCheckBox(transposeChangedAction);
         transposeCheckBox.setText("Transpose");
@@ -253,7 +240,6 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                 }
 
                 CURRENT_METRIC = CorrelationTypes.values()[correlationMetric.getSelectedIndex()];
-                CURRENT_LINEAR_TRANSFORM = LinearTransformType.values()[linearTransformComboBox.getSelectedIndex()];
                 CURRENT_SCALE_TRANSFORM = ScaleTransformType.values()[scaleTransformComboBox.getSelectedIndex()];
                 proceed = true;
                 setVisible(false);

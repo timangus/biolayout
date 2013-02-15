@@ -61,12 +61,12 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
     private ExpressionData expresionData = null;
     private JPanel expressionGraphCheckBoxesPanel = null;
 
-    private JCheckBox logScaleCheckBox = null;
     private JCheckBox gridLinesCheckBox = null;
     private JCheckBox classMeanCheckBox = null;
     private JCheckBox selectionMeanCheckBox = null;
     private JCheckBox rescaleCheckBox = null;
     private JCheckBox axesLegendCheckBox = null;
+    private JComboBox transformComboBox = null;
     private JButton exportPlotExpressionProfileAsButton = null;
 
     private AbstractAction renderPlotImageToFileAction = null;
@@ -148,8 +148,6 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
     */
     private void initComponents()
     {
-        logScaleCheckBox = new JCheckBox("Log Scale");
-        logScaleCheckBox.setToolTipText("Log Scale");
         gridLinesCheckBox = new JCheckBox("Grid Lines");
         gridLinesCheckBox.setToolTipText("Grid Lines");
         classMeanCheckBox = new JCheckBox("Class Mean");
@@ -162,23 +160,31 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
         axesLegendCheckBox.setToolTipText("Axes Legend");
         exportPlotExpressionProfileAsButton = new JButton(exportPlotExpressionProfileAsAction);
         exportPlotExpressionProfileAsButton.setToolTipText("Export Plot Expression Profile As...");
-        logScaleCheckBox.addActionListener(this);
         gridLinesCheckBox.addActionListener(this);
         classMeanCheckBox.addActionListener(this);
         selectionMeanCheckBox.addActionListener(this);
         rescaleCheckBox.addActionListener(this);
         axesLegendCheckBox.addActionListener(this);
-        logScaleCheckBox.setSelected( PLOT_LOG_SCALE.get() );
         gridLinesCheckBox.setSelected( PLOT_GRID_LINES.get() );
         classMeanCheckBox.setSelected( PLOT_CLASS_MEAN.get() );
         selectionMeanCheckBox.setSelected( PLOT_SELECTION_MEAN.get() );
         rescaleCheckBox.setSelected( PLOT_RESCALE.get() );
         axesLegendCheckBox.setSelected( PLOT_AXES_LEGEND.get() );
 
+        transformComboBox = new JComboBox();
+        for (ExpressionEnvironment.TransformType type : ExpressionEnvironment.TransformType.values())
+        {
+            String s = Utils.titleCaseOf(type.toString());
+            transformComboBox.addItem(s);
+        }
+        transformComboBox.setSelectedIndex(PLOT_TRANSFORM.get());
+        transformComboBox.setToolTipText("Transform");
+        transformComboBox.addActionListener(this);
+
         JPanel expressionGraphUpperPartPanel = new JPanel(true);
 
         expressionGraphCheckBoxesPanel = new JPanel(true);
-        expressionGraphCheckBoxesPanel.add(logScaleCheckBox);
+        expressionGraphCheckBoxesPanel.add(transformComboBox);
         expressionGraphCheckBoxesPanel.add(gridLinesCheckBox);
         expressionGraphCheckBoxesPanel.add(classMeanCheckBox);
         expressionGraphCheckBoxesPanel.add(selectionMeanCheckBox);
@@ -260,12 +266,15 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             double height = this.getSize().getHeight();
             double columnWidth = width / totalColumns;
 
-            boolean drawLogScale = PLOT_LOG_SCALE.get();
             boolean drawGridLines = PLOT_GRID_LINES.get();
             boolean drawMeanOfClass = PLOT_CLASS_MEAN.get();
             boolean drawMeanOfSelection = PLOT_SELECTION_MEAN.get();
             boolean drawRescale = PLOT_RESCALE.get();
             boolean drawAxesLegend = PLOT_AXES_LEGEND.get();
+            ExpressionEnvironment.TransformType transformType =
+                    ExpressionEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
+
+            expresionData.setTransformType(transformType);
 
             int plotRectangleWidth = (int)( ( width / totalColumns ) * (totalColumns - 1) ) + 2;
             g2d.setStroke(THIN_BASIC_STROKE);
@@ -286,9 +295,10 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                 index = expresionData.getIdentityMap( graphNode.getNodeName() );
                 if (index == null) continue;
 
+                float[] transformedData = expresionData.getTransformedRow(index);
                 for (int j = 0; j < totalColumns; j++)
                 {
-                    value = (drawLogScale) ? log( expresionData.getExpressionDataValue(index, j) ) : expresionData.getExpressionDataValue(index, j);
+                    value = transformedData[j];
 
                     if (value > max)
                         max = value;
@@ -336,6 +346,8 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                    g2d.setColor(nodeColor);
                }
 
+               float[] transformedData = expresionData.getTransformedRow(index);
+
                double currentX = 0.0;
                double nextX = 0.0;
                double thisY = 0.0;
@@ -344,8 +356,8 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                {
                    currentX = (j * columnWidth) + PAD_X;
                    nextX = ( (j + 1) * columnWidth ) + PAD_X;
-                   thisY = (drawLogScale) ? log(expresionData.getExpressionDataValue(index, j) - min) : ( expresionData.getExpressionDataValue(index, j) - min);
-                   nextY = (drawLogScale) ? log(expresionData.getExpressionDataValue(index, j + 1) - min) : ( expresionData.getExpressionDataValue(index, j + 1) - min);
+                   thisY = transformedData[j] - min;
+                   nextY = transformedData[j + 1] - min;
 
                    if (drawMeanOfClass || drawMeanOfSelection)
                    {
@@ -554,7 +566,14 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             for (int ticks = 0; ticks < Y_TICKS; ticks++)
             {
                 tickY = (int)(ticks * tickHeight);
-                result = (drawLogScale) ? pow(E, (double)ticks * tickHeight / yScale) : ( (double)ticks * tickHeight / yScale ) + min;
+                if (transformType == ExpressionEnvironment.TransformType.LOG_SCALE)
+                {
+                    result = pow(E, (double) ticks * tickHeight / yScale);
+                }
+                else
+                {
+                    result = ((double) ticks * tickHeight / yScale) + min;
+                }
                 label = " " + ( ( !result.equals(Double.NaN) ) ? Utils.numberFormatting(result, 1) : "" );
 
                 g2d.drawLine( PAD_X, (int)(height - padY - tickY), PAD_X + PAD_BORDER, (int)(height - padY - tickY) );
@@ -850,18 +869,30 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if ( e.getSource().equals(logScaleCheckBox) )
-            PLOT_LOG_SCALE.set( logScaleCheckBox.isSelected() ) ;
-        else if ( e.getSource().equals(gridLinesCheckBox) )
-            PLOT_GRID_LINES.set( gridLinesCheckBox.isSelected() ) ;
-        else if ( e.getSource().equals(classMeanCheckBox) )
-            PLOT_CLASS_MEAN.set( classMeanCheckBox.isSelected() ) ;
-        else if ( e.getSource().equals(selectionMeanCheckBox) )
-            PLOT_SELECTION_MEAN.set( selectionMeanCheckBox.isSelected() ) ;
-        else if ( e.getSource().equals(rescaleCheckBox) )
-            PLOT_RESCALE.set( rescaleCheckBox.isSelected() ) ;
-        else if ( e.getSource().equals(axesLegendCheckBox) )
-            PLOT_AXES_LEGEND.set( axesLegendCheckBox.isSelected() ) ;
+        if (e.getSource().equals(gridLinesCheckBox))
+        {
+            PLOT_GRID_LINES.set(gridLinesCheckBox.isSelected());
+        }
+        else if (e.getSource().equals(classMeanCheckBox))
+        {
+            PLOT_CLASS_MEAN.set(classMeanCheckBox.isSelected());
+        }
+        else if (e.getSource().equals(selectionMeanCheckBox))
+        {
+            PLOT_SELECTION_MEAN.set(selectionMeanCheckBox.isSelected());
+        }
+        else if (e.getSource().equals(rescaleCheckBox))
+        {
+            PLOT_RESCALE.set(rescaleCheckBox.isSelected());
+        }
+        else if (e.getSource().equals(axesLegendCheckBox))
+        {
+            PLOT_AXES_LEGEND.set(axesLegendCheckBox.isSelected());
+        }
+        else if (e.getSource().equals(transformComboBox))
+        {
+            PLOT_TRANSFORM.set(transformComboBox.getSelectedIndex());
+        }
 
         layoutFrame.getLayoutGraphPropertiesDialog().setHasNewPreferencesBeenApplied(true);
         this.repaint();

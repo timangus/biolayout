@@ -915,72 +915,52 @@ public final class ExpressionData
         return totalAnnotationColunms;
     }
 
-    private void linearTransformMeanCentred(LayoutProgressBarDialog layoutProgressBarDialog)
+    private TransformType transformType;
+    public void setTransformType(TransformType transformType)
     {
-        for (int row = 0; row < totalRows; row++)
-        {
-            float mean = sumX_cacheArray[row] / totalColumns;
-
-            for (int column = 0; column < totalColumns; column++)
-            {
-                 float value = getExpressionDataValue(row, column);
-                 value = value - mean;
-                 setExpressionDataValue(row, column, value);
-            }
-
-            int percent = (100 * row) / totalRows;
-            layoutProgressBarDialog.incrementProgress(percent);
-        }
-
-        layoutProgressBarDialog.setText("Summing");
-        sumRows();
+        this.transformType = transformType;
     }
 
-    private void linearTransformUnitVarianceScaled(LayoutProgressBarDialog layoutProgressBarDialog)
+    public float[] getTransformedRow(int row)
     {
-        for (int row = 0; row < totalRows; row++)
-        {
-            float mean = sumX_cacheArray[row] / totalColumns;
-            float variance = sumX2_cacheArray[row] / totalColumns;
-            float stddev = (float)sqrt(variance);
+        float[] out = new float[totalColumns];
 
-            for (int column = 0; column < totalColumns; column++)
+        float mean = sumX_cacheArray[row] / totalColumns;
+        float variance = sumX2_cacheArray[row] / totalColumns;
+        float stddev = (float) sqrt(variance);
+        float pareto = (float)sqrt(stddev);
+
+        for (int column = 0; column < totalColumns; column++)
+        {
+            float value = getExpressionDataValue(row, column);
+
+            switch (transformType)
             {
-                 float value = getExpressionDataValue(row, column);
-                 value = (value - mean) / stddev;
-                 setExpressionDataValue(row, column, value);
+                default:
+                case RAW:
+                    break;
+
+                case LOG_SCALE:
+                    value = (float) java.lang.Math.log(value);
+                    break;
+
+                case MEAN_CENTRED:
+                    value = value - mean;
+                    break;
+
+                case UNIT_VARIANCE_SCALED:
+                    value = (value - mean) / stddev;;
+                    break;
+
+                case PARETO_SCALED:
+                    value = (value - mean) / pareto;
+                    break;
             }
 
-            int percent = (100 * row) / totalRows;
-            layoutProgressBarDialog.incrementProgress(percent);
+            out[column] = value;
         }
 
-        layoutProgressBarDialog.setText("Summing");
-        sumRows();
-    }
-
-    private void linearTransformParetoScaled(LayoutProgressBarDialog layoutProgressBarDialog)
-    {
-        for (int row = 0; row < totalRows; row++)
-        {
-            float mean = sumX_cacheArray[row] / totalColumns;
-            float variance = sumX2_cacheArray[row] / totalColumns;
-            float stddev = (float)sqrt(variance);
-            float pareto = (float)sqrt(stddev);
-
-            for (int column = 0; column < totalColumns; column++)
-            {
-                 float value = getExpressionDataValue(row, column);
-                 value = (value - mean) / pareto;
-                 setExpressionDataValue(row, column, value);
-            }
-
-            int percent = (100 * row) / totalRows;
-            layoutProgressBarDialog.incrementProgress(percent);
-        }
-
-        layoutProgressBarDialog.setText("Summing");
-        sumRows();
+        return out;
     }
 
     interface IRescaleDelegate { public float f(float x); }
@@ -1048,7 +1028,7 @@ public final class ExpressionData
         }
     }
 
-    public void preprocess(LayoutProgressBarDialog layoutProgressBarDialog, LinearTransformType linearTransformType,
+    public void preprocess(LayoutProgressBarDialog layoutProgressBarDialog,
             ScaleTransformType scaleTransformType, float filterValue)
     {
         layoutProgressBarDialog.prepareProgressBar(100, "Preprocessing");
@@ -1074,25 +1054,6 @@ public final class ExpressionData
 
             case ANTILOG10:
                 rescale(layoutProgressBarDialog, new RescaleAntiLog10());
-                break;
-        }
-
-        switch (linearTransformType)
-        {
-            default:
-            case NONE:
-                break;
-
-            case MEAN_CENTRED:
-                linearTransformMeanCentred(layoutProgressBarDialog);
-                break;
-
-            case UNIT_VARIANCE_SCALED:
-                linearTransformUnitVarianceScaled(layoutProgressBarDialog);
-                break;
-
-            case PARETO_SCALED:
-                linearTransformParetoScaled(layoutProgressBarDialog);
                 break;
         }
 

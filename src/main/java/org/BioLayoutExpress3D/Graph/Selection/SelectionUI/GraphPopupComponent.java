@@ -42,9 +42,9 @@ public final class GraphPopupComponent implements Runnable
     private LayoutFrame layoutFrame = null;
 
     private ExpressionData expresionData = null;
-    private boolean drawLogScale = false;
     private boolean drawGridLines = false;
     private boolean drawAxesLegend = false;
+    private ExpressionEnvironment.TransformType transformType = ExpressionEnvironment.TransformType.RAW;
 
     private JPopupMenu popupMenu = null;
     private JMenuItem popupMenuItem = null;
@@ -93,9 +93,9 @@ public final class GraphPopupComponent implements Runnable
         this.layoutFrame = layoutFrame;
 
         expresionData = layoutFrame.getExpressionData();
-        drawLogScale = PLOT_LOG_SCALE.get();
         drawGridLines = PLOT_GRID_LINES.get();
         drawAxesLegend = PLOT_AXES_LEGEND.get();
+        transformType = ExpressionEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
     }
 
     @Override
@@ -234,12 +234,15 @@ public final class GraphPopupComponent implements Runnable
             g2d.setColor(DESCRIPTIONS_COLOR);
             g2d.drawRect( PAD_X, 0, plotRectangleWidth, (int)(height - padY) );
 
-            double value = (drawLogScale) ? log( expresionData.getExpressionDataValue(index, 0) ) : expresionData.getExpressionDataValue(index, 0);
+            expresionData.setTransformType(transformType);
+            float[] transformedData = expresionData.getTransformedRow(index);
+
+            double value = transformedData[0];
             double max = value;
             double min = value;
             for (int j = 1; j < totalColumns; j++)
             {
-                value = (drawLogScale) ? log( expresionData.getExpressionDataValue(index, j) ) : expresionData.getExpressionDataValue(index, j);
+                value = transformedData[j];
 
                 if (value > max)
                     max = value;
@@ -263,8 +266,8 @@ public final class GraphPopupComponent implements Runnable
             {
                 currentX = (j * columnWidth) + PAD_X;
                 nextX = ( (j + 1) * columnWidth ) + PAD_X;
-                thisY = (drawLogScale) ? log(expresionData.getExpressionDataValue(index, j) - min) : ( expresionData.getExpressionDataValue(index, j) - min);
-                nextY = (drawLogScale) ? log(expresionData.getExpressionDataValue(index, j + 1) - min) : ( expresionData.getExpressionDataValue(index, j + 1) - min);
+                thisY = transformedData[j] - min;
+                nextY = transformedData[j + 1] - min;
 
                 thisY *= yScale;
                 nextY *= yScale;
@@ -317,7 +320,14 @@ public final class GraphPopupComponent implements Runnable
             for (int ticks = 0; ticks < Y_TICKS; ticks++)
             {
                 tickY = (int)(ticks * tickHeight);
-                result = (drawLogScale) ? pow(E, (double)ticks * tickHeight / yScale) : ( (double)ticks * tickHeight / yScale ) + min;
+                if (transformType == ExpressionEnvironment.TransformType.LOG_SCALE)
+                {
+                    result = pow(E, (double) ticks * tickHeight / yScale);
+                }
+                else
+                {
+                    result = ((double) ticks * tickHeight / yScale) + min;
+                }
                 label = " " + ( ( !result.equals(Double.NaN) ) ? Utils.numberFormatting(result, 1) : "" );
 
                 g2d.drawLine( PAD_X, (int)(height - padY - tickY), PAD_X + PAD_BORDER, (int)(height - padY - tickY) );
