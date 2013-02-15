@@ -754,17 +754,17 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         populateClassViewer(hideColumnsData, false, false);
     }
 
-    public void populateClassViewer(boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    public void populateClassViewer(boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
-        populateClassViewer(null, updateExpresionGraphViewOnly, notUpdateTitleBar);
+        populateClassViewer(null, updateExpressionGraphViewOnly, notUpdateTitleBar);
     }
 
-    public void populateClassViewer(Object[][] hideColumnsData, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    public void populateClassViewer(Object[][] hideColumnsData, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
         NetworkContainer nc = layoutFrame.getNetworkRootContainer();
         if (nc != null)
         {
-            if (!updateExpresionGraphViewOnly)
+            if (!updateExpressionGraphViewOnly)
             {
                 if (DEBUG_BUILD) println("populateClassViewer(): " + layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName());
 
@@ -802,7 +802,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 checkAndAbortUpdateDetailedEntropyTableRunnable();
 
                 if (hideColumnsData == null && classViewerHideColumnsDialog != null)
-                    classViewerHideColumnsDialog.updateClassViewerHideColumnsTable(this, enableHideColumnsAndExportButtons, updateExpresionGraphViewOnly, notUpdateTitleBar);
+                    classViewerHideColumnsDialog.updateClassViewerHideColumnsTable(this, enableHideColumnsAndExportButtons, updateExpressionGraphViewOnly, notUpdateTitleBar);
 
                 generalTable.sortTableByColumn(NAME_COLUMN, generalTableSorter);
             }

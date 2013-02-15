@@ -41,7 +41,7 @@ public final class GraphPopupComponent implements Runnable
     private boolean isPetriNet = false;
     private LayoutFrame layoutFrame = null;
 
-    private ExpressionData expresionData = null;
+    private ExpressionData expressionData = null;
     private boolean drawGridLines = false;
     private boolean drawAxesLegend = false;
     private ExpressionEnvironment.TransformType transformType = ExpressionEnvironment.TransformType.RAW;
@@ -92,7 +92,7 @@ public final class GraphPopupComponent implements Runnable
         this.isPetriNet = isPetriNet;
         this.layoutFrame = layoutFrame;
 
-        expresionData = layoutFrame.getExpressionData();
+        expressionData = layoutFrame.getExpressionData();
         drawGridLines = PLOT_GRID_LINES.get();
         drawAxesLegend = PLOT_AXES_LEGEND.get();
         transformType = ExpressionEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
@@ -183,8 +183,8 @@ public final class GraphPopupComponent implements Runnable
             // render the parentComponent background
             super.paintComponent(g);
 
-            int totalColumns = expresionData.getTotalColumns();
-            Integer index = expresionData.getIdentityMap( graphNode.getNodeName() );
+            int totalColumns = expressionData.getTotalColumns();
+            Integer index = expressionData.getIdentityMap( graphNode.getNodeName() );
 
             // don't render anything if no expression or index number, besides the parentComponent background (above)
             if ( (totalColumns == 0) || (index == null) ) return;
@@ -205,7 +205,7 @@ public final class GraphPopupComponent implements Runnable
             String columnName = "";
             for (int j = 0; j < totalColumns; j++)
             {
-                columnName = expresionData.getColumnName(j);
+                columnName = expressionData.getColumnName(j);
 
                 if (columnName.length() > EXPRESSION_PLOT_X_AXIS_NAMES_LENGTH_THRESHOLD)
                     columnName = columnName.substring(0, EXPRESSION_PLOT_X_AXIS_NAMES_LENGTH_THRESHOLD) + NAME_TAIL;
@@ -234,8 +234,8 @@ public final class GraphPopupComponent implements Runnable
             g2d.setColor(DESCRIPTIONS_COLOR);
             g2d.drawRect( PAD_X, 0, plotRectangleWidth, (int)(height - padY) );
 
-            expresionData.setTransformType(transformType);
-            float[] transformedData = expresionData.getTransformedRow(index);
+            expressionData.setTransformType(transformType);
+            float[] transformedData = expressionData.getTransformedRow(index);
 
             double value = transformedData[0];
             double max = value;
@@ -253,7 +253,7 @@ public final class GraphPopupComponent implements Runnable
 
             double yScale = (height - padY) / (max - min);
 
-            index = expresionData.getIdentityMap( graphNode.getNodeName() );
+            index = expressionData.getIdentityMap( graphNode.getNodeName() );
             Color nodeColor = graphNode.getColor();
             g2d.setColor(nodeColor);
 
@@ -360,7 +360,7 @@ public final class GraphPopupComponent implements Runnable
             for (int ticks = 0; ticks < xTicks; ticks++)
             {
                 g2d.setColor(DESCRIPTIONS_COLOR);
-                columnName = expresionData.getColumnName(ticks);
+                columnName = expressionData.getColumnName(ticks);
                 if (columnName.length() > EXPRESSION_PLOT_X_AXIS_NAMES_LENGTH_THRESHOLD)
                     columnName = columnName.substring(0, EXPRESSION_PLOT_X_AXIS_NAMES_LENGTH_THRESHOLD) + NAME_TAIL;
                 g2d.drawString( columnName, (int)(height - padY + PAD_BORDER), -(int)( PAD_X + (ticks * tickWidth) ) );

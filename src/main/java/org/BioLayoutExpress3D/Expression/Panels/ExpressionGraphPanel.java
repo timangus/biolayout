@@ -58,7 +58,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
 
     private JFrame jframe = null;
     private LayoutFrame layoutFrame = null;
-    private ExpressionData expresionData = null;
+    private ExpressionData expressionData = null;
     private JPanel expressionGraphCheckBoxesPanel = null;
 
     private JCheckBox gridLinesCheckBox = null;
@@ -79,13 +79,13 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
     private ExpressionGraphPlotPanel expressionGraphPlotPanel = null;
     private ExpressionChooseClassesToRenderPlotImagesFromDialog expressionChooseClassesToRenderPlotImagesFromDialog = null;
 
-    public ExpressionGraphPanel(JFrame jframe, LayoutFrame layoutFrame, ExpressionData expresionData)
+    public ExpressionGraphPanel(JFrame jframe, LayoutFrame layoutFrame, ExpressionData expressionData)
     {
         super(true);
 
         this.jframe = jframe;
         this.layoutFrame = layoutFrame;
-        this.expresionData = expresionData;
+        this.expressionData = expressionData;
 
         initActions();
         initComponents();
@@ -238,7 +238,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             // render the panel background
             super.paintComponent(g);
 
-            int totalColumns = expresionData.getTotalColumns();
+            int totalColumns = expressionData.getTotalColumns();
             // don't render anything if no expression, besides the panel background (above)
             if (totalColumns == 0) return;
 
@@ -252,7 +252,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             Rectangle2D rectangle2D = null;
             for (int j = 0; j < totalColumns; j++)
             {
-                rectangle2D = g2d.getFontMetrics( g2d.getFont() ).getStringBounds(expresionData.getColumnName(j), g2d);
+                rectangle2D = g2d.getFontMetrics( g2d.getFont() ).getStringBounds(expressionData.getColumnName(j), g2d);
 
                 if (rectangle2D.getWidth() > maxStringWidth)
                     maxStringWidth = rectangle2D.getWidth();
@@ -274,7 +274,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             ExpressionEnvironment.TransformType transformType =
                     ExpressionEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
 
-            expresionData.setTransformType(transformType);
+            expressionData.setTransformType(transformType);
 
             int plotRectangleWidth = (int)( ( width / totalColumns ) * (totalColumns - 1) ) + 2;
             g2d.setStroke(THIN_BASIC_STROKE);
@@ -292,10 +292,10 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             exportPlotExpressionProfileAsAction.setEnabled( !expandedSelectedNodes.isEmpty() );
             for (GraphNode graphNode : expandedSelectedNodes)
             {
-                index = expresionData.getIdentityMap( graphNode.getNodeName() );
+                index = expressionData.getIdentityMap( graphNode.getNodeName() );
                 if (index == null) continue;
 
-                float[] transformedData = expresionData.getTransformedRow(index);
+                float[] transformedData = expressionData.getTransformedRow(index);
                 for (int j = 0; j < totalColumns; j++)
                 {
                     value = transformedData[j];
@@ -318,7 +318,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             Color nodeColor = null;
             for (GraphNode graphNode : expandedSelectedNodes)
             {
-               index = expresionData.getIdentityMap( graphNode.getNodeName() );
+               index = expressionData.getIdentityMap( graphNode.getNodeName() );
                if (index == null) continue;
 
                nodeColor = graphNode.getColor();
@@ -346,7 +346,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
                    g2d.setColor(nodeColor);
                }
 
-               float[] transformedData = expresionData.getTransformedRow(index);
+               float[] transformedData = expressionData.getTransformedRow(index);
 
                double currentX = 0.0;
                double nextX = 0.0;
@@ -606,7 +606,7 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
             for (int ticks = 0; ticks < xTicks; ticks++)
             {
                 g2d.setColor(DESCRIPTIONS_COLOR);
-                g2d.drawString( expresionData.getColumnName(ticks), (int)(height - padY + PAD_BORDER), -(int)( PAD_X + (ticks * tickWidth) ) );
+                g2d.drawString( expressionData.getColumnName(ticks), (int)(height - padY + PAD_BORDER), -(int)( PAD_X + (ticks * tickWidth) ) );
 
                 if (drawGridLines)
                 {
@@ -822,23 +822,23 @@ public final class ExpressionGraphPanel extends JPanel implements ActionListener
     {
         try
         {
-            int totalColumns = expresionData.getTotalColumns();
+            int totalColumns = expressionData.getTotalColumns();
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write("Name\t");
             for (int j = 0; j < totalColumns; j++)
-                fileWriter.write(expresionData.getColumnName(j) + "\t");
+                fileWriter.write(expressionData.getColumnName(j) + "\t");
             fileWriter.write("\n");
 
             Integer index = null;
             HashSet<GraphNode> expandedSelectedNodes = layoutFrame.getGraph().getSelectionManager().getExpandedSelectedNodes();
             for (GraphNode graphNode : expandedSelectedNodes)
             {
-                index = expresionData.getIdentityMap( graphNode.getNodeName() );
+                index = expressionData.getIdentityMap( graphNode.getNodeName() );
                 if (index == null) continue;
 
                 fileWriter.write(graphNode.getNodeName() + "\t");
                 for (int j = 0; j < totalColumns; j++)
-                    fileWriter.write(expresionData.getExpressionDataValue(index, j) + "\t");
+                    fileWriter.write(expressionData.getExpressionDataValue(index, j) + "\t");
                 fileWriter.write("\n");
             }
 

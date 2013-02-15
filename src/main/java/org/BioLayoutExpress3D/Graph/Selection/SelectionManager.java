@@ -824,7 +824,7 @@ public final class SelectionManager
         return addNodesToSelected(nodes, includeHidden, true, addEdges, true, false, false);
     }
 
-    public boolean addNodesToSelected(Collection<GraphNode> nodes, boolean includeHidden, boolean addSelectedNodes, boolean addEdges, boolean updateViewers, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    public boolean addNodesToSelected(Collection<GraphNode> nodes, boolean includeHidden, boolean addSelectedNodes, boolean addEdges, boolean updateViewers, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
         if (DEBUG_BUILD) println("Add nodes to Selected: " + nodes.size());
 
@@ -856,8 +856,8 @@ public final class SelectionManager
             setActionsEnable( !selectedNodes.isEmpty() );
         }
 
-        if (updateViewers || updateExpresionGraphViewOnly)
-            updateViewers(updateExpresionGraphViewOnly, notUpdateTitleBar);
+        if (updateViewers || updateExpressionGraphViewOnly)
+            updateViewers(updateExpressionGraphViewOnly, notUpdateTitleBar);
         updateGraphStatistics();
         updateFrameStatusLabel();
 
@@ -1397,7 +1397,7 @@ public final class SelectionManager
         removeNodeFromSelected(node, true, false, false);
     }
 
-    public void removeNodeFromSelected(GraphNode node, boolean updateViewers, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    public void removeNodeFromSelected(GraphNode node, boolean updateViewers, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
         selectedNodes.remove(node);
 
@@ -1406,13 +1406,13 @@ public final class SelectionManager
                 selectedEdges.remove(graphEdge);
 
         setActionsEnable( !selectedNodes.isEmpty() );
-        if (updateViewers || updateExpresionGraphViewOnly)
-            updateViewers(updateExpresionGraphViewOnly, notUpdateTitleBar);
+        if (updateViewers || updateExpressionGraphViewOnly)
+            updateViewers(updateExpressionGraphViewOnly, notUpdateTitleBar);
         updateGraphStatistics();
         updateFrameStatusLabel();
     }
 
-    public void removeNodeFromSelected(Collection<GraphNode> nodes, boolean updateViewers, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    public void removeNodeFromSelected(Collection<GraphNode> nodes, boolean updateViewers, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
         selectedNodes.removeAll(nodes);
 
@@ -1422,8 +1422,8 @@ public final class SelectionManager
                     selectedEdges.remove(graphEdge);
 
         setActionsEnable( !selectedNodes.isEmpty() );
-        if (updateViewers || updateExpresionGraphViewOnly)
-            updateViewers(updateExpresionGraphViewOnly, notUpdateTitleBar);
+        if (updateViewers || updateExpressionGraphViewOnly)
+            updateViewers(updateExpressionGraphViewOnly, notUpdateTitleBar);
         updateGraphStatistics();
         updateFrameStatusLabel();
     }
@@ -1433,13 +1433,13 @@ public final class SelectionManager
         updateViewers(false, false);
     }
 
-    private void updateViewers(boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    private void updateViewers(boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
         if ( layoutFrame.getExpressionViewerFrame() != null && layoutFrame.getExpressionViewerFrame().isVisible() )
             layoutFrame.getExpressionViewerFrame().refreshExpressionViewer();
 
         if ( layoutFrame.getClassViewerFrame().isVisible() )
-            layoutFrame.getClassViewerFrame().populateClassViewer(updateExpresionGraphViewOnly, notUpdateTitleBar);
+            layoutFrame.getClassViewerFrame().populateClassViewer(updateExpressionGraphViewOnly, notUpdateTitleBar);
     }
 
     private void updateGraphStatistics()

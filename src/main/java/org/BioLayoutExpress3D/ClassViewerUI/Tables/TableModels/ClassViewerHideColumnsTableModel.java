@@ -82,7 +82,7 @@ public final class ClassViewerHideColumnsTableModel extends AbstractTableModel
         classViewerFrame.populateClassViewer(data);
     }
 
-    public void updateClassViewerHideColumnsTable(ClassViewerFrame classViewerFrame, boolean enableHideColumnsAndExportButtons, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    public void updateClassViewerHideColumnsTable(ClassViewerFrame classViewerFrame, boolean enableHideColumnsAndExportButtons, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
         if (enableHideColumnsAndExportButtons)
         {
@@ -109,7 +109,7 @@ public final class ClassViewerHideColumnsTableModel extends AbstractTableModel
                     data[i][1] = prevAllColumnBooleanValues[i];
                 }
 
-                classViewerFrame.populateClassViewer(data, updateExpresionGraphViewOnly, notUpdateTitleBar);
+                classViewerFrame.populateClassViewer(data, updateExpressionGraphViewOnly, notUpdateTitleBar);
             }
         }
         else

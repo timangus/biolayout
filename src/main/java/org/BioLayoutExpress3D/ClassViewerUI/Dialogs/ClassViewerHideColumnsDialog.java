@@ -126,12 +126,12 @@ public final class ClassViewerHideColumnsDialog extends JDialog
         setVisible(false);
     }
 
-    public void updateClassViewerHideColumnsTable(ClassViewerFrame classViewerFrame, boolean enableHideColumnsAndExportButtons, boolean updateExpresionGraphViewOnly, boolean notUpdateTitleBar)
+    public void updateClassViewerHideColumnsTable(ClassViewerFrame classViewerFrame, boolean enableHideColumnsAndExportButtons, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
     {
         resetSelectDeselectAllButton();
 
         this.enableHideColumnsAndExportButtons = enableHideColumnsAndExportButtons;
-        hideColumnsTableModel.updateClassViewerHideColumnsTable(classViewerFrame, enableHideColumnsAndExportButtons, updateExpresionGraphViewOnly, notUpdateTitleBar);
+        hideColumnsTableModel.updateClassViewerHideColumnsTable(classViewerFrame, enableHideColumnsAndExportButtons, updateExpressionGraphViewOnly, notUpdateTitleBar);
     }
 
 
