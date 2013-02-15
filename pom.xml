@@ -470,6 +470,10 @@
                                     <value>${maven.build.timestamp}</value>
                                 </replacement>
                                 <replacement>
+                                    <token>@buildTag@</token>
+                                    <value>${build.tag}</value>
+                                </replacement>
+                                <replacement>
                                     <token>@debug@</token>
                                     <value>${debug.build}</value>
                                 </replacement>

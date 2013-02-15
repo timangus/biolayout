@@ -30,7 +30,8 @@ public final class GlobalEnvironment
     public static final String TITLE_VERSION = " Version ";
     public static final String TITLE_VERSION_NUMBER = BuildConfig.VERSION;
     public static final boolean DEBUG_BUILD = BuildConfig.DEBUG;
-    public static final String VERSION = TITLE + TITLE_VERSION + TITLE_VERSION_NUMBER + ( (DEBUG_BUILD) ? " (debug " + BuildConfig.BUILD_TIME + ")" : "" );
+    public static final String VERSION = TITLE + TITLE_VERSION + TITLE_VERSION_NUMBER +
+            (!BuildConfig.BUILD_TAG.isEmpty() ? "-" + BuildConfig.BUILD_TAG : "");
     public static final String BIOLAYOUT_EXPRESS_3D_DOMAIN_URL = BuildConfig.URL;
     public static final String BIOLAYOUT_SERVER_DATASETS_DIRECTORY = "/datasets/";
     public static final String BIOLAYOUT_DATASETS_CONTROL_FILE = "ListOfDataSets.ctr";
