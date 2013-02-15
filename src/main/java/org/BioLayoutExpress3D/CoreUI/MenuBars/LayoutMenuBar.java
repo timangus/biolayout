@@ -443,6 +443,11 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         editSelectAll.setMnemonic(KeyEvent.VK_D);
     }
 
+    public void setViewMenuToggle2D3DAction(AbstractAction toggle2D3DAction)
+    {
+        JMenuItem viewHideSelection = viewMenu.add(toggle2D3DAction);
+    }
+
     public void setViewMenuHideSelectionAction(AbstractAction hideSelectionAction)
     {
         JMenuItem viewHideSelection = viewMenu.add(hideSelectionAction);

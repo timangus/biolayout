@@ -525,7 +525,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
         };
 
-        _2D3DSwitchAction = new AbstractAction("2D & 3D Switch")
+        _2D3DSwitchAction = new AbstractAction("Toggle 2D/3D")
         {
             /**
             *  Serial version UID variable for the AbstractAction class.
@@ -664,6 +664,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setEditSubMenuReverseSelectionAction( graph.getSelectionManager().getReverseSelectionAction() );
         layoutMenuBar.setEditSubMenuDeselectAllAction( graph.getSelectionManager().getDeselectAllAction() );
 
+        layoutMenuBar.setViewMenuToggle2D3DAction(_2D3DSwitchAction);
         layoutMenuBar.setViewMenuHideSelectionAction( graph.getSelectionManager().getHideSelectionAction() );
         layoutMenuBar.setViewMenuHideUnselectedAction( graph.getSelectionManager().getHideUnselectedAction() );
         layoutMenuBar.setViewMenuUnhideAllNodesAction( graph.getSelectionManager().getUnhideAllAction() );
