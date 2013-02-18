@@ -26,6 +26,11 @@ public class GraphmlComponentContainer implements Comparable<GraphmlComponentCon
     private static final float DEFAULT_COMPONENT_CONTAINER_ALPHA = 0.2f;
 
     /**
+    *  GraphmlComponentContainer id.
+    */
+    public String id = "";
+
+    /**
     *  GraphmlComponentContainer name.
     */
     public String name = "";
@@ -53,24 +58,25 @@ public class GraphmlComponentContainer implements Comparable<GraphmlComponentCon
     /**
     *  First GraphmlComponentContainer constructor.
     */
-    public GraphmlComponentContainer(String name, Rectangle2D.Float rectangle2D, Color color)
+    public GraphmlComponentContainer(String id, String name, Rectangle2D.Float rectangle2D, Color color)
     {
-        this(name, DEFAULT_COMPONENT_CONTAINER_DEPTH, DEFAULT_COMPONENT_CONTAINER_ALPHA, rectangle2D, color);
+        this(id, name, DEFAULT_COMPONENT_CONTAINER_DEPTH, DEFAULT_COMPONENT_CONTAINER_ALPHA, rectangle2D, color);
     }
 
     /**
     *  Second GraphmlComponentContainer constructor.
     */
-    public GraphmlComponentContainer(String name, int depth, Rectangle2D.Float rectangle2D, Color color)
+    public GraphmlComponentContainer(String id, String name, int depth, Rectangle2D.Float rectangle2D, Color color)
     {
-        this(name, depth, DEFAULT_COMPONENT_CONTAINER_ALPHA, rectangle2D, color);
+        this(id, name, depth, DEFAULT_COMPONENT_CONTAINER_ALPHA, rectangle2D, color);
     }
 
     /**
     *  Third GraphmlComponentContainer constructor.
     */
-    public GraphmlComponentContainer(String name, int depth, float alpha, Rectangle2D.Float rectangle2D, Color color)
+    public GraphmlComponentContainer(String id, String name, int depth, float alpha, Rectangle2D.Float rectangle2D, Color color)
     {
+        this.id = id;
         this.name = name;
         this.depth = depth;
         this.alpha = alpha;

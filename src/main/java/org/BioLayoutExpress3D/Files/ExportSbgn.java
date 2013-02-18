@@ -725,13 +725,14 @@ public final class ExportSbgn
         return false;
     }
 
-    private Glyph translateNodeToSbgnGlyph(GraphNode graphNode, String id)
+    private Glyph translateNodeToSbgnGlyph(GraphNode graphNode)
     {
         float x, y;
+        String id = graphNode.getNodeName();
 
         if (nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get())
         {
-            float[] graphmlCoord = gnc.getAllGraphmlNodesMap().get(graphNode.getNodeName()).first;
+            float[] graphmlCoord = gnc.getAllGraphmlNodesMap().get(id).first;
             x = graphmlCoord[2] * SCALE;
             y = graphmlCoord[3] * SCALE;
         }
@@ -1713,10 +1714,16 @@ public final class ExportSbgn
         }
     }
 
-    private Arc translateEdgeToSbgnArc(GraphEdge graphEdge, String id, Glyph source, Glyph target)
+    private Arc translateEdgeToSbgnArc(GraphEdge graphEdge, Glyph source, Glyph target)
     {
+
         GraphNode startNode = graphEdge.getNodeFirst();
         GraphNode endNode = graphEdge.getNodeSecond();
+        Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]> edgeData =
+                gnc.getAllGraphmlEdgesMap().get(startNode.getNodeName() + " " +
+                endNode.getNodeName());
+        String id = edgeData.first;
+
         float startX, startY;
         float endX, endY;
 
@@ -1755,10 +1762,6 @@ public final class ExportSbgn
         start.setY(startY);
         arc.setStart(start);
 
-        Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]>
-                    edgeData = gnc.getAllGraphmlEdgesMap().get(startNode.getNodeName() + " " +
-                    endNode.getNodeName());
-
         ArrayList<Point2D.Float> intermediatePoints = edgeData.second.second;
         String[] arrowHeads = edgeData.fourth;
 
@@ -1787,7 +1790,7 @@ public final class ExportSbgn
         return arc;
     }
 
-    private Glyph translateContainerToSbgnGlyph(GraphmlComponentContainer componentContainer, int id)
+    private Glyph translateContainerToSbgnGlyph(GraphmlComponentContainer componentContainer, int order)
     {
         float x = componentContainer.rectangle2D.x * SCALE;
         float y = componentContainer.rectangle2D.y * SCALE;
@@ -1795,12 +1798,12 @@ public final class ExportSbgn
         float height = componentContainer.rectangle2D.height * SCALE;
 
         Glyph glyph = new Glyph();
-        glyph.setId("compartment" + Integer.toString(id));
+        glyph.setId(componentContainer.id);
 
         // We could probably be cleverer about this in that some compartments
         // will share a depth and arguably should have the same compartment order
         // This is nevertheless correct though
-        glyph.setCompartmentOrder((float)id);
+        glyph.setCompartmentOrder((float)order);
 
         String mepnLabel = componentContainer.name;
         Color mepnBackColor = componentContainer.color;
@@ -1840,20 +1843,19 @@ public final class ExportSbgn
 
         if (nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get())
         {
-            int containerId = 1;
+            int containerOrder = 1;
             for (GraphmlComponentContainer componentContainer : gnc.getAllPathwayComponentContainersFor2D())
             {
-                Glyph glyph = translateContainerToSbgnGlyph(componentContainer, containerId);
+                Glyph glyph = translateContainerToSbgnGlyph(componentContainer, containerOrder);
 
                 map.getGlyph().add(glyph);
-                containerId++;
+                containerOrder++;
             }
         }
 
         for (GraphNode graphNode : in.getGraphNodes())
         {
-            String id = "glyph" + Integer.toString(graphNode.getNodeID());
-            Glyph glyph = translateNodeToSbgnGlyph(graphNode, id);
+            Glyph glyph = translateNodeToSbgnGlyph(graphNode);
 
             map.getGlyph().add(glyph);
             sbgnGlyphs.put(graphNode.getNodeID(), glyph);
@@ -1884,10 +1886,9 @@ public final class ExportSbgn
 
         for (GraphEdge graphEdge : sortedGraphEdges)
         {
-            String id = "a" + Integer.toString(edgeId++);
             Glyph source = sbgnGlyphs.get(graphEdge.getNodeFirst().getNodeID());
             Glyph target = sbgnGlyphs.get(graphEdge.getNodeSecond().getNodeID());
-            Arc arc = translateEdgeToSbgnArc(graphEdge, id, source, target);
+            Arc arc = translateEdgeToSbgnArc(graphEdge, source, target);
 
             map.getArc().add(arc);
         }

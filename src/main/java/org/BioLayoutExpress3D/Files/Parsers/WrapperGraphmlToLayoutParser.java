@@ -637,11 +637,11 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                     nodeColor = (nodeColorString != null) ? Color.decode(nodeColorString) : DEFAULT_NODE_COLOR;
 
                     if (nodeLabelNameElements.length == 1)
-                        allPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(nodeLabelNameElements[0], rectangle2D, nodeColor) );
+                        allPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(nodeName, nodeLabelNameElements[0], rectangle2D, nodeColor) );
                     else if (nodeLabelNameElements.length == 2)
-                        allPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(nodeLabelNameElements[0], Integer.parseInt(nodeLabelNameElements[1]), rectangle2D, nodeColor) );
+                        allPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(nodeName, nodeLabelNameElements[0], Integer.parseInt(nodeLabelNameElements[1]), rectangle2D, nodeColor) );
                     else if (nodeLabelNameElements.length == 3)
-                        allPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(nodeLabelNameElements[0], Integer.parseInt(nodeLabelNameElements[1]), Float.parseFloat(nodeLabelNameElements[2]), rectangle2D, nodeColor) );
+                        allPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(nodeName, nodeLabelNameElements[0], Integer.parseInt(nodeLabelNameElements[1]), Float.parseFloat(nodeLabelNameElements[2]), rectangle2D, nodeColor) );
                 }
             }
 

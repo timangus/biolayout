@@ -476,7 +476,7 @@ public class CoreParser
             field6 = getNext();
             field7 = getNext();
 
-            alGraphmllPathwayComponentContainersFor3D.add( new GraphmlComponentContainer(vertex,
+            alGraphmllPathwayComponentContainersFor3D.add( new GraphmlComponentContainer("", vertex,
                                                                                   Integer.parseInt(field1),
                                                                                   Float.parseFloat(field2),
                                                                                   new Rectangle2D.Float( Float.parseFloat(field3), Float.parseFloat(field4), Float.parseFloat(field5), Float.parseFloat(field6) ),
