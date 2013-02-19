@@ -436,7 +436,7 @@ public final class GlobalEnvironment
     public static final PrefBool PLOT_SELECTION_MEAN = new PrefBool(false, "plot_selection_mean", true);
     public static final PrefBool PLOT_RESCALE = new PrefBool(true, "plot_rescale", true);
     public static final PrefBool PLOT_AXES_LEGEND = new PrefBool(false, "plot_axes", true);
-    public static final PrefInt PLOT_TRANSFORM = new PrefInt(0, "plot_linear_transform", true);
+    public static final PrefInt PLOT_TRANSFORM = new PrefInt(0, "plot_transform", true);
 
     public static final boolean SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS = true;
     public static final PrefString CUSTOMIZE_NODE_NAMES_DELIMITER = new PrefString("", "customize_node_names_delimiter", SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS);
