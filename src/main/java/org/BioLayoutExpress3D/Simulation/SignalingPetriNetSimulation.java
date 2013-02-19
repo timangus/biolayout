@@ -62,6 +62,8 @@ public class SignalingPetriNetSimulation
     private int[][] allArraysLengths = null;
 
     private long timeTaken = 0;
+
+    // [thread][step][place]
     private float[][][] results = null;
 
     // variables needed for N-CP
