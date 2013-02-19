@@ -926,8 +926,16 @@ public final class ExpressionData
         float[] out = new float[totalColumns];
 
         float mean = sumX_cacheArray[row] / totalColumns;
-        float variance = sumX2_cacheArray[row] / totalColumns;
-        float stddev = (float) sqrt(variance);
+
+        float variance = 0.0f;
+        for (int column = 0; column < totalColumns; column++)
+        {
+            float x = getExpressionDataValue(row, column);
+            variance += ((x - mean) * (x - mean));
+        }
+        variance = variance / totalColumns;
+
+        float stddev = (float)sqrt(variance);
         float pareto = (float)sqrt(stddev);
 
         for (int column = 0; column < totalColumns; column++)
@@ -949,7 +957,7 @@ public final class ExpressionData
                     break;
 
                 case UNIT_VARIANCE_SCALED:
-                    value = (value - mean) / stddev;;
+                    value = (value - mean) / stddev;
                     break;
 
                 case PARETO_SCALED:
