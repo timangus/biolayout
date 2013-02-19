@@ -50,10 +50,10 @@ public final class AnimationVisualization
         if ( isExpressionProfileAnimationMode && ANIMATION_PER_NODE_MAX_VALUE.get() )
             ANIMATION_RESULTS_REAL_MAX_VALUE = ANIMATION_RESULTS_MAX_VALUE = ANIMATION_EXPRESSION_DATA_LOCAL_MAX_VALUES[nodeID];
         int index = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getIdentityMap(nodeName) : 0;
-        nodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS[currentTick][nodeID];
+        nodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick);
         processNextNodeValue = ( ANIMATION_FLUID_LINEAR_TRANSITION && ( (currentTick + 1) < TOTAL_NUMBER_OF_ANIMATION_TICKS ) );
         if (processNextNodeValue)
-            nextNodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS[currentTick + 1][nodeID];
+            nextNodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick + 1);
         nodeScaleValue = (is3DMode)
                          ? (1.0f)
                          : (1.0f / NODE_SIZE_DIVIDE_RATIO);
@@ -143,10 +143,10 @@ public final class AnimationVisualization
         boolean processNextNodeValue = false;
 
         int index = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getIdentityMap(nodeName) : 0;
-        nodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS[currentTick][nodeID];
+        nodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick);
         processNextNodeValue = ( ANIMATION_FLUID_LINEAR_TRANSITION && ( (currentTick + 1) < TOTAL_NUMBER_OF_ANIMATION_TICKS ) );
         if (processNextNodeValue)
-            nextNodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS[currentTick + 1][nodeID];
+            nextNodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick + 1);
 
         if (processNextNodeValue)
         {

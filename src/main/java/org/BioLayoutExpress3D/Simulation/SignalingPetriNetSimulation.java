@@ -63,8 +63,158 @@ public class SignalingPetriNetSimulation
 
     private long timeTaken = 0;
 
-    // [thread][step][place]
-    private float[][][] results = null;
+    public class SpnResult
+    {
+        private float data[];
+        int numPlaces;
+        int numTimeBlocks;
+
+        public SpnResult(int numPlaces, int numTimeBlocks)
+        {
+            this.numPlaces = numPlaces;
+            this.numTimeBlocks = numTimeBlocks;
+
+            data = new float[numPlaces * numTimeBlocks * 4];
+        }
+
+        public float getValue(int placeIndex, int timeBlock)
+        {
+            return data[timeBlock + (placeIndex * numTimeBlocks) + 0];
+        }
+
+        public float getStddev(int placeIndex, int timeBlock)
+        {
+            return data[timeBlock + (placeIndex * numTimeBlocks) + 1];
+        }
+
+        public float getVariance(int placeIndex, int timeBlock)
+        {
+            return data[timeBlock + (placeIndex * numTimeBlocks) + 2];
+        }
+
+        public float getStderr(int placeIndex, int timeBlock)
+        {
+            return data[timeBlock + (placeIndex * numTimeBlocks) + 3];
+        }
+
+        public void setValue(int placeIndex, int timeBlock, float value)
+        {
+            data[timeBlock + (placeIndex * numTimeBlocks) + 0] = value;
+        }
+
+        public void setStddev(int placeIndex, int timeBlock, float value)
+        {
+            data[timeBlock + (placeIndex * numTimeBlocks) + 1] = value;
+        }
+
+        public void setVariance(int placeIndex, int timeBlock, float value)
+        {
+            data[timeBlock + (placeIndex * numTimeBlocks) + 2] = value;
+        }
+
+        public void setStderr(int placeIndex, int timeBlock, float value)
+        {
+            data[timeBlock + (placeIndex * numTimeBlocks) + 3] = value;
+        }
+
+        public void clear()
+        {
+            for (int placeIndex = 0; placeIndex < numPlaces; placeIndex++)
+            {
+                for (int timeBlock = 0; timeBlock < numTimeBlocks; timeBlock++)
+                {
+                    setValue(placeIndex, timeBlock, 0.0f);
+                    setVariance(placeIndex, timeBlock, 0.0f);
+                    setStddev(placeIndex, timeBlock, 0.0f);
+                    setStderr(placeIndex, timeBlock, 0.0f);
+                }
+            }
+        }
+
+        public int size()
+        {
+            return numTimeBlocks;
+        }
+    }
+
+    private class SpnResultRuns
+    {
+        private int numTimeBlocks;
+        private int numPlaces;
+        private int numRuns;
+        private SpnResult[] runs;
+
+        public SpnResultRuns(int numTimeBlocks, int numPlaces, int numRuns)
+        {
+            this.numTimeBlocks = numTimeBlocks;
+            this.numPlaces = numPlaces;
+            this.numRuns = numRuns;
+
+            runs = new SpnResult[numRuns];
+            for (int i = 0; i < numRuns; i++)
+            {
+                runs[i] = new SpnResult(numPlaces, numTimeBlocks);
+            }
+        }
+
+        public void clear()
+        {
+            for (SpnResult run : runs)
+            {
+                run.clear();
+            }
+        }
+
+        public SpnResult consolidateRuns()
+        {
+            SpnResult out = new SpnResult(numPlaces, numTimeBlocks);
+
+            layoutProgressBarDialog.prepareProgressBar(numPlaces, "Consolidating results...");
+            layoutProgressBarDialog.startProgressBar();
+
+            for (int placeIndex = 0; placeIndex < numPlaces; placeIndex++)
+            {
+                for (int timeBlock = 0; timeBlock < numTimeBlocks; timeBlock++)
+                {
+                    float sum = 0.0f;
+                    float sum2 = 0.0f;
+
+                    for (SpnResult run : runs)
+                    {
+                        sum += run.getValue(placeIndex, timeBlock);
+                        sum2 += (sum * sum);
+                    }
+
+                    float mean = sum / runs.length;
+                    float variance = 0.0f;
+                    for (SpnResult run : runs)
+                    {
+                        float x = run.getValue(placeIndex, timeBlock);
+                        variance += ((x - mean) * (x - mean));
+                    }
+                    variance = variance / runs.length;
+
+                    float stddev = (float)java.lang.Math.sqrt(variance);
+                    float stderr = (float)java.lang.Math.sqrt(stddev);
+
+                    out.setValue(placeIndex, timeBlock, mean);
+                    out.setVariance(placeIndex, timeBlock, variance);
+                    out.setStddev(placeIndex, timeBlock, stddev);
+                    out.setStderr(placeIndex, timeBlock, stderr);
+                }
+
+                layoutProgressBarDialog.incrementProgress();
+            }
+
+            layoutProgressBarDialog.endProgressBar();
+
+            return out;
+        }
+    }
+
+    // Array so computation can be spread across threads
+    private SpnResultRuns[] intermediateResults = null;
+    private SpnResult consolidatedResult = null;
 
     // variables needed for N-CP
     private static final int MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION = 2;
@@ -94,7 +244,6 @@ public class SignalingPetriNetSimulation
     public void executeSPNSimulation(int totalTimeBlocks, int totalRuns)
     {
         long prevTime = System.nanoTime();
-        initAllCachedDataStructures(totalTimeBlocks, totalRuns);
         performSPNSimulation(totalTimeBlocks, totalRuns);
         clean(totalRuns);
         timeTaken = System.nanoTime() - prevTime;
@@ -128,9 +277,22 @@ public class SignalingPetriNetSimulation
         totalInhibitorsIDs = new int[numberOfVertices][0];
         partialInhibitorsIDs = new int[numberOfVertices][0];
 
-        results = ( !( USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) || (totalRuns < MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION) )
-                  ? new float[1][totalTimeBlocks][numberOfVertices]
-                  : new float[NUMBER_OF_AVAILABLE_PROCESSORS][totalTimeBlocks][numberOfVertices];
+        int numThreads;
+        if ( !( USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) || (totalRuns < MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION) )
+        {
+            numThreads = 1;
+        }
+        else
+        {
+            numThreads = NUMBER_OF_AVAILABLE_PROCESSORS;
+        }
+
+        intermediateResults = new SpnResultRuns[numThreads];
+        for (int threadId = 0; threadId < intermediateResults.length; threadId++)
+        {
+            println("Creating intermediateResults[" + threadId + "]");
+            intermediateResults[threadId] = new SpnResultRuns(totalTimeBlocks, numberOfVertices, totalRuns);
+        }
 
         ArrayList<Integer> arraylistTransitionIDs = new ArrayList<Integer>();
         Tuple5<int[], int[], float[], int[], int[]> familyTuple5 = null;
@@ -157,12 +319,16 @@ public class SignalingPetriNetSimulation
     private void performSPNSimulation(int totalTimeBlocks, int totalRuns)
     {
         String progressBarParallelismTitle = (USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) ? " (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
-        layoutProgressBarDialog.prepareProgressBar(totalRuns, "Now Processing SPN Simulation For " + totalTimeBlocks + " Time Blocks & " + totalRuns + " Runs" + progressBarParallelismTitle + "...");
+
+        layoutProgressBarDialog.prepareProgressBar(totalRuns, "Allocating resources...");
         layoutProgressBarDialog.startProgressBar();
+        initAllCachedDataStructures(totalTimeBlocks, totalRuns);
+
+        layoutProgressBarDialog.setText("Now Processing SPN Simulation For " + totalTimeBlocks + " Time Blocks & " + totalRuns + " Runs" + progressBarParallelismTitle + "...");
 
         if ( !( USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) || (totalRuns < MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION) )
         {
-            allIterationsSPNSimulation(totalTimeBlocks, totalRuns, totalRuns, transitionIDs, results[0]);
+            allIterationsSPNSimulation(totalTimeBlocks, totalRuns, totalRuns, transitionIDs, intermediateResults[0]);
         }
         else
         {
@@ -174,7 +340,7 @@ public class SignalingPetriNetSimulation
 
             cyclicBarrierTimer.clear();
             for (int threadId = 0; threadId < NUMBER_OF_AVAILABLE_PROCESSORS; threadId++)
-                executor.execute( SPNSimulationProcessKernel(threadId, totalTimeBlocks, totalRuns, totalRunsPerProcess, results[threadId]) );
+                executor.execute( SPNSimulationProcessKernel(threadId, totalTimeBlocks, totalRuns, totalRunsPerProcess, intermediateResults[threadId]) );
 
             try
             {
@@ -195,23 +361,26 @@ public class SignalingPetriNetSimulation
 
             if (DEBUG_BUILD) println("\nTotal SignalingPetriNetSimulation N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
 
-            aggregateResultsFromAllProcesses(results, totalTimeBlocks);
+            aggregateResultsFromAllProcesses(intermediateResults, totalTimeBlocks);
         }
 
         layoutProgressBarDialog.endProgressBar();
+
+        consolidatedResult = intermediateResults[0].consolidateRuns();
+
         layoutProgressBarDialog.stopProgressBar();
 
         if ( SAVE_SPN_RESULTS.get() && AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER.get() && !SAVE_SPN_RESULTS_FILE_NAME.get().isEmpty() )
             SPNSimulationResultsWriteToFile(totalTimeBlocks, totalRuns);
 
         // do it here to ensure the SPN results are being fed to the popup Java2D plot even before the Animation Control dialog is initializing it
-        ANIMATION_SIMULATION_RESULTS = results[0];
+        ANIMATION_SIMULATION_RESULTS = consolidatedResult;
     }
 
     /**
-    *  Performs all iterations of the SPN simulation (wrapper method for selecting between native and Java versions of the SPN simulation).
+    *  Performs all iterations of the SPN simulation.
     */
-    private void allIterationsSPNSimulation(int totalTimeBlocks, int totalRuns, int runs, int[] transitionIDs, float[][] results)
+    private void allIterationsSPNSimulation(int totalTimeBlocks, int totalRuns, int runs, int[] transitionIDs, SpnResultRuns result)
     {
         float[] places = new float[numberOfVertices];
         int placesIndex = 0;
@@ -220,15 +389,21 @@ public class SignalingPetriNetSimulation
         {
             placesIndex = numberOfVertices;
             while (--placesIndex >= 0)
+            {
                 places[placesIndex] = 0.0f;
-
-            addResult(results, places, 1.0f, 0); // initialize first block
+                result.runs[run].setValue(placesIndex, 0, 0.0f);
+            }
 
             for (int timeBlock = 1; timeBlock < totalTimeBlocks; timeBlock++) // start from 1
             {
                 shuffleTransitions(transitionIDs);
                 activateAllTransitions(transitionIDs, places, timeBlock);
-                addResult(results, places, (float)totalRuns, timeBlock);
+
+                placesIndex = numberOfVertices;
+                while (--placesIndex >= 0)
+                {
+                    result.runs[run].setValue(placesIndex, timeBlock, places[placesIndex]);
+                }
             }
 
             updateGUI();
@@ -239,7 +414,7 @@ public class SignalingPetriNetSimulation
     *   Return a light-weight runnable using the Adapter technique for the SPN simulation so as to avoid any load latencies.
     *   The coding style simulates an OpenCL/CUDA kernel.
     */
-    private Runnable SPNSimulationProcessKernel(final int threadId, final int totalTimeBlocks, final int totalRuns, final int totalRunsPerProcess, final float[][] processResults)
+    private Runnable SPNSimulationProcessKernel(final int threadId, final int totalTimeBlocks, final int totalRuns, final int totalRunsPerProcess, final SpnResultRuns processResult)
     {
         return new Runnable()
         {
@@ -257,7 +432,7 @@ public class SignalingPetriNetSimulation
 
                         // last run process will add remainder runs
                         int runs = ( threadId == (NUMBER_OF_AVAILABLE_PROCESSORS - 1) ) ? totalRunsPerProcess + (totalRuns % NUMBER_OF_AVAILABLE_PROCESSORS) : totalRunsPerProcess;
-                        allIterationsSPNSimulation(totalTimeBlocks, totalRuns, runs, transitionIDsForThread, processResults);
+                        allIterationsSPNSimulation(totalTimeBlocks, totalRuns, runs, transitionIDsForThread, processResult);
                     }
                     finally
                     {
@@ -275,28 +450,17 @@ public class SignalingPetriNetSimulation
                     if (DEBUG_BUILD) println("Problem with pausing the N-Core thread with threadId " + threadId + " in SPNSimulationProcessKernel()!:\n" + ex.getMessage());
                 }
             }
-
-
         };
     }
 
     /**
-    *  Aggregates results from all processes to the first dimention (threadId) of the results float[][][] array.
+    *  Aggregates results from all processes to the first dimension (threadId) of the results float[][][] array.
     */
-    private void aggregateResultsFromAllProcesses(float[][][] results, int totalTimeBlocks)
+    private void aggregateResultsFromAllProcesses(SpnResultRuns[] results, int totalTimeBlocks)
     {
-        int z = NUMBER_OF_AVAILABLE_PROCESSORS;
-        int y = 0;
-        int x = 0;
-        while (--z >= 1) // does not need to add to the first threadId as all results are aggregated to the first one
+        for (int threadId = 1; threadId < NUMBER_OF_AVAILABLE_PROCESSORS; threadId++)
         {
-            y = totalTimeBlocks;
-            while (--y >= 0)
-            {
-                x = numberOfVertices;
-                while (--x >= 0)
-                    results[0][y][x] += results[z][y][x];
-            }
+            results[0].runs = Utils.mergeArrays(results[0].runs, results[threadId].runs);
         }
     }
 
@@ -462,16 +626,6 @@ public class SignalingPetriNetSimulation
     }
 
     /**
-    *  Adds the given result.
-    */
-    private void addResult(float[][] results, float[] places, float totalRuns, int step)
-    {
-        int i = numberOfVertices;
-        while (--i >= 0)
-            results[step][i] += (places[i] / totalRuns);
-    }
-
-    /**
     *  Updates the GUI for the SPN simulation iterations.
     */
     private void updateGUI()
@@ -616,7 +770,7 @@ public class SignalingPetriNetSimulation
         {
             int z = NUMBER_OF_AVAILABLE_PROCESSORS;
             while (--z >= 1) // does not need to add to the first threadId as all results are aggregated to the first one
-                results[z] = null;
+                intermediateResults[z].clear();
         }
 
         System.gc();
@@ -663,7 +817,7 @@ public class SignalingPetriNetSimulation
                                                                                          "\"\t\"" + SAVE_DETAILS_DATA_COLUMN_NAME_TIMEBLOCKS + totalTimeBlocks +
                                                                                          "\"\t\"" + SAVE_DETAILS_DATA_COLUMN_NAME_RUNS +       totalRuns + "\"\n");
                 fileWriter.write("Node ID\tGraphml Node Key\tNode Name\t");
-                for (int i = 1; i <= results[0].length; i++) // for every timeblock
+                for (int i = 1; i <= totalTimeBlocks; i++) // for every timeblock
                     fileWriter.write("TimeBlock: " + i + "\t"); // write the timeblock ID
                 fileWriter.write("\n");
 
@@ -672,8 +826,11 @@ public class SignalingPetriNetSimulation
                     if ( !vertex.ismEPNTransition() )
                     {
                         fileWriter.write(vertex.getVertexID() + "\t" + vertex.getVertexName() + "\t" + nc.getNodeName( vertex.getVertexName() ).replace(" ", "").replace("\n", "_") + "\t"); // write the node's id & name
-                        for (int i = 0; i < results[0].length; i++) // for every timeblock
-                            fileWriter.write(results[0][i][vertex.getVertexID()] + "\t"); // write the node's value at this timeblock
+                        for (int i = 0; i < totalTimeBlocks; i++) // for every timeblock
+                        {
+                            fileWriter.write(consolidatedResult.getValue(vertex.getVertexID(), i) + "\t"); // write the node's value at this timeblock
+                            //FIXME stddev column
+                        }
                         fileWriter.write("\n");
                     }
 
@@ -723,34 +880,9 @@ public class SignalingPetriNetSimulation
     /**
     *  Gets all the SPN simulation results.
     */
-    public float[][] getSPNSimulationResults()
+    public SpnResult getSPNSimulationResults()
     {
-        return results[0];
-    }
-
-    /**
-    *  Gets and clones all the SPN simulation results.
-    */
-    public float[][] getSPNSimulationClonedResults()
-    {
-        float[][] resultsCloned = new float[results[0].length][results[0][0].length];
-        int x = results[0].length;
-        while (--x >= 0)
-        {
-            /*
-            int y = results[0][0].length;
-            while(--y >= 0)
-            {
-                resultsCloned[x][y] = results[0][x][y];
-            }
-            */
-
-            // for optimizing the array copy
-            // resultsCloned[x] = Arrays.copyOf(results[0][x], results[0][x].length);
-            System.arraycopy(results[0][x], 0, resultsCloned[x], 0, results[0][x].length); // fastest way, native method!
-        }
-
-        return resultsCloned;
+        return consolidatedResult;
     }
 
     /**
@@ -759,14 +891,14 @@ public class SignalingPetriNetSimulation
     public float findMaxValueFromResultsArray()
     {
         float number = 0.0f;
-        float maxValue = results[0][0][0];
+        float maxValue = consolidatedResult.getValue(0, 0);
         for ( Vertex vertex: nc.getVertices() )
         {
             if ( !vertex.ismEPNTransition() )
             {
-                for (int i = 0; i < results[0].length; i++) // for every timeblock
+                for (int i = 0; i < consolidatedResult.size(); i++) // for every timeblock
                 {
-                    number = results[0][i][vertex.getVertexID()];
+                    number = consolidatedResult.getValue(vertex.getVertexID(), i);
                     if (maxValue < number)
                         maxValue = number; // Max case
                 }
@@ -781,7 +913,7 @@ public class SignalingPetriNetSimulation
     */
     public void initializeResultsArray(int numberOfVertices, int totalTimeBlocks)
     {
-        results = new float[1][totalTimeBlocks][numberOfVertices];
+        consolidatedResult = new SpnResult(numberOfVertices, totalTimeBlocks);
     }
 
     /**
@@ -789,8 +921,7 @@ public class SignalingPetriNetSimulation
     */
     public void addResultToResultsArray(int nodeID, int timeBlock, float result)
     {
-        results[0][timeBlock][nodeID] = result;
+        consolidatedResult.setValue(nodeID, timeBlock, result);
+        consolidatedResult.setStddev(nodeID, timeBlock, 0.0f); //FIXME
     }
-
-
 }

@@ -452,12 +452,12 @@ public final class GraphPopupComponent implements Runnable
             g2d.setColor(DESCRIPTIONS_COLOR);
             g2d.drawRect( PAD_X, 0, plotRectangleWidth, (int)(height - padY) );
 
-            double value = ANIMATION_SIMULATION_RESULTS[0][nodeID];
+            double value = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, 0);
             double max = value;
             double min = value;
             for (int i = 1; i < totalTimeBlocks; i++)
             {
-                value = ANIMATION_SIMULATION_RESULTS[i][nodeID];
+                value = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i);
 
                if (value > max)
                    max = value;
@@ -480,8 +480,8 @@ public final class GraphPopupComponent implements Runnable
             {
                 currentX = (i * columnWidth) + PAD_X;
                 nextX = ( (i + 1) * columnWidth ) + PAD_X;
-                thisY = ANIMATION_SIMULATION_RESULTS[i][nodeID] - min;
-                nextY = ANIMATION_SIMULATION_RESULTS[i + 1][nodeID] - min;
+                thisY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i) - min;
+                nextY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i + 1) - min;
 
                 thisY *= yScale;
                 nextY *= yScale;

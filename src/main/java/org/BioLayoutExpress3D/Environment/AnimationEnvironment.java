@@ -5,6 +5,7 @@ import org.BioLayoutExpress3D.Environment.Preferences.*;
 import org.BioLayoutExpress3D.Expression.*;
 import org.BioLayoutExpress3D.Textures.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import org.BioLayoutExpress3D.Simulation.SignalingPetriNetSimulation;
 
 /**
 *
@@ -56,7 +57,7 @@ public class AnimationEnvironment
     /**
     *  Constant value needed for the animation.
     */
-    public static float[][] ANIMATION_SIMULATION_RESULTS = null;
+    public static SignalingPetriNetSimulation.SpnResult ANIMATION_SIMULATION_RESULTS = null;
 
     /**
     *  Constant value needed for the animation.

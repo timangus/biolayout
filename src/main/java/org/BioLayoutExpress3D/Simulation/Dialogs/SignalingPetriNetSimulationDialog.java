@@ -348,7 +348,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
     /**
     *  Gets the simulation cloned results.
     */
-    public float[][] getSPNSimulationResults()
+    public SignalingPetriNetSimulation.SpnResult getSPNSimulationResults()
     {
         return SPNSimulation.getSPNSimulationResults();
     }
