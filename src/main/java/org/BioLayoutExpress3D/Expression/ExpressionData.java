@@ -1020,9 +1020,6 @@ public final class ExpressionData
             int percent = (100 * row) / totalRows;
             layoutProgressBarDialog.incrementProgress(percent);
         }
-
-        layoutProgressBarDialog.setText("Summing");
-        sumRows();
     }
 
     private void filter(float filterValue)
@@ -1064,6 +1061,9 @@ public final class ExpressionData
                 rescale(layoutProgressBarDialog, new RescaleAntiLog10());
                 break;
         }
+
+        layoutProgressBarDialog.setText("Summing");
+        sumRows();
 
         layoutProgressBarDialog.endProgressBar();
 
