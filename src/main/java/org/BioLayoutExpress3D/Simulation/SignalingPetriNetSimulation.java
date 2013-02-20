@@ -161,6 +161,7 @@ public class SignalingPetriNetSimulation
             }
         }
 
+        //FIXME: parallelise this
         public SpnResult consolidateRuns()
         {
             SpnResult out = new SpnResult(numPlaces, numTimeBlocks);
