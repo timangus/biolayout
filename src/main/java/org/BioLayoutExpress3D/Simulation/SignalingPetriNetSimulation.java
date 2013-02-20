@@ -65,56 +65,54 @@ public class SignalingPetriNetSimulation
 
     public class SpnResult
     {
+        // A simple array is used for performance reasons
         private float data[];
         int numPlaces;
         int numTimeBlocks;
+        int rowWidth;
+        static final int VALUE          = 0;
+        static final int STDERR         = 1;
+        static final int NUM_DATA_ITEMS = 2;
 
         public SpnResult(int numPlaces, int numTimeBlocks)
         {
             this.numPlaces = numPlaces;
             this.numTimeBlocks = numTimeBlocks;
+            this.rowWidth = numTimeBlocks * NUM_DATA_ITEMS;
 
-            data = new float[numPlaces * numTimeBlocks * 4];
+            if (DEBUG_BUILD)
+            {
+                println("Allocating " + ((numPlaces * rowWidth * 4) >> 10) + " kb");
+            }
+            data = new float[numPlaces * rowWidth];
         }
 
         public float getValue(int placeIndex, int timeBlock)
         {
-            return data[timeBlock + (placeIndex * numTimeBlocks) + 0];
-        }
-
-        public float getStddev(int placeIndex, int timeBlock)
-        {
-            return data[timeBlock + (placeIndex * numTimeBlocks) + 1];
-        }
-
-        public float getVariance(int placeIndex, int timeBlock)
-        {
-            return data[timeBlock + (placeIndex * numTimeBlocks) + 2];
+            int x = (timeBlock * NUM_DATA_ITEMS);
+            int y = placeIndex;
+            return data[(y * rowWidth) + x + VALUE];
         }
 
         public float getStderr(int placeIndex, int timeBlock)
         {
-            return data[timeBlock + (placeIndex * numTimeBlocks) + 3];
+            int x = (timeBlock * NUM_DATA_ITEMS);
+            int y = placeIndex;
+            return data[(y * rowWidth) + x + STDERR];
         }
 
         public void setValue(int placeIndex, int timeBlock, float value)
         {
-            data[timeBlock + (placeIndex * numTimeBlocks) + 0] = value;
-        }
-
-        public void setStddev(int placeIndex, int timeBlock, float value)
-        {
-            data[timeBlock + (placeIndex * numTimeBlocks) + 1] = value;
-        }
-
-        public void setVariance(int placeIndex, int timeBlock, float value)
-        {
-            data[timeBlock + (placeIndex * numTimeBlocks) + 2] = value;
+            int x = (timeBlock * NUM_DATA_ITEMS);
+            int y = placeIndex;
+            data[(y * rowWidth) + x + VALUE] = value;
         }
 
         public void setStderr(int placeIndex, int timeBlock, float value)
         {
-            data[timeBlock + (placeIndex * numTimeBlocks) + 3] = value;
+            int x = (timeBlock * NUM_DATA_ITEMS);
+            int y = placeIndex;
+            data[(y * rowWidth) + x + STDERR] = value;
         }
 
         public void clear()
@@ -124,8 +122,6 @@ public class SignalingPetriNetSimulation
                 for (int timeBlock = 0; timeBlock < numTimeBlocks; timeBlock++)
                 {
                     setValue(placeIndex, timeBlock, 0.0f);
-                    setVariance(placeIndex, timeBlock, 0.0f);
-                    setStddev(placeIndex, timeBlock, 0.0f);
                     setStderr(placeIndex, timeBlock, 0.0f);
                 }
             }
@@ -177,20 +173,18 @@ public class SignalingPetriNetSimulation
                 for (int timeBlock = 0; timeBlock < numTimeBlocks; timeBlock++)
                 {
                     float sum = 0.0f;
-                    float sum2 = 0.0f;
-
-                    for (SpnResult run : runs)
-                    {
-                        sum += run.getValue(placeIndex, timeBlock);
-                        sum2 += (sum * sum);
-                    }
-
-                    float mean = sum / runs.length;
-                    float variance = 0.0f;
                     for (SpnResult run : runs)
                     {
                         float x = run.getValue(placeIndex, timeBlock);
-                        variance += ((x - mean) * (x - mean));
+                        sum += x;
+                    }
+                    float mean = sum / runs.length;
+
+                    float variance = 0.0f;
+                    for (SpnResult run : runs)
+                    {
+                        float xMinusMenu = run.getValue(placeIndex, timeBlock) - mean;
+                        variance += (xMinusMenu * xMinusMenu);
                     }
                     variance = variance / runs.length;
 
@@ -198,8 +192,6 @@ public class SignalingPetriNetSimulation
                     float stderr = (float)java.lang.Math.sqrt(stddev);
 
                     out.setValue(placeIndex, timeBlock, mean);
-                    out.setVariance(placeIndex, timeBlock, variance);
-                    out.setStddev(placeIndex, timeBlock, stddev);
                     out.setStderr(placeIndex, timeBlock, stderr);
                 }
 
@@ -818,7 +810,7 @@ public class SignalingPetriNetSimulation
                                                                                          "\"\t\"" + SAVE_DETAILS_DATA_COLUMN_NAME_RUNS +       totalRuns + "\"\n");
                 fileWriter.write("Node ID\tGraphml Node Key\tNode Name\t");
                 for (int i = 1; i <= totalTimeBlocks; i++) // for every timeblock
-                    fileWriter.write("TimeBlock: " + i + "\t"); // write the timeblock ID
+                    fileWriter.write("TimeBlock: " + i + "\tStd. Error\t"); // write the timeblock ID
                 fileWriter.write("\n");
 
                 for ( Vertex vertex: nc.getVertices() )
@@ -829,7 +821,7 @@ public class SignalingPetriNetSimulation
                         for (int i = 0; i < totalTimeBlocks; i++) // for every timeblock
                         {
                             fileWriter.write(consolidatedResult.getValue(vertex.getVertexID(), i) + "\t"); // write the node's value at this timeblock
-                            //FIXME stddev column
+                            fileWriter.write(consolidatedResult.getStderr(vertex.getVertexID(), i) + "\t");
                         }
                         fileWriter.write("\n");
                     }
@@ -919,9 +911,9 @@ public class SignalingPetriNetSimulation
     /**
     *  Adds a result to the result array.
     */
-    public void addResultToResultsArray(int nodeID, int timeBlock, float result)
+    public void addResultToResultsArray(int nodeID, int timeBlock, float result, float stderr)
     {
         consolidatedResult.setValue(nodeID, timeBlock, result);
-        consolidatedResult.setStddev(nodeID, timeBlock, 0.0f); //FIXME
+        consolidatedResult.setStderr(nodeID, timeBlock, stderr);
     }
 }

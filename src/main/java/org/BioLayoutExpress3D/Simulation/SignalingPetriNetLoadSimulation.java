@@ -253,8 +253,17 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
                 while ( ( line = fileReaderBuffered.readLine() ) != null )
                 {
                     allDetails = line.split("\t");
-                    for (int i = 3; i < allDetails.length; i++) // for every timeblock, which starts at column 3, column one has the nodeID
-                        layoutFrame.getSignalingPetriNetSimulationDialog().addResultToResultsArray( Integer.parseInt(allDetails[0]), i - 3, Float.parseFloat(allDetails[i]) );
+                    for (int i = 3; i < allDetails.length; i += 2)
+                    {
+                        // for every timeblock, which starts at column 3, column one has the nodeID
+                        layoutFrame.getSignalingPetriNetSimulationDialog().addResultToResultsArray(
+                                Integer.parseInt(allDetails[0]),
+                                (i - 3) / 2,
+                                Float.parseFloat(allDetails[i]),
+                                Float.parseFloat(allDetails[i + 1])
+                                );
+                    }
+
                     layoutProgressBarDialog.incrementProgress(++counter);
                 }
 

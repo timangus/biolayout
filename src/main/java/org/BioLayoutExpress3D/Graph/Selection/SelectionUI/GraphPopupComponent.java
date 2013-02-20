@@ -458,35 +458,60 @@ public final class GraphPopupComponent implements Runnable
             for (int i = 1; i < totalTimeBlocks; i++)
             {
                 value = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i);
+                double halfError = ANIMATION_SIMULATION_RESULTS.getStderr(nodeID, i) * 0.5;
 
-               if (value > max)
-                   max = value;
+                if ((value + halfError) > max)
+                {
+                    max = value + halfError;
+                }
 
-               if (value < min)
-                    min = value;
+                if ((value - halfError) < min)
+                {
+                    min = value - halfError;
+                }
             }
 
             double yScale = (height - padY) / (max - min);
 
             Color nodeColor = graphNode.getColor();
-            g2d.setColor(nodeColor);
 
-            double currentX = 0.0;
-            double nextX = 0.0;
-            double thisY = 0.0;
-            double nextY = 0.0;
-            g2d.setStroke(THICK_BASIC_STROKE);
             for (int i = 0; i < totalTimeBlocks - 1; i++)
             {
-                currentX = (i * columnWidth) + PAD_X;
-                nextX = ( (i + 1) * columnWidth ) + PAD_X;
-                thisY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i) - min;
-                nextY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i + 1) - min;
+                double currentX = (i * columnWidth) + PAD_X;
+                double nextX = ( (i + 1) * columnWidth ) + PAD_X;
+                double thisY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i) - min;
+                double nextY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i + 1) - min;
+                double halfThisError = ANIMATION_SIMULATION_RESULTS.getStderr(nodeID, i) * 0.5;
+                double halfNextError = ANIMATION_SIMULATION_RESULTS.getStderr(nodeID, i + 1) * 0.5;
 
                 thisY *= yScale;
                 nextY *= yScale;
+                halfThisError *= yScale;
+                halfNextError *= yScale;
 
-                g2d.drawLine( (int)currentX, (int)(height - padY - thisY), (int)nextX, (int)(height - padY - nextY) );
+                int[] xs =
+                {
+                    (int) currentX, (int) nextX, (int) nextX, (int) currentX
+                };
+                int[] ys =
+                {
+                    (int) (height - padY - thisY + halfThisError),
+                    (int) (height - padY - nextY + halfNextError),
+                    (int) (height - padY - nextY - halfNextError),
+                    (int) (height - padY - thisY - halfThisError)
+                };
+
+                g2d.setColor(new Color(nodeColor.getRed(), nodeColor.getGreen(), nodeColor.getBlue(), 31));
+                g2d.fillPolygon(xs, ys, 4);
+
+                g2d.setStroke(THIN_BASIC_STROKE);
+                g2d.setColor(nodeColor);
+                g2d.drawLine(xs[0], ys[0], xs[1], ys[1]);
+                g2d.drawLine(xs[3], ys[3], xs[2], ys[2]);
+
+                g2d.setColor(nodeColor);
+                g2d.setStroke(THICK_BASIC_STROKE);
+                g2d.drawLine((int) currentX, (int) (height - padY - thisY), (int) nextX, (int) (height - padY - nextY));
             }
 
             if (drawAxesLegend)

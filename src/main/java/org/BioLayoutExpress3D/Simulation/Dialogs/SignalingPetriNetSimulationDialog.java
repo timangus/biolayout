@@ -377,9 +377,9 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
     *  Adds a result to the result array.
     *  To be used from the SignalingPetriNetLoadSimulation class.
     */
-    public void addResultToResultsArray(int nodeID, int timeBlock, float result)
+    public void addResultToResultsArray(int nodeID, int timeBlock, float result, float stderr)
     {
-        SPNSimulation.addResultToResultsArray(nodeID, timeBlock, result);
+        SPNSimulation.addResultToResultsArray(nodeID, timeBlock, result, stderr);
     }
 
     /**
