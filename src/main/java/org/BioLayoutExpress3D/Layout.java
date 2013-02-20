@@ -9,6 +9,7 @@ import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 import org.BioLayoutExpress3D.Environment.DataFolder;
+import org.BioLayoutExpress3D.Utils.ThreadExceptionHandler;
 
 /**
 *
@@ -449,10 +450,10 @@ public final class Layout
             reportMemoryUsage();
         }
 
+        Thread.setDefaultUncaughtExceptionHandler(new ThreadExceptionHandler());
+
         Layout layout = new Layout( ( !fileName.isEmpty() ) ? fileName : "", !dataSets.isEmpty(),
                 repository, dataSets, useDefaultSettings, preferences,
                 hasChosenUseShadersProcessCommandLine, useShadersProcess );
     }
-
-
 }
