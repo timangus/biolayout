@@ -1819,6 +1819,8 @@ final class GraphRenderer3D implements GraphInterface // package access
 
         prevHowManyDisplayListsToCreate = howManyDisplayListsToCreate;
 
+        boolean glBegin = false;
+        boolean glNewList = false;
         int edgeIndex = 0;
         int displayListIndex = 0;
 
@@ -1827,17 +1829,19 @@ final class GraphRenderer3D implements GraphInterface // package access
         {
             if ( (edgeIndex % EDGES_PER_DISPLAY_LIST) == 0 )
             {
-                if (displayListIndex > 0)
+                if (displayListIndex > 0 && glNewList)
                 {
                     gl.glEndList();
                 }
 
                 gl.glNewList(allEdgesDisplayLists.get(displayListIndex), GL_COMPILE);
+                glNewList = true;
 
                 if (displayListIndex == 0 && !useProportionalEdgesSizeToWeightRendering)
                 {
                     gl.glLineWidth(lineWidth);
                     gl.glBegin(GL_LINES); // GL_TRIANGLES
+                    glBegin = true;
                 }
 
                 displayListIndex++;
@@ -1849,6 +1853,7 @@ final class GraphRenderer3D implements GraphInterface // package access
                 lineWidth = ( (lineWidth = ( DEFAULT_EDGE_SIZE.get() * edge.getScaledWeight() ) ) > 0.0f) ? lineWidth : 0.001f;
                 gl.glLineWidth(lineWidth);
                 gl.glBegin(GL_LINES); // GL_TRIANGLES
+                glBegin = true;
             }
 
             node1 = edge.getNodeFirst();
@@ -1905,10 +1910,16 @@ final class GraphRenderer3D implements GraphInterface // package access
                 gl.glVertex3f(point2.x / 100.0f - 5.0f, point2.y / 100.0f - 5.0f, point2.z / 100.0f - 5.0f);
             }
 
-            if (useProportionalEdgesSizeToWeightRendering) gl.glEnd();
+            if (useProportionalEdgesSizeToWeightRendering && glBegin)
+            {
+                gl.glEnd();
+            }
         }
 
-        if (!useProportionalEdgesSizeToWeightRendering) gl.glEnd();
+        if (!useProportionalEdgesSizeToWeightRendering && glBegin)
+        {
+            gl.glEnd();
+        }
 
         // make sure to disable shaders before the 2D rendering of node labels, but also need to disable shaders out of the display lists to avoid horribly slow FPSs!
         // shaderLinesSFXs.disableShaders(gl);
@@ -1988,7 +1999,10 @@ final class GraphRenderer3D implements GraphInterface // package access
             // gl.glEnable(GL_DEPTH_TEST);
         }
 
-        gl.glEndList();
+        if (glNewList)
+        {
+            gl.glEndList();
+        }
 
         if (DEBUG_BUILD) println("Done");
     }
