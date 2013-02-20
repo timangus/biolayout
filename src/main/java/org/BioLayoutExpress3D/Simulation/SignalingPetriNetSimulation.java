@@ -653,7 +653,7 @@ public class SignalingPetriNetSimulation
             {
                 parentsIDsList.add( vertex.getVertexID() );
                 childrenIDsList.add( vertex.getVertexID() );
-                childrenWeightsArray = getWeigth(vertex.getVertexID(), edge.getEdgeName(), totalTimeBlocks);
+                childrenWeightsArray = getWeight(vertex.getVertexID(), edge.getEdgeName(), totalTimeBlocks);
                 for (int i = 0; i < totalTimeBlocks; i++)
                     childrenWeightsList.add(childrenWeightsArray[i]);
             }
@@ -664,7 +664,7 @@ public class SignalingPetriNetSimulation
             else // arrow head goes from transition node to non-transition node, it's a child node
             {
                 childrenIDsList.add( vertex.getVertexID() );
-                childrenWeightsArray = getWeigth(vertex.getVertexID(), edge.getEdgeName(), totalTimeBlocks);
+                childrenWeightsArray = getWeight(vertex.getVertexID(), edge.getEdgeName(), totalTimeBlocks);
                 for (int i = 0; i < totalTimeBlocks; i++)
                     childrenWeightsList.add(childrenWeightsArray[i]);
             }
@@ -677,7 +677,7 @@ public class SignalingPetriNetSimulation
     /**
     *  Gets the weight for every timeblock.
     */
-    private float[] getWeigth(int vertexID, String edgeName, int totalTimeBlocks)
+    private float[] getWeight(int vertexID, String edgeName, int totalTimeBlocks)
     {
         float[] floatArray = new float[totalTimeBlocks];
         if ( (edgeName == null) || edgeName.isEmpty() )
