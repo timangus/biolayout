@@ -924,8 +924,14 @@ public final class ExpressionData
     public float[] getTransformedRow(int row)
     {
         float[] out = new float[totalColumns];
+        float rowSum = 0.0f;
 
-        float mean = sumX_cacheArray[row] / totalColumns;
+        for (int column = 0; column < totalColumns; column++)
+        {
+            rowSum += getExpressionDataValue(row, column);
+        }
+
+        float mean = rowSum / totalColumns;
 
         float variance = 0.0f;
         for (int column = 0; column < totalColumns; column++)
