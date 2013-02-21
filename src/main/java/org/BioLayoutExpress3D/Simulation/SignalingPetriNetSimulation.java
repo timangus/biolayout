@@ -138,18 +138,28 @@ public class SignalingPetriNetSimulation
         private int numTimeBlocks;
         private int numPlaces;
         private int numRuns;
+        private boolean calculateError;
         private SpnResult[] runs;
 
-        public SpnResultRuns(int numTimeBlocks, int numPlaces, int numRuns)
+        public SpnResultRuns(int numTimeBlocks, int numPlaces, int numRuns, boolean calculateError)
         {
             this.numTimeBlocks = numTimeBlocks;
             this.numPlaces = numPlaces;
             this.numRuns = numRuns;
+            this.calculateError = calculateError;
 
-            runs = new SpnResult[numRuns];
-            for (int i = 0; i < numRuns; i++)
+            if (calculateError)
             {
-                runs[i] = new SpnResult(numPlaces, numTimeBlocks);
+                runs = new SpnResult[numRuns];
+                for (int i = 0; i < numRuns; i++)
+                {
+                    runs[i] = new SpnResult(numPlaces, numTimeBlocks);
+                }
+            }
+            else
+            {
+                runs = new SpnResult[1];
+                runs[0] = new SpnResult(numPlaces, numTimeBlocks);
             }
         }
 
@@ -164,9 +174,14 @@ public class SignalingPetriNetSimulation
         //FIXME: parallelise this
         public SpnResult consolidateRuns()
         {
+            if (!calculateError)
+            {
+                return runs[0];
+            }
+
             SpnResult out = new SpnResult(numPlaces, numTimeBlocks);
 
-            layoutProgressBarDialog.prepareProgressBar(numPlaces, "Consolidating results...");
+            layoutProgressBarDialog.prepareProgressBar(numPlaces, "Calculating error...");
             layoutProgressBarDialog.startProgressBar();
 
             for (int placeIndex = 0; placeIndex < numPlaces; placeIndex++)
@@ -202,6 +217,11 @@ public class SignalingPetriNetSimulation
 
             return out;
         }
+
+        public boolean getCalculateError()
+        {
+            return calculateError;
+        }
     }
 
     // Array so computation can be spread across threads
@@ -233,10 +253,10 @@ public class SignalingPetriNetSimulation
     /**
     *  Executes the SPN simulation.
     */
-    public void executeSPNSimulation(int totalTimeBlocks, int totalRuns)
+    public void executeSPNSimulation(int totalTimeBlocks, int totalRuns, boolean calculateError)
     {
         long prevTime = System.nanoTime();
-        performSPNSimulation(totalTimeBlocks, totalRuns);
+        performSPNSimulation(totalTimeBlocks, totalRuns, calculateError);
         clean(totalRuns);
         timeTaken = System.nanoTime() - prevTime;
     }
@@ -244,7 +264,7 @@ public class SignalingPetriNetSimulation
     /**
     *  Initializes all the relevant SPN data structures.
     */
-    private void initAllCachedDataStructures(int totalTimeBlocks, int totalRuns)
+    private void initAllCachedDataStructures(int totalTimeBlocks, int totalRuns, boolean calculateError)
     {
         numberOfVertices = nc.getNumberOfVertices();
         String SPNDistributionTypeString = USE_SPN_DISTRIBUTION_TYPE.get();
@@ -283,7 +303,8 @@ public class SignalingPetriNetSimulation
         for (int threadId = 0; threadId < intermediateResults.length; threadId++)
         {
             println("Creating intermediateResults[" + threadId + "]");
-            intermediateResults[threadId] = new SpnResultRuns(totalTimeBlocks, numberOfVertices, totalRuns);
+            intermediateResults[threadId] = new SpnResultRuns(totalTimeBlocks,
+                    numberOfVertices, totalRuns, calculateError);
         }
 
         ArrayList<Integer> arraylistTransitionIDs = new ArrayList<Integer>();
@@ -306,15 +327,15 @@ public class SignalingPetriNetSimulation
     }
 
     /**
-    *  Main method of the SPN simulation execution code. Uses an N-Core paralellism algorithm in case of multiple core availability.
+    *  Main method of the SPN simulation execution code. Uses an N-Core parallelism algorithm in case of multiple core availability.
     */
-    private void performSPNSimulation(int totalTimeBlocks, int totalRuns)
+    private void performSPNSimulation(int totalTimeBlocks, int totalRuns, boolean calculateError)
     {
         String progressBarParallelismTitle = (USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) ? " (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
 
         layoutProgressBarDialog.prepareProgressBar(totalRuns, "Allocating resources...");
         layoutProgressBarDialog.startProgressBar();
-        initAllCachedDataStructures(totalTimeBlocks, totalRuns);
+        initAllCachedDataStructures(totalTimeBlocks, totalRuns, calculateError);
 
         layoutProgressBarDialog.setText("Now Processing SPN Simulation For " + totalTimeBlocks + " Time Blocks & " + totalRuns + " Runs" + progressBarParallelismTitle + "...");
 
@@ -383,7 +404,15 @@ public class SignalingPetriNetSimulation
             while (--placesIndex >= 0)
             {
                 places[placesIndex] = 0.0f;
-                result.runs[run].setValue(placesIndex, 0, 0.0f);
+
+                if (result.getCalculateError())
+                {
+                    result.runs[run].setValue(placesIndex, 0, 0.0f);
+                }
+                else
+                {
+                    result.runs[0].setValue(placesIndex, 0, 0.0f);
+                }
             }
 
             for (int timeBlock = 1; timeBlock < totalTimeBlocks; timeBlock++) // start from 1
@@ -394,7 +423,16 @@ public class SignalingPetriNetSimulation
                 placesIndex = numberOfVertices;
                 while (--placesIndex >= 0)
                 {
-                    result.runs[run].setValue(placesIndex, timeBlock, places[placesIndex]);
+                    if (result.getCalculateError())
+                    {
+                        result.runs[run].setValue(placesIndex, timeBlock, places[placesIndex]);
+                    }
+                    else
+                    {
+                        float runningTotal = result.runs[0].getValue(placesIndex, timeBlock);
+                        float value = places[placesIndex] / totalRuns;
+                        result.runs[0].setValue(placesIndex, timeBlock, runningTotal + value);
+                    }
                 }
             }
 

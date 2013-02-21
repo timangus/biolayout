@@ -33,6 +33,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
 
     private JTextField totalTimeBlocksTextField = null;
     private JTextField totalRunsField = null;
+    private JCheckBox errorCheckBox = null;
     private JRadioButton useUniformDistributionRadioButton = null;
     private JRadioButton useStandardNormalDistributionRadioButton = null;
     private JRadioButton useDeterministicProcessRadioButton = null;
@@ -97,6 +98,8 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
         timeBlocksLabel.setToolTipText("Number of Time Blocks");
         JLabel runsLabel = new JLabel("Number of Runs:");
         runsLabel.setToolTipText("Number of Runs");
+        errorCheckBox = new JCheckBox("Calculate Error");
+        errorCheckBox.setSelected(false);
         totalTimeBlocksTextField = new JTextField();
         totalTimeBlocksTextField.setDocument( new TextFieldFilter(TextFieldFilter.NUMERIC) );
         totalTimeBlocksTextField.setToolTipText("Number of Time Blocks");
@@ -150,14 +153,16 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
             .addGroup(simulationOptionsPanelLayout.createSequentialGroup()
                 .addGroup(simulationOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                     .addComponent(runsLabel)
-                    .addComponent(timeBlocksLabel))
+                    .addComponent(timeBlocksLabel)
+                )
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(simulationOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(totalTimeBlocksTextField, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(totalRunsField, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
-                    // .addComponent(totalTimeBlocksTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    // .addComponent(totalRunsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(42, Short.MAX_VALUE))
+                    .addComponent(totalRunsField, GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                )
+                .addContainerGap(42, Short.MAX_VALUE)
+            )
+            .addComponent(errorCheckBox)
         );
         simulationOptionsPanelLayout.setVerticalGroup(
             simulationOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -165,12 +170,17 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
                 .addContainerGap()
                 .addGroup(simulationOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(timeBlocksLabel)
-                    .addComponent(totalTimeBlocksTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addComponent(totalTimeBlocksTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                )
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(simulationOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(runsLabel)
-                    .addComponent(totalRunsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                    .addComponent(totalRunsField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                )
+                .addContainerGap(11, Short.MAX_VALUE)
+                .addComponent(errorCheckBox)
+                .addContainerGap(11, Short.MAX_VALUE)
+            )
         );
 
         simulationStochasticOptionsPanel.setBorder( BorderFactory.createTitledBorder("SPN Simulation Stochastic Options") );
@@ -425,6 +435,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
         {
             final String totalTimeBlocksString = totalTimeBlocksTextField.getText();
             final String totalRunsString = totalRunsField.getText();
+            final boolean calculateError = errorCheckBox.isSelected();
 
             if ( totalTimeBlocksString.isEmpty() || totalRunsString.isEmpty() )
             {
@@ -443,7 +454,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
                     @Override
                     public void run()
                     {
-                        SPNSimulation.executeSPNSimulation(totalTimeBlocks, totalRuns);
+                        SPNSimulation.executeSPNSimulation(totalTimeBlocks, totalRuns, calculateError);
                         layoutFrame.getLayoutAnimationControlDialog().getAnimationControlDialogAction().setEnabled(true);
                         String[] timeResults = Time.convertMSecsToTimeString(SPNSimulation.getTimeTaken() / 1000000).split(" ");
                         SPNSimulationResultsDialog.setResultLabelsText( timeResults[0] + " secs " + timeResults[1] + " msecs", totalTimeBlocksString, totalRunsString, layoutFrame.getSignalingPetriNetSimulationDialog().findMaxValueFromResultsArray() );
