@@ -458,7 +458,7 @@ public final class GraphPopupComponent implements Runnable
             for (int i = 1; i < totalTimeBlocks; i++)
             {
                 value = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i);
-                double halfError = ANIMATION_SIMULATION_RESULTS.getStderr(nodeID, i) * 0.5;
+                double halfError = ANIMATION_SIMULATION_RESULTS.getStddev(nodeID, i) * 0.5;
 
                 if ((value + halfError) > max)
                 {
@@ -481,8 +481,8 @@ public final class GraphPopupComponent implements Runnable
                 double nextX = ( (i + 1) * columnWidth ) + PAD_X;
                 double thisY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i) - min;
                 double nextY = ANIMATION_SIMULATION_RESULTS.getValue(nodeID, i + 1) - min;
-                double halfThisError = ANIMATION_SIMULATION_RESULTS.getStderr(nodeID, i) * 0.5;
-                double halfNextError = ANIMATION_SIMULATION_RESULTS.getStderr(nodeID, i + 1) * 0.5;
+                double halfThisError = ANIMATION_SIMULATION_RESULTS.getStddev(nodeID, i) * 0.5;
+                double halfNextError = ANIMATION_SIMULATION_RESULTS.getStddev(nodeID, i + 1) * 0.5;
 
                 thisY *= yScale;
                 nextY *= yScale;

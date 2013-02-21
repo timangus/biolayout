@@ -94,7 +94,7 @@ public class SignalingPetriNetSimulation
             return data[(y * rowWidth) + x + VALUE];
         }
 
-        public float getStderr(int placeIndex, int timeBlock)
+        public float getStddev(int placeIndex, int timeBlock)
         {
             int x = (timeBlock * NUM_DATA_ITEMS);
             int y = placeIndex;
@@ -108,7 +108,7 @@ public class SignalingPetriNetSimulation
             data[(y * rowWidth) + x + VALUE] = value;
         }
 
-        public void setStderr(int placeIndex, int timeBlock, float value)
+        public void setStddev(int placeIndex, int timeBlock, float value)
         {
             int x = (timeBlock * NUM_DATA_ITEMS);
             int y = placeIndex;
@@ -122,7 +122,7 @@ public class SignalingPetriNetSimulation
                 for (int timeBlock = 0; timeBlock < numTimeBlocks; timeBlock++)
                 {
                     setValue(placeIndex, timeBlock, 0.0f);
-                    setStderr(placeIndex, timeBlock, 0.0f);
+                    setStddev(placeIndex, timeBlock, 0.0f);
                 }
             }
         }
@@ -190,10 +190,9 @@ public class SignalingPetriNetSimulation
                     variance = variance / runs.length;
 
                     float stddev = (float)java.lang.Math.sqrt(variance);
-                    float stderr = (float)java.lang.Math.sqrt(stddev);
 
                     out.setValue(placeIndex, timeBlock, mean);
-                    out.setStderr(placeIndex, timeBlock, stderr);
+                    out.setStddev(placeIndex, timeBlock, stddev);
                 }
 
                 layoutProgressBarDialog.incrementProgress();
@@ -811,7 +810,7 @@ public class SignalingPetriNetSimulation
                                                                                          "\"\t\"" + SAVE_DETAILS_DATA_COLUMN_NAME_RUNS +       totalRuns + "\"\n");
                 fileWriter.write("Node ID\tGraphml Node Key\tNode Name\t");
                 for (int i = 1; i <= totalTimeBlocks; i++) // for every timeblock
-                    fileWriter.write("TimeBlock: " + i + "\tStd. Error\t"); // write the timeblock ID
+                    fileWriter.write("TimeBlock: " + i + "\tStd. Dev.\t"); // write the timeblock ID
                 fileWriter.write("\n");
 
                 for ( Vertex vertex: nc.getVertices() )
@@ -822,7 +821,7 @@ public class SignalingPetriNetSimulation
                         for (int i = 0; i < totalTimeBlocks; i++) // for every timeblock
                         {
                             fileWriter.write(consolidatedResult.getValue(vertex.getVertexID(), i) + "\t"); // write the node's value at this timeblock
-                            fileWriter.write(consolidatedResult.getStderr(vertex.getVertexID(), i) + "\t");
+                            fileWriter.write(consolidatedResult.getStddev(vertex.getVertexID(), i) + "\t");
                         }
                         fileWriter.write("\n");
                     }
@@ -915,6 +914,6 @@ public class SignalingPetriNetSimulation
     public void addResultToResultsArray(int nodeID, int timeBlock, float result, float stderr)
     {
         consolidatedResult.setValue(nodeID, timeBlock, result);
-        consolidatedResult.setStderr(nodeID, timeBlock, stderr);
+        consolidatedResult.setStddev(nodeID, timeBlock, stderr);
     }
 }
