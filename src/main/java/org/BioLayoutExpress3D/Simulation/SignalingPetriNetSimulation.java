@@ -681,7 +681,7 @@ public class SignalingPetriNetSimulation
     private float[] getWeight(int vertexID, String edgeName, int totalTimeBlocks)
     {
         float[] floatArray = new float[totalTimeBlocks];
-        if ( (edgeName == null) || edgeName.isEmpty() )
+        if ( (edgeName == null) || edgeName.isEmpty() || edgeName.trim().length() == 0 )
             return initFloatArrayAllTimeBlocksToValue(1.0f, floatArray);
 
         try
