@@ -236,14 +236,16 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
             // skip first line, versioning line
             fileReaderBuffered.readLine();
             // second line gives back SPN simulation details
-            Tuple4<String, Integer, Integer, Integer> allDetailsTuple4 = getSimulationAllDetails( fileReaderBuffered.readLine().split("\t") );
+            Tuple5<String, Integer, Integer, Integer, SignalingPetriNetSimulation.ErrorType> allDetailsTuple5 =
+                    getSimulationAllDetails( fileReaderBuffered.readLine().split("\t") );
 
-            if ( allDetailsTuple4.first.equals( layoutFrame.getFileNameLoaded() ) ) // the simulation results loading should be the same as the loaded graph, else abort
+            if ( allDetailsTuple5.first.equals( layoutFrame.getFileNameLoaded() ) ) // the simulation results loading should be the same as the loaded graph, else abort
             {
                 layoutProgressBarDialog.prepareProgressBar(totalLines - 2, "Parsing " + file.getName() + " SPN Simulation File...");
                 layoutProgressBarDialog.startProgressBar();
 
-                layoutFrame.getSignalingPetriNetSimulationDialog().initializeResultsArray(allDetailsTuple4.second, allDetailsTuple4.third, allDetailsTuple4.fourth);
+                layoutFrame.getSignalingPetriNetSimulationDialog().initializeResultsArray(allDetailsTuple5.second,
+                        allDetailsTuple5.third, allDetailsTuple5.fourth, allDetailsTuple5.fifth);
 
                 // skip third line, column naming line
                 fileReaderBuffered.readLine();
@@ -253,15 +255,29 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
                 while ( ( line = fileReaderBuffered.readLine() ) != null )
                 {
                     allDetails = line.split("\t");
-                    for (int i = 3; i < allDetails.length; i += 2)
+                    if (allDetailsTuple5.fifth == SignalingPetriNetSimulation.ErrorType.NONE)
                     {
-                        // for every timeblock, which starts at column 3, column one has the nodeID
-                        layoutFrame.getSignalingPetriNetSimulationDialog().addResultToResultsArray(
-                                Integer.parseInt(allDetails[0]),
-                                (i - 3) / 2,
-                                Float.parseFloat(allDetails[i]),
-                                Float.parseFloat(allDetails[i + 1])
-                                );
+                        for (int i = 3; i < allDetails.length; i++)
+                        {
+                            // for every timeblock, which starts at column 3, column one has the nodeID
+                            layoutFrame.getSignalingPetriNetSimulationDialog().addResultToResultsArray(
+                                    Integer.parseInt(allDetails[0]),
+                                    i - 3,
+                                    Float.parseFloat(allDetails[i]),
+                                    0.0f);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 3; i < allDetails.length; i += 2)
+                        {
+                            // for every timeblock, which starts at column 3, column one has the nodeID
+                            layoutFrame.getSignalingPetriNetSimulationDialog().addResultToResultsArray(
+                                    Integer.parseInt(allDetails[0]),
+                                    (i - 3) / 2,
+                                    Float.parseFloat(allDetails[i]),
+                                    Float.parseFloat(allDetails[i + 1]));
+                        }
                     }
 
                     layoutProgressBarDialog.incrementProgress(++counter);
@@ -302,7 +318,7 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
         return isSuccessful;
     }
 
-    private Tuple4<String, Integer, Integer, Integer> getSimulationAllDetails(String[] allDetails)
+    private Tuple5<String, Integer, Integer, Integer, SignalingPetriNetSimulation.ErrorType> getSimulationAllDetails(String[] allDetails)
     {
         // get rid of starting/ending " enclosing characters
         for (int i = 0; i < allDetails.length; i++)
@@ -310,7 +326,9 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
 
         return Tuples.tuple(allDetails[1], Integer.parseInt( allDetails[2].substring( SAVE_DETAILS_DATA_COLUMN_NAME_NODES.length(), allDetails[2].length() ) ),
                                            Integer.parseInt( allDetails[3].substring( SAVE_DETAILS_DATA_COLUMN_NAME_TIMEBLOCKS.length(), allDetails[3].length() ) ),
-                                           Integer.parseInt( allDetails[4].substring( SAVE_DETAILS_DATA_COLUMN_NAME_RUNS.length(), allDetails[4].length() ) ) );
+                                           Integer.parseInt( allDetails[4].substring( SAVE_DETAILS_DATA_COLUMN_NAME_RUNS.length(), allDetails[4].length() ) ),
+                                           SignalingPetriNetSimulation.ErrorType.valueOf(allDetails[5].substring( SAVE_DETAILS_DATA_COLUMN_NAME_ERROR.length(), allDetails[5].length() ))
+                );
     }
 
     public AbstractAction getSignalingPetriNetLoadSimulationAction()

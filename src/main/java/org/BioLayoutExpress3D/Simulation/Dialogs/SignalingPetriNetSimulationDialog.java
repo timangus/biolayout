@@ -34,6 +34,8 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
     private JTextField totalTimeBlocksTextField = null;
     private JTextField totalRunsField = null;
     private JCheckBox errorCheckBox = null;
+    private JRadioButton stddevErrorTypeRadioButton = null;
+    private JRadioButton stderrErrorTypeRadioButton = null;
     private JRadioButton useUniformDistributionRadioButton = null;
     private JRadioButton useStandardNormalDistributionRadioButton = null;
     private JRadioButton useDeterministicProcessRadioButton = null;
@@ -100,6 +102,15 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
         runsLabel.setToolTipText("Number of Runs");
         errorCheckBox = new JCheckBox("Calculate Error");
         errorCheckBox.setSelected(false);
+        errorCheckBox.addActionListener(this);
+        ButtonGroup errorTypeButtonGroup = new ButtonGroup();
+        stddevErrorTypeRadioButton = new JRadioButton("Standard Deviation");
+        stddevErrorTypeRadioButton.setSelected(true);
+        stddevErrorTypeRadioButton.setEnabled(false);
+        stderrErrorTypeRadioButton = new JRadioButton("Standard Error");
+        stderrErrorTypeRadioButton.setEnabled(false);
+        errorTypeButtonGroup.add(stddevErrorTypeRadioButton);
+        errorTypeButtonGroup.add(stderrErrorTypeRadioButton);
         totalTimeBlocksTextField = new JTextField();
         totalTimeBlocksTextField.setDocument( new TextFieldFilter(TextFieldFilter.NUMERIC) );
         totalTimeBlocksTextField.setToolTipText("Number of Time Blocks");
@@ -163,6 +174,8 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
                 .addContainerGap(42, Short.MAX_VALUE)
             )
             .addComponent(errorCheckBox)
+            .addComponent(stddevErrorTypeRadioButton)
+            .addComponent(stderrErrorTypeRadioButton)
         );
         simulationOptionsPanelLayout.setVerticalGroup(
             simulationOptionsPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -179,6 +192,9 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
                 )
                 .addContainerGap(11, Short.MAX_VALUE)
                 .addComponent(errorCheckBox)
+                .addContainerGap(11, Short.MAX_VALUE)
+                .addComponent(stddevErrorTypeRadioButton)
+                .addComponent(stderrErrorTypeRadioButton)
                 .addContainerGap(11, Short.MAX_VALUE)
             )
         );
@@ -375,21 +391,22 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
     *  Initializes the results array.
     *  To be used from the SignalingPetriNetLoadSimulation class.
     */
-    public void initializeResultsArray(int numberOfVertices, int totalTimeBlocks, int totalRuns)
+    public void initializeResultsArray(int numberOfVertices, int totalTimeBlocks, int totalRuns,
+            SignalingPetriNetSimulation.ErrorType errorType)
     {
         this.totalTimeBlocks = totalTimeBlocks;
         this.totalRuns = totalRuns;
 
-        SPNSimulation.initializeResultsArray(numberOfVertices, totalTimeBlocks);
+        SPNSimulation.initializeResultsArray(numberOfVertices, totalTimeBlocks, errorType);
     }
 
     /**
     *  Adds a result to the result array.
     *  To be used from the SignalingPetriNetLoadSimulation class.
     */
-    public void addResultToResultsArray(int nodeID, int timeBlock, float result, float stderr)
+    public void addResultToResultsArray(int nodeID, int timeBlock, float result, float error)
     {
-        SPNSimulation.addResultToResultsArray(nodeID, timeBlock, result, stderr);
+        SPNSimulation.addResultToResultsArray(nodeID, timeBlock, result, error);
     }
 
     /**
@@ -431,11 +448,32 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
             USE_SPN_TRANSITION_TYPE.set( SPNTransitionTypes.ORIGINAL.toString() );
             layoutFrame.getLayoutGraphPropertiesDialog().setHasNewPreferencesBeenApplied(true);
         }
+        else if ( e.getSource().equals(errorCheckBox))
+        {
+            stddevErrorTypeRadioButton.setEnabled(errorCheckBox.isSelected());
+            stderrErrorTypeRadioButton.setEnabled(errorCheckBox.isSelected());
+        }
         else if ( e.getSource().equals(runSimulationButton) )
         {
             final String totalTimeBlocksString = totalTimeBlocksTextField.getText();
             final String totalRunsString = totalRunsField.getText();
-            final boolean calculateError = errorCheckBox.isSelected();
+            final SignalingPetriNetSimulation.ErrorType errorType;
+
+            if (errorCheckBox.isSelected())
+            {
+                if (stddevErrorTypeRadioButton.isSelected())
+                {
+                    errorType = SignalingPetriNetSimulation.ErrorType.STDDEV;
+                }
+                else
+                {
+                    errorType = SignalingPetriNetSimulation.ErrorType.STDERR;
+                }
+            }
+            else
+            {
+                errorType = SignalingPetriNetSimulation.ErrorType.NONE;
+            }
 
             if ( totalTimeBlocksString.isEmpty() || totalRunsString.isEmpty() )
             {
@@ -454,7 +492,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
                     @Override
                     public void run()
                     {
-                        SPNSimulation.executeSPNSimulation(totalTimeBlocks, totalRuns, calculateError);
+                        SPNSimulation.executeSPNSimulation(totalTimeBlocks, totalRuns, errorType);
                         layoutFrame.getLayoutAnimationControlDialog().getAnimationControlDialogAction().setEnabled(true);
                         String[] timeResults = Time.convertMSecsToTimeString(SPNSimulation.getTimeTaken() / 1000000).split(" ");
                         SPNSimulationResultsDialog.setResultLabelsText( timeResults[0] + " secs " + timeResults[1] + " msecs", totalTimeBlocksString, totalRunsString, layoutFrame.getSignalingPetriNetSimulationDialog().findMaxValueFromResultsArray() );
