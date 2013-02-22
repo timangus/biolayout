@@ -264,7 +264,8 @@ public class SignalingPetriNetSimulation
     /**
     *  Initializes all the relevant SPN data structures.
     */
-    private void initAllCachedDataStructures(int totalTimeBlocks, int totalRuns, boolean calculateError)
+    private void initAllCachedDataStructures(int totalTimeBlocks, int totalRuns,
+            int numThreads, boolean calculateError)
     {
         numberOfVertices = nc.getNumberOfVertices();
         String SPNDistributionTypeString = USE_SPN_DISTRIBUTION_TYPE.get();
@@ -289,22 +290,20 @@ public class SignalingPetriNetSimulation
         totalInhibitorsIDs = new int[numberOfVertices][0];
         partialInhibitorsIDs = new int[numberOfVertices][0];
 
-        int numThreads;
-        if ( !( USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) || (totalRuns < MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION) )
-        {
-            numThreads = 1;
-        }
-        else
-        {
-            numThreads = NUMBER_OF_AVAILABLE_PROCESSORS;
-        }
-
         intermediateResults = new SpnResultRuns[numThreads];
         for (int threadId = 0; threadId < intermediateResults.length; threadId++)
         {
+            int runsForThread = totalRuns / numThreads;
+
+            if (threadId == 0)
+            {
+                // Give the first thread the left over runs
+                runsForThread += totalRuns % numThreads;
+            }
+
             println("Creating intermediateResults[" + threadId + "]");
             intermediateResults[threadId] = new SpnResultRuns(totalTimeBlocks,
-                    numberOfVertices, totalRuns, calculateError);
+                    numberOfVertices, runsForThread, calculateError);
         }
 
         ArrayList<Integer> arraylistTransitionIDs = new ArrayList<Integer>();
@@ -331,29 +330,33 @@ public class SignalingPetriNetSimulation
     */
     private void performSPNSimulation(int totalTimeBlocks, int totalRuns, boolean calculateError)
     {
-        String progressBarParallelismTitle = (USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) ? " (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
+        int numThreads = 1;
+
+        if ((USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get()) && (totalRuns >= MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION))
+        {
+            numThreads = NUMBER_OF_AVAILABLE_PROCESSORS;
+        }
 
         layoutProgressBarDialog.prepareProgressBar(totalRuns, "Allocating resources...");
         layoutProgressBarDialog.startProgressBar();
-        initAllCachedDataStructures(totalTimeBlocks, totalRuns, calculateError);
+        initAllCachedDataStructures(totalTimeBlocks, totalRuns, numThreads, calculateError);
 
-        layoutProgressBarDialog.setText("Now Processing SPN Simulation For " + totalTimeBlocks + " Time Blocks & " + totalRuns + " Runs" + progressBarParallelismTitle + "...");
+        layoutProgressBarDialog.setText("Now Processing SPN Simulation For " + totalTimeBlocks +
+                " Time Blocks & " + totalRuns + " Runs...");
 
-        if ( !( USE_MULTICORE_PROCESS && USE_SPN_N_CORE_PARALLELISM.get() ) || (totalRuns < MINIMUM_NUMBER_OF_SPN_RUNS_FOR_PARALLELIZATION) )
+        if ( numThreads > 1 )
         {
-            allIterationsSPNSimulation(totalTimeBlocks, totalRuns, totalRuns, transitionIDs, intermediateResults[0]);
-        }
-        else
-        {
-            int totalRunsPerProcess = totalRuns / NUMBER_OF_AVAILABLE_PROCESSORS;
-            LoggerThreadPoolExecutor executor = new LoggerThreadPoolExecutor(NUMBER_OF_AVAILABLE_PROCESSORS, NUMBER_OF_AVAILABLE_PROCESSORS, 0L, TimeUnit.MILLISECONDS,
-                                                                             new LinkedBlockingQueue<Runnable>(NUMBER_OF_AVAILABLE_PROCESSORS),
-                                                                             new LoggerThreadFactory("SignalingPetriNetSimulation"),
-                                                                             new ThreadPoolExecutor.CallerRunsPolicy() );
+            LoggerThreadPoolExecutor executor = new LoggerThreadPoolExecutor(numThreads,
+                    numThreads, 0L, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>(numThreads),
+                    new LoggerThreadFactory("SignalingPetriNetSimulation"),
+                    new ThreadPoolExecutor.CallerRunsPolicy());
 
             cyclicBarrierTimer.clear();
-            for (int threadId = 0; threadId < NUMBER_OF_AVAILABLE_PROCESSORS; threadId++)
-                executor.execute( SPNSimulationProcessKernel(threadId, totalTimeBlocks, totalRuns, totalRunsPerProcess, intermediateResults[threadId]) );
+            for (int threadId = 0; threadId < numThreads; threadId++)
+            {
+                executor.execute( SPNSimulationProcessKernel(threadId, totalRuns, intermediateResults[threadId]) );
+            }
 
             try
             {
@@ -363,18 +366,34 @@ public class SignalingPetriNetSimulation
             }
             catch (BrokenBarrierException ex)
             {
-                if (DEBUG_BUILD) println("Problem with a broken barrier with the main SignalingPetriNetSimulation simulation thread in performSPNSimulation()!:\n" + ex.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("Problem with a broken barrier with the main SignalingPetriNetSimulation " +
+                            "simulation thread in performSPNSimulation()!:\n" + ex.getMessage());
+                }
             }
             catch (InterruptedException ex)
             {
                 // restore the interuption status after catching InterruptedException
                 Thread.currentThread().interrupt();
-                if (DEBUG_BUILD) println("Problem with pausing the main SignalingPetriNetSimulation simulation thread in performSPNSimulation()!:\n" + ex.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("Problem with pausing the main SignalingPetriNetSimulation simulation " +
+                            "thread in performSPNSimulation()!:\n" + ex.getMessage());
+                }
             }
 
-            if (DEBUG_BUILD) println("\nTotal SignalingPetriNetSimulation N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
+            if (DEBUG_BUILD)
+            {
+                println("\nTotal SignalingPetriNetSimulation N-CP run time: " +
+                        (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
+            }
 
-            aggregateResultsFromAllProcesses(intermediateResults, totalTimeBlocks);
+            aggregateResultsFromAllProcesses(intermediateResults, calculateError);
+        }
+        else
+        {
+            allIterationsSPNSimulation(totalRuns, transitionIDs, intermediateResults[0]);
         }
 
         layoutProgressBarDialog.endProgressBar();
@@ -383,8 +402,11 @@ public class SignalingPetriNetSimulation
 
         layoutProgressBarDialog.stopProgressBar();
 
-        if ( SAVE_SPN_RESULTS.get() && AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER.get() && !SAVE_SPN_RESULTS_FILE_NAME.get().isEmpty() )
+        if ( SAVE_SPN_RESULTS.get() && AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER.get() &&
+                !SAVE_SPN_RESULTS_FILE_NAME.get().isEmpty() )
+        {
             SPNSimulationResultsWriteToFile(totalTimeBlocks, totalRuns);
+        }
 
         // do it here to ensure the SPN results are being fed to the popup Java2D plot even before the Animation Control dialog is initializing it
         ANIMATION_SIMULATION_RESULTS = consolidatedResult;
@@ -393,14 +415,14 @@ public class SignalingPetriNetSimulation
     /**
     *  Performs all iterations of the SPN simulation.
     */
-    private void allIterationsSPNSimulation(int totalTimeBlocks, int totalRuns, int runs, int[] transitionIDs, SpnResultRuns result)
+    private void allIterationsSPNSimulation(int totalRuns, int[] transitionIDs, SpnResultRuns result)
     {
         float[] places = new float[numberOfVertices];
         int placesIndex = 0;
-        int run = runs;
+        int run = result.numRuns;
         while (--run >= 0)
         {
-            placesIndex = numberOfVertices;
+            placesIndex = result.numPlaces;
             while (--placesIndex >= 0)
             {
                 places[placesIndex] = 0.0f;
@@ -415,7 +437,7 @@ public class SignalingPetriNetSimulation
                 }
             }
 
-            for (int timeBlock = 1; timeBlock < totalTimeBlocks; timeBlock++) // start from 1
+            for (int timeBlock = 1; timeBlock < result.numTimeBlocks; timeBlock++) // start from 1
             {
                 shuffleTransitions(transitionIDs);
                 activateAllTransitions(transitionIDs, places, timeBlock);
@@ -444,7 +466,7 @@ public class SignalingPetriNetSimulation
     *   Return a light-weight runnable using the Adapter technique for the SPN simulation so as to avoid any load latencies.
     *   The coding style simulates an OpenCL/CUDA kernel.
     */
-    private Runnable SPNSimulationProcessKernel(final int threadId, final int totalTimeBlocks, final int totalRuns, final int totalRunsPerProcess, final SpnResultRuns processResult)
+    private Runnable SPNSimulationProcessKernel(final int threadId, final int totalRuns, final SpnResultRuns processResult)
     {
         return new Runnable()
         {
@@ -460,9 +482,7 @@ public class SignalingPetriNetSimulation
                         int[] transitionIDsForThread = new int[transitionIDs.length];
                         System.arraycopy(transitionIDs, 0, transitionIDsForThread, 0, transitionIDs.length); // fastest way, native method!
 
-                        // last run process will add remainder runs
-                        int runs = ( threadId == (NUMBER_OF_AVAILABLE_PROCESSORS - 1) ) ? totalRunsPerProcess + (totalRuns % NUMBER_OF_AVAILABLE_PROCESSORS) : totalRunsPerProcess;
-                        allIterationsSPNSimulation(totalTimeBlocks, totalRuns, runs, transitionIDsForThread, processResult);
+                        allIterationsSPNSimulation(totalRuns, transitionIDsForThread, processResult);
                     }
                     finally
                     {
@@ -484,13 +504,31 @@ public class SignalingPetriNetSimulation
     }
 
     /**
-    *  Aggregates results from all processes to the first dimension (threadId) of the results float[][][] array.
+    *  Aggregates results from all processes to the first dimension (threadId) of the results array.
     */
-    private void aggregateResultsFromAllProcesses(SpnResultRuns[] results, int totalTimeBlocks)
+    private void aggregateResultsFromAllProcesses(SpnResultRuns[] results, boolean calculateError)
     {
-        for (int threadId = 1; threadId < NUMBER_OF_AVAILABLE_PROCESSORS; threadId++)
+        for (int threadId = 1; threadId < results.length; threadId++)
         {
-            results[0].runs = Utils.mergeArrays(results[0].runs, results[threadId].runs);
+            if (calculateError)
+            {
+                // Just concatenate the results, they'll be combined later
+                results[0].runs = Utils.mergeArrays(results[0].runs, results[threadId].runs);
+            }
+            else
+            {
+                int placeIndex = results[0].numPlaces;
+                while (--placeIndex >= 0)
+                {
+                    int timeBlock = results[0].numTimeBlocks;
+                    while (--timeBlock >= 0)
+                    {
+                        float value = results[0].runs[0].getValue(placeIndex, timeBlock);
+                        results[0].runs[0].setValue(placeIndex, timeBlock,
+                                value + results[threadId].runs[0].getValue(placeIndex, timeBlock));
+                    }
+                }
+            }
         }
     }
 
