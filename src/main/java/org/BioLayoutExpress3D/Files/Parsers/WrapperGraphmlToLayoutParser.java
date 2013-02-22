@@ -386,12 +386,14 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             if ( nodeShape.equals( (String)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[i].first ) && ( (nodeColor1 != null) && nodeColor1.equals( (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[i].third ) ) ) // because of possible errors in glyph color definitions
             {
                 currentGraphmlShape = (GraphmlShapesGroup2)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_2[i].second;
-                if ( currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_VERTICAL) || currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_HORIZONTAL) )
+                if (currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_VERTICAL) || currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_HORIZONTAL))
                 {
                     ismEPNTransition = true;
                     currentGraphmlShape = (nodeWidth < nodeHeight) ? GraphmlShapesGroup2.TRANSITION_VERTICAL : GraphmlShapesGroup2.TRANSITION_HORIZONTAL;
                 }
-                else if ( currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_DIAMOND) )
+                else if (currentGraphmlShape.equals(GraphmlShapesGroup2.TRANSITION_DIAMOND) ||
+                        currentGraphmlShape.equals(GraphmlShapesGroup2.PATHWAY_MODULE) ||
+                        currentGraphmlShape.equals(GraphmlShapesGroup2.PATHWAY_OUTPUT))
                 {
                     ismEPNTransition = true;
                 }
