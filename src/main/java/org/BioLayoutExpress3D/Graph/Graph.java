@@ -108,16 +108,6 @@ public class Graph extends GLCanvas implements GraphInterface
     private static final float AMOUNT_OF_NODE_SIZE_INCREASE = 0.25f;
 
     /**
-    *  Value needed for the OpenGL renderer.
-    */
-    private int prevGLError = GL_NO_ERROR;
-
-    /**
-    *  Value needed for the OpenGL renderer.
-    */
-    private int currentGLError = GL_NO_ERROR;
-
-    /**
     *  Messages related variable.
     */
     private Font messagesFont = null;
@@ -272,7 +262,10 @@ public class Graph extends GLCanvas implements GraphInterface
     */
     public void prepareHighQualityRendering(GL2 gl)
     {
-        gl.glEnable(GL_MULTISAMPLE);
+        if (gl.isExtensionAvailable("GL_ARB_multisample"))
+        {
+            gl.glEnable(GL_MULTISAMPLE);
+        }
 
         gl.glEnable(GL_POINT_SMOOTH);
         gl.glEnable(GL_LINE_SMOOTH);
@@ -282,7 +275,10 @@ public class Graph extends GLCanvas implements GraphInterface
         gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
         gl.glHint(GL_FOG_HINT, GL_NICEST);
-        gl.glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+        if (gl.isExtensionAvailable("GL_SGIS_generate_mipmap"))
+        {
+            gl.glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+        }
         if (GL_IS_NVIDIA && USE_SHADERS_PROCESS) gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST); // warning, the AMD/ATI driver does not like this setting, and it's only for OpenGL 2.0 and above!
     }
 
@@ -291,7 +287,10 @@ public class Graph extends GLCanvas implements GraphInterface
     */
     public void prepareLowQualityRendering(GL2 gl)
     {
-        gl.glDisable(GL_MULTISAMPLE);
+        if (gl.isExtensionAvailable("GL_ARB_multisample"))
+        {
+            gl.glDisable(GL_MULTISAMPLE);
+        }
 
         gl.glDisable(GL_POINT_SMOOTH);
         gl.glDisable(GL_LINE_SMOOTH);
@@ -301,7 +300,10 @@ public class Graph extends GLCanvas implements GraphInterface
         gl.glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
         gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_FASTEST);
         gl.glHint(GL_FOG_HINT, GL_FASTEST);
-        gl.glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
+        if (gl.isExtensionAvailable("GL_SGIS_generate_mipmap"))
+        {
+            gl.glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
+        }
         if (GL_IS_NVIDIA && USE_SHADERS_PROCESS) gl.glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_FASTEST); // warning, the AMD/ATI driver does not like this setting, and it's only for OpenGL 2.0 and above!
     }
 
@@ -682,11 +684,18 @@ public class Graph extends GLCanvas implements GraphInterface
     */
     private Texture loadTextureFromImage(GL2 gl, Texture texture, BufferedImage image, int textureUnit)
     {
-        gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
+        if (textureUnit != 0 && gl.isFunctionAvailable("glActiveTexture"))
+        {
+            gl.glActiveTexture(GL_TEXTURE0 + textureUnit);
+        }
+
         disposeTexture(gl, texture);
         texture = TextureProducer.createTextureFromBufferedImage(image, qualityRendering);
-        if (textureUnit != 0)
+
+        if (textureUnit != 0 && gl.isFunctionAvailable("glActiveTexture"))
+        {
             gl.glActiveTexture(GL_TEXTURE0);
+        }
 
         return texture;
     }
@@ -1396,15 +1405,7 @@ public class Graph extends GLCanvas implements GraphInterface
         requestFocus();
         gl.glFlush();
 
-        currentGLError = gl.glGetError();
-        boolean checkError = (DEBUG_BUILD) ? (currentGLError != GL_NO_ERROR) : (currentGLError != GL_NO_ERROR) && (currentGLError == GL_OUT_OF_MEMORY);
-        if ( checkError && (currentGLError != prevGLError) )
-        {
-            prevGLError = currentGLError;
-            String error = GLU.gluErrorString(currentGLError);
-            JOptionPane.showMessageDialog(this, "OpenGL reported an error: " + error + "!", "OpenGL Error: " + error, JOptionPane.WARNING_MESSAGE);
-            if (DEBUG_BUILD) println("GraphRenderer2D init(GLAutoDrawable) glGetError() returned: " + error);
-        }
+        OpenGLContext.checkGLErrors(gl, true);
     }
 
     /**
@@ -1440,15 +1441,7 @@ public class Graph extends GLCanvas implements GraphInterface
         }
         gl.glFlush();
 
-        currentGLError = gl.glGetError();
-        boolean checkError = (DEBUG_BUILD) ? (currentGLError != GL_NO_ERROR) : (currentGLError != GL_NO_ERROR) && (currentGLError == GL_OUT_OF_MEMORY);
-        if ( checkError && (currentGLError != prevGLError) )
-        {
-            prevGLError = currentGLError;
-            String error = GLU.gluErrorString(currentGLError);
-            JOptionPane.showMessageDialog(this, "OpenGL reported an error: " + error + "!", "OpenGL Error: " + error, JOptionPane.WARNING_MESSAGE);
-            if (DEBUG_BUILD) println("GraphRenderer2D display(GLAutoDrawable) glGetError() returned: " + error);
-        }
+        OpenGLContext.checkGLErrors(gl, true);
     }
 
     /**
@@ -1477,15 +1470,7 @@ public class Graph extends GLCanvas implements GraphInterface
         currentGraphRenderer.reshape(glDrawable, x, y, width, height);
         gl.glFlush();
 
-        currentGLError = glDrawable.getGL().glGetError();
-        boolean checkError = (DEBUG_BUILD) ? (currentGLError != GL_NO_ERROR) : (currentGLError != GL_NO_ERROR) && (currentGLError == GL_OUT_OF_MEMORY);
-        if ( checkError && (currentGLError != prevGLError) )
-        {
-            prevGLError = currentGLError;
-            String error = GLU.gluErrorString(currentGLError);
-            JOptionPane.showMessageDialog(this, "OpenGL reported an error: " + error + "!", "OpenGL Error: " + error, JOptionPane.WARNING_MESSAGE);
-            if (DEBUG_BUILD) println("GraphRenderer3D reshape(GLAutoDrawable) glGetError() returned: " + error);
-        }
+        OpenGLContext.checkGLErrors(gl, true);
     }
 
     /**

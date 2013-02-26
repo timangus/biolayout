@@ -82,16 +82,6 @@ public abstract class OpenGLContext extends Canvas
     /**
     *  Value needed for the OpenGL GPU Computations.
     */
-    private int prevGLError = GL_NO_ERROR;
-
-    /**
-    *  Value needed for the OpenGL GPU Computations.
-    */
-    private int currentGLError = 0;
-
-    /**
-    *  Value needed for the OpenGL GPU Computations.
-    */
     private boolean CPUErrorOccured = false;
 
     /**
@@ -594,16 +584,22 @@ public abstract class OpenGLContext extends Canvas
     private void initializeGPUMemory(GL2 gl)
     {
         initializeGPUMemoryImplementation(gl);
-        checkGLErrors(gl, "initializeGPUMemory()");
+        if (checkGLErrors(gl, dialogErrorLog) != null)
+        {
+            GPUErrorOccured = true;
+        }
     }
 
     /**
-    *  Performs the GPU Computing calculations.
-    */
+     * Performs the GPU Computing calculations.
+     */
     private void performGPUComputingCalculations(GL2 gl)
     {
         performGPUComputingCalculationsImplementation(gl);
-        checkGLErrors(gl, "performGPUComputingCalculations()");
+        if (checkGLErrors(gl, dialogErrorLog) != null)
+        {
+            GPUErrorOccured = true;
+        }
     }
 
     /**
@@ -614,7 +610,10 @@ public abstract class OpenGLContext extends Canvas
         try
         {
             retrieveGPUResultsImplementation(gl);
-            checkGLErrors(gl, "retrieveGPUResults()");
+            if (checkGLErrors(gl, dialogErrorLog) != null)
+            {
+                GPUErrorOccured = true;
+            }
         }
         catch (OutOfMemoryError memErr)
         {
@@ -640,7 +639,10 @@ public abstract class OpenGLContext extends Canvas
             // free the framebuffer
             gl.glDeleteFramebuffers(1, FBO);
 
-            checkGLErrors(gl, "deleteOpenGLContext()");
+            if (checkGLErrors(gl, dialogErrorLog) != null)
+            {
+                GPUErrorOccured = true;
+            }
         }
         catch (Exception ex)
         {
@@ -653,41 +655,37 @@ public abstract class OpenGLContext extends Canvas
     *  Extremely useful debugging function: When developing,
     *  make sure to call this after almost every GL call.
     */
-    private void checkGLErrors(GL2 gl, String label)
-    {
-        currentGLError = gl.glGetError();
-        if ( (currentGLError != GL_NO_ERROR) && (currentGLError != prevGLError) )
-        {
-            prevGLError = currentGLError;
-            String error = glu.gluErrorString(currentGLError);
-            if (dialogErrorLog)
-                JOptionPane.showMessageDialog(this, "OpenGL reported an error: " + error + "!\nPoint of error: " + label, "OpenGL Error: " + error, JOptionPane.WARNING_MESSAGE);
-            if (DEBUG_BUILD) println("OpenGL reported an error: " + error + "!\nPoint of error: " + label);
-
-            GPUErrorOccured = true;
-        }
-    }
-
-    public static void checkGLErrors(GL2 gl)
+    public static String checkGLErrors(GL2 gl, boolean dialog)
     {
         int error = gl.glGetError();
         if (error != GL_NO_ERROR)
         {
             String stringError = glu.gluErrorString(error);
 
+            StackTraceElement[] stes = Thread.currentThread().getStackTrace();
+            StackTraceElement ste = stes[2]; // The index here is probably java implementation dependendent
+
+            String fullClassName = ste.getClassName();
+            String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
+            String methodName = ste.getMethodName();
+            int lineNumber = ste.getLineNumber();
+            String errorReport = className + "." + methodName + "():" + lineNumber +
+                    " OpenGL error '" + stringError + "'";
+
             if (DEBUG_BUILD)
             {
-                StackTraceElement[] stes = Thread.currentThread().getStackTrace();
-                StackTraceElement ste = stes[2]; // The index here is probably java implementation dependendent
-
-                String fullClassName = ste.getClassName();
-                String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-                String methodName = ste.getMethodName();
-                int lineNumber = ste.getLineNumber();
-
-                println(className + "." + methodName + "():" + lineNumber + " OpenGL error '" + stringError + "'");
+                println(errorReport);
             }
+
+            if (dialog)
+            {
+                JOptionPane.showMessageDialog(null, errorReport, "OpenGL Error", JOptionPane.WARNING_MESSAGE);
+            }
+
+            return errorReport;
         }
+
+        return null;
     }
 
     /**
