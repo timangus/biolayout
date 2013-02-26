@@ -100,7 +100,7 @@ public class SignalingPetriNetSimulationDialog extends JDialog implements Action
         timeBlocksLabel.setToolTipText("Number of Time Blocks");
         JLabel runsLabel = new JLabel("Number of Runs:");
         runsLabel.setToolTipText("Number of Runs");
-        errorCheckBox = new JCheckBox("Calculate Error");
+        errorCheckBox = new JCheckBox("Calculate Variance");
         errorCheckBox.setSelected(false);
         errorCheckBox.addActionListener(this);
         ButtonGroup errorTypeButtonGroup = new ButtonGroup();
