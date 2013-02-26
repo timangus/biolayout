@@ -423,7 +423,8 @@
                                     tofile="${osx.app.dir}/Contents/Resources/Icon.icns" />
                                 <copy file="${project.build.directory}/${outFilename}.jar"
                                     tofile="${osx.app.dir}/Contents/Resources/Java/${outFilename}.jar" />
-                                <symlink link="${osx.app.dir}/Contents/MacOS/JavaApplicationStub"
+                                <symlink failonerror="false" overwrite="true"
+                                    link="${osx.app.dir}/Contents/MacOS/JavaApplicationStub"
                                     resource="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub"/>
                             </target>
                         </configuration>
