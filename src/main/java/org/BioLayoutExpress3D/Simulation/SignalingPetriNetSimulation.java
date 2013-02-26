@@ -223,7 +223,7 @@ public class SignalingPetriNetSimulation
                     }
                     else
                     {
-                        float stderr = (float)java.lang.Math.sqrt(stddev);
+                        float stderr = stddev / (float)java.lang.Math.sqrt(runs.length);
                         out.setError(placeIndex, timeBlock, stderr);
                     }
                 }
