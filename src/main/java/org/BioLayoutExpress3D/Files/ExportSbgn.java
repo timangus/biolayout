@@ -152,25 +152,26 @@ public final class ExportSbgn
         map.put("-P", "process");
         map.put("P",  "process");
         map.put("PT", "process");
-        map.put("Su", "process");
+        map.put("SU", "process");
         map.put("AP", "process");
-        map.put("Gy", "process");
-        map.put("Ub", "process");
-        map.put("Me", "process");
-        map.put("Se", "process");
-        map.put("Pa", "process");
-        map.put("Ac", "process");
-        map.put("Pr", "process");
+        map.put("GY", "process");
+        map.put("UB", "process");
+        map.put("ME", "process");
+        map.put("SE", "process");
+        map.put("PA", "process");
+        map.put("AC", "process");
+        map.put("PR", "process");
         map.put("S",  "process");
-        map.put("At", "process");
-        map.put("My", "process");
+        map.put("AT", "process");
+        map.put("MY", "process");
         map.put("H+", "process");
         map.put("OH", "process");
-        map.put("Pe", "process");
-        map.put("Ox", "process");
-        map.put("Sec","process");
+        map.put("PE", "process");
+        map.put("OX", "process");
+        map.put("SEC","process");
         map.put("M",  "process");
         map.put("/",  "source and sink");
+        map.put("?",  "uncertain process");
         LABEL_TO_GLYPH_CLASS = Collections.unmodifiableMap(map);
     }
 
@@ -605,7 +606,7 @@ public final class ExportSbgn
         }
         else if (mepnShape.equals("ellipse"))
         {
-            String glyphClass = LABEL_TO_GLYPH_CLASS.get(mepnLabel);
+            String glyphClass = LABEL_TO_GLYPH_CLASS.get(mepnLabel.toUpperCase());
             if (glyphClass != null)
             {
                 glyph.setClazz(glyphClass);
