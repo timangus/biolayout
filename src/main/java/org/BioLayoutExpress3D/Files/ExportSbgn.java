@@ -136,10 +136,10 @@ public final class ExportSbgn
     static
     {
         java.util.Map<String, String> map = new HashMap<String, String>();
-        map.put("D",  "dissociation");
         map.put("&",  "and");
         map.put("OR", "or");
         map.put("B",  "association");
+        map.put("D",  "dissociation");
         map.put("O",  "process");
         map.put("X",  "process");
         map.put("AX", "process");
