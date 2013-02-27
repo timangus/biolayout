@@ -218,19 +218,27 @@ public final class ExportSbgn
 
     private ComponentList parseMepnLabel(String mepnLabel)
     {
-        String alias = null;
-        Pattern aliasRegex = Pattern.compile("[^\\n]+(\\n\\s*\\(([^\\)]*)\\))");
-        Matcher aliasMatcher = aliasRegex.matcher(mepnLabel);
-        String strippedLabel = mepnLabel;
-        if (aliasMatcher.find())
+        String[] components = mepnLabel.split("\\s*:\\s*");
+
+        String complexAlias = null;
+        if (components.length > 1)
         {
-            alias = aliasMatcher.group(2);
-            strippedLabel = mepnLabel.replace(aliasMatcher.group(1), "");
+            // More than one component indicates a complex
+            // In this case the last component may include an alias for the complex
+            // as a whole which we must save and strip off
+            // Note that a complex alias MUST be on its own line to avoid being
+            // ambiguous with respect to a protein alias
+            int lastComponentIndex = components.length - 1;
+            Pattern aliasRegex = Pattern.compile("[^\\n]+(\\n\\s*\\(([^\\)]*)\\))");
+            Matcher aliasMatcher = aliasRegex.matcher(components[lastComponentIndex]);
+            if (aliasMatcher.find())
+            {
+                complexAlias = aliasMatcher.group(2);
+                components[lastComponentIndex] = components[lastComponentIndex].replace(aliasMatcher.group(1), "");
+            }
         }
 
         List<Component> list = new ArrayList<Component>();
-
-        String[] components = strippedLabel.split("\\s*:\\s*");
 
         // Match this pattern: <n>PROT1[A]
         Pattern regex = Pattern.compile("(?:<([^>]+)>)?([^\\[]*)(?:\\[([^\\]]+)\\])?");
@@ -271,7 +279,7 @@ public final class ExportSbgn
             list.add(c);
         }
 
-        return new ComponentList(alias, list);
+        return new ComponentList(complexAlias, list);
     }
 
     private void configureComponentGlyph(String type, Component c, Glyph glyph)
