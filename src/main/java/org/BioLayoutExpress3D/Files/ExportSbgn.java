@@ -1658,6 +1658,8 @@ public final class ExportSbgn
         List<String> processClazzes = new ArrayList<String>(
                 Arrays.asList(
                 "process",
+                "uncertain process",
+                "association",
                 "dissociation",
                 "source and sink"));
 
