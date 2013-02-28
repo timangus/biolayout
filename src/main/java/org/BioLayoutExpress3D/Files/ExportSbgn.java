@@ -284,8 +284,15 @@ public final class ExportSbgn
 
     private void configureComponentGlyph(String type, Component c, Glyph glyph)
     {
-        final float INFO_X = 0.3f * SCALE;
         Bbox glyphBbox = glyph.getBbox();
+
+        // SBGN-ED seems to only allow three info glyphs per parent glyph edge.
+        // It decides which "index" the subglyph sits in based on which third its
+        // bbox sits in. So the 0.33f here is to make sure we get the subglyph
+        // into a place where SBGN-ED won't just arbitrarily throw it away.
+        // Craptastic.
+        final float SBGN_ED_X_OFFSET = glyphBbox.getW() * 0.1f;
+        final float SBGN_ED_STRIDE = 0.33f * glyphBbox.getW();
         int multimer = c.getNumber();
 
         if (multimer != 1)
@@ -306,7 +313,7 @@ public final class ExportSbgn
             glyph.setClazz(type);
         }
 
-        int infoIndex = 1;
+        int infoIndex = 0;
         for (String info : c.getInfoList())
         {
             // Infos
@@ -315,7 +322,7 @@ public final class ExportSbgn
             infoGlyph.setClazz("unit of information");
 
             Bbox bbox = new Bbox();
-            bbox.setX(glyphBbox.getX() + (INFO_X * infoIndex));
+            bbox.setX(glyphBbox.getX() + SBGN_ED_X_OFFSET + (SBGN_ED_STRIDE * infoIndex));
             bbox.setY(glyphBbox.getY());
             infoGlyph.setBbox(bbox);
 
@@ -328,7 +335,7 @@ public final class ExportSbgn
             infoIndex++;
         }
 
-        int modIndex = 1;
+        int modIndex = 0;
         for (String mod : c.getModList())
         {
             // Mods
@@ -337,7 +344,7 @@ public final class ExportSbgn
             multimerGlyph.setClazz("state variable");
 
             Bbox bbox = new Bbox();
-            bbox.setX(glyphBbox.getX() + (INFO_X * modIndex));
+            bbox.setX(glyphBbox.getX() + SBGN_ED_X_OFFSET + (SBGN_ED_STRIDE * modIndex));
             bbox.setY(glyphBbox.getY() + glyphBbox.getH());
             multimerGlyph.setBbox(bbox);
 
