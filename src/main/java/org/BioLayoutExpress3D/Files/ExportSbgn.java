@@ -1895,6 +1895,27 @@ public final class ExportSbgn
         return glyph;
     }
 
+    private boolean listContainsGlyphWithId(List<Glyph> glyphs, String id)
+    {
+        for (Glyph glyph : glyphs)
+        {
+            if (glyph.getId().equals(id))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void makeGlyphIdUnique(Glyph glyph, List<Glyph> existingGlyphs)
+    {
+        while (listContainsGlyphWithId(existingGlyphs, glyph.getId()))
+        {
+            glyph.setId(glyph.getId() + "_");
+        }
+    }
+
     private Sbgn translateMepnToSbgn(Graph in)
     {
         Sbgn sbgn = new Sbgn();
@@ -1922,6 +1943,7 @@ public final class ExportSbgn
         {
             Glyph glyph = translateNodeToSbgnGlyph(graphNode);
 
+            makeGlyphIdUnique(glyph, map.getGlyph());
             map.getGlyph().add(glyph);
             sbgnGlyphs.put(graphNode.getNodeID(), glyph);
         }
