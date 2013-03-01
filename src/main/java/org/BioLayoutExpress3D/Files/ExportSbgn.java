@@ -1612,7 +1612,7 @@ public final class ExportSbgn
                 Bbox originalBbox = glyph.getBbox();
                 final float NEW_GLYPH_SCALE = 1.0f;
                 float simpleChemicalWidth = originalBbox.getH() * NEW_GLYPH_SCALE;
-                float horizontalShift = simpleChemicalWidth * 0.5f;
+                float horizontalShift = simpleChemicalWidth * 0.3f;
 
                 Glyph leftGlyph = new Glyph();
                 Arc leftArc = new Arc();
