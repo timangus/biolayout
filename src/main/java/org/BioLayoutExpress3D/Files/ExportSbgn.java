@@ -554,6 +554,9 @@ public final class ExportSbgn
         }
     }
 
+    List<String> spnGlyphIds = new ArrayList<String>();
+    List<String> spnArcIds = new ArrayList<String>();
+
     private boolean specialiseSpnDistSpacerOrOutput(String mepnShape, String mepnLabel, Color mepnBackColor, Glyph glyph)
     {
         if (mepnLabel.isEmpty())
@@ -617,6 +620,7 @@ public final class ExportSbgn
         if (specialiseSpnTokenInput(mepnShape, mepnLabel, mepnBackColor, glyph) ||
                 specialiseSpnDistSpacerOrOutput(mepnShape, mepnLabel, mepnBackColor, glyph))
         {
+            spnGlyphIds.add(glyph.getId());
             return true;
         }
         else if (mepnShape.equals("ellipse"))
@@ -1578,9 +1582,31 @@ public final class ExportSbgn
             if (glyph.getClazz().startsWith(ENERGY_TRANSFER_GLYPH_INDICATOR))
             {
                 List<Arc> arcs = new ArrayList<Arc>();
+                List<Arc> connectedSpnArcs = new ArrayList<Arc>();
 
-                arcs.addAll(arcsComingFrom(glyph, arcList));
-                arcs.addAll(arcsGoingTo(glyph, arcList));
+                for (Arc arc : arcsComingFrom(glyph, arcList))
+                {
+                    if (spnArcIds.contains(arc.getId()))
+                    {
+                        connectedSpnArcs.add(arc);
+                    }
+                    else
+                    {
+                        arcs.add(arc);
+                    }
+                }
+
+                for (Arc arc : arcsGoingTo(glyph, arcList))
+                {
+                    if (!spnArcIds.contains(arc.getId()))
+                    {
+                        connectedSpnArcs.add(arc);
+                    }
+                    else
+                    {
+                        arcs.add(arc);
+                    }
+                }
 
                 String originalLabel = glyph.getClazz().replace(ENERGY_TRANSFER_GLYPH_INDICATOR, "");
                 Pattern r = Pattern.compile("^\\s*(.+?)\\s*->\\s*(.+?)\\s*$");
@@ -1651,6 +1677,20 @@ public final class ExportSbgn
                     setArcStartToGlyph(rightArc, target);
                     setArcEndToGlyph(rightArc, rightGlyph);
                     rightArc.setClazz("production");
+
+                    // Reconnect any SPN arcs
+                    for (Arc connectedSpnArc : connectedSpnArcs)
+                    {
+                        if (connectedSpnArc.getSource() == glyph)
+                        {
+                            connectedSpnArc.setSource(rightGlyph);
+                        }
+
+                        if (connectedSpnArc.getTarget() == glyph)
+                        {
+                            connectedSpnArc.setTarget(rightGlyph);
+                        }
+                    }
                 }
 
                 glyphsToAdd.add(leftGlyph);
@@ -1805,6 +1845,11 @@ public final class ExportSbgn
 
         specialiseSbgnArc(Arrays.asList(arrowHeads), source, target, arc);
 
+        if (spnGlyphIds.contains(source.getId()) || spnGlyphIds.contains(target.getId()))
+        {
+            spnArcIds.add(arc.getId());
+        }
+
         return arc;
     }
 
@@ -1857,6 +1902,8 @@ public final class ExportSbgn
         sbgn.setMap(map);
         map.setLanguage("process description");
         java.util.Map<Integer,Glyph> sbgnGlyphs = new HashMap<Integer,Glyph>();
+        spnGlyphIds.clear();
+        spnArcIds.clear();
         glyphsToNotClone.clear();
 
         if (nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get())
