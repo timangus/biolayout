@@ -1598,7 +1598,7 @@ public final class ExportSbgn
 
                 for (Arc arc : arcsGoingTo(glyph, arcList))
                 {
-                    if (!spnArcIds.contains(arc.getId()))
+                    if (spnArcIds.contains(arc.getId()))
                     {
                         connectedSpnArcs.add(arc);
                     }
