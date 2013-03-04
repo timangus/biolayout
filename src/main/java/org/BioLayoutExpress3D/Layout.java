@@ -236,7 +236,7 @@ public final class Layout
         System.err.println(" -useShaders [on|off]                : use shaders support for the renderer (default on)");
         System.err.println(" -nimbusLAF [on|off]                 : set the Nimbus look and feel (default off)");
         System.err.println(" -useDefaultPreferences              : use the defaults for all saved preferences");
-        System.err.println(" -usePreference <preference> <value> : use the defaults for all saved preferences");
+        System.err.println(" -usePreference <preference> <value> : set a specific preference to some value");
         System.err.println(" -help                               : prints out this help page");
 
         System.exit(0);
@@ -314,8 +314,6 @@ public final class Layout
         String dataSets = "";
         // use this complex way for parsing the USE_SHADERS_PROCESS value so as to avoid a weird OpenGL flicker effect in Windows OSs
         // which only happens when the USE_SHADERS_PROCESS variables are being accessed within void main!!!
-        boolean hasChosenUseNativeCodeCommandLine = false;
-        boolean useNativeCode = false;
         boolean hasChosenUseShadersProcessCommandLine = false;
         boolean useShadersProcess = false;
         boolean nimbusLAF = false;
@@ -346,12 +344,6 @@ public final class Layout
                 {
                     dataSets = args[++i];
                     if (DEBUG_BUILD) System.out.println("Now starting with loading dataSets:\n\"" + dataSets + "\"");
-                }
-                else if ("-useNativeCode".equals(args[i]))
-                {
-                    hasChosenUseNativeCodeCommandLine = true;
-                    useNativeCode = "on".equals( args[++i].toLowerCase() );
-                    if (DEBUG_BUILD) System.out.println("Now starting with using native code: " + Boolean.toString(useNativeCode));
                 }
                 else if ("-useShaders".equals(args[i]))
                 {
