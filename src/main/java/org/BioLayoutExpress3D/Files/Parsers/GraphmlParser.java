@@ -24,6 +24,7 @@ import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 public final class GraphmlParser extends XmlParser
 {
+    private final boolean DEBUG_GRAPHML = false;
 
     /**
     *  Graph related parsing variable.
@@ -265,7 +266,7 @@ public final class GraphmlParser extends XmlParser
     @Override
     protected void startDocumentInherit() throws SAXException
     {
-        if (DEBUG_BUILD) println("\nStarting parsing the " + nameOfXmlParser + " XML document.\n");
+        if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nStarting parsing the " + nameOfXmlParser + " XML document.\n");
     }
 
     /**
@@ -274,7 +275,7 @@ public final class GraphmlParser extends XmlParser
     @Override
     protected void endDocumentInherit() throws SAXException
     {
-        if (DEBUG_BUILD) println("\nFinished parsing the " + nameOfXmlParser + " XML document.\n");
+        if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nFinished parsing the " + nameOfXmlParser + " XML document.\n");
     }
 
     /**
@@ -285,7 +286,7 @@ public final class GraphmlParser extends XmlParser
     {
         if ( type.equals("graph") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <graph> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <graph> reached");
 
             edgedefault = attributes.getValue("edgedefault");
             id = attributes.getValue("id");
@@ -304,7 +305,7 @@ public final class GraphmlParser extends XmlParser
 
             parseOrder = attributes.getValue("parse.order");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("edgedefault: " + edgedefault);
                 println("id: " + id);
@@ -319,34 +320,34 @@ public final class GraphmlParser extends XmlParser
         // from now on, parsing node data
         else if ( type.equals("node") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <node> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <node> reached");
 
             nodeId = attributes.getValue("id");
 
-            if (DEBUG_BUILD) println("nodeId: " + nodeId);
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("nodeId: " + nodeId);
         }
         else if ( type.equals("data") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <data> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <data> reached");
 
             key = attributes.getValue("key");
 
-            if (DEBUG_BUILD) println("key: " + key);
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("key: " + key);
         }
         else if ( type.equals("y:ShapeNode") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:ShapeNode> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:ShapeNode> reached");
         }
         else if ( type.equals("y:Geometry") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:Geometry> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:Geometry> reached");
 
             geometryValues[0] = Float.parseFloat( attributes.getValue("height") );
             geometryValues[1] = Float.parseFloat( attributes.getValue("width") );
             geometryValues[2] = Float.parseFloat( attributes.getValue("x") );
             geometryValues[3] = Float.parseFloat( attributes.getValue("y") );
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("height: " + geometryValues[0]);
                 println("width: " + geometryValues[1]);
@@ -356,7 +357,7 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:Fill") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:Fill> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:Fill> reached");
 
             // make sure the fillValues array has 4 values, as it's not always the case in the graphml file
             fillValues[0] = attributes.getValue("hasColor");
@@ -364,7 +365,7 @@ public final class GraphmlParser extends XmlParser
             fillValues[2] = attributes.getValue("color2");
             fillValues[3] = attributes.getValue("transparent");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("hasColor: " + fillValues[0]);
                 println("color: " + fillValues[1]);
@@ -374,7 +375,7 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:BorderStyle") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:BorderStyle> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:BorderStyle> reached");
 
             // make sure the borderStyleValues array has 4 values, as it's not always the case in the graphml file
             borderStyleValues[0] = attributes.getValue("hasColor");
@@ -382,7 +383,7 @@ public final class GraphmlParser extends XmlParser
             borderStyleValues[2] = attributes.getValue("type");
             borderStyleValues[3] = attributes.getValue("width");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("hasColor: " + borderStyleValues[0]);
                 println("color: " + borderStyleValues[1]);
@@ -392,7 +393,7 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:NodeLabel") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:NodeLabel> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:NodeLabel> reached");
 
             isAtNodeLabel = true;
             nodeLabelValues[0]  = attributes.getValue("alignment");
@@ -411,7 +412,7 @@ public final class GraphmlParser extends XmlParser
             nodeLabelValues[13] = attributes.getValue("x");
             nodeLabelValues[14] = attributes.getValue("y");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("alignment: " + nodeLabelValues[0]);
                 println("autoSizePolicy: " + nodeLabelValues[1]);
@@ -432,23 +433,23 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:Shape") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:Shape> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:Shape> reached");
 
             shape = attributes.getValue("type");
 
-            if (DEBUG_BUILD) println("shape: " + shape);
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("shape: " + shape);
         }
         // from now on, parsing edge data
         else if ( type.equals("edge") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <edge> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <edge> reached");
 
             edgeId = attributes.getValue("id");
 
             edgeNodeConnectionValues[0] = attributes.getValue("source");
             edgeNodeConnectionValues[1] = attributes.getValue("target");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("edgeId: " + edgeId);
                 println("source: " + edgeNodeConnectionValues[0]);
@@ -457,22 +458,22 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:PolyLineEdge") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:PolyLineEdge> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:PolyLineEdge> reached");
         }
         else if ( type.equals("y:ArcEdge") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:ArcEdge> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:ArcEdge> reached");
         }
         else if ( type.equals("y:Path") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:Path> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:Path> reached");
 
             pathValues[0] = Float.parseFloat( attributes.getValue("sx") );
             pathValues[1] = Float.parseFloat( attributes.getValue("sy") );
             pathValues[2] = Float.parseFloat( attributes.getValue("tx") );
             pathValues[3] = Float.parseFloat( attributes.getValue("ty") );
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("sx: " + pathValues[0]);
                 println("sy: " + pathValues[1]);
@@ -482,24 +483,24 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:Point") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:Point> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:Point> reached");
 
             Point2D.Float point = new Point2D.Float( Float.parseFloat( attributes.getValue("x") ),
                                                      Float.parseFloat( attributes.getValue("y") )
                                                    );
             allPointValues.add(point);
 
-            if (DEBUG_BUILD) println("Point: " + point.toString());
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Point: " + point.toString());
         }
         else if ( type.equals("y:LineStyle") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:LineStyle> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:LineStyle> reached");
 
             lineStyleValues[0] = attributes.getValue("color");
             lineStyleValues[1] = attributes.getValue("type");
             lineStyleValues[2] = attributes.getValue("width");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("color: " + lineStyleValues[0]);
                 println("type: " + lineStyleValues[1]);
@@ -508,12 +509,12 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:Arrows") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:Arrows> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:Arrows> reached");
 
             arrowsValues[0] = attributes.getValue("source");
             arrowsValues[1] = attributes.getValue("target");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("source: " + arrowsValues[0]);
                 println("target: " + arrowsValues[1]);
@@ -521,7 +522,7 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:EdgeLabel") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:EdgeLabel> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:EdgeLabel> reached");
 
             isAtEdgeLabel = true;
             edgeLabelValues[0]  = attributes.getValue("alignment");
@@ -542,7 +543,7 @@ public final class GraphmlParser extends XmlParser
             edgeLabelValues[15] = attributes.getValue("x");
             edgeLabelValues[16] = attributes.getValue("y");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("alignment: " + edgeLabelValues[0]);
                 println("distance: " + edgeLabelValues[1]);
@@ -566,13 +567,13 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:Arc") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:Arc> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:Arc> reached");
 
             bendStyleOrArcValues[1] = attributes.getValue("height");
             bendStyleOrArcValues[1] = attributes.getValue("ratio");
             bendStyleOrArcValues[1] = attributes.getValue("type");
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("height: " + bendStyleOrArcValues[1]);
                 println("ratio: " + bendStyleOrArcValues[2]);
@@ -581,11 +582,11 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:BendStyle") )
         {
-            if (DEBUG_BUILD) println("\nGraphml tag <y:BendStyle> reached");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("\nGraphml tag <y:BendStyle> reached");
 
             bendStyleOrArcValues[0] = attributes.getValue("smoothed");
 
-            if (DEBUG_BUILD) println("smoothed: " + bendStyleOrArcValues[0]);
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("smoothed: " + bendStyleOrArcValues[0]);
         }
     }
 
@@ -597,12 +598,12 @@ public final class GraphmlParser extends XmlParser
     {
         if ( type.equals("graph") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <graph> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <graph> ended\n");
         }
         // from now on, parsing node data
         else if ( type.equals("node") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <node> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <node> ended\n");
 
             Tuple6<float[], String[], String[], String[], String[], String> nodeTuple6 = Tuples.tuple(geometryValues,
                                                                                                       fillValues,
@@ -622,29 +623,29 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("data") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <data> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <data> ended\n");
         }
         else if ( type.equals("y:ShapeNode") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:ShapeNode> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:ShapeNode> ended\n");
         }
         else if ( type.equals("y:Geometry") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:Geometry> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:Geometry> ended\n");
         }
         else if ( type.equals("y:Fill") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:Fill> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:Fill> ended\n");
         }
         else if ( type.equals("y:BorderStyle") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:BorderStyle> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:BorderStyle> ended\n");
         }
         else if ( type.equals("y:NodeLabel") )
         {
             isAtNodeLabel = false;
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("nodeLabelName: " + nodeLabelName[0]);
                 println("Graphml tag <y:NodeLabel> ended\n");
@@ -652,12 +653,12 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:Shape") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:Shape> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:Shape> ended\n");
         }
         // from now on, parsing edge data
         else if ( type.equals("edge") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <edge> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <edge> ended\n");
 
             Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]> edgeTuple6 = Tuples.tuple(edgeId,
                                                                                                                                         allPathValues,
@@ -677,35 +678,35 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:PolyLineEdge") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:PolyLineEdge> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:PolyLineEdge> ended\n");
         }
         else if ( type.equals("y:ArcEdge") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:ArcEdge> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:ArcEdge> ended\n");
         }
         else if ( type.equals("y:Path") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:Path> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:Path> ended\n");
 
             allPathValues = Tuples.tuple(pathValues, allPointValues);
         }
         else if ( type.equals("y:Point") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:Point> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:Point> ended\n");
         }
         else if ( type.equals("y:LineStyle") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:LineStyle> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:LineStyle> ended\n");
         }
         else if ( type.equals("y:Arrows") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:Arrows> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:Arrows> ended\n");
         }
         else if ( type.equals("y:EdgeLabel") )
         {
             isAtEdgeLabel = false;
 
-            if (DEBUG_BUILD)
+            if (DEBUG_BUILD && DEBUG_GRAPHML)
             {
                 println("edgeLabelName: " + edgeLabelValues[17]);
                 println("Graphml tag <y:EdgeLabel> ended\n");
@@ -713,7 +714,7 @@ public final class GraphmlParser extends XmlParser
         }
         else if ( type.equals("y:BendStyle") )
         {
-            if (DEBUG_BUILD) println("Graphml tag <y:BendStyle> ended\n");
+            if (DEBUG_BUILD && DEBUG_GRAPHML) println("Graphml tag <y:BendStyle> ended\n");
         }
     }
 
@@ -736,7 +737,7 @@ public final class GraphmlParser extends XmlParser
     @Override
     protected void errorInherit(SAXParseException exception)
     {
-        if (DEBUG_BUILD) println( "XML validation error:\n" + exception.getMessage() );
+        if (DEBUG_BUILD && DEBUG_GRAPHML) println( "XML validation error:\n" + exception.getMessage() );
         JOptionPane.showMessageDialog(layoutFrame, "XML validation error:\n" + exception.getMessage(), "XML validation error!", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -746,7 +747,7 @@ public final class GraphmlParser extends XmlParser
     @Override
     protected void fatalErrorInherit(SAXParseException exception)
     {
-        if (DEBUG_BUILD) println( "XML validation fatal error:\n" + exception.getMessage() );
+        if (DEBUG_BUILD && DEBUG_GRAPHML) println( "XML validation fatal error:\n" + exception.getMessage() );
         JOptionPane.showMessageDialog(layoutFrame, "XML validation fatal error:\n" + exception.getMessage(), "XML validation fatal error!", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -756,7 +757,7 @@ public final class GraphmlParser extends XmlParser
     @Override
     protected void warningInherit(SAXParseException exception)
     {
-        if (DEBUG_BUILD) println( "XML validation warning error:\n" + exception.getMessage() );
+        if (DEBUG_BUILD && DEBUG_GRAPHML) println( "XML validation warning error:\n" + exception.getMessage() );
         JOptionPane.showMessageDialog(layoutFrame, "XML validation warning error:\n" + exception.getMessage(), "XML validation warning error!", JOptionPane.ERROR_MESSAGE);
     }
 
