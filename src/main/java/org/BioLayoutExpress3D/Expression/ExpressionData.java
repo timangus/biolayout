@@ -1032,10 +1032,11 @@ public final class ExpressionData
     {
         for (int row = 0; row < totalRows; row++)
         {
-            float variance = sumX2_cacheArray[row] / totalColumns;
-            float stddev = (float)sqrt(variance);
-
-            rowsToFilter[row] = (stddev < filterValue);
+            for (int column = 0; column < totalColumns; column++)
+            {
+                float value = getExpressionDataValue(row, column);
+                rowsToFilter[row] = (value < filterValue);
+            }
         }
     }
 

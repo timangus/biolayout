@@ -151,7 +151,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
         // Filter
         filterCheckBox = new JCheckBox(filterChangedAction);
-        filterCheckBox.setText("Filter Rows With Standard Deviation Less Than");
+        filterCheckBox.setText("Filter Rows With All Values Less Than");
         filterCheckBox.setSelected(false);
         filterField = new FloatNumberField(0, 5);
         filterField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
