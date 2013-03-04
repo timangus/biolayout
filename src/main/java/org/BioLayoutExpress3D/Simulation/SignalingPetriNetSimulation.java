@@ -79,6 +79,7 @@ public class SignalingPetriNetSimulation
         private int numTimeBlocks;
         private ErrorType errorType;
         private int rowWidth;
+        private int bytesAllocated;
         static final int VALUE          = 0;
         static final int STDERR         = 1;
         static final int NUM_DATA_ITEMS = 2;
@@ -90,11 +91,8 @@ public class SignalingPetriNetSimulation
             this.errorType = errorType;
             this.rowWidth = numTimeBlocks * NUM_DATA_ITEMS;
 
-            if (DEBUG_BUILD)
-            {
-                println("Allocating " + ((numPlaces * rowWidth * 4) >> 10) + " kb");
-            }
             data = new float[numPlaces * rowWidth];
+            this.bytesAllocated = numPlaces * rowWidth * 4;
         }
 
         public float getValue(int placeIndex, int timeBlock)
@@ -170,6 +168,17 @@ public class SignalingPetriNetSimulation
             {
                 runs = new SpnResult[1];
                 runs[0] = new SpnResult(numPlaces, numTimeBlocks, errorType);
+            }
+
+            if (DEBUG_BUILD)
+            {
+                int bytesAllocated = 0;
+                for (SpnResult run : runs)
+                {
+                    bytesAllocated += run.bytesAllocated;
+                }
+
+                println("Allocated " + (bytesAllocated >> 10) + "kb for " + numRuns + " runs");
             }
         }
 
