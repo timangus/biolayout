@@ -40,7 +40,7 @@ public final class ExpressionData
     */
     private static final int MAX_ARRAY_SIZE = MAX_ARRAY_RAM_USAGE / 4;
 
-    public static final int FILE_MAGIC_NUMBER = 0xB73D0003;
+    public static final int FILE_MAGIC_NUMBER = 0xB73D0004;
 
     private LayoutFrame layoutFrame = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
@@ -593,9 +593,17 @@ public final class ExpressionData
                                     "\t" + nf3.format(correlation));
                         }
                     }
+                    else
+                    {
+                        index++;
+                    }
                 }
 
                 outOstream.writeInt(i);
+            }
+            else
+            {
+                index += (totalRows - (i + 1));
             }
 
             layoutProgressBarDialog.setText(currentLayoutProgressBarText +
