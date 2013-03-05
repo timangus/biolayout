@@ -149,6 +149,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         Insets insets = this.getInsets();
         this.setSize( new Dimension(APPLICATION_SCREEN_DIMENSION.width + insets.left + insets.right - 2, APPLICATION_SCREEN_DIMENSION.height + insets.top + insets.bottom - 2) );
+        this.setMinimumSize(new Dimension(320, 240));
         this.setIconImage(BIOLAYOUT_ICON_IMAGE);
 
         long prevTimeInMSecs = System.nanoTime() / 1000000;
