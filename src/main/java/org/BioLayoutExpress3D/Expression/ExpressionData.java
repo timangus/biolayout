@@ -1032,11 +1032,32 @@ public final class ExpressionData
     {
         for (int row = 0; row < totalRows; row++)
         {
+            boolean filter = true;
+
             for (int column = 0; column < totalColumns; column++)
             {
                 float value = getExpressionDataValue(row, column);
-                rowsToFilter[row] = (value < filterValue);
+                if (value >= filterValue)
+                {
+                    filter = false;
+                }
             }
+
+            rowsToFilter[row] = filter;
+        }
+
+        if (DEBUG_BUILD)
+        {
+            int numFilteredRows = 0;
+            for (int row = 0; row < totalRows; row++)
+            {
+                if (rowsToFilter[row])
+                {
+                    numFilteredRows++;
+                }
+            }
+
+            println("Filtering " + numFilteredRows + " rows");
         }
     }
 
