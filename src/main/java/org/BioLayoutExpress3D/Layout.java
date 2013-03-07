@@ -3,12 +3,14 @@ package org.BioLayoutExpress3D;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import java.text.SimpleDateFormat;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.DebugConsole.*;
 import org.BioLayoutExpress3D.StaticLibraries.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 import org.BioLayoutExpress3D.Environment.DataFolder;
+import org.BioLayoutExpress3D.Utils.Path;
 import org.BioLayoutExpress3D.Utils.ThreadExceptionHandler;
 
 /**
@@ -50,6 +52,16 @@ public final class Layout
             boolean useDefaults, Map<String, String> preferences,
             boolean hasChosenUseShadersProcessCommandLine, boolean useShadersProcess)
     {
+
+        if (!DEBUG_BUILD)
+        {
+            ReleaseLogger stdOutLogger = new ReleaseLogger(System.out);
+            System.setOut(stdOutLogger);
+
+            ReleaseLogger stdErrLogger = new ReleaseLogger(System.err);
+            System.setOut(stdErrLogger);
+        }
+
         if (hasChosenUseShadersProcessCommandLine)
             USE_SHADERS_PROCESS = useShadersProcess;
 
@@ -63,6 +75,35 @@ public final class Layout
         else
         {
             new LayoutFrame().initializeFrame(useDefaults, preferences, true).loadOnlineDataSet(repository, dataSets);
+        }
+    }
+
+    private class ReleaseLogger extends PrintStream
+    {
+        public ReleaseLogger(OutputStream stream)
+        {
+            super(stream, true);
+        }
+
+        @Override
+        public void print(String s)
+        {
+            super.print(s);
+
+            try
+            {
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+
+                String dataFolder = DataFolder.get();
+                String exceptionLogFileName = Path.combine(dataFolder, "ReleaseConsoleOutput.txt");
+                PrintWriter logOut = new PrintWriter(new BufferedWriter(new FileWriter(exceptionLogFileName, true)));
+                logOut.print(timeStamp + ": ");
+                logOut.println(s);
+                logOut.close();
+            }
+            catch (IOException ioe)
+            {
+            }
         }
     }
 

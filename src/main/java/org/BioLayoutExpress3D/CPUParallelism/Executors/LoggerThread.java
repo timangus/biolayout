@@ -46,20 +46,6 @@ public class LoggerThread extends Thread
     public LoggerThread(Runnable runnable, String name)
     {
         super(runnable, name + " thread id: " + created.incrementAndGet());
-
-        if (DEBUG_BUILD)
-        {
-            setUncaughtExceptionHandler( new Thread.UncaughtExceptionHandler()
-            {
-
-                @Override
-                public void uncaughtException(Thread thread, Throwable e)
-                {
-                    println("Uncaught in thread " + thread.getName() + " with: " + e.getMessage());
-                }
-
-            } );
-        }
     }
 
     /**

@@ -5,6 +5,9 @@ package org.BioLayoutExpress3D.Utils;
  */
 
 import javax.swing.*;
+import java.io.*;
+import org.BioLayoutExpress3D.Utils.Path;
+import org.BioLayoutExpress3D.Environment.DataFolder;
 
 public class ThreadExceptionHandler implements
         Thread.UncaughtExceptionHandler
@@ -21,9 +24,22 @@ public class ThreadExceptionHandler implements
         {
             handlingThreadException = true;
 
-            System.out.println("Exception \"" + e.toString() + "\" occurred in thread ID " +
-                    thread.getId() + "(" + thread.getName() + ")");
-            System.out.println(stackTraceForThrowable(e));
+            String logText = "Exception \"" + e.toString() + "\" occurred in thread ID " +
+                    thread.getId() + "(" + thread.getName() + ")\n" + stackTraceForThrowable(e);
+
+            System.out.println(logText);
+
+            try
+            {
+                String dataFolder = DataFolder.get();
+                String exceptionLogFileName = Path.combine(dataFolder, "UncaughtExceptions.txt");
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(exceptionLogFileName, true)));
+                out.println(logText);
+                out.close();
+            }
+            catch (IOException ioe)
+            {
+            }
 
             JOptionPane.showMessageDialog(null,
                     "Exception \"" + e.toString() + "\" occurred in thread ID " +
