@@ -170,13 +170,18 @@ public final class ClassViewerTableModelGeneral extends AbstractTableModel
         proccessSelected(allClasses, null);
     }
 
+    public void clear()
+    {
+        data = new Object[0][0];
+    }
+
     public void proccessSelected(boolean allClasses, Object[][] hideColumnsData)
     {
         HashSet<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
         int selectedSize = selectedNodes.size();
         if (selectedSize == 0)
         {
-            data = new Object[0][0];
+            clear();
             return;
         }
 

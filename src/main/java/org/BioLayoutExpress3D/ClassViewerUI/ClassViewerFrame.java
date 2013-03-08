@@ -425,6 +425,10 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if ( !selectedGenes.isEmpty() )
             classSetsBox.setSelectedItem( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName() );
 
+        // Clear it out
+        ClassViewerTableModelGeneral model = (ClassViewerTableModelGeneral)generalTable.getModel();
+        model.clear();
+
         generalTable.setDefaultEditor( VertexClass.class, new DefaultCellEditor(classComboBox) );
         generalTable.setDefaultRenderer( VertexClass.class, classComboBox.getClassRenderer() );
 
