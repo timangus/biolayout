@@ -108,7 +108,8 @@ public final class GraphPopupComponent implements Runnable
         {
             if ( component.hasFocus() )
             {
-                if ( SHOW_POPUP_OVERLAY_PLOT.get() && DATA_TYPE.equals(DataTypes.EXPRESSION) )
+                if ( SHOW_POPUP_OVERLAY_PLOT.get() && DATA_TYPE.equals(DataTypes.EXPRESSION) &&
+                        !expressionData.isTransposed() )
                 {
                     initPopupMenuItem("Node Name & Expression Profile:   " + popupNodeName);
                     expressionGraphSimplePlotPanel = new ExpressionGraphSimplePlotPanel(true);

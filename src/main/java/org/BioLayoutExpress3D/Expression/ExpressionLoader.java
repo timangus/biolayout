@@ -92,7 +92,7 @@ public final class ExpressionLoader
             expressionData.initialize(
                     numRows - firstDataRow,
                     numColumns - firstDataColumn,
-                    totalAnnotationColumns);
+                    totalAnnotationColumns, transpose);
 
             layoutProgressBarDialog.setText("Loading data");
 

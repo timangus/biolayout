@@ -54,6 +54,7 @@ public final class ExpressionData
     private int totalRows = 0;
     private int totalColumns = 0;
     private int totalAnnotationColunms = 0;
+    private boolean transpose = false;
     private String[] columnNamesArray = null;
     private String[] rowIDsArray = null;
     private FloatBuffer sumX_cacheBuffer = null;
@@ -88,11 +89,12 @@ public final class ExpressionData
     /**
     *  Initalizes all the data structures.
     */
-    public void initialize(int totalRows, int totalColumns, int totalAnnotationColunms)
+    public void initialize(int totalRows, int totalColumns, int totalAnnotationColunms, boolean transpose)
     {
         this.totalRows = totalRows;
         this.totalColumns = totalColumns;
         this.totalAnnotationColunms = totalAnnotationColunms;
+        this.transpose = transpose;
 
         columnNamesArray = new String[totalColumns];
         rowIDsArray = new String[totalRows];
@@ -913,6 +915,11 @@ public final class ExpressionData
     public int getTotalColumns()
     {
         return totalColumns;
+    }
+
+    public boolean isTransposed()
+    {
+        return transpose;
     }
 
     /**
