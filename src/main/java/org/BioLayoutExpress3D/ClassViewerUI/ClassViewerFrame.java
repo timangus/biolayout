@@ -163,7 +163,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                     if ( splitPane.getDividerLocation() == (classViewerWidthValue / 2) ) // only do this if the slit pane divider is in original location (classViewerWidthValue / 2) of the Class Viewer
                     {
                         validate();
-                        splitPane.setDividerLocation( (prevSplitPaneDividerLocation = classViewerFrame.getWidth() / 2) );
+                        splitPane.setDividerLocation(classViewerFrame.getWidth() / 2);
+                        prevSplitPaneDividerLocation = splitPane.getDividerLocation();
                     }
                 }
             }
@@ -200,8 +201,12 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                     else
                         classViewerHideColumnsDialog.setLocation( ( SCREEN_DIMENSION.width - classViewerFrame.getWidth() ) / 2 - classViewerHideColumnsDialog.getWidth(), ( SCREEN_DIMENSION.height - classViewerHideColumnsDialog.getHeight() ) / 2 );
 
-                    if ( DATA_TYPE.equals(DataTypes.EXPRESSION) ) // only if expression data is loaded, otherwise the divider location will have been already set to 0
-                        splitPane.setDividerLocation( (prevSplitPaneDividerLocation = classViewerFrame.getWidth() / 2) );
+                    // only if expression data is loaded, otherwise the divider location will have been already set to 0
+                    if (DATA_TYPE.equals(DataTypes.EXPRESSION) && !layoutFrame.getExpressionData().isTransposed())
+                    {
+                        splitPane.setDividerLocation(classViewerFrame.getWidth() / 2);
+                        prevSplitPaneDividerLocation = splitPane.getDividerLocation();
+                    }
 
                     // make sure to clear all plot/tables if current selection is empty
                     if ( layoutFrame.getGraph().getSelectionManager().getSelectedNodes().isEmpty() )
@@ -435,7 +440,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if (DEBUG_BUILD) println("Reinit Due to Initial Init.");
 
         if ( !selectedGenes.isEmpty() )
+        {
             populateClassViewer(false, true); //to update the classComboBox and generalTable with the current selection
+        }
     }
 
     private void checkAndAbortUpdateEntropyTableRunnable()
@@ -811,7 +818,17 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 generalTable.sortTableByColumn(NAME_COLUMN, generalTableSorter);
             }
 
-            expressionGraphPanel.repaint();
+            // HACK
+            if (!layoutFrame.getExpressionData().isTransposed())
+            {
+                expressionGraphPanel.setVisible(true);
+                expressionGraphPanel.repaint();
+            }
+            else
+            {
+                expressionGraphPanel.setVisible(false);
+            }
+
             checkClassViewerNavigationButtons();
             if (updateResetSelectDeselectAllButton)
                 resetSelectDeselectAllButton();
@@ -1028,13 +1045,21 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         // nextClassButton.doClick();
         // fire actionPerformed event directly, thus effectively avoiding the JButton being pressed down for some time
         nextClassAction.actionPerformed( new ActionEvent(nextClassAction, ActionEvent.ACTION_PERFORMED, "") );
-        expressionGraphPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction().setEnabled( DATA_TYPE.equals(DataTypes.EXPRESSION) && (layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getTotalClasses() > 0) );
-        expressionGraphPanel.getRenderPlotImageToFileAction().setEnabled( DATA_TYPE.equals(DataTypes.EXPRESSION) );
+        expressionGraphPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction().setEnabled(
+                DATA_TYPE.equals(DataTypes.EXPRESSION) &&
+                !layoutFrame.getExpressionData().isTransposed() &&
+                (layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getTotalClasses() > 0));
+        expressionGraphPanel.getRenderPlotImageToFileAction().setEnabled(
+                DATA_TYPE.equals(DataTypes.EXPRESSION) &&
+                !layoutFrame.getExpressionData().isTransposed());
     }
 
     public void setSplitPaneDividerLocationForNoExpressionData()
     {
-        if (splitPane.getDividerLocation() != 0) prevSplitPaneDividerLocation = splitPane.getDividerLocation();
+        if (splitPane.getDividerLocation() != 0)
+        {
+            prevSplitPaneDividerLocation = splitPane.getDividerLocation();
+        }
         splitPane.setDividerLocation(0);
     }
 
