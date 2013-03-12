@@ -3,7 +3,7 @@
 !include "FileAssociation.nsh"
 
 !define LONG_NAME "BioLayout Express 3D"
-!define VERSION "2.3"
+!define VERSION "3.0"
 !define BASE_NAME "BioLayoutExpress3D"
 !define BASE_DIR ".."
 
