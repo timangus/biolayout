@@ -53,6 +53,11 @@ public final class ClassViewerTable extends JTable
         int colIndex = columnAtPoint(p);
         Object cellData = getValueAt(rowIndex, colIndex);
 
+        if (cellData == null)
+        {
+            return "";
+        }
+
         if (cellData instanceof Color)
         {
             Color color = (Color)cellData;
