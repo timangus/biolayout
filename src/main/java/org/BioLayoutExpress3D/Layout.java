@@ -97,6 +97,7 @@ public final class Layout
                 String dataFolder = DataFolder.get();
                 String exceptionLogFileName = Path.combine(dataFolder, "ReleaseConsoleOutput.txt");
                 PrintWriter logOut = new PrintWriter(new BufferedWriter(new FileWriter(exceptionLogFileName, true)));
+                logOut.println(BuildConfig.BUILD_TIME);
                 logOut.print(timeStamp + ": ");
                 logOut.println(s);
                 logOut.close();

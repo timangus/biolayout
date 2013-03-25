@@ -6,6 +6,9 @@ package org.BioLayoutExpress3D.Utils;
 
 import javax.swing.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import org.BioLayoutExpress3D.BuildConfig;
 import org.BioLayoutExpress3D.Utils.Path;
 import org.BioLayoutExpress3D.Environment.DataFolder;
 
@@ -24,7 +27,10 @@ public class ThreadExceptionHandler implements
         {
             handlingThreadException = true;
 
-            String logText = "Exception \"" + e.toString() + "\" occurred in thread ID " +
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+
+            String logText = BuildConfig.BUILD_TIME + "\n" + timeStamp +
+                    ": Exception \"" + e.toString() + "\" occurred in thread ID " +
                     thread.getId() + "(" + thread.getName() + ")\n" + stackTraceForThrowable(e);
 
             System.out.println(logText);
