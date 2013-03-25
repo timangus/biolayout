@@ -102,7 +102,7 @@ public final class ExportSbgn
             String fileExtension = fileNameExtensionFilterSbgn.getExtensions()[0];
 
             String fileName = fileChooser.getSelectedFile().getAbsolutePath();
-            fileName = IOUtils.checkFileNameExtension(fileName, fileExtension);
+            fileName = IOUtils.removeMultipleExtensions(fileName, fileExtension);
             saveFile = new File(fileName + "." + fileExtension);
 
             if (saveFile.exists())

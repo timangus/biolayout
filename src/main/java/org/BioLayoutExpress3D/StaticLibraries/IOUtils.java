@@ -91,9 +91,16 @@ public final class IOUtils
     /**
     *  Recursive method to get rid of (multiple) usage of the same file extension.
     */
-    public static String checkFileNameExtension(String fileName, String fileExtension)
+    public static String removeMultipleExtensions(String fileName, String fileExtension)
     {
-        return ( fileName.endsWith(fileExtension) ) ? checkFileNameExtension(getPrefix(fileName), fileExtension) : fileName;
+        if (fileName.endsWith("." + fileExtension))
+        {
+            return removeMultipleExtensions(getPrefix(fileName), fileExtension);
+        }
+        else
+        {
+            return fileName;
+        }
     }
 
     /**

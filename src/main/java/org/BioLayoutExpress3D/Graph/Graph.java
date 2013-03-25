@@ -1028,7 +1028,7 @@ public class Graph extends GLCanvas implements GraphInterface
             // default file extension will be the PNG file format
             String fileExtension = ( imageToFileChooser.getFileFilter().equals(fileNameExtensionFilterPNG) ) ? fileNameExtensionFilterPNG.getExtensions()[0] : fileNameExtensionFilterJPG.getExtensions()[0];
             String fileName = imageToFileChooser.getSelectedFile().getAbsolutePath();
-            fileName = IOUtils.checkFileNameExtension(fileName, fileExtension);
+            fileName = IOUtils.removeMultipleExtensions(fileName, fileExtension);
             saveScreenshotFileToReturn = new File(fileName + "." + fileExtension);
 
             if ( saveScreenshotFileToReturn.exists() )
