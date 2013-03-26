@@ -171,7 +171,7 @@ public final class GraphmlLookUpmEPNTables
                                                                           Tuples.tuple("S",   "ellipse", SECRETION,                    decode("#CCFFCC"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("/",   "ellipse", SINK_PROTEASOMAL_DEGRADATION, decode("#FFFFFF"), 5.0f, CIRCLE, TORUS),
                                                                           Tuples.tuple("Ox",  "ellipse", OXIDATION,                    decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
-                                                                          Tuples.tuple("M",   "ellipse", MUTATION,                     decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
+                                                                          Tuples.tuple("M",   "ellipse", MUTATION,                     decode("#FF99CC"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("?",   "ellipse", UNKNOWN_TRANSITION,           decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
 
                                                                           // Edge Annotations
