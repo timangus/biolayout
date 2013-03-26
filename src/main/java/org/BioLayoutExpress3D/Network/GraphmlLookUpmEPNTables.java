@@ -67,6 +67,9 @@ public final class GraphmlLookUpmEPNTables
                                              HYDROXYLATION,
                                              SECRETION,
                                              SINK_PROTEASOMAL_DEGRADATION,
+                                             OXIDATION,
+                                             MUTATION,
+                                             UNKNOWN_TRANSITION,
 
                                              // Edge Annotations
                                              EDGE_ACTIVATES,
@@ -119,7 +122,10 @@ public final class GraphmlLookUpmEPNTables
                                                                                 OXIDISATION,
                                                                                 HYDROXYLATION,
                                                                                 SECRETION,
-                                                                                SINK_PROTEASOMAL_DEGRADATION
+                                                                                SINK_PROTEASOMAL_DEGRADATION,
+                                                                                OXIDATION,
+                                                                                MUTATION,
+                                                                                UNKNOWN_TRANSITION
                                                                               };
 
     /**
@@ -164,6 +170,9 @@ public final class GraphmlLookUpmEPNTables
                                                                           Tuples.tuple("OH",  "ellipse", HYDROXYLATION,                decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("S",   "ellipse", SECRETION,                    decode("#CCFFCC"), 5.0f, CIRCLE, SPHERE),
                                                                           Tuples.tuple("/",   "ellipse", SINK_PROTEASOMAL_DEGRADATION, decode("#FFFFFF"), 5.0f, CIRCLE, TORUS),
+                                                                          Tuples.tuple("Ox",  "ellipse", OXIDATION,                    decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
+                                                                          Tuples.tuple("M",   "ellipse", MUTATION,                     decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
+                                                                          Tuples.tuple("?",   "ellipse", UNKNOWN_TRANSITION,           decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
 
                                                                           // Edge Annotations
                                                                           Tuples.tuple("A",   "diamond", EDGE_ACTIVATES,               decode("#00CC33"), 5.0f, DIAMOND, OCTAHEDRON),
