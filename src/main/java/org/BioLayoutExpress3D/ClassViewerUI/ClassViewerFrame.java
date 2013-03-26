@@ -1020,7 +1020,18 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             for (int i = 0; i < generalTable.getRowCount(); i++)
             {
                 for (int j = 1; j < generalTable.getColumnCount(); j++)
-                    fileWriter.write(generalTable.getValueAt(i, j).toString() + "\t");
+                {
+                    Object value = generalTable.getValueAt(i, j);
+
+                    if (value != null)
+                    {
+                        fileWriter.write(value.toString() + "\t");
+                    }
+                    else
+                    {
+                        fileWriter.write("\t");
+                    }
+                }
                 fileWriter.write("\n");
             }
 
