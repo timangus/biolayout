@@ -57,16 +57,16 @@ FMMMLayout()
 
 void call(GraphAttributes GA)
 {
-	const Graph G = GA.constGraph();
+	Graph G = GA.constGraph();
 	EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0);
 	call(GA,edgelength);
 }
 
-void call(ClusterGraphAttributes &GA)
+/*void call(ClusterGraphAttributes &GA)
 {
-	const Graph &G = GA.constGraph();
+	Graph &G = GA.constGraph();
 	//compute depth of cluster tree, also sets cluster depth values
-	const ClusterGraph &CG = GA.constClusterGraph();
+	ClusterGraph &CG = GA.constClusterGraph();
 	int cdepth = CG.treeDepth();
 	EdgeArray<double> edgeLength(G);
 	//compute lca of end vertices for each edge
@@ -78,14 +78,14 @@ void call(ClusterGraphAttributes &GA)
 	}
 	call(GA,edgeLength);
 	GA.updateClusterPositions();
-}
+}*/
 
 
-void call(GraphAttributes &GA, const EdgeArray<double> &edgeLength)
+void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
 {
-	const Graph &G = GA.constGraph();
-	NodeArray<NodeAttributes> A(G);       //stores the attributes of the nodes (given by L)
-	EdgeArray<EdgeAttributes> E(G);       //stores the edge attributes of G
+	Graph G = GA.constGraph();
+	NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G);       //stores the attributes of the nodes (given by L)
+	EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G);       //stores the edge attributes of G
 	Graph G_reduced;                      //stores a undirected simple and loopfree copy
 										//of G
 	EdgeArray<EdgeAttributes> E_reduced;  //stores the edge attributes of G_reduced
@@ -132,7 +132,7 @@ void call(GraphAttributes &AG, char* ps_file)
 
 void call(
 	GraphAttributes &AG,
-	const EdgeArray<double> &edgeLength,
+	EdgeArray<double> &edgeLength,
 	char* ps_file)
 {
 	call(AG,edgeLength);
@@ -206,7 +206,7 @@ void call_FORCE_CALCULATION_step(
 	int act_level,
 	int max_level)
 {
-	const int ITERBOUND = 10000;//needed to guarantee termination if
+	int ITERBOUND = 10000;//needed to guarantee termination if
 							 //stopCriterion() == scThreshold
 	if(G.numberOfNodes() > 1)
 	{
@@ -315,7 +315,7 @@ void update_low_level_options_due_to_high_level_options_settings()
 {
 	PageFormatType pf = pageFormat();
 	double uel = unitEdgeLength();
-	bool nip = newInitialPlacement();
+	boolean nip = newInitialPlacement();
 	QualityVsSpeed qvs = qualityVersusSpeed();
 
 	//update
@@ -360,7 +360,7 @@ void update_low_level_options_due_to_high_level_options_settings()
 
 
 void import_NodeAttributes(
-	const Graph& G,
+	Graph& G,
 	GraphAttributes& GA,
 	NodeArray<NodeAttributes>& A)
 {
@@ -377,8 +377,8 @@ void import_NodeAttributes(
 
 
 void import_EdgeAttributes(
-	const Graph& G,
-	const EdgeArray<double>& edgeLength,
+	Graph& G,
+	EdgeArray<double>& edgeLength,
 	EdgeArray<EdgeAttributes>& E)
 {
 	edge e;
@@ -397,7 +397,7 @@ void import_EdgeAttributes(
 
 
 void init_ind_ideal_edgelength(
-	const Graph& G,
+	Graph& G,
 	NodeArray<NodeAttributes>& A,
 	EdgeArray<EdgeAttributes>& E)
 {
@@ -417,7 +417,7 @@ void init_ind_ideal_edgelength(
 }
 
 
-void set_radii(const Graph& G, NodeArray<NodeAttributes>& A)
+void set_radii(Graph& G, NodeArray<NodeAttributes>& A)
 {
 	node v;
 	radius.init(G);
@@ -446,7 +446,7 @@ void export_NodeAttributes(
 
 
 void make_simple_loopfree(
-	const Graph& G,
+	Graph& G,
 	NodeArray<NodeAttributes>& A,
 	EdgeArray<EdgeAttributes>E,
 	Graph& G_reduced,
@@ -506,7 +506,7 @@ void make_simple_loopfree(
 
 
 void delete_parallel_edges(
-	const Graph& G,
+	Graph& G,
 	EdgeArray<EdgeAttributes>& E,
 	Graph& G_reduced,
 	List<edge>& S,
@@ -689,7 +689,7 @@ void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
 {
 	ofstream out_fmmm (ps_file,ios::out);
 	if (!ps_file) cout<<ps_file<<" could not be opened !"<<endl;
-	const Graph& G = AG.constGraph();
+	Graph& G = AG.constGraph();
 	node v;
 	edge e;
 	double x_min = AG.x(G.firstNode());
@@ -1111,8 +1111,8 @@ void init_boxlength_and_cornercoordinate (
 {
 	//boxlength is set
 
-	const double MIN_NODE_SIZE = 10;
-	const double BOX_SCALING_FACTOR = 1.1;
+	double MIN_NODE_SIZE = 10;
+	double BOX_SCALING_FACTOR = 1.1;
 	double w=0,h=0;       //helping variables
 
 	node v;
@@ -1132,7 +1132,7 @@ void init_boxlength_and_cornercoordinate (
 
 void create_initial_placement (Graph& G, NodeArray<NodeAttributes>& A)
 {
-	const int BILLION = 1000000000;
+	int BILLION = 1000000000;
 	int i,j,k;
 	node v;
 
@@ -1145,7 +1145,7 @@ void create_initial_placement (Graph& G, NodeArray<NodeAttributes>& A)
 		init_boxlength_and_cornercoordinate(G,A);
 		int level = static_cast<int>( ceil(Math::log4(G.numberOfNodes())));
 		int m     = static_cast<int>(pow(2.0,level))-1;
-		bool finished = false;
+		boolean finished = false;
 		double blall = boxlength/(m+1); //boxlength for boxes at the lowest level (depth)
 		Array<node> all_nodes(G.numberOfNodes());
 
@@ -1463,16 +1463,16 @@ void prevent_oscilations(
 	int iter)
 {
 
-	const double pi_times_1_over_6 = 0.52359878;
-	const double pi_times_2_over_6 = 2 * pi_times_1_over_6;
-	const double pi_times_3_over_6 = 3 * pi_times_1_over_6;
-	const double pi_times_4_over_6 = 4 * pi_times_1_over_6;
-	const double pi_times_5_over_6 = 5 * pi_times_1_over_6;
-	const double pi_times_7_over_6 = 7 * pi_times_1_over_6;
-	const double pi_times_8_over_6 = 8 * pi_times_1_over_6;
-	const double pi_times_9_over_6 = 9 * pi_times_1_over_6;
-	const double pi_times_10_over_6 = 10 * pi_times_1_over_6;
-	const double pi_times_11_over_6 = 11 * pi_times_1_over_6;
+	double pi_times_1_over_6 = 0.52359878;
+	double pi_times_2_over_6 = 2 * pi_times_1_over_6;
+	double pi_times_3_over_6 = 3 * pi_times_1_over_6;
+	double pi_times_4_over_6 = 4 * pi_times_1_over_6;
+	double pi_times_5_over_6 = 5 * pi_times_1_over_6;
+	double pi_times_7_over_6 = 7 * pi_times_1_over_6;
+	double pi_times_8_over_6 = 8 * pi_times_1_over_6;
+	double pi_times_9_over_6 = 9 * pi_times_1_over_6;
+	double pi_times_10_over_6 = 10 * pi_times_1_over_6;
+	double pi_times_11_over_6 = 11 * pi_times_1_over_6;
 
 	DPoint nullpoint (0,0);
 	double fi; //angle in [0,2pi) measured counterclockwise
