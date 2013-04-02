@@ -2,7 +2,6 @@ package ogdf.basic;
 
 public class DPoint
 {
-
     public double m_x; //!< The x-coordinate.
     public double m_y; //!< The y-coordinate.
 
@@ -23,12 +22,6 @@ public class DPoint
     public DPoint(DPoint dp)
     {
         this(dp.m_x, dp.m_y);
-    }
-
-    private boolean DIsEqual(double a, double b)
-    {
-        final double OGDF_GEOM_EPS = 1e-06;
-        return (a < (b + OGDF_GEOM_EPS) && a > (b - OGDF_GEOM_EPS));
     }
 
     //! Relaxed equality operator.
@@ -61,5 +54,32 @@ public class DPoint
     public DPoint minus(DPoint p)
     {
         return new DPoint(m_x - p.m_x, m_y - p.m_y);
+    }
+
+    final static double OGDF_GEOM_EPS = 1e-06;
+
+    public static boolean DIsEqual(double a, double b)
+    {
+        return (a < (b + OGDF_GEOM_EPS) && a > (b - OGDF_GEOM_EPS));
+    }
+
+    public static boolean DIsGreater(double a, double b)
+    {
+        return (a > (b + OGDF_GEOM_EPS));
+    }
+
+    public static boolean DIsGreaterEqual(double a, double b)
+    {
+        return (a > (b - OGDF_GEOM_EPS));
+    }
+
+    public static boolean DIsLess(double a, double b)
+    {
+        return (a < (b - OGDF_GEOM_EPS));
+    }
+
+    public static boolean DIsLessEqual(double a, double b)
+    {
+        return (a < (b + OGDF_GEOM_EPS));
     }
 }

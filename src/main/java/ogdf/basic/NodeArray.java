@@ -123,6 +123,12 @@ public class NodeArray<T> extends ArrayList<T>
         return super.get(v.index());
     }
 
+    public void set(node v, T value)
+    {
+        assert v != null && v.graphOf() == m_pGraph;
+        super.set(v.index(), value);
+    }
+
     //! Reinitializes the array. Associates the array with no graph.
     public void init()
     {

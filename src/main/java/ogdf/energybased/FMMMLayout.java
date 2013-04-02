@@ -42,25 +42,722 @@ package ogdf.energybased;
  * \see  http://www.gnu.org/copyleft/gpl.html
  ***************************************************************/
 
+import java.lang.*;
+import java.util.*;
 import ogdf.basic.*;
 
 public class FMMMLayout {
 
+        //! Possible page formats.
+    enum PageFormatType {
+            pfPortrait,  //!< A4 portrait page.
+            pfLandscape, //!< A4 landscape page.
+            pfSquare     //!< Square format.
+    };
 
-FMMMLayout()
-{
-	initialize_all_options();
-}
+    //! Trade-off between run-time and quality.
+    enum QualityVsSpeed {
+            qvsGorgeousAndEfficient,  //!< Best quality.
+            qvsBeautifulAndFast,      //!< Medium quality and speed.
+            qvsNiceAndIncredibleSpeed //!< Best speed.
+    };
 
+    //! Specifies how the length of an edge is measured.
+    enum EdgeLengthMeasurement {
+            elmMidpoint,      //!< Measure from center point of edge end points.
+            elmBoundingCircle //!< Measure from border of circle s surrounding edge end points.
+    };
+
+    //! Specifies which positions for a node are allowed.
+    enum AllowedPositions {
+            apAll,
+            apInteger,
+            apExponent
+    };
+
+    //! Specifies in which case it is allowed to tip over drawings of connected components.
+    enum TipOver {
+            toNone,
+            toNoGrowingRow,
+            toAlways
+    };
+
+    //! Specifies how connected components are sorted before the packing algorithm is applied.
+    enum PreSort {
+            psNone, //!< Do not presort.
+            psDecreasingHeight, //!< Presort by decreasing height of components.
+            psDecreasingWidth   //!< Presort by decreasing width of components.
+    };
+
+    //! Specifies how sun nodes of galaxies are selected.
+    public enum GalaxyChoice {
+            gcUniformProb,
+            gcNonUniformProbLowerMass,
+            gcNonUniformProbHigherMass
+    };
+
+    //! Specifies how MaxIterations is changed in subsequent multilevels.
+    enum MaxIterChange {
+            micConstant,
+            micLinearlyDecreasing,
+            micRapidlyDecreasing
+    };
+
+    //! Specifies how the initial placement is generated.
+    public enum InitialPlacementMult {
+            ipmSimple,
+            ipmAdvanced
+    };
+
+    //! Specifies the force model.
+    enum ForceModel {
+            fmFruchtermanReingold, //!< The force-model by Fruchterman, Reingold.
+            fmEades,               //!< The force-model by Eades.
+            fmNew                  //!< The new force-model.
+    };
+
+    //! Specifies how to calculate repulsive forces.
+    enum RepulsiveForcesMethod {
+            rfcExact,             //!< Exact calculation.
+            rfcGridApproximation, //!< Grid approximation.
+            rfcNMM                //!< Calculation as for new multipole method.
+    };
+
+    //! Specifies the stop criterion.
+    enum StopCriterion {
+            scFixedIterations,           //!< Stop if fixedIterations() is reached.
+            scThreshold,                 //!< Stop if threshold() is reached.
+            scFixedIterationsOrThreshold //!< Stop if fixedIterations() or threshold() is reached.
+    };
+
+    //! Specifies how the initial placement is done.
+    enum InitialPlacementForces {
+            ipfUniformGrid,      //!< Uniform placement on a grid.
+            ipfRandomTime,       //!< Random placement (based on current time).
+            ipfRandomRandIterNr, //!< Random placement (based on randIterNr()).
+            ipfKeepPositions     //!< No change in placement.
+    };
+
+    //! Specifies how the reduced bucket quadtree is constructed.
+    enum ReducedTreeConstruction {
+            rtcPathByPath,      //!< Path-by-path construction.
+            rtcSubtreeBySubtree //!< Subtree-by-subtree construction.
+    };
+
+    //! Specifies how to calculate the smallest quadratic cell surrounding particles of a node in the reduced bucket quadtree.
+    enum SmallestCellFinding {
+            scfIteratively, //!< Iteratively (in constant time).
+            scfAluru        //!< According to formula by Aluru et al. (in constant time).
+    };
+
+    //! Returns the runtime (=CPU-time) of the layout algorithm in seconds.
+    double getCpuTime() {
+            return time_total;
+    }
+
+
+    /** @}
+     *  @name High-level options
+     *  Allow to specify the most relevant parameters.
+     *  @{
+     */
+
+    //! Returns the current setting of option useHighLevelOptions.
+    /**
+     * If set to true, the high-level options are used to set all low-level options.
+     * Usually, it is sufficient just to set high-level options; if you want to
+     * be more specific, set this parameter to false and set the low level options.
+     */
+    boolean useHighLevelOptions() { return m_useHighLevelOptions; }
+
+    //! Sets the option useHighLevelOptions to \a uho.
+    void useHighLevelOptions(boolean uho) { m_useHighLevelOptions = uho; }
+
+    //! Sets single level option, no multilevel hierarchy is created if b == true
+    void setSingleLevel(boolean b) {m_singleLevel = b;}
+
+    //! Returns the current setting of option pageFormat.
+    /**
+     * This option defines the desired aspect ratio of the drawing area.
+     *  - \a pfPortrait: A4 page in portrait orientation
+     *  - \a pfLandscape: A4 page in landscape orientation
+     *  - \a pfSquare: square page format
+     */
+    PageFormatType pageFormat() { return m_pageFormat; }
+
+    //! Sets the option pageRatio to \a t.
+    void pageFormat(PageFormatType t) { m_pageFormat = t; }
+
+    //! Returns the current setting of option unitEdgeLength.
+    double unitEdgeLength() { return m_unitEdgeLength; }
+
+    //! Sets the option unitEdgeLength to \a x.
+    void unitEdgeLength(double x) {m_unitEdgeLength = (( x > 0.0) ? x : 1);}
+
+    //! Returns the current setting of option newInitialPlacement.
+    /**
+     * This option defines if the initial placement of the nodes at the
+     * coarsest multilevel is varied for each distinct call of FMMMLayout
+     * or keeps always the same.
+     */
+    boolean newInitialPlacement() { return m_newInitialPlacement; }
+
+    //! Sets the option newInitialPlacement to \a nip.
+    void newInitialPlacement(boolean nip) { m_newInitialPlacement = nip; }
+
+    //! Returns the current setting of option qualityVersusSpeed.
+    /**
+     * Indicates if the algorithm is tuned either for best quality or best speed.
+     *  - \a qvsGorgeousAndEfficient: gorgeous quality and efficient speed
+     *  - \a qvsBeautifulAndFast: beautiful quality and fast speed
+     *  - \a qvsNiceAndIncredibleSpeed: nice quality and incredible speed
+     */
+    QualityVsSpeed qualityVersusSpeed() { return m_qualityVersusSpeed; }
+
+    //! Sets the option qualityVersusSpeed to \a qvs.
+    void qualityVersusSpeed(QualityVsSpeed qvs) {m_qualityVersusSpeed = qvs; }
+
+
+    /** @}
+     *  @name General low-level options
+     * The low-level options in this and the following sections are meant for
+     * experts or interested people only.
+     *  @{
+     */
+
+    //! Sets the seed of the random number generator.
+    void randSeed(int p) { m_randSeed = ((0<=p) ? p : 1);}
+
+    //! Returns the seed of the random number generator.
+    int randSeed() {return m_randSeed;}
+
+    //! Returns the current setting of option edgeLengthMeasurement.
+    /**
+     * This option indicates how the length of an edge is measured.
+     * Possible values:
+     *   - \a elmMidpoint: from center to center
+     *   - \a elmBoundingCircle: the distance between the two tight circles bounding the
+     *     graphics of two adjacent nodes
+     */
+    EdgeLengthMeasurement edgeLengthMeasurement() {
+            return m_edgeLengthMeasurement;
+    }
+
+    //! Sets the option edgeLengthMeasurement to \a elm.
+    void edgeLengthMeasurement(EdgeLengthMeasurement elm) { m_edgeLengthMeasurement = elm; }
+
+    //! Returns the current setting of option allowedPositions.
+    /**
+     * This option defines which positions for a node are allowed.
+     * Possibly values:
+     *   - \a apAll: every position is allowed
+     *   - \a apInteger: only integer positions in the range depending on the number of
+     *     nodes
+     *   - \a apExponent: only integer positions in the range of -2^MaxIntPosExponent to
+     *     2^MaxIntPosExponent
+     */
+    AllowedPositions allowedPositions() { return m_allowedPositions; }
+
+    //! Sets the option allowedPositions to \a ap.
+    void allowedPositions(AllowedPositions ap) { m_allowedPositions = ap; }
+
+    //! Returns the current setting of option maxIntPosExponent.
+    /**
+     * This option defines the exponent used if allowedPositions() == \a apExponent.
+     */
+    int maxIntPosExponent() { return m_maxIntPosExponent; }
+
+    //! Sets the option maxIntPosExponent to \a e.
+    void maxIntPosExponent(int e) {
+            m_maxIntPosExponent = (((e >= 31)&&(e<=51))? e : 31);
+    }
+
+
+    /** @}
+     *  @name Options for the divide et impera step
+     *  @{
+     */
+
+    //! Returns the current setting of option pageRatio.
+    /**
+     * This option defines the desired aspect ratio of the rectangular drawing area.
+     */
+    double pageRatio() { return m_pageRatio; }
+
+    //! Sets the option pageRatio to \a r.
+    void pageRatio(double r) {m_pageRatio = (( r > 0) ? r : 1);}
+
+    //! Returns the current setting of option stepsForRotatingComponents.
+    /**
+     * This options determines the number of times each connected component is rotated with
+     * angles between 0 and 90 degree to obtain a bounding rectangle with small area.
+     */
+    int stepsForRotatingComponents() { return m_stepsForRotatingComponents; }
+
+    //! Sets the option stepsForRotatingComponents to \a n.
+    void stepsForRotatingComponents(int n) {
+            m_stepsForRotatingComponents = ((0<=n) ? n : 0);
+    }
+
+    //! Returns the current setting of option tipOverCCs.
+    /**
+     * Defines in which case it is allowed to tip over drawings of connected components.
+     * Possible values:
+     *   - \a toNone: not allowed at all
+     *   - \a toNoGrowingRow: only if the height of the packing row does not grow
+     *   - \a toAlways: always allowed
+     */
+    TipOver tipOverCCs() { return m_tipOverCCs; }
+
+    //! Sets the option tipOverCCs to \a to.
+    void tipOverCCs(TipOver to) { m_tipOverCCs = to; }
+
+    //! Returns the  minimal distance between connected components.
+    double minDistCC() { return m_minDistCC; }
+
+    //! Sets the  minimal distance between connected components to \a x.
+    void minDistCC(double x) { m_minDistCC = (( x > 0) ? x : 1);}
+
+    //! Returns the current setting of option presortCCs.
+    /**
+     * This option defines if the connected components are sorted before
+     * the packing algorithm is applied.
+     * Possible values:
+     *   - \a psNone: no sorting
+     *   - \a psDecreasingHeight: sorted by decreasing height
+     *   - \a psDecreasingWidth: sorted by decreasing width
+     */
+    PreSort presortCCs() { return m_presortCCs; }
+
+    //! Sets the option presortCCs to \a ps.
+    void presortCCs(PreSort ps) { m_presortCCs = ps; }
+
+
+    /** @}
+     *  @name Options for the multilevel step
+     *  @{
+     */
+
+    //! Returns the current setting of option minGraphSize.
+    /**
+     * This option determines the number of nodes of a graph in the
+     * multilevel representation for which no more collapsing of galaxies
+     * is performed (i.e. the graph at the highest level).
+     */
+    int minGraphSize() { return m_minGraphSize; }
+
+    //! Sets the option minGraphSize to \a n.
+    void minGraphSize(int n) { m_minGraphSize = ((n >= 2)? n : 2);}
+
+    //! Returns the current setting of option galaxyChoice.
+    /**
+     * This option defines how sun nodes of galaxies are selected.
+     * Possible values:
+     *   - \a gcUniformProb: selecting by uniform random probability
+     *   - \a gcNonUniformProbLowerMass: selecting by non-uniform probability depending on
+     *     the star masses (prefering nodes with lower star mass)
+     *   - \a gcNonUniformProbHigherMass: as above but prefering nodes with higher star mass
+     */
+    GalaxyChoice galaxyChoice() { return m_galaxyChoice; }
+
+    //! Sets the option galaxyChoice to \a gc.
+    void galaxyChoice(GalaxyChoice gc) { m_galaxyChoice = gc; }
+
+    //! Returns the current setting of option randomTries.
+    /**
+     * This option defines the number of tries to get a random node with
+     * minimal star mass (used in case of galaxyChoice() == gcNonUniformProbLowerMass
+     * and galaxyChoice() == gcNonUniformProbHigherMass).
+     */
+    int randomTries() { return m_randomTries; }
+
+    //! Sets the option randomTries to \a n.
+    void randomTries(int n) {m_randomTries = ((n>=1)? n: 1);}
+
+    //! Returns the current setting of option maxIterChange.
+    /**
+     * This option defines how MaxIterations is changed in subsequent multilevels.
+     * Possible values:
+     *   - \a micConstant: kept constant at the force calculation step at every level
+     *   - \a micLinearlyDecreasing: linearly decreasing from MaxIterFactor*FixedIterations
+     *     to FixedIterations
+     *   - \a micRapidlyDecreasing: rapdily decreasing from MaxIterFactor*FixedIterations
+     *      to FixedIterations
+     */
+    MaxIterChange maxIterChange() { return m_maxIterChange; }
+
+    //! Sets the option maxIterChange to \a mic.
+    void maxIterChange(MaxIterChange mic) { m_maxIterChange = mic; }
+
+    //! Returns the current setting of option maxIterFactor.
+    /**
+     * This option defines the factor used for decrasing MaxIterations
+     * (in case of maxIterChange() == micLinearlyDecreasing or maxIterChange()
+     * == micRapidlyDecreasing).
+     */
+    int maxIterFactor() { return m_maxIterFactor; }
+
+    //! Sets the option maxIterFactor to \a f.
+    void maxIterFactor(int f) { m_maxIterFactor = ((f>=1) ? f : 1 ); }
+
+    //! Returns the current setting of option initialPlacementMult.
+    /**
+     * This option defines how the initial placement is generated.
+     * Possible values:
+     *   - \a ipmSimple: only using information about placement of nodes on higher levels
+     *   - \a ipmAdvanced: using additional information about the placement of all inter
+     *   - \a  solar system nodes
+     */
+    InitialPlacementMult initialPlacementMult() {
+            return m_initialPlacementMult;
+    }
+
+    //! Sets the option initialPlacementMult to \a ipm.
+    void initialPlacementMult(InitialPlacementMult ipm) {
+            m_initialPlacementMult = ipm;
+    }
+
+
+    /** @}
+     *  @name Options for the force calculation step
+     *  @{
+     */
+
+    //! Returns the used force model.
+    /**
+     * Possibly values:
+     *   - \a fmFruchtermanReingold: model of Fruchterman and Reingold
+     *   - \a fmEades: model of Eades
+     *   - \a fmNew: new model
+     */
+    ForceModel forceModel() { return m_forceModel; }
+
+    //! Sets the used force model to \a fm.
+    void forceModel(ForceModel fm) { m_forceModel = fm; }
+
+    //! Returns the strength of the springs.
+    double springStrength() { return m_springStrength; }
+
+    //! Sets the strength of the springs to \a x.
+    void springStrength(double x) { m_springStrength  = ((x > 0)? x : 1);}
+
+    //! Returns the strength of the repulsive forces.
+    double repForcesStrength() { return m_repForcesStrength; }
+
+    //! Sets the strength of the repulsive forces to \a x.
+    void repForcesStrength(double x) { m_repForcesStrength =((x > 0)? x : 1);}
+
+    //! Returns the current setting of option repulsiveForcesCalculation.
+    /**
+     * This option defines how to calculate repulsive forces.
+     * Possible values:
+     *   - \a rfcExact: exact calculation (slow)
+     *   - \a rfcGridApproximation: grid approxiamtion (inaccurate)
+     *   - \a rfcNMM: like in NMM (= New Multipole Method; fast and accurate)
+     */
+    RepulsiveForcesMethod repulsiveForcesCalculation() {
+            return m_repulsiveForcesCalculation;
+    }
+
+    //! Sets the option repulsiveForcesCalculation to \a rfc.
+    void repulsiveForcesCalculation(RepulsiveForcesMethod rfc) {
+            m_repulsiveForcesCalculation = rfc;
+    }
+
+    //! Returns the stop criterion.
+    /**
+     * Possible values:
+     *   - \a rscFixedIterations: stop if fixedIterations() is reached
+     *   - \a rscThreshold: stop if threshold() is reached
+     *   - \a rscFixedIterationsOrThreshold: stop if fixedIterations() or threshold()
+     *     is reached
+     */
+    StopCriterion stopCriterion() { return m_stopCriterion; }
+
+    //! Sets the stop criterion to \a rsc.
+    void stopCriterion(StopCriterion rsc) { m_stopCriterion = rsc; }
+
+    //! Returns the threshold for the stop criterion.
+    /**
+     * (If the average absolute value of all forces in
+     * an iteration is less then threshold() then stop.)
+     */
+    double threshold() { return m_threshold; }
+
+    //! Sets the threshold for the stop criterion to \a x.
+    void threshold(double x) {m_threshold = ((x > 0) ? x : 0.1);}
+
+    //! Returns the fixed number of iterations for the stop criterion.
+    int fixedIterations() { return m_fixedIterations; }
+
+    //! Sets the fixed number of iterations for the stop criterion to \a n.
+    void fixedIterations(int n) { m_fixedIterations = ((n >= 1) ? n : 1);}
+
+    //! Returns the scaling factor for the forces.
+    double forceScalingFactor() { return m_forceScalingFactor; }
+
+    //! Sets the scaling factor for the forces to \ f.
+    void forceScalingFactor(double f) { m_forceScalingFactor = ((f > 0) ? f : 1);}
+
+    //! Returns the current setting of option coolTemperature.
+    /**
+     * If set to true, forces are scaled by coolValue()^(actual iteration) *
+     * forceScalingFactor(); otherwise forces are scaled by forceScalingFactor().
+     */
+    boolean coolTemperature() { return m_coolTemperature; }
+
+    //! Sets the option coolTemperature to \a b.
+    void coolTemperature(boolean b) { m_coolTemperature = b; }
+
+    //! Returns the current setting of option coolValue.
+    /**
+     * This option defines the value by which forces are decreased
+     * if coolTemperature is true.
+     */
+    double coolValue() { return m_coolValue; }
+
+    //! Sets the option coolValue to \a x.
+    void coolValue(double x) { m_coolValue = (((x >0 )&&(x<=1) )? x : 0.99);}
+
+
+    //! Returns the current setting of option initialPlacementForces.
+    /**
+     * This option defines how the initial placement is done.
+     * Possible values:
+     *   - \a ipfUniformGrid: uniform on a grid
+     *   - \a ipfRandomTime: random based on actual time
+     *   - \a ipfRandomRandIterNr: random based on randIterNr()
+     *   - \a ipfKeepPositions: no change in placement
+     */
+    InitialPlacementForces initialPlacementForces() {
+            return m_initialPlacementForces;
+    }
+
+    //! Sets the option initialPlacementForces to \a ipf.
+    void initialPlacementForces(InitialPlacementForces ipf) {
+            m_initialPlacementForces = ipf;
+    }
+
+
+    /** @}
+     *  @name Options for the postprocessing step
+     *  @{
+     */
+
+    //! Returns the current setting of option resizeDrawing.
+    /**
+     * If set to true, the resulting drawing is resized so that the average edge
+     * length is the desired edge length times resizingScalar().
+     */
+    boolean resizeDrawing() { return m_resizeDrawing; }
+
+    //! Sets the option resizeDrawing to \a b.
+    void resizeDrawing(boolean b) { m_resizeDrawing = b; }
+
+    //! Returns the current setting of option resizingScalar.
+    /**
+     * This option defines a parameter to scale the drawing if
+     * resizeDrawing() is true.
+     */
+    double resizingScalar() { return m_resizingScalar; }
+
+    //! Sets the option resizingScalar to \a s.
+    void resizingScalar(double s) { m_resizingScalar = ((s > 0) ? s : 1);}
+
+    //! Returns the number of iterations for fine tuning.
+    int fineTuningIterations() { return m_fineTuningIterations; }
+
+    //! Sets the number of iterations for fine tuning to \a n.
+    void fineTuningIterations(int n) { m_fineTuningIterations =((n >= 0) ? n : 0);}
+
+    //! Returns the curent setting of option fineTuneScalar.
+    /**
+     * This option defines a parameter for scaling the forces in the
+     * fine-tuning iterations.
+     */
+    double fineTuneScalar() { return m_fineTuneScalar; }
+
+    //! Sets the option fineTuneScalar to \a s
+    void fineTuneScalar(double s) { m_fineTuneScalar = ((s >= 0) ? s : 1);}
+
+    //! Returns the current setting of option adjustPostRepStrengthDynamically.
+    /**
+     * If set to true, the strength of the repulsive force field is calculated
+     * dynamically by a formula depending on the number of nodes; otherwise the
+     * strength are scaled by PostSpringStrength and PostStrengthOfRepForces.
+     */
+    boolean adjustPostRepStrengthDynamically() {
+            return m_adjustPostRepStrengthDynamically;
+    }
+
+    //! Sets the option adjustPostRepStrengthDynamically to \a b.
+    void adjustPostRepStrengthDynamically(boolean b) {
+            m_adjustPostRepStrengthDynamically = b;
+    }
+
+    //! Returns the strength of the springs in the postprocessing step.
+    double postSpringStrength() { return m_postSpringStrength; }
+
+    //! Sets the strength of the springs in the postprocessing step to \a x.
+    void postSpringStrength(double x) { m_postSpringStrength  = ((x > 0)? x : 1);}
+
+    //! Returns the strength of the repulsive forces in the postprocessing step.
+    double postStrengthOfRepForces() { return m_postStrengthOfRepForces; }
+
+    //! Sets the strength of the repulsive forces in the postprocessing step to \a x.
+    void postStrengthOfRepForces(double x) {
+            m_postStrengthOfRepForces = ((x > 0)? x : 1);
+    }
+
+
+    /** @}
+     *  @name Options for repulsive force approximation methods
+     *  @{
+     */
+
+    //! Returns the current setting of option frGridQuotient.
+    /**
+     * The number k of rows and columns of the grid is sqrt(|V|) / frGridQuotient().
+     * (Note that in [Fruchterman,Reingold] frGridQuotient is 2.)
+     */
+    int  frGridQuotient() {return m_frGridQuotient;}
+
+    //! Sets the option frGridQuotient to \a p.
+    void frGridQuotient(int p) { m_frGridQuotient = ((0<=p) ? p : 2);}
+
+    //! Returns the current setting of option nmTreeConstruction.
+    /**
+     * This option defines how the reduced bucket quadtree is constructed.
+     * Possible values:
+     *   - \a rtcPathByPath: path by path construction
+     *   - \a rtcSubtreeBySubtree: subtree by subtree construction
+     */
+    ReducedTreeConstruction nmTreeConstruction() { return m_NMTreeConstruction; }
+
+    //! Sets the option nmTreeConstruction to \a rtc.
+    void nmTreeConstruction(ReducedTreeConstruction rtc) { m_NMTreeConstruction = rtc; }
+
+    //! Returns the current setting of option nmSmallCell.
+    /**
+     * This option defines how the smallest quadratic cell that surrounds
+     * the particles of a node in the reduced bucket quadtree is calculated.
+     * Possible values:
+     *   - \a scfIteratively: iteratively (in constant time)
+     *   - \a scfAluru: by the formula by Aluru et al. (in constant time)
+     */
+    SmallestCellFinding nmSmallCell() { return m_NMSmallCell; }
+
+    //! Sets the option nmSmallCell to \a scf.
+    void nmSmallCell(SmallestCellFinding scf) { m_NMSmallCell = scf; }
+
+    //! Returns the current setting of option nmParticlesInLeaves.
+    /**
+     * Defines the maximal number of particles that are contained in
+     * a leaf of the reduced bucket quadtree.
+     */
+    int nmParticlesInLeaves() { return m_NMParticlesInLeaves; }
+
+    //! Sets the option nmParticlesInLeaves to \a n.
+    void nmParticlesInLeaves(int n) { m_NMParticlesInLeaves = ((n>= 1)? n : 1);}
+
+    //! Returns the precision \a p for the <i>p</i>-term multipole expansions.
+    int nmPrecision() { return m_NMPrecision; }
+
+    //! Sets the precision for the multipole expansions to \ p.
+    void nmPrecision(int p) { m_NMPrecision  = ((p >= 1 ) ? p : 1);}
+
+    //! @}
+
+//FIXME private:
+
+    //high level options
+    boolean                  m_useHighLevelOptions; //!< The option for using high-level options.
+    PageFormatType        m_pageFormat; //!< The option for the page format.
+    double                m_unitEdgeLength; //!< The unit edge length.
+    boolean                  m_newInitialPlacement; //!< The option for new initial placement.
+    QualityVsSpeed        m_qualityVersusSpeed; //!< The option for quality-vs-speed trade-off.
+
+    //low level options
+    //general options
+    int                   m_randSeed; //!< The random seed.
+    EdgeLengthMeasurement m_edgeLengthMeasurement; //!< The option for edge length measurement.
+    AllowedPositions      m_allowedPositions; //!< The option for allowed positions.
+    int                   m_maxIntPosExponent; //!< The option for the used	exponent.
+
+    //options for divide et impera step
+    double                m_pageRatio; //!< The desired page ratio.
+    int                   m_stepsForRotatingComponents; //!< The number of rotations.
+    TipOver               m_tipOverCCs; //!< Option for tip-over of connected components.
+    double                m_minDistCC; //!< The separation between connected components.
+    PreSort               m_presortCCs; //!< The option for presorting connected components.
+
+    //options for multilevel step
+    boolean  		          m_singleLevel; //!< Option for pure single level.
+    int                   m_minGraphSize; //!< The option for minimal graph size.
+    GalaxyChoice          m_galaxyChoice; //!< The selection of galaxy nodes.
+    int                   m_randomTries; //!< The number of random tries.
+    MaxIterChange         m_maxIterChange; //!< The option for how to change MaxIterations.
+                                                    //!< If maxIterChange != micConstant, the iterations are decreased
+                                                    //!< depending on the level, starting from
+                                                    //!< ((maxIterFactor()-1) * fixedIterations())
+    int                   m_maxIterFactor; //!< The factor used for decreasing MaxIterations.
+    InitialPlacementMult m_initialPlacementMult; //!< The option for creating initial placement.
+
+    //options for force calculation step
+    ForceModel            m_forceModel; //!< The used force model.
+    double                m_springStrength; //!< The strengths of springs.
+    double                m_repForcesStrength; //!< The strength of repulsive forces.
+    RepulsiveForcesMethod m_repulsiveForcesCalculation; //!< Option for how to calculate repulsive forces.
+    StopCriterion         m_stopCriterion; //!< The stop criterion.
+    double                m_threshold; //!< The threshold for the stop criterion.
+    int                   m_fixedIterations; //!< The fixed number of iterations for the stop criterion.
+    double                m_forceScalingFactor; //!< The scaling factor for the forces.
+    boolean                  m_coolTemperature; //!< The option for how to scale forces.
+    double                m_coolValue; //!< The value by which forces are decreased.
+    InitialPlacementForces m_initialPlacementForces; //!< The option for how the initial placement is done.
+
+    //options for postprocessing step
+    boolean                  m_resizeDrawing; //!< The option for resizing the drawing.
+    double                m_resizingScalar; //!< Parameter for resizing the drawing.
+    int                   m_fineTuningIterations; //!< The number of iterations for fine tuning.
+    double                m_fineTuneScalar; //!< Parameter for scaling forces during fine tuning.
+    boolean                  m_adjustPostRepStrengthDynamically; //!< The option adjustPostRepStrengthDynamically.
+    double                m_postSpringStrength; //!< The strength of springs during postprocessing.
+    double                m_postStrengthOfRepForces; //!< The strength of repulsive forces during postprocessing.
+
+    //options for repulsive force approximation methods
+    int                   m_frGridQuotient; //!< The grid quotient.
+    ReducedTreeConstruction m_NMTreeConstruction; //!< The option for how to construct reduced bucket quadtree.
+    SmallestCellFinding   m_NMSmallCell; //!< The option for how to calculate smallest quadtratic cells.
+    int                   m_NMParticlesInLeaves; //!< The maximal number of particles in a leaf.
+    int                   m_NMPrecision; //!< The precision for multipole expansions.
+
+    	//other variables
+	double max_integer_position; //!< The maximum value for an integer position.
+	double cool_factor; //!< Needed for scaling the forces if coolTemperature is true.
+	double average_ideal_edgelength; //!< Measured from center to center.
+	double boxlength; //!< Holds the length of the quadratic comput. box.
+	int number_of_components; //!< The number of components of the graph.
+	DPoint down_left_corner; //!< Holds down left corner of the comput. box.
+	NodeArray<Double> radius; //!< Holds the radius of the surrounding circle for each node.
+	double time_total; //!< The runtime (=CPU-time) of the algorithm in seconds.
+
+	FruchtermanReingold FR; //!< Class for repulsive force calculation (Fruchterman, Reingold).
+	NMM NM; //!< Class for repulsive force calculation.
+
+
+    FMMMLayout()
+    {
+        initialize_all_options();
+    }
 
 //--------------------------- most important functions --------------------------------
-
-void call(GraphAttributes GA)
-{
-	Graph G = GA.constGraph();
-	EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0);
-	call(GA,edgelength);
-}
+    void call(GraphAttributes GA)
+    {
+        Graph G = GA.constGraph();
+        EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0);
+        call(GA, edgelength);
+    }
 
 /*void call(ClusterGraphAttributes &GA)
 {
@@ -80,50 +777,53 @@ void call(GraphAttributes GA)
 	GA.updateClusterPositions();
 }*/
 
+    void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
+    {
+        Graph G = GA.constGraph();
+        NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G);       //stores the attributes of the nodes (given by L)
+        EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G);       //stores the edge attributes of G
+        Graph G_reduced = new Graph();                      //stores a undirected simple and loopfree copy
+        //of G
+        EdgeArray<EdgeAttributes> E_reduced = new EdgeArray<EdgeAttributes>();  //stores the edge attributes of G_reduced
+        NodeArray<NodeAttributes> A_reduced = new NodeArray<NodeAttributes>();  //stores the node attributes of G_reduced
 
-void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
-{
-	Graph G = GA.constGraph();
-	NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G);       //stores the attributes of the nodes (given by L)
-	EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G);       //stores the edge attributes of G
-	Graph G_reduced;                      //stores a undirected simple and loopfree copy
-										//of G
-	EdgeArray<EdgeAttributes> E_reduced;  //stores the edge attributes of G_reduced
-	NodeArray<NodeAttributes> A_reduced;  //stores the node attributes of G_reduced
+        if (G.numberOfNodes() > 1)
+        {
+            GA.clearAllBends();//all edges are straight-line
+            if (useHighLevelOptions())
+            {
+                update_low_level_options_due_to_high_level_options_settings();
+            }
+            import_NodeAttributes(G, GA, A);
+            import_EdgeAttributes(G, edgeLength, E);
 
-	if(G.numberOfNodes() > 1)
-	{
-		GA.clearAllBends();//all edges are straight-line
-		if(useHighLevelOptions())
-			update_low_level_options_due_to_high_level_options_settings();
-		import_NodeAttributes(G,GA,A);
-		import_EdgeAttributes(G,edgeLength,E);
+            /*double t_total;
+             usedTime(t_total);*/
+            max_integer_position = Math.pow(2.0, maxIntPosExponent());
+            init_ind_ideal_edgelength(G, A, E);
+            make_simple_loopfree(G, A, E, G_reduced, A_reduced, E_reduced);
+            call_DIVIDE_ET_IMPERA_step(G_reduced, A_reduced, E_reduced);
+            if (allowedPositions() != AllowedPositions.apAll)
+            {
+                make_positions_integer(G_reduced, A_reduced);
+            }
+            //time_total = usedTime(t_total);
 
-		double t_total;
-		usedTime(t_total);
-		max_integer_position = pow(2.0,maxIntPosExponent());
-		init_ind_ideal_edgelength(G,A,E);
-		make_simple_loopfree(G,A,E,G_reduced,A_reduced,E_reduced);
-		call_DIVIDE_ET_IMPERA_step(G_reduced,A_reduced,E_reduced);
-		if(allowedPositions() != apAll)
-			make_positions_integer(G_reduced,A_reduced);
-		time_total = usedTime(t_total);
-
-		export_NodeAttributes(G_reduced,A_reduced,GA);
-	}
-	else //trivial cases
-	{
-		if(G.numberOfNodes() == 1 )
-		{
-			node v = G.firstNode();
-			GA.x(v) = 0;
-			GA.y(v) = 0;
-		}
-	}
-}
+            export_NodeAttributes(G_reduced, A_reduced, GA);
+        }
+        else //trivial cases
+        {
+            if (G.numberOfNodes() == 1)
+            {
+                node v = G.firstNode();
+                GA.setX(v, 0.0);
+                GA.setY(v, 0.0);
+            }
+        }
+    }
 
 
-void call(GraphAttributes &AG, char* ps_file)
+/*void call(GraphAttributes &AG, char* ps_file)
 {
 	call(AG);
 	create_postscript_drawing(AG,ps_file);
@@ -137,380 +837,446 @@ void call(
 {
 	call(AG,edgeLength);
 	create_postscript_drawing(AG,ps_file);
-}
+}*/
 
+    void call_DIVIDE_ET_IMPERA_step(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E)
+    {
+        NodeArray<Integer> component = new NodeArray<Integer>(G); //holds for each node the index of its component
+        number_of_components = SimpleGraphAlg.connectedComponents(G, component);//calculate components of G
+        List<Graph> G_sub = new ArrayList<Graph>(number_of_components);
+        List<NodeArray<NodeAttributes>> A_sub = new ArrayList<NodeArray<NodeAttributes>>(number_of_components);
+        List<EdgeArray<EdgeAttributes>> E_sub = new ArrayList<EdgeArray<EdgeAttributes>>(number_of_components);
+        create_maximum_connected_subGraphs(G, A, E, G_sub, A_sub, E_sub, component);
 
-void call_DIVIDE_ET_IMPERA_step(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>& E)
-{
-	NodeArray<int> component(G); //holds for each node the index of its component
-	number_of_components = connectedComponents(G,component);//calculate components of G
-	Graph* G_sub = new Graph[number_of_components];
-	NodeArray<NodeAttributes>* A_sub = new NodeArray<NodeAttributes>[number_of_components];
-	EdgeArray<EdgeAttributes>* E_sub = new EdgeArray<EdgeAttributes>[number_of_components];
-	create_maximum_connected_subGraphs(G,A,E,G_sub,A_sub,E_sub,component);
+        if (number_of_components == 1)
+        {
+            call_MULTILEVEL_step_for_subGraph(G_sub.get(0), A_sub.get(0), E_sub.get(0), -1);
+        }
+        else
+        {
+            for (int i = 0; i < number_of_components; i++)
+            {
+                call_MULTILEVEL_step_for_subGraph(G_sub.get(i), A_sub.get(i), E_sub.get(i), i);
+            }
+        }
 
-	if(number_of_components == 1)
-		call_MULTILEVEL_step_for_subGraph(G_sub[0],A_sub[0],E_sub[0],-1);
-	else
-		for(int i = 0; i < number_of_components;i++)
-			call_MULTILEVEL_step_for_subGraph(G_sub[i],A_sub[i],E_sub[i],i);
+        pack_subGraph_drawings(A, G_sub, A_sub);
+        //delete_all_subGraphs(G_sub,A_sub,E_sub);
+    }
 
-	pack_subGraph_drawings (A,G_sub,A_sub);
-	delete_all_subGraphs(G_sub,A_sub,E_sub);
-}
+    void call_MULTILEVEL_step_for_subGraph(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E,
+            int comp_index)
+    {
+        Multilevel Mult = new Multilevel();
 
+        int max_level = 30;//sufficient for all graphs with upto pow(2,30) nodes!
+        //adapt mingraphsize such that no levels are created beyond input graph.
+        if (m_singleLevel)
+        {
+            m_minGraphSize = G.numberOfNodes();
+        }
+        List<Graph> G_mult_ptr = new ArrayList<Graph>(max_level + 1);
+        List<NodeArray<NodeAttributes>> A_mult_ptr = new ArrayList<NodeArray<NodeAttributes>>(max_level + 1);
+        List<EdgeArray<EdgeAttributes>> E_mult_ptr = new ArrayList<EdgeArray<EdgeAttributes>>(max_level + 1);
 
-void call_MULTILEVEL_step_for_subGraph(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>& E,
-	int comp_index)
-{
-	Multilevel Mult;
+        Mult.create_multilevel_representations(G, A, E, randSeed(),
+                galaxyChoice(), minGraphSize(),
+                randomTries(), G_mult_ptr, A_mult_ptr,
+                E_mult_ptr, max_level);
 
-	int max_level = 30;//sufficient for all graphs with upto pow(2,30) nodes!
-	//adapt mingraphsize such that no levels are created beyond input graph.
-	if (m_singleLevel) m_minGraphSize = G.numberOfNodes();
-	Array<Graph*> G_mult_ptr(max_level+1);
-	Array<NodeArray<NodeAttributes>*> A_mult_ptr (max_level+1);
-	Array<EdgeArray<EdgeAttributes>*> E_mult_ptr (max_level+1);
+        for (int i = max_level; i >= 0; i--)
+        {
+            if (i == max_level)
+            {
+                create_initial_placement(G_mult_ptr.get(i), A_mult_ptr.get(i));
+            }
+            else
+            {
+                Mult.find_initial_placement_for_level(i, initialPlacementMult(), G_mult_ptr, A_mult_ptr, E_mult_ptr);
+                update_boxlength_and_cornercoordinate(G_mult_ptr.get(i), A_mult_ptr.get(i));
+            }
+            call_FORCE_CALCULATION_step(G_mult_ptr.get(i), A_mult_ptr.get(i), E_mult_ptr.get(i),
+                    i, max_level);
+        }
+        //Mult.delete_multilevel_representations(G_mult_ptr,A_mult_ptr,E_mult_ptr,max_level);
+    }
 
-	Mult.create_multilevel_representations(G,A,E,randSeed(),
-				galaxyChoice(),minGraphSize(),
-				randomTries(),G_mult_ptr,A_mult_ptr,
-				E_mult_ptr,max_level);
+    void call_FORCE_CALCULATION_step(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E,
+            int act_level,
+            int max_level)
+    {
+        int ITERBOUND = 10000;//needed to guarantee termination if
+        //stopCriterion() == scThreshold
+        if (G.numberOfNodes() > 1)
+        {
+            int iter = 1;
+            int max_mult_iter = get_max_mult_iter(act_level, max_level, G.numberOfNodes());
+            double actforcevectorlength = threshold() + 1;
 
-	for(int i = max_level;i >= 0;i--)
-	{
-		if(i == max_level)
-			create_initial_placement(*G_mult_ptr[i],*A_mult_ptr[i]);
-		else
-		{
-			Mult.find_initial_placement_for_level(i,initialPlacementMult(),G_mult_ptr, A_mult_ptr,E_mult_ptr);
-			update_boxlength_and_cornercoordinate(*G_mult_ptr[i],*A_mult_ptr[i]);
-		}
-		call_FORCE_CALCULATION_step(*G_mult_ptr[i],*A_mult_ptr[i],*E_mult_ptr[i],
-				 i,max_level);
-	}
-	Mult.delete_multilevel_representations(G_mult_ptr,A_mult_ptr,E_mult_ptr,max_level);
-}
+            NodeArray<DPoint> F_rep = new NodeArray<DPoint>(G); //stores rep. forces
+            NodeArray<DPoint> F_attr = new NodeArray<DPoint>(G); //stores attr. forces
+            NodeArray<DPoint> F = new NodeArray<DPoint>(G); //stores resulting forces
+            NodeArray<DPoint> last_node_movement = new NodeArray<DPoint>(G);//stores the force vectors F of the last
+            //iterations (needed to avoid oscillations)
 
+            set_average_ideal_edgelength(G, E);//needed for easy scaling of the forces
+            make_initialisations_for_rep_calc_classes(G);
 
-void call_FORCE_CALCULATION_step(
-	Graph& G,
-	NodeArray<NodeAttributes>&A,
-	EdgeArray<EdgeAttributes>& E,
-	int act_level,
-	int max_level)
-{
-	int ITERBOUND = 10000;//needed to guarantee termination if
-							 //stopCriterion() == scThreshold
-	if(G.numberOfNodes() > 1)
-	{
-		int iter = 1;
-		int max_mult_iter = get_max_mult_iter(act_level,max_level,G.numberOfNodes());
-		double actforcevectorlength = threshold() + 1;
+            while (((stopCriterion() == StopCriterion.scFixedIterations) && (iter <= max_mult_iter)) ||
+                    ((stopCriterion() == StopCriterion.scThreshold) && (actforcevectorlength >= threshold()) &&
+                    (iter <= ITERBOUND)) ||
+                    ((stopCriterion() == StopCriterion.scFixedIterationsOrThreshold) && (iter <= max_mult_iter) &&
+                    (actforcevectorlength >= threshold())))
+            {//while
+                calculate_forces(G, A, E, F, F_attr, F_rep, last_node_movement, iter, 0);
+                if (stopCriterion() != StopCriterion.scFixedIterations)
+                {
+                    actforcevectorlength = get_average_forcevector_length(G, F);
+                }
+                iter++;
+            }//while
 
-		NodeArray<DPoint> F_rep(G); //stores rep. forces
-		NodeArray<DPoint> F_attr(G); //stores attr. forces
-		NodeArray<DPoint> F (G); //stores resulting forces
-		NodeArray<DPoint> last_node_movement(G);//stores the force vectors F of the last
-												//iterations (needed to avoid oscillations)
+            if (act_level == 0)
+            {
+                call_POSTPROCESSING_step(G, A, E, F, F_attr, F_rep, last_node_movement);
+            }
 
-		set_average_ideal_edgelength(G,E);//needed for easy scaling of the forces
-		make_initialisations_for_rep_calc_classes(G);
+            //deallocate_memory_for_rep_calc_classes();
+        }
+    }
 
-		while( ((stopCriterion() == scFixedIterations)&&(iter <= max_mult_iter)) ||
-			((stopCriterion() == scThreshold)&&(actforcevectorlength >= threshold())&&
-			(iter <= ITERBOUND)) ||
-			((stopCriterion() == scFixedIterationsOrThreshold)&&(iter <= max_mult_iter) &&
-			(actforcevectorlength >= threshold())) )
-		{//while
-			calculate_forces(G,A,E,F,F_attr,F_rep,last_node_movement,iter,0);
-			if(stopCriterion() != scFixedIterations)
-				actforcevectorlength = get_average_forcevector_length(G,F);
-			iter++;
-		}//while
+    void call_POSTPROCESSING_step(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E,
+            NodeArray<DPoint> F,
+            NodeArray<DPoint> F_attr,
+            NodeArray<DPoint> F_rep,
+            NodeArray<DPoint> last_node_movement)
+    {
+        for (int i = 1; i <= 10; i++)
+        {
+            calculate_forces(G, A, E, F, F_attr, F_rep, last_node_movement, i, 1);
+        }
 
-		if(act_level == 0)
-			call_POSTPROCESSING_step(G,A,E,F,F_attr,F_rep,last_node_movement);
+        if ((resizeDrawing() == true))
+        {
+            adapt_drawing_to_ideal_average_edgelength(G, A, E);
+            update_boxlength_and_cornercoordinate(G, A);
+        }
 
-		deallocate_memory_for_rep_calc_classes();
-	}
-}
+        for (int i = 1; i <= fineTuningIterations(); i++)
+        {
+            calculate_forces(G, A, E, F, F_attr, F_rep, last_node_movement, i, 2);
+        }
 
-
-void call_POSTPROCESSING_step(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>& E,
-	NodeArray<DPoint>& F,
-	NodeArray<DPoint>& F_attr,
-	NodeArray<DPoint>& F_rep,
-	NodeArray<DPoint>& last_node_movement)
-{
-	for(int i = 1; i<= 10; i++)
-		calculate_forces(G,A,E,F,F_attr,F_rep,last_node_movement,i,1);
-
-	if((resizeDrawing() == true))
-	{
-		adapt_drawing_to_ideal_average_edgelength(G,A,E);
-		update_boxlength_and_cornercoordinate(G,A);
-	}
-
-	for(int i = 1; i<= fineTuningIterations(); i++)
-		calculate_forces(G,A,E,F,F_attr,F_rep,last_node_movement,i,2);
-
-	if((resizeDrawing() == true))
-		adapt_drawing_to_ideal_average_edgelength(G,A,E);
-}
-
+        if ((resizeDrawing() == true))
+        {
+            adapt_drawing_to_ideal_average_edgelength(G, A, E);
+        }
+    }
 
 //------------------------- functions for pre/post-processing -------------------------
+    void initialize_all_options()
+    {
+        //setting high level options
+        useHighLevelOptions(false);
+        pageFormat(PageFormatType.pfSquare);
+        unitEdgeLength(100);
+        newInitialPlacement(false);
+        qualityVersusSpeed(QualityVsSpeed.qvsBeautifulAndFast);
 
-void initialize_all_options()
-{
-	//setting high level options
-	useHighLevelOptions(false); pageFormat(pfSquare); unitEdgeLength(100);
-	newInitialPlacement(false); qualityVersusSpeed(qvsBeautifulAndFast);
+        //setting low level options
+        //setting general options
+        randSeed(100);
+        edgeLengthMeasurement(EdgeLengthMeasurement.elmBoundingCircle);
+        allowedPositions(AllowedPositions.apInteger);
+        maxIntPosExponent(40);
 
-	//setting low level options
-	//setting general options
-	randSeed(100);edgeLengthMeasurement(elmBoundingCircle);
-	allowedPositions(apInteger);maxIntPosExponent(40);
+        //setting options for the divide et impera step
+        pageRatio(1.0);
+        stepsForRotatingComponents(10);
+        tipOverCCs(TipOver.toNoGrowingRow);
+        minDistCC(100);
+        presortCCs(PreSort.psDecreasingHeight);
 
-	//setting options for the divide et impera step
-	pageRatio(1.0);stepsForRotatingComponents(10);
-	tipOverCCs(toNoGrowingRow);minDistCC(100);
-	presortCCs(psDecreasingHeight);
+        //setting options for the multilevel step
+        minGraphSize(50);
+        galaxyChoice(GalaxyChoice.gcNonUniformProbLowerMass);
+        randomTries(20);
+        maxIterChange(MaxIterChange.micLinearlyDecreasing);
+        maxIterFactor(10);
+        initialPlacementMult(InitialPlacementMult.ipmAdvanced);
+        m_singleLevel = false;
 
-	//setting options for the multilevel step
-	minGraphSize(50);galaxyChoice(gcNonUniformProbLowerMass);randomTries(20);
-	maxIterChange(micLinearlyDecreasing);maxIterFactor(10);
-	initialPlacementMult(ipmAdvanced);
-	m_singleLevel = false;
+        //setting options for the force calculation step
+        forceModel(ForceModel.fmNew);
+        springStrength(1);
+        repForcesStrength(1);
+        repulsiveForcesCalculation(RepulsiveForcesMethod.rfcNMM);
+        stopCriterion(StopCriterion.scFixedIterationsOrThreshold);
+        threshold(0.01);
+        fixedIterations(30);
+        forceScalingFactor(0.05);
+        coolTemperature(false);
+        coolValue(0.99);
+        initialPlacementForces(InitialPlacementForces.ipfRandomRandIterNr);
 
-	//setting options for the force calculation step
-	forceModel(fmNew);springStrength(1);repForcesStrength(1);
-	repulsiveForcesCalculation(rfcNMM);stopCriterion(scFixedIterationsOrThreshold);
-	threshold(0.01);fixedIterations(30);forceScalingFactor(0.05);
-	coolTemperature(false);coolValue(0.99);initialPlacementForces(ipfRandomRandIterNr);
+        //setting options for postprocessing
+        resizeDrawing(true);
+        resizingScalar(1);
+        fineTuningIterations(20);
+        fineTuneScalar(0.2);
+        adjustPostRepStrengthDynamically(true);
+        postSpringStrength(2.0);
+        postStrengthOfRepForces(0.01);
 
-	//setting options for postprocessing
-	resizeDrawing(true);resizingScalar(1);fineTuningIterations(20);
-	fineTuneScalar(0.2);adjustPostRepStrengthDynamically(true);
-	postSpringStrength(2.0);postStrengthOfRepForces(0.01);
+        //setting options for different repulsive force calculation methods
+        frGridQuotient(2);
+        nmTreeConstruction(ReducedTreeConstruction.rtcSubtreeBySubtree);
+        nmSmallCell(SmallestCellFinding.scfIteratively);
+        nmParticlesInLeaves(25);
+        nmPrecision(4);
+    }
 
-	//setting options for different repulsive force calculation methods
-	frGridQuotient(2);
-	nmTreeConstruction(rtcSubtreeBySubtree);nmSmallCell(scfIteratively);
-	nmParticlesInLeaves(25); nmPrecision(4);
-}
+    void update_low_level_options_due_to_high_level_options_settings()
+    {
+        PageFormatType pf = pageFormat();
+        double uel = unitEdgeLength();
+        boolean nip = newInitialPlacement();
+        QualityVsSpeed qvs = qualityVersusSpeed();
 
+        //update
+        initialize_all_options();
+        useHighLevelOptions(true);
+        pageFormat(pf);
+        unitEdgeLength(uel);
+        newInitialPlacement(nip);
+        qualityVersusSpeed(qvs);
 
-void update_low_level_options_due_to_high_level_options_settings()
-{
-	PageFormatType pf = pageFormat();
-	double uel = unitEdgeLength();
-	boolean nip = newInitialPlacement();
-	QualityVsSpeed qvs = qualityVersusSpeed();
+        if (pageFormat() == PageFormatType.pfSquare)
+        {
+            pageRatio(1.0);
+        }
+        else if (pageFormat() == PageFormatType.pfLandscape)
+        {
+            pageRatio(1.4142);
+        }
+        else //pageFormat() == pfPortrait
+        {
+            pageRatio(0.7071);
+        }
 
-	//update
-	initialize_all_options();
-	useHighLevelOptions(true);
-	pageFormat(pf);
-	unitEdgeLength(uel);
-	newInitialPlacement(nip);
-	qualityVersusSpeed(qvs);
+        if (newInitialPlacement())
+        {
+            initialPlacementForces(InitialPlacementForces.ipfRandomTime);
+        }
+        else
+        {
+            initialPlacementForces(InitialPlacementForces.ipfRandomRandIterNr);
+        }
 
-	if(pageFormat() == pfSquare)
-		pageRatio(1.0);
-	else if(pageFormat() ==pfLandscape)
-		pageRatio(1.4142);
-	else //pageFormat() == pfPortrait
-		pageRatio(0.7071);
+        if (qualityVersusSpeed() == QualityVsSpeed.qvsGorgeousAndEfficient)
+        {
+            fixedIterations(60);
+            fineTuningIterations(40);
+            nmPrecision(6);
+        }
+        else if (qualityVersusSpeed() == QualityVsSpeed.qvsBeautifulAndFast)
+        {
+            fixedIterations(30);
+            fineTuningIterations(20);
+            nmPrecision(4);
+        }
+        else //qualityVersusSpeed() == qvsNiceAndIncredibleSpeed
+        {
+            fixedIterations(15);
+            fineTuningIterations(10);
+            nmPrecision(2);
+        }
+    }
 
-	if(newInitialPlacement())
-		initialPlacementForces(ipfRandomTime);
-	else
-		initialPlacementForces(ipfRandomRandIterNr);
+    void import_NodeAttributes(
+            Graph G,
+            GraphAttributes GA,
+            NodeArray<NodeAttributes> A)
+    {
+        DPoint position = new DPoint();
 
-	if(qualityVersusSpeed() == qvsGorgeousAndEfficient)
-	{
-		fixedIterations(60);
-		fineTuningIterations(40);
-		nmPrecision(6);
-	}
-	else if(qualityVersusSpeed() == qvsBeautifulAndFast)
-	{
-		fixedIterations(30);
-		fineTuningIterations(20);
-		nmPrecision(4);
-	}
-	else //qualityVersusSpeed() == qvsNiceAndIncredibleSpeed
-	{
-		fixedIterations(15);
-		fineTuningIterations(10);
-		nmPrecision(2);
-	}
-}
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            node v = i.next();
+            position.m_x = GA.x(v);
+            position.m_y = GA.y(v);
+            A.get(v).set_NodeAttributes(GA.width(v), GA.height(v), position, null, null);
+        }
+    }
 
+    void import_EdgeAttributes(
+            Graph G,
+            EdgeArray<Double> edgeLength,
+            EdgeArray<EdgeAttributes> E)
+    {
+        double length;
 
-void import_NodeAttributes(
-	Graph& G,
-	GraphAttributes& GA,
-	NodeArray<NodeAttributes>& A)
-{
-	node v;
-	DPoint position;
+        for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+        {
+            edge e = i.next();
+            if (edgeLength.get(e) > 0) //no negative edgelength allowed
+            {
+                length = edgeLength.get(e);
+            }
+            else
+            {
+                length = 1;
+            }
 
-	forall_nodes(v,G)
-	{
-		position.m_x = GA.x(v);
-		position.m_y = GA.y(v);
-		A[v].set_NodeAttributes(GA.width(v),GA.height(v),position,NULL,NULL);
-	}
-}
-
-
-void import_EdgeAttributes(
-	Graph& G,
-	EdgeArray<double>& edgeLength,
-	EdgeArray<EdgeAttributes>& E)
-{
-	edge e;
-	double length;
-
-	forall_edges(e,G)
-	{
-		if(edgeLength[e] > 0) //no negative edgelength allowed
-			length = edgeLength[e];
-		else
-			length = 1;
-
-		E[e].set_EdgeAttributes(length,NULL,NULL);
-	}
-}
-
-
-void init_ind_ideal_edgelength(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>& E)
-{
-	edge e;
-
-	if (edgeLengthMeasurement() == elmMidpoint)
-		forall_edges(e,G)
-			E[e].set_length(E[e].get_length() * unitEdgeLength());
-
-	else //(edgeLengthMeasurement() == elmBoundingCircle)
-	{
-		set_radii(G,A);
-		forall_edges(e,G)
-			E[e].set_length(E[e].get_length() * unitEdgeLength() + radius[e->source()]
-				+ radius[e->target()]);
-	}
-}
-
-
-void set_radii(Graph& G, NodeArray<NodeAttributes>& A)
-{
-	node v;
-	radius.init(G);
-	double w,h;
-	forall_nodes(v,G)
-	{
-		w = A[v].get_width()/2;
-		h = A[v].get_height()/2;
-		radius[v] = sqrt(w*w+ h*h);
-	}
-}
+            E.get(e).set_EdgeAttributes(length, null, null);
+        }
+    }
 
 
-void export_NodeAttributes(
-	Graph& G_reduced,
-	NodeArray<NodeAttributes>& A_reduced,
-	GraphAttributes& GA)
-{
-	node v_copy;
-	forall_nodes(v_copy,G_reduced)
-	{
-		GA.x(A_reduced[v_copy].get_original_node()) =  A_reduced[v_copy].get_position().m_x;
-		GA.y(A_reduced[v_copy].get_original_node()) =  A_reduced[v_copy].get_position().m_y;
-	}
-}
+    void init_ind_ideal_edgelength(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E)
+    {
+        if (edgeLengthMeasurement() == EdgeLengthMeasurement.elmMidpoint)
+        {
+            for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+            {
+                edge e = i.next();
+                E.get(e).set_length(E.get(e).get_length() * unitEdgeLength());
+            }
+        }
+        else //(edgeLengthMeasurement() == elmBoundingCircle)
+        {
+            set_radii(G, A);
+            for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+            {
+                edge e = i.next();
+                E.get(e).set_length(E.get(e).get_length() * unitEdgeLength() + radius.get(e.source()) +
+                        radius.get(e.target()));
+            }
+        }
+    }
 
 
-void make_simple_loopfree(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>E,
-	Graph& G_reduced,
-	NodeArray<NodeAttributes>& A_reduced,
-	EdgeArray<EdgeAttributes>& E_reduced)
-{
-	node u_orig,v_orig,v_reduced;
-	edge e_reduced,e_orig;
+    void set_radii(Graph G, NodeArray<NodeAttributes> A)
+    {
+        radius.init(G);
+        double w, h;
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            node v = i.next();
+            w = A.get(v).get_width() / 2;
+            h = A.get(v).get_height() / 2;
+            radius.set(v, new Double(Math.sqrt(w * w + h * h)));
+        }
+    }
 
-	//create the reduced Graph G_reduced and save in A/E links to node/edges of G_reduced
-	//create G_reduced as a copy of G without selfloops!
+    void export_NodeAttributes(
+            Graph G_reduced,
+            NodeArray<NodeAttributes> A_reduced,
+            GraphAttributes GA)
+    {
+        for (Iterator<node> i = G_reduced.nodesIterator(); i.hasNext();)
+        {
+            node v_copy = i.next();
 
-	G_reduced.clear();
-	forall_nodes(v_orig,G)
-		A[v_orig].set_copy_node(G_reduced.newNode());
-	forall_edges(e_orig,G)
-	{
-		u_orig = e_orig->source();
-		v_orig = e_orig->target();
-		if(u_orig != v_orig)
-			E[e_orig].set_copy_edge(G_reduced.newEdge (A[u_orig].get_copy_node(),
-			A[v_orig].get_copy_node()));
-		else
-			E[e_orig].set_copy_edge(NULL);//mark this edge as deleted
-	}
+            GA.setX(A_reduced.get(v_copy).get_original_node(), A_reduced.get(v_copy).get_position().m_x);
+            GA.setY(A_reduced.get(v_copy).get_original_node(), A_reduced.get(v_copy).get_position().m_y);
+        }
+    }
 
-	//remove parallel (and reversed) edges from G_reduced
-	EdgeArray<double> new_edgelength(G_reduced);
-	List<edge> S;
-	S.clear();
-	delete_parallel_edges(G,E,G_reduced,S,new_edgelength);
+    void make_simple_loopfree(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E,
+            Graph G_reduced,
+            NodeArray<NodeAttributes> A_reduced,
+            EdgeArray<EdgeAttributes> E_reduced)
+    {
+        node u_orig, v_orig, v_reduced;
+        edge e_reduced, e_orig;
 
-	//make A_reduced, E_reduced valid for G_reduced
-	A_reduced.init(G_reduced);
-	E_reduced.init(G_reduced);
+        //create the reduced Graph G_reduced and save in A/E links to node/edges of G_reduced
+        //create G_reduced as a copy of G without selfloops!
 
-	//import information for A_reduced, E_reduced and links to the original nodes/edges
-	//of the copy nodes/edges
-	forall_nodes(v_orig,G)
-	{
-		v_reduced = A[v_orig].get_copy_node();
-		A_reduced[v_reduced].set_NodeAttributes(A[v_orig].get_width(), A[v_orig].
-			get_height(),A[v_orig].get_position(),
-			v_orig,NULL);
-	}
-	forall_edges(e_orig,G)
-	{
-		e_reduced = E[e_orig].get_copy_edge();
-		if(e_reduced != NULL)
-			E_reduced[e_reduced].set_EdgeAttributes(E[e_orig].get_length(),e_orig,NULL);
-	}
+        G_reduced.clear();
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v_orig = i.next();
+            A.get(v_orig).set_copy_node(G_reduced.newNode());
+        }
 
-	//update edgelength of copy edges in G_reduced associated with a set of parallel
-	//edges in G
-	update_edgelength(S,new_edgelength,E_reduced);
-}
+        for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+        {
+            e_orig = i.next();
+            u_orig = e_orig.source();
+            v_orig = e_orig.target();
+            if (u_orig != v_orig)
+            {
+                E.get(e_orig).set_copy_edge(G_reduced.newEdge(A.get(u_orig).get_copy_node(),
+                        A.get(v_orig).get_copy_node()));
+            }
+            else
+            {
+                E.get(e_orig).set_copy_edge(null);//mark this edge as deleted
+            }
+        }
+
+        //remove parallel (and reversed) edges from G_reduced
+        EdgeArray<Double> new_edgelength = new EdgeArray<Double>(G_reduced);
+        List<edge> S = new ArrayList<edge>();
+        S.clear();
+        delete_parallel_edges(G, E, G_reduced, S, new_edgelength);
+
+        //make A_reduced, E_reduced valid for G_reduced
+        A_reduced.init(G_reduced);
+        E_reduced.init(G_reduced);
+
+        //import information for A_reduced, E_reduced and links to the original nodes/edges
+        //of the copy nodes/edges
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v_orig = i.next();
+            v_reduced = A.get(v_orig).get_copy_node();
+            A_reduced.get(v_reduced).set_NodeAttributes(A.get(v_orig).get_width(), A.get(v_orig).
+                    get_height(), A.get(v_orig).get_position(),
+                    v_orig, null);
+        }
+        for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+        {
+            e_orig = i.next();
+            e_reduced = E.get(e_orig).get_copy_edge();
+            if (e_reduced != null)
+            {
+                E_reduced.get(e_reduced).set_EdgeAttributes(E.get(e_orig).get_length(), e_orig, null);
+            }
+        }
+
+        //update edgelength of copy edges in G_reduced associated with a set of parallel
+        //edges in G
+        update_edgelength(S, new_edgelength, E_reduced);
+    }
 
 
 void delete_parallel_edges(
-	Graph& G,
-	EdgeArray<EdgeAttributes>& E,
-	Graph& G_reduced,
-	List<edge>& S,
-	EdgeArray<double>& new_edgelength)
+	Graph G,
+	EdgeArray<EdgeAttributes> E,
+	Graph G_reduced,
+	List<edge> S,
+	EdgeArray<Double> new_edgelength)
 {
 	EdgeMaxBucketFunc MaxSort;
 	EdgeMinBucketFunc MinSort;
@@ -525,7 +1291,7 @@ void delete_parallel_edges(
 
 	//save the original edges for each edge in G_reduced
 	forall_edges(e_act,G)
-		if(E[e_act].get_copy_edge() != NULL) //e_act is no self_loops
+		if(E[e_act].get_copy_edge() != null) //e_act is no self_loops
 			original_edge[E[e_act].get_copy_edge()] = e_act;
 
 	forall_edges(e_act,G_reduced)
@@ -558,7 +1324,7 @@ void delete_parallel_edges(
 				else //more then two parallel edges
 					new_edgelength[e_save] +=E[original_edge[e_act]].get_length();
 
-				E[original_edge[e_act]].set_copy_edge(NULL); //mark copy of edge as deleted
+				E[original_edge[e_act]].set_copy_edge(null); //mark copy of edge as deleted
 				G_reduced.delEdge(e_act);                    //delete copy edge in G_reduced
 				counter++;
 			}
@@ -587,33 +1353,31 @@ void delete_parallel_edges(
 		new_edgelength[e_save]/=counter;
 }
 
+    void update_edgelength(
+            List<edge> S,
+            EdgeArray<Double> new_edgelength,
+            EdgeArray<EdgeAttributes> E_reduced)
+    {
+        edge e;
+        while (!S.isEmpty())
+        {
+            e = S.get(0);
+            S.remove(0); //S.popFrontRet();
+            E_reduced.get(e).set_length(new_edgelength.get(e));
+        }
+    }
 
-void update_edgelength(
-	List<edge>& S,
-	EdgeArray<double>& new_edgelength,
-	EdgeArray<EdgeAttributes>& E_reduced)
-{
-	edge e;
-	while (!S.empty())
-	{
-		e = S.popFrontRet();
-		E_reduced[e].set_length(new_edgelength[e]);
-	}
-}
+    double get_post_rep_force_strength(int n)
+    {
+        return Math.min(0.2, 400.0 / (double) n);
+    }
 
-
-//inline double get_post_rep_force_strength(int n)
-//{
-//	return min(0.2,400.0/double(n));
-//}
-
-
-void make_positions_integer(Graph& G, NodeArray<NodeAttributes>& A)
+void make_positions_integer(Graph G, NodeArray<NodeAttributes> A)
 {
 	node v;
 	double new_x,new_y;
 
-	if(allowedPositions() == apInteger)
+	if(allowedPositions() == AllowedPositions.apInteger)
 	{//if
 		//calculate value of max_integer_position
 		max_integer_position = 100 * average_ideal_edgelength * G.numberOfNodes() *
@@ -622,53 +1386,57 @@ void make_positions_integer(Graph& G, NodeArray<NodeAttributes>& A)
 
 	//restrict positions to lie in [-max_integer_position,max_integer_position]
 	//X [-max_integer_position,max_integer_position]
-	forall_nodes(v,G)
-		if( (A[v].get_x() > max_integer_position) ||
-			(A[v].get_y() > max_integer_position) ||
-			(A[v].get_x() < max_integer_position * (-1.0)) ||
-			(A[v].get_y() < max_integer_position * (-1.0)) )
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+		if( (A.get(v).get_x() > max_integer_position) ||
+			(A.get(v).get_y() > max_integer_position) ||
+			(A.get(v).get_x() < max_integer_position * (-1.0)) ||
+			(A.get(v).get_y() < max_integer_position * (-1.0)) )
 		{
-			DPoint cross_point;
-			DPoint nullpoint (0,0);
-			DPoint old_pos (A[v].get_x(),A[v].get_y());
-			DPoint lt ( max_integer_position * (-1.0),max_integer_position);
-			DPoint rt ( max_integer_position,max_integer_position);
-			DPoint lb ( max_integer_position * (-1.0),max_integer_position * (-1.0));
-			DPoint rb ( max_integer_position,max_integer_position * (-1.0));
-			DLine s (nullpoint,old_pos);
-			DLine left_bound (lb,lt);
-			DLine right_bound (rb,rt);
-			DLine top_bound (lt,rt);
-			DLine bottom_bound (lb,rb);
+			DPoint cross_point = new DPoint();
+			DPoint nullpoint = new DPoint(0,0);
+			DPoint old_pos = new DPoint(A.get(v).get_x(),A.get(v).get_y());
+			DPoint lt = new DPoint( max_integer_position * (-1.0),max_integer_position);
+			DPoint rt = new DPoint( max_integer_position,max_integer_position);
+			DPoint lb = new DPoint( max_integer_position * (-1.0),max_integer_position * (-1.0));
+			DPoint rb = new DPoint( max_integer_position,max_integer_position * (-1.0));
+			DLine s = new DLine(nullpoint,old_pos);
+			DLine left_bound = new DLine(lb,lt);
+			DLine right_bound = new DLine(rb,rt);
+			DLine top_bound = new DLine(lt,rt);
+			DLine bottom_bound = new DLine(lb,rb);
 
 			if(s.intersection(left_bound,cross_point))
 			{
-				A[v].set_x(cross_point.m_x);
-				A[v].set_y(cross_point.m_y);
+				A.get(v).set_x(cross_point.m_x);
+				A.get(v).set_y(cross_point.m_y);
 			}
 			else if(s.intersection(right_bound,cross_point))
 			{
-				A[v].set_x(cross_point.m_x);
-				A[v].set_y(cross_point.m_y);
+				A.get(v).set_x(cross_point.m_x);
+				A.get(v).set_y(cross_point.m_y);
 			}
 			else if(s.intersection(top_bound,cross_point))
 			{
-				A[v].set_x(cross_point.m_x);
-				A[v].set_y(cross_point.m_y);
+				A.get(v).set_x(cross_point.m_x);
+				A.get(v).set_y(cross_point.m_y);
 			}
 			else if(s.intersection(bottom_bound,cross_point))
 			{
-				A[v].set_x(cross_point.m_x);
-				A[v].set_y(cross_point.m_y);
+				A.get(v).set_x(cross_point.m_x);
+				A.get(v).set_y(cross_point.m_y);
 			}
-			else cout<<"Error  make_positions_integer()"<<endl;
+			else System.out.println("Error  make_positions_integer()");
 		}
+        }
 
 		//make positions integer
-		forall_nodes(v,G)
-		{
-			new_x = floor(A[v].get_x());
-			new_y = floor(A[v].get_y());
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+			new_x = Math.floor(A.get(v).get_x());
+			new_y = Math.floor(A.get(v).get_y());
 			if(new_x < down_left_corner.m_x)
 			{
 				boxlength += 2;
@@ -679,17 +1447,17 @@ void make_positions_integer(Graph& G, NodeArray<NodeAttributes>& A)
 				boxlength += 2;
 				down_left_corner.m_y = down_left_corner.m_y-2;
 			}
-			A[v].set_x(new_x);
-			A[v].set_y(new_y);
+			A.get(v).set_x(new_x);
+			A.get(v).set_y(new_y);
 		}
 }
 
 
-void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
+/*void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
 {
 	ofstream out_fmmm (ps_file,ios::out);
 	if (!ps_file) cout<<ps_file<<" could not be opened !"<<endl;
-	Graph& G = AG.constGraph();
+	Graph G = AG.constGraph();
 	node v;
 	edge e;
 	double x_min = AG.x(G.firstNode());
@@ -764,19 +1532,19 @@ void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
 	out_fmmm<<"%%EndProgram "<<endl;
 	out_fmmm<<"showpage "<<endl;
 	out_fmmm<<"%%EOF "<<endl;
-}
+}*/
 
 
 //------------------------- functions for divide et impera step -----------------------
 
 void create_maximum_connected_subGraphs(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>&E,
-	Graph G_sub[],
-	NodeArray<NodeAttributes> A_sub[],
-	EdgeArray<EdgeAttributes> E_sub[],
-	NodeArray<int>& component)
+	Graph G,
+	NodeArray<NodeAttributes> A,
+	EdgeArray<EdgeAttributes>E,
+	List<Graph> G_sub,
+	List<NodeArray<NodeAttributes>> A_sub,
+	List<EdgeArray<EdgeAttributes>> E_sub,
+	NodeArray<Integer> component)
 {
 	node u_orig,v_orig,v_sub;
 	edge e_sub,e_orig;
@@ -808,22 +1576,22 @@ void create_maximum_connected_subGraphs(
 		v_sub = A[v_orig].get_subgraph_node();
 		A_sub[component[v_orig]][v_sub].set_NodeAttributes(A[v_orig].get_width(),
 			A[v_orig].get_height(),A[v_orig].get_position(),
-			v_orig,NULL);
+			v_orig,null);
 	}
 	forall_edges(e_orig,G)
 	{
 		e_sub = E[e_orig].get_subgraph_edge();
 		v_orig = e_orig->source();
 		E_sub[component[v_orig]][e_sub].set_EdgeAttributes(E[e_orig].get_length(),
-			e_orig,NULL);
+			e_orig,null);
 	}
 }
 
 
 void pack_subGraph_drawings(
-	NodeArray<NodeAttributes>& A,
-	Graph G_sub[],
-	NodeArray<NodeAttributes> A_sub[])
+	NodeArray<NodeAttributes> A,
+	List<Graph> G_sub,
+	List<NodeArray<NodeAttributes>> A_sub)
 {
 	double aspect_ratio_area, bounding_rectangles_area;
 	MAARPacking P;
@@ -842,7 +1610,7 @@ void pack_subGraph_drawings(
 
 
 void calculate_bounding_rectangles_of_components(
-	List<Rectangle>& R,
+	List<Rectangle> R,
 	Graph G_sub[],
 	NodeArray<NodeAttributes> A_sub[])
 {
@@ -859,8 +1627,8 @@ void calculate_bounding_rectangles_of_components(
 
 
 Rectangle calculate_bounding_rectangle(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
+	Graph G,
+	NodeArray<NodeAttributes> A,
 	int componenet_index)
 {
 	Rectangle r;
@@ -905,7 +1673,7 @@ Rectangle calculate_bounding_rectangle(
 
 
 void rotate_components_and_calculate_bounding_rectangles(
-	List<Rectangle>&R,
+	List<Rectangle>R,
 	Graph G_sub[],
 	NodeArray<NodeAttributes> A_sub[])
 {
@@ -1008,10 +1776,25 @@ void rotate_components_and_calculate_bounding_rectangles(
 	}//allcomponents
 }
 
+	double calculate_area(double width,double height,int comp_nr) {
+		if (comp_nr == 1)  //calculate aspect ratio area of the rectangle
+		{
+			double  ratio = width/height;
+
+			if(ratio < pageRatio()) //scale width
+				return ( width * height * (pageRatio()/ratio));
+			else //scale height
+				return (width * height * (ratio/pageRatio()));
+		}
+		else  //calculate area of the rectangle
+			return width * height;
+	}
+
+
 
 void export_node_positions(
-	NodeArray<NodeAttributes>& A,
-	List<Rectangle>&  R,
+	NodeArray<NodeAttributes> A,
+	List<Rectangle>  R,
 	Graph G_sub[],
 	NodeArray<NodeAttributes> A_sub[])
 {
@@ -1048,12 +1831,12 @@ void export_node_positions(
 
 //----------------------- functions for multilevel step -----------------------------
 
-inline int get_max_mult_iter(int act_level, int max_level, int node_nr)
+int get_max_mult_iter(int act_level, int max_level, int node_nr)
 {
 	int iter;
-	if(maxIterChange() == micConstant) //nothing to do
+	if(maxIterChange() == MaxIterChange.micConstant) //nothing to do
 		iter =  fixedIterations();
-	else if (maxIterChange() == micLinearlyDecreasing) //linearly decreasing values
+	else if (maxIterChange() == MaxIterChange.micLinearlyDecreasing) //linearly decreasing values
 	{
 		if(max_level == 0)
 			iter = fixedIterations() +  ((maxIterFactor()-1) * fixedIterations());
@@ -1083,18 +1866,18 @@ inline int get_max_mult_iter(int act_level, int max_level, int node_nr)
 
 //-------------------------- functions for force calculation ---------------------------
 
-inline void calculate_forces(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>& E,
-	NodeArray<DPoint>& F,
-	NodeArray<DPoint>& F_attr,
-	NodeArray<DPoint>& F_rep,
-	NodeArray<DPoint>& last_node_movement,
+void calculate_forces(
+	Graph G,
+	NodeArray<NodeAttributes> A,
+	EdgeArray<EdgeAttributes> E,
+	NodeArray<DPoint> F,
+	NodeArray<DPoint> F_attr,
+	NodeArray<DPoint> F_rep,
+	NodeArray<DPoint> last_node_movement,
 	int iter,
 	int fine_tuning_step)
 {
-	if(allowedPositions() != apAll)
+	if(allowedPositions() != AllowedPositions.apAll)
 		make_positions_integer(G,A);
 	calculate_attractive_forces(G,A,E,F_attr);
 	calculate_repulsive_forces(G,A,F_rep);
@@ -1106,8 +1889,8 @@ inline void calculate_forces(
 
 
 void init_boxlength_and_cornercoordinate (
-	Graph& G,
-	NodeArray<NodeAttributes>& A)
+	Graph G,
+	NodeArray<NodeAttributes> A)
 {
 	//boxlength is set
 
@@ -1130,7 +1913,7 @@ void init_boxlength_and_cornercoordinate (
 }
 
 
-void create_initial_placement (Graph& G, NodeArray<NodeAttributes>& A)
+void create_initial_placement (Graph G, NodeArray<NodeAttributes> A)
 {
 	int BILLION = 1000000000;
 	int i,j,k;
@@ -1198,7 +1981,7 @@ void create_initial_placement (Graph& G, NodeArray<NodeAttributes>& A)
 }
 
 
-inline void init_F(Graph& G, NodeArray<DPoint>& F)
+void init_F(Graph G, NodeArray<DPoint> F)
 {
 	DPoint nullpoint (0,0);
 	node v;
@@ -1207,24 +1990,39 @@ inline void init_F(Graph& G, NodeArray<DPoint>& F)
 }
 
 
-inline void make_initialisations_for_rep_calc_classes(Graph& G)
+void make_initialisations_for_rep_calc_classes(Graph G)
 {
-	if(repulsiveForcesCalculation() == rfcExact)
+	if(repulsiveForcesCalculation() == RepulsiveForcesCalculation.rfcExact)
 		FR.make_initialisations(boxlength,down_left_corner,frGridQuotient());
-	else if(repulsiveForcesCalculation() == rfcGridApproximation)
+	else if(repulsiveForcesCalculation() == RepulsiveForcesCalculation.rfcGridApproximation)
 		FR.make_initialisations(boxlength,down_left_corner,frGridQuotient());
-	else //(repulsiveForcesCalculation() == rfcNMM
+	else //(repulsiveForcesCalculation() == RepulsiveForcesCalculation.rfcNMM
 		NM.make_initialisations(G,boxlength,down_left_corner,
 		nmParticlesInLeaves(),nmPrecision(),
 		nmTreeConstruction(),nmSmallCell());
 }
 
+	//! Calculates repulsive forces for each node.
+	void calculate_repulsive_forces(
+		Graph &G,
+		NodeArray<NodeAttributes>& A,
+		NodeArray<DPoint>& F_rep)
+	{
+		if(repulsiveForcesCalculation() == rfcExact )
+			FR.calculate_exact_repulsive_forces(G,A,F_rep);
+		else if(repulsiveForcesCalculation() == rfcGridApproximation )
+			FR.calculate_approx_repulsive_forces(G,A,F_rep);
+		else //repulsiveForcesCalculation() == rfcNMM
+			NM.calculate_repulsive_forces(G,A,F_rep);
+	}
+
+
 
 void calculate_attractive_forces(
-	Graph& G,
+	Graph G,
 	NodeArray<NodeAttributes> & A,
 	EdgeArray<EdgeAttributes> & E,
-	NodeArray<DPoint>& F_attr)
+	NodeArray<DPoint> F_attr)
 {
 	numexcept N;
 	edge e;
@@ -1288,10 +2086,10 @@ double f_attr_scalar(double d, double ind_ideal_edge_length)
 
 
 void add_attr_rep_forces(
-	Graph& G,
-	NodeArray<DPoint>& F_attr,
-	NodeArray<DPoint>& F_rep,
-	NodeArray<DPoint>& F,
+	Graph G,
+	NodeArray<DPoint> F_attr,
+	NodeArray<DPoint> F_rep,
+	NodeArray<DPoint> F,
 	int iter,
 	int fine_tuning_step)
 {
@@ -1365,9 +2163,9 @@ void add_attr_rep_forces(
 
 
 void move_nodes(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	NodeArray<DPoint>& F)
+	Graph G,
+	NodeArray<NodeAttributes> A,
+	NodeArray<DPoint> F)
 {
 	node v;
 
@@ -1377,8 +2175,8 @@ void move_nodes(
 
 
 void update_boxlength_and_cornercoordinate(
-	Graph& G,
-	NodeArray<NodeAttributes>&A)
+	Graph G,
+	NodeArray<NodeAttributes> A)
 {
 	node v;
 	double xmin,xmax,ymin,ymax;
@@ -1426,10 +2224,16 @@ void update_boxlength_and_cornercoordinate(
 		NM.update_boxlength_and_cornercoordinate(boxlength,down_left_corner);
 }
 
+	//! Describes the max. radius of a move in one time step, depending on the number of iterations.
+	double max_radius(int iter) {
+		return (iter == 1) ? boxlength/1000 : boxlength/5;
+	}
+
+
 
 void set_average_ideal_edgelength(
-	Graph& G,
-	EdgeArray<EdgeAttributes>& E)
+	Graph G,
+	EdgeArray<EdgeAttributes> E)
 {
 	double averagelength = 0;
 	edge e;
@@ -1445,7 +2249,7 @@ void set_average_ideal_edgelength(
 }
 
 
-double get_average_forcevector_length (Graph& G, NodeArray<DPoint>& F)
+double get_average_forcevector_length (Graph G, NodeArray<DPoint> F)
 {
 	double lengthsum = 0;
 	node v;
@@ -1457,9 +2261,9 @@ double get_average_forcevector_length (Graph& G, NodeArray<DPoint>& F)
 
 
 void prevent_oscilations(
-	Graph& G,
-	NodeArray<DPoint>& F,
-	NodeArray<DPoint>& last_node_movement,
+	Graph G,
+	NodeArray<DPoint> F,
+	NodeArray<DPoint> last_node_movement,
 	int iter)
 {
 
@@ -1589,9 +2393,9 @@ double angle(DPoint& P, DPoint& Q, DPoint& R)
 
 
 void init_last_node_movement(
-	Graph& G,
-	NodeArray<DPoint>& F,
-	NodeArray<DPoint>& last_node_movement)
+	Graph G,
+	NodeArray<DPoint> F,
+	NodeArray<DPoint> last_node_movement)
 {
 	node v;
 	forall_nodes(v,G)
@@ -1600,9 +2404,9 @@ void init_last_node_movement(
 
 
 void adapt_drawing_to_ideal_average_edgelength(
-	Graph& G,
-	NodeArray<NodeAttributes>& A,
-	EdgeArray<EdgeAttributes>& E)
+	Graph G,
+	NodeArray<NodeAttributes> A,
+	EdgeArray<EdgeAttributes> E)
 {
 	edge e;
 	node v;
@@ -1629,6 +2433,22 @@ void adapt_drawing_to_ideal_average_edgelength(
 		A[v].set_position(new_pos);
 	}
 }
+
+	void restrict_force_to_comp_box(DPoint& force) {
+		double x_min = down_left_corner.m_x;
+		double x_max = down_left_corner.m_x+boxlength;
+		double y_min = down_left_corner.m_y;
+		double y_max = down_left_corner.m_y+boxlength;
+		if (force.m_x < x_min )
+			force.m_x = x_min;
+		else if (force.m_x > x_max )
+			force.m_x = x_max;
+		if (force.m_y < y_min )
+			force.m_y = y_min;
+		else if (force.m_y > y_max )
+			force.m_y = y_max;
+	}
+
 
 
 } //end namespace ogdf

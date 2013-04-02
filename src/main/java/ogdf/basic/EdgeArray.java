@@ -117,6 +117,12 @@ public class EdgeArray<T> extends ArrayList<T>
         return super.get(e.index());
     }
 
+    public void set(edge e, T value)
+    {
+        assert e != null && e.graphOf() == m_pGraph;
+        super.set(e.index(), value);
+    }
+
     //! Reinitializes the array. Associates the array with no graph.
     public void init()
     {
