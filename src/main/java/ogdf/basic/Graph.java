@@ -14,4 +14,5 @@ public class Graph
     public void clear() { }
     public node newNode() { return null; }
     public edge newEdge(node a, node b) { return null; }
+    public void delEdge(edge e) { }
 }

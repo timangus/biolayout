@@ -7,744 +7,919 @@ package ogdf.energybased;
  *   $Author: gutwenger $
  *   $Date: 2012-07-07 17:14:54 +0200 (Sa, 07. Jul 2012) $
  ***************************************************************/
-
-/** \file
- * \brief Implementation of Fast Multipole Multilevel Method (FM^3).
+/**
+ * \file \brief Implementation of Fast Multipole Multilevel Method (FM^3).
  *
  * \author Stefan Hachul
  *
- * \par License:
- * This file is part of the Open Graph Drawing Framework (OGDF).
+ * \par License: This file is part of the Open Graph Drawing Framework (OGDF).
  *
- * \par
- * Copyright (C)<br>
- * See README.txt in the root directory of the OGDF installation for details.
+ * \par Copyright (C)<br> See README.txt in the root directory of the OGDF installation for details.
  *
- * \par
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * Version 2 or 3 as published by the Free Software Foundation;
- * see the file LICENSE.txt included in the packaging of this file
- * for details.
+ * \par This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License Version 2 or 3 as published by the Free Software Foundation; see the file LICENSE.txt included in the
+ * packaging of this file for details.
  *
- * \par
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * \par This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * \par
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+ * \par You should have received a copy of the GNU General Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * \see  http://www.gnu.org/copyleft/gpl.html
- ***************************************************************/
-
+ * \see http://www.gnu.org/copyleft/gpl.html
+ **************************************************************
+ */
 import java.lang.*;
 import java.util.*;
 import ogdf.basic.*;
 
-public class FMMMLayout {
+public class FMMMLayout
+{
 
-        //! Possible page formats.
-    enum PageFormatType {
-            pfPortrait,  //!< A4 portrait page.
-            pfLandscape, //!< A4 landscape page.
-            pfSquare     //!< Square format.
+    //! Possible page formats.
+    enum PageFormatType
+    {
+        pfPortrait, //!< A4 portrait page.
+        pfLandscape, //!< A4 landscape page.
+        pfSquare     //!< Square format.
     };
 
     //! Trade-off between run-time and quality.
-    enum QualityVsSpeed {
-            qvsGorgeousAndEfficient,  //!< Best quality.
-            qvsBeautifulAndFast,      //!< Medium quality and speed.
-            qvsNiceAndIncredibleSpeed //!< Best speed.
+    enum QualityVsSpeed
+    {
+        qvsGorgeousAndEfficient, //!< Best quality.
+        qvsBeautifulAndFast, //!< Medium quality and speed.
+        qvsNiceAndIncredibleSpeed //!< Best speed.
     };
 
     //! Specifies how the length of an edge is measured.
-    enum EdgeLengthMeasurement {
-            elmMidpoint,      //!< Measure from center point of edge end points.
-            elmBoundingCircle //!< Measure from border of circle s surrounding edge end points.
+    enum EdgeLengthMeasurement
+    {
+        elmMidpoint, //!< Measure from center point of edge end points.
+        elmBoundingCircle //!< Measure from border of circle s surrounding edge end points.
     };
 
     //! Specifies which positions for a node are allowed.
-    enum AllowedPositions {
-            apAll,
-            apInteger,
-            apExponent
+    enum AllowedPositions
+    {
+        apAll,
+        apInteger,
+        apExponent
     };
 
     //! Specifies in which case it is allowed to tip over drawings of connected components.
-    enum TipOver {
-            toNone,
-            toNoGrowingRow,
-            toAlways
+    enum TipOver
+    {
+        toNone,
+        toNoGrowingRow,
+        toAlways
     };
 
     //! Specifies how connected components are sorted before the packing algorithm is applied.
-    enum PreSort {
-            psNone, //!< Do not presort.
-            psDecreasingHeight, //!< Presort by decreasing height of components.
-            psDecreasingWidth   //!< Presort by decreasing width of components.
+    enum PreSort
+    {
+        psNone, //!< Do not presort.
+        psDecreasingHeight, //!< Presort by decreasing height of components.
+        psDecreasingWidth   //!< Presort by decreasing width of components.
     };
 
     //! Specifies how sun nodes of galaxies are selected.
-    public enum GalaxyChoice {
-            gcUniformProb,
-            gcNonUniformProbLowerMass,
-            gcNonUniformProbHigherMass
+    public enum GalaxyChoice
+    {
+        gcUniformProb,
+        gcNonUniformProbLowerMass,
+        gcNonUniformProbHigherMass
     };
 
     //! Specifies how MaxIterations is changed in subsequent multilevels.
-    enum MaxIterChange {
-            micConstant,
-            micLinearlyDecreasing,
-            micRapidlyDecreasing
+    enum MaxIterChange
+    {
+        micConstant,
+        micLinearlyDecreasing,
+        micRapidlyDecreasing
     };
 
     //! Specifies how the initial placement is generated.
-    public enum InitialPlacementMult {
-            ipmSimple,
-            ipmAdvanced
+    public enum InitialPlacementMult
+    {
+        ipmSimple,
+        ipmAdvanced
     };
 
     //! Specifies the force model.
-    enum ForceModel {
-            fmFruchtermanReingold, //!< The force-model by Fruchterman, Reingold.
-            fmEades,               //!< The force-model by Eades.
-            fmNew                  //!< The new force-model.
+    enum ForceModel
+    {
+        fmFruchtermanReingold, //!< The force-model by Fruchterman, Reingold.
+        fmEades, //!< The force-model by Eades.
+        fmNew                  //!< The new force-model.
     };
 
     //! Specifies how to calculate repulsive forces.
-    enum RepulsiveForcesMethod {
-            rfcExact,             //!< Exact calculation.
-            rfcGridApproximation, //!< Grid approximation.
-            rfcNMM                //!< Calculation as for new multipole method.
+    enum RepulsiveForcesMethod
+    {
+        rfcExact, //!< Exact calculation.
+        rfcGridApproximation, //!< Grid approximation.
+        rfcNMM                //!< Calculation as for new multipole method.
     };
 
     //! Specifies the stop criterion.
-    enum StopCriterion {
-            scFixedIterations,           //!< Stop if fixedIterations() is reached.
-            scThreshold,                 //!< Stop if threshold() is reached.
-            scFixedIterationsOrThreshold //!< Stop if fixedIterations() or threshold() is reached.
+    enum StopCriterion
+    {
+        scFixedIterations, //!< Stop if fixedIterations() is reached.
+        scThreshold, //!< Stop if threshold() is reached.
+        scFixedIterationsOrThreshold //!< Stop if fixedIterations() or threshold() is reached.
     };
 
     //! Specifies how the initial placement is done.
-    enum InitialPlacementForces {
-            ipfUniformGrid,      //!< Uniform placement on a grid.
-            ipfRandomTime,       //!< Random placement (based on current time).
-            ipfRandomRandIterNr, //!< Random placement (based on randIterNr()).
-            ipfKeepPositions     //!< No change in placement.
+    enum InitialPlacementForces
+    {
+        ipfUniformGrid, //!< Uniform placement on a grid.
+        ipfRandomTime, //!< Random placement (based on current time).
+        ipfRandomRandIterNr, //!< Random placement (based on randIterNr()).
+        ipfKeepPositions     //!< No change in placement.
     };
 
     //! Specifies how the reduced bucket quadtree is constructed.
-    enum ReducedTreeConstruction {
-            rtcPathByPath,      //!< Path-by-path construction.
-            rtcSubtreeBySubtree //!< Subtree-by-subtree construction.
+    enum ReducedTreeConstruction
+    {
+        rtcPathByPath, //!< Path-by-path construction.
+        rtcSubtreeBySubtree //!< Subtree-by-subtree construction.
     };
 
     //! Specifies how to calculate the smallest quadratic cell surrounding particles of a node in the reduced bucket quadtree.
-    enum SmallestCellFinding {
-            scfIteratively, //!< Iteratively (in constant time).
-            scfAluru        //!< According to formula by Aluru et al. (in constant time).
+    enum SmallestCellFinding
+    {
+        scfIteratively, //!< Iteratively (in constant time).
+        scfAluru        //!< According to formula by Aluru et al. (in constant time).
     };
 
     //! Returns the runtime (=CPU-time) of the layout algorithm in seconds.
-    double getCpuTime() {
-            return time_total;
+    double getCpuTime()
+    {
+        return time_total;
     }
 
-
-    /** @}
-     *  @name High-level options
-     *  Allow to specify the most relevant parameters.
-     *  @{
+    /**
+     * @}
+     * @name High-level options Allow to specify the most relevant parameters.
+     * @{
      */
-
     //! Returns the current setting of option useHighLevelOptions.
     /**
-     * If set to true, the high-level options are used to set all low-level options.
-     * Usually, it is sufficient just to set high-level options; if you want to
-     * be more specific, set this parameter to false and set the low level options.
+     * If set to true, the high-level options are used to set all low-level options. Usually, it is sufficient just to
+     * set high-level options; if you want to be more specific, set this parameter to false and set the low level
+     * options.
      */
-    boolean useHighLevelOptions() { return m_useHighLevelOptions; }
+    boolean useHighLevelOptions()
+    {
+        return m_useHighLevelOptions;
+    }
 
     //! Sets the option useHighLevelOptions to \a uho.
-    void useHighLevelOptions(boolean uho) { m_useHighLevelOptions = uho; }
+    void useHighLevelOptions(boolean uho)
+    {
+        m_useHighLevelOptions = uho;
+    }
 
     //! Sets single level option, no multilevel hierarchy is created if b == true
-    void setSingleLevel(boolean b) {m_singleLevel = b;}
+    void setSingleLevel(boolean b)
+    {
+        m_singleLevel = b;
+    }
 
     //! Returns the current setting of option pageFormat.
     /**
-     * This option defines the desired aspect ratio of the drawing area.
-     *  - \a pfPortrait: A4 page in portrait orientation
-     *  - \a pfLandscape: A4 page in landscape orientation
-     *  - \a pfSquare: square page format
+     * This option defines the desired aspect ratio of the drawing area. - \a pfPortrait: A4 page in portrait
+     * orientation - \a pfLandscape: A4 page in landscape orientation - \a pfSquare: square page format
      */
-    PageFormatType pageFormat() { return m_pageFormat; }
+    PageFormatType pageFormat()
+    {
+        return m_pageFormat;
+    }
 
     //! Sets the option pageRatio to \a t.
-    void pageFormat(PageFormatType t) { m_pageFormat = t; }
+    void pageFormat(PageFormatType t)
+    {
+        m_pageFormat = t;
+    }
 
     //! Returns the current setting of option unitEdgeLength.
-    double unitEdgeLength() { return m_unitEdgeLength; }
+    double unitEdgeLength()
+    {
+        return m_unitEdgeLength;
+    }
 
     //! Sets the option unitEdgeLength to \a x.
-    void unitEdgeLength(double x) {m_unitEdgeLength = (( x > 0.0) ? x : 1);}
+    void unitEdgeLength(double x)
+    {
+        m_unitEdgeLength = ((x > 0.0) ? x : 1);
+    }
 
     //! Returns the current setting of option newInitialPlacement.
     /**
-     * This option defines if the initial placement of the nodes at the
-     * coarsest multilevel is varied for each distinct call of FMMMLayout
-     * or keeps always the same.
+     * This option defines if the initial placement of the nodes at the coarsest multilevel is varied for each distinct
+     * call of FMMMLayout or keeps always the same.
      */
-    boolean newInitialPlacement() { return m_newInitialPlacement; }
+    boolean newInitialPlacement()
+    {
+        return m_newInitialPlacement;
+    }
 
     //! Sets the option newInitialPlacement to \a nip.
-    void newInitialPlacement(boolean nip) { m_newInitialPlacement = nip; }
+    void newInitialPlacement(boolean nip)
+    {
+        m_newInitialPlacement = nip;
+    }
 
     //! Returns the current setting of option qualityVersusSpeed.
     /**
-     * Indicates if the algorithm is tuned either for best quality or best speed.
-     *  - \a qvsGorgeousAndEfficient: gorgeous quality and efficient speed
-     *  - \a qvsBeautifulAndFast: beautiful quality and fast speed
-     *  - \a qvsNiceAndIncredibleSpeed: nice quality and incredible speed
+     * Indicates if the algorithm is tuned either for best quality or best speed. - \a qvsGorgeousAndEfficient: gorgeous
+     * quality and efficient speed - \a qvsBeautifulAndFast: beautiful quality and fast speed - \a
+     * qvsNiceAndIncredibleSpeed: nice quality and incredible speed
      */
-    QualityVsSpeed qualityVersusSpeed() { return m_qualityVersusSpeed; }
+    QualityVsSpeed qualityVersusSpeed()
+    {
+        return m_qualityVersusSpeed;
+    }
 
     //! Sets the option qualityVersusSpeed to \a qvs.
-    void qualityVersusSpeed(QualityVsSpeed qvs) {m_qualityVersusSpeed = qvs; }
+    void qualityVersusSpeed(QualityVsSpeed qvs)
+    {
+        m_qualityVersusSpeed = qvs;
+    }
 
-
-    /** @}
-     *  @name General low-level options
-     * The low-level options in this and the following sections are meant for
-     * experts or interested people only.
-     *  @{
+    /**
+     * @}
+     * @name General low-level options The low-level options in this and the following sections are meant for experts or
+     * interested people only.
+     * @{
      */
-
     //! Sets the seed of the random number generator.
-    void randSeed(int p) { m_randSeed = ((0<=p) ? p : 1);}
+    void randSeed(int p)
+    {
+        m_randSeed = ((0 <= p) ? p : 1);
+    }
 
     //! Returns the seed of the random number generator.
-    int randSeed() {return m_randSeed;}
+    int randSeed()
+    {
+        return m_randSeed;
+    }
 
     //! Returns the current setting of option edgeLengthMeasurement.
     /**
-     * This option indicates how the length of an edge is measured.
-     * Possible values:
-     *   - \a elmMidpoint: from center to center
-     *   - \a elmBoundingCircle: the distance between the two tight circles bounding the
-     *     graphics of two adjacent nodes
+     * This option indicates how the length of an edge is measured. Possible values: - \a elmMidpoint: from center to
+     * center - \a elmBoundingCircle: the distance between the two tight circles bounding the graphics of two adjacent
+     * nodes
      */
-    EdgeLengthMeasurement edgeLengthMeasurement() {
-            return m_edgeLengthMeasurement;
+    EdgeLengthMeasurement edgeLengthMeasurement()
+    {
+        return m_edgeLengthMeasurement;
     }
 
     //! Sets the option edgeLengthMeasurement to \a elm.
-    void edgeLengthMeasurement(EdgeLengthMeasurement elm) { m_edgeLengthMeasurement = elm; }
+    void edgeLengthMeasurement(EdgeLengthMeasurement elm)
+    {
+        m_edgeLengthMeasurement = elm;
+    }
 
     //! Returns the current setting of option allowedPositions.
     /**
-     * This option defines which positions for a node are allowed.
-     * Possibly values:
-     *   - \a apAll: every position is allowed
-     *   - \a apInteger: only integer positions in the range depending on the number of
-     *     nodes
-     *   - \a apExponent: only integer positions in the range of -2^MaxIntPosExponent to
-     *     2^MaxIntPosExponent
+     * This option defines which positions for a node are allowed. Possibly values: - \a apAll: every position is
+     * allowed - \a apInteger: only integer positions in the range depending on the number of nodes - \a apExponent:
+     * only integer positions in the range of -2^MaxIntPosExponent to 2^MaxIntPosExponent
      */
-    AllowedPositions allowedPositions() { return m_allowedPositions; }
+    AllowedPositions allowedPositions()
+    {
+        return m_allowedPositions;
+    }
 
     //! Sets the option allowedPositions to \a ap.
-    void allowedPositions(AllowedPositions ap) { m_allowedPositions = ap; }
+    void allowedPositions(AllowedPositions ap)
+    {
+        m_allowedPositions = ap;
+    }
 
     //! Returns the current setting of option maxIntPosExponent.
     /**
      * This option defines the exponent used if allowedPositions() == \a apExponent.
      */
-    int maxIntPosExponent() { return m_maxIntPosExponent; }
-
-    //! Sets the option maxIntPosExponent to \a e.
-    void maxIntPosExponent(int e) {
-            m_maxIntPosExponent = (((e >= 31)&&(e<=51))? e : 31);
+    int maxIntPosExponent()
+    {
+        return m_maxIntPosExponent;
     }
 
+    //! Sets the option maxIntPosExponent to \a e.
+    void maxIntPosExponent(int e)
+    {
+        m_maxIntPosExponent = (((e >= 31) && (e <= 51)) ? e : 31);
+    }
 
-    /** @}
-     *  @name Options for the divide et impera step
-     *  @{
+    /**
+     * @}
+     * @name Options for the divide et impera step
+     * @{
      */
-
     //! Returns the current setting of option pageRatio.
     /**
      * This option defines the desired aspect ratio of the rectangular drawing area.
      */
-    double pageRatio() { return m_pageRatio; }
+    double pageRatio()
+    {
+        return m_pageRatio;
+    }
 
     //! Sets the option pageRatio to \a r.
-    void pageRatio(double r) {m_pageRatio = (( r > 0) ? r : 1);}
+    void pageRatio(double r)
+    {
+        m_pageRatio = ((r > 0) ? r : 1);
+    }
 
     //! Returns the current setting of option stepsForRotatingComponents.
     /**
-     * This options determines the number of times each connected component is rotated with
-     * angles between 0 and 90 degree to obtain a bounding rectangle with small area.
+     * This options determines the number of times each connected component is rotated with angles between 0 and 90
+     * degree to obtain a bounding rectangle with small area.
      */
-    int stepsForRotatingComponents() { return m_stepsForRotatingComponents; }
+    int stepsForRotatingComponents()
+    {
+        return m_stepsForRotatingComponents;
+    }
 
     //! Sets the option stepsForRotatingComponents to \a n.
-    void stepsForRotatingComponents(int n) {
-            m_stepsForRotatingComponents = ((0<=n) ? n : 0);
+    void stepsForRotatingComponents(int n)
+    {
+        m_stepsForRotatingComponents = ((0 <= n) ? n : 0);
     }
 
     //! Returns the current setting of option tipOverCCs.
     /**
-     * Defines in which case it is allowed to tip over drawings of connected components.
-     * Possible values:
-     *   - \a toNone: not allowed at all
-     *   - \a toNoGrowingRow: only if the height of the packing row does not grow
-     *   - \a toAlways: always allowed
+     * Defines in which case it is allowed to tip over drawings of connected components. Possible values: - \a toNone:
+     * not allowed at all - \a toNoGrowingRow: only if the height of the packing row does not grow - \a toAlways: always
+     * allowed
      */
-    TipOver tipOverCCs() { return m_tipOverCCs; }
+    TipOver tipOverCCs()
+    {
+        return m_tipOverCCs;
+    }
 
     //! Sets the option tipOverCCs to \a to.
-    void tipOverCCs(TipOver to) { m_tipOverCCs = to; }
+    void tipOverCCs(TipOver to)
+    {
+        m_tipOverCCs = to;
+    }
 
     //! Returns the  minimal distance between connected components.
-    double minDistCC() { return m_minDistCC; }
+    double minDistCC()
+    {
+        return m_minDistCC;
+    }
 
     //! Sets the  minimal distance between connected components to \a x.
-    void minDistCC(double x) { m_minDistCC = (( x > 0) ? x : 1);}
+    void minDistCC(double x)
+    {
+        m_minDistCC = ((x > 0) ? x : 1);
+    }
 
     //! Returns the current setting of option presortCCs.
     /**
-     * This option defines if the connected components are sorted before
-     * the packing algorithm is applied.
-     * Possible values:
-     *   - \a psNone: no sorting
-     *   - \a psDecreasingHeight: sorted by decreasing height
-     *   - \a psDecreasingWidth: sorted by decreasing width
+     * This option defines if the connected components are sorted before the packing algorithm is applied. Possible
+     * values: - \a psNone: no sorting - \a psDecreasingHeight: sorted by decreasing height - \a psDecreasingWidth:
+     * sorted by decreasing width
      */
-    PreSort presortCCs() { return m_presortCCs; }
+    PreSort presortCCs()
+    {
+        return m_presortCCs;
+    }
 
     //! Sets the option presortCCs to \a ps.
-    void presortCCs(PreSort ps) { m_presortCCs = ps; }
+    void presortCCs(PreSort ps)
+    {
+        m_presortCCs = ps;
+    }
 
-
-    /** @}
-     *  @name Options for the multilevel step
-     *  @{
+    /**
+     * @}
+     * @name Options for the multilevel step
+     * @{
      */
-
     //! Returns the current setting of option minGraphSize.
     /**
-     * This option determines the number of nodes of a graph in the
-     * multilevel representation for which no more collapsing of galaxies
-     * is performed (i.e. the graph at the highest level).
+     * This option determines the number of nodes of a graph in the multilevel representation for which no more
+     * collapsing of galaxies is performed (i.e. the graph at the highest level).
      */
-    int minGraphSize() { return m_minGraphSize; }
+    int minGraphSize()
+    {
+        return m_minGraphSize;
+    }
 
     //! Sets the option minGraphSize to \a n.
-    void minGraphSize(int n) { m_minGraphSize = ((n >= 2)? n : 2);}
+    void minGraphSize(int n)
+    {
+        m_minGraphSize = ((n >= 2) ? n : 2);
+    }
 
     //! Returns the current setting of option galaxyChoice.
     /**
-     * This option defines how sun nodes of galaxies are selected.
-     * Possible values:
-     *   - \a gcUniformProb: selecting by uniform random probability
-     *   - \a gcNonUniformProbLowerMass: selecting by non-uniform probability depending on
-     *     the star masses (prefering nodes with lower star mass)
-     *   - \a gcNonUniformProbHigherMass: as above but prefering nodes with higher star mass
+     * This option defines how sun nodes of galaxies are selected. Possible values: - \a gcUniformProb: selecting by
+     * uniform random probability - \a gcNonUniformProbLowerMass: selecting by non-uniform probability depending on the
+     * star masses (prefering nodes with lower star mass) - \a gcNonUniformProbHigherMass: as above but prefering nodes
+     * with higher star mass
      */
-    GalaxyChoice galaxyChoice() { return m_galaxyChoice; }
+    GalaxyChoice galaxyChoice()
+    {
+        return m_galaxyChoice;
+    }
 
     //! Sets the option galaxyChoice to \a gc.
-    void galaxyChoice(GalaxyChoice gc) { m_galaxyChoice = gc; }
+    void galaxyChoice(GalaxyChoice gc)
+    {
+        m_galaxyChoice = gc;
+    }
 
     //! Returns the current setting of option randomTries.
     /**
-     * This option defines the number of tries to get a random node with
-     * minimal star mass (used in case of galaxyChoice() == gcNonUniformProbLowerMass
-     * and galaxyChoice() == gcNonUniformProbHigherMass).
+     * This option defines the number of tries to get a random node with minimal star mass (used in case of
+     * galaxyChoice() == gcNonUniformProbLowerMass and galaxyChoice() == gcNonUniformProbHigherMass).
      */
-    int randomTries() { return m_randomTries; }
+    int randomTries()
+    {
+        return m_randomTries;
+    }
 
     //! Sets the option randomTries to \a n.
-    void randomTries(int n) {m_randomTries = ((n>=1)? n: 1);}
+    void randomTries(int n)
+    {
+        m_randomTries = ((n >= 1) ? n : 1);
+    }
 
     //! Returns the current setting of option maxIterChange.
     /**
-     * This option defines how MaxIterations is changed in subsequent multilevels.
-     * Possible values:
-     *   - \a micConstant: kept constant at the force calculation step at every level
-     *   - \a micLinearlyDecreasing: linearly decreasing from MaxIterFactor*FixedIterations
-     *     to FixedIterations
-     *   - \a micRapidlyDecreasing: rapdily decreasing from MaxIterFactor*FixedIterations
-     *      to FixedIterations
+     * This option defines how MaxIterations is changed in subsequent multilevels. Possible values: - \a micConstant:
+     * kept constant at the force calculation step at every level - \a micLinearlyDecreasing: linearly decreasing from
+     * MaxIterFactor*FixedIterations to FixedIterations - \a micRapidlyDecreasing: rapdily decreasing from
+     * MaxIterFactor*FixedIterations to FixedIterations
      */
-    MaxIterChange maxIterChange() { return m_maxIterChange; }
+    MaxIterChange maxIterChange()
+    {
+        return m_maxIterChange;
+    }
 
     //! Sets the option maxIterChange to \a mic.
-    void maxIterChange(MaxIterChange mic) { m_maxIterChange = mic; }
+    void maxIterChange(MaxIterChange mic)
+    {
+        m_maxIterChange = mic;
+    }
 
     //! Returns the current setting of option maxIterFactor.
     /**
-     * This option defines the factor used for decrasing MaxIterations
-     * (in case of maxIterChange() == micLinearlyDecreasing or maxIterChange()
-     * == micRapidlyDecreasing).
+     * This option defines the factor used for decrasing MaxIterations (in case of maxIterChange() ==
+     * micLinearlyDecreasing or maxIterChange() == micRapidlyDecreasing).
      */
-    int maxIterFactor() { return m_maxIterFactor; }
+    int maxIterFactor()
+    {
+        return m_maxIterFactor;
+    }
 
     //! Sets the option maxIterFactor to \a f.
-    void maxIterFactor(int f) { m_maxIterFactor = ((f>=1) ? f : 1 ); }
+    void maxIterFactor(int f)
+    {
+        m_maxIterFactor = ((f >= 1) ? f : 1);
+    }
 
     //! Returns the current setting of option initialPlacementMult.
     /**
-     * This option defines how the initial placement is generated.
-     * Possible values:
-     *   - \a ipmSimple: only using information about placement of nodes on higher levels
-     *   - \a ipmAdvanced: using additional information about the placement of all inter
-     *   - \a  solar system nodes
+     * This option defines how the initial placement is generated. Possible values: - \a ipmSimple: only using
+     * information about placement of nodes on higher levels - \a ipmAdvanced: using additional information about the
+     * placement of all inter - \a solar system nodes
      */
-    InitialPlacementMult initialPlacementMult() {
-            return m_initialPlacementMult;
+    InitialPlacementMult initialPlacementMult()
+    {
+        return m_initialPlacementMult;
     }
 
     //! Sets the option initialPlacementMult to \a ipm.
-    void initialPlacementMult(InitialPlacementMult ipm) {
-            m_initialPlacementMult = ipm;
+    void initialPlacementMult(InitialPlacementMult ipm)
+    {
+        m_initialPlacementMult = ipm;
     }
 
-
-    /** @}
-     *  @name Options for the force calculation step
-     *  @{
+    /**
+     * @}
+     * @name Options for the force calculation step
+     * @{
      */
-
     //! Returns the used force model.
     /**
-     * Possibly values:
-     *   - \a fmFruchtermanReingold: model of Fruchterman and Reingold
-     *   - \a fmEades: model of Eades
-     *   - \a fmNew: new model
+     * Possibly values: - \a fmFruchtermanReingold: model of Fruchterman and Reingold - \a fmEades: model of Eades - \a
+     * fmNew: new model
      */
-    ForceModel forceModel() { return m_forceModel; }
+    ForceModel forceModel()
+    {
+        return m_forceModel;
+    }
 
     //! Sets the used force model to \a fm.
-    void forceModel(ForceModel fm) { m_forceModel = fm; }
+    void forceModel(ForceModel fm)
+    {
+        m_forceModel = fm;
+    }
 
     //! Returns the strength of the springs.
-    double springStrength() { return m_springStrength; }
+    double springStrength()
+    {
+        return m_springStrength;
+    }
 
     //! Sets the strength of the springs to \a x.
-    void springStrength(double x) { m_springStrength  = ((x > 0)? x : 1);}
+    void springStrength(double x)
+    {
+        m_springStrength = ((x > 0) ? x : 1);
+    }
 
     //! Returns the strength of the repulsive forces.
-    double repForcesStrength() { return m_repForcesStrength; }
+    double repForcesStrength()
+    {
+        return m_repForcesStrength;
+    }
 
     //! Sets the strength of the repulsive forces to \a x.
-    void repForcesStrength(double x) { m_repForcesStrength =((x > 0)? x : 1);}
+    void repForcesStrength(double x)
+    {
+        m_repForcesStrength = ((x > 0) ? x : 1);
+    }
 
     //! Returns the current setting of option repulsiveForcesCalculation.
     /**
-     * This option defines how to calculate repulsive forces.
-     * Possible values:
-     *   - \a rfcExact: exact calculation (slow)
-     *   - \a rfcGridApproximation: grid approxiamtion (inaccurate)
-     *   - \a rfcNMM: like in NMM (= New Multipole Method; fast and accurate)
+     * This option defines how to calculate repulsive forces. Possible values: - \a rfcExact: exact calculation (slow) -
+     * \a rfcGridApproximation: grid approxiamtion (inaccurate) - \a rfcNMM: like in NMM (= New Multipole Method; fast
+     * and accurate)
      */
-    RepulsiveForcesMethod repulsiveForcesCalculation() {
-            return m_repulsiveForcesCalculation;
+    RepulsiveForcesMethod repulsiveForcesCalculation()
+    {
+        return m_repulsiveForcesCalculation;
     }
 
     //! Sets the option repulsiveForcesCalculation to \a rfc.
-    void repulsiveForcesCalculation(RepulsiveForcesMethod rfc) {
-            m_repulsiveForcesCalculation = rfc;
+    void repulsiveForcesCalculation(RepulsiveForcesMethod rfc)
+    {
+        m_repulsiveForcesCalculation = rfc;
     }
 
     //! Returns the stop criterion.
     /**
-     * Possible values:
-     *   - \a rscFixedIterations: stop if fixedIterations() is reached
-     *   - \a rscThreshold: stop if threshold() is reached
-     *   - \a rscFixedIterationsOrThreshold: stop if fixedIterations() or threshold()
-     *     is reached
+     * Possible values: - \a rscFixedIterations: stop if fixedIterations() is reached - \a rscThreshold: stop if
+     * threshold() is reached - \a rscFixedIterationsOrThreshold: stop if fixedIterations() or threshold() is reached
      */
-    StopCriterion stopCriterion() { return m_stopCriterion; }
+    StopCriterion stopCriterion()
+    {
+        return m_stopCriterion;
+    }
 
     //! Sets the stop criterion to \a rsc.
-    void stopCriterion(StopCriterion rsc) { m_stopCriterion = rsc; }
+    void stopCriterion(StopCriterion rsc)
+    {
+        m_stopCriterion = rsc;
+    }
 
     //! Returns the threshold for the stop criterion.
     /**
-     * (If the average absolute value of all forces in
-     * an iteration is less then threshold() then stop.)
+     * (If the average absolute value of all forces in an iteration is less then threshold() then stop.)
      */
-    double threshold() { return m_threshold; }
+    double threshold()
+    {
+        return m_threshold;
+    }
 
     //! Sets the threshold for the stop criterion to \a x.
-    void threshold(double x) {m_threshold = ((x > 0) ? x : 0.1);}
+    void threshold(double x)
+    {
+        m_threshold = ((x > 0) ? x : 0.1);
+    }
 
     //! Returns the fixed number of iterations for the stop criterion.
-    int fixedIterations() { return m_fixedIterations; }
+    int fixedIterations()
+    {
+        return m_fixedIterations;
+    }
 
     //! Sets the fixed number of iterations for the stop criterion to \a n.
-    void fixedIterations(int n) { m_fixedIterations = ((n >= 1) ? n : 1);}
+    void fixedIterations(int n)
+    {
+        m_fixedIterations = ((n >= 1) ? n : 1);
+    }
 
     //! Returns the scaling factor for the forces.
-    double forceScalingFactor() { return m_forceScalingFactor; }
+    double forceScalingFactor()
+    {
+        return m_forceScalingFactor;
+    }
 
     //! Sets the scaling factor for the forces to \ f.
-    void forceScalingFactor(double f) { m_forceScalingFactor = ((f > 0) ? f : 1);}
+    void forceScalingFactor(double f)
+    {
+        m_forceScalingFactor = ((f > 0) ? f : 1);
+    }
 
     //! Returns the current setting of option coolTemperature.
     /**
-     * If set to true, forces are scaled by coolValue()^(actual iteration) *
-     * forceScalingFactor(); otherwise forces are scaled by forceScalingFactor().
+     * If set to true, forces are scaled by coolValue()^(actual iteration) * forceScalingFactor(); otherwise forces are
+     * scaled by forceScalingFactor().
      */
-    boolean coolTemperature() { return m_coolTemperature; }
+    boolean coolTemperature()
+    {
+        return m_coolTemperature;
+    }
 
     //! Sets the option coolTemperature to \a b.
-    void coolTemperature(boolean b) { m_coolTemperature = b; }
+    void coolTemperature(boolean b)
+    {
+        m_coolTemperature = b;
+    }
 
     //! Returns the current setting of option coolValue.
     /**
-     * This option defines the value by which forces are decreased
-     * if coolTemperature is true.
+     * This option defines the value by which forces are decreased if coolTemperature is true.
      */
-    double coolValue() { return m_coolValue; }
+    double coolValue()
+    {
+        return m_coolValue;
+    }
 
     //! Sets the option coolValue to \a x.
-    void coolValue(double x) { m_coolValue = (((x >0 )&&(x<=1) )? x : 0.99);}
-
+    void coolValue(double x)
+    {
+        m_coolValue = (((x > 0) && (x <= 1)) ? x : 0.99);
+    }
 
     //! Returns the current setting of option initialPlacementForces.
     /**
-     * This option defines how the initial placement is done.
-     * Possible values:
-     *   - \a ipfUniformGrid: uniform on a grid
-     *   - \a ipfRandomTime: random based on actual time
-     *   - \a ipfRandomRandIterNr: random based on randIterNr()
-     *   - \a ipfKeepPositions: no change in placement
+     * This option defines how the initial placement is done. Possible values: - \a ipfUniformGrid: uniform on a grid -
+     * \a ipfRandomTime: random based on actual time - \a ipfRandomRandIterNr: random based on randIterNr() - \a
+     * ipfKeepPositions: no change in placement
      */
-    InitialPlacementForces initialPlacementForces() {
-            return m_initialPlacementForces;
+    InitialPlacementForces initialPlacementForces()
+    {
+        return m_initialPlacementForces;
     }
 
     //! Sets the option initialPlacementForces to \a ipf.
-    void initialPlacementForces(InitialPlacementForces ipf) {
-            m_initialPlacementForces = ipf;
+    void initialPlacementForces(InitialPlacementForces ipf)
+    {
+        m_initialPlacementForces = ipf;
     }
 
-
-    /** @}
-     *  @name Options for the postprocessing step
-     *  @{
+    /**
+     * @}
+     * @name Options for the postprocessing step
+     * @{
      */
-
     //! Returns the current setting of option resizeDrawing.
     /**
-     * If set to true, the resulting drawing is resized so that the average edge
-     * length is the desired edge length times resizingScalar().
+     * If set to true, the resulting drawing is resized so that the average edge length is the desired edge length times
+     * resizingScalar().
      */
-    boolean resizeDrawing() { return m_resizeDrawing; }
+    boolean resizeDrawing()
+    {
+        return m_resizeDrawing;
+    }
 
     //! Sets the option resizeDrawing to \a b.
-    void resizeDrawing(boolean b) { m_resizeDrawing = b; }
+    void resizeDrawing(boolean b)
+    {
+        m_resizeDrawing = b;
+    }
 
     //! Returns the current setting of option resizingScalar.
     /**
-     * This option defines a parameter to scale the drawing if
-     * resizeDrawing() is true.
+     * This option defines a parameter to scale the drawing if resizeDrawing() is true.
      */
-    double resizingScalar() { return m_resizingScalar; }
+    double resizingScalar()
+    {
+        return m_resizingScalar;
+    }
 
     //! Sets the option resizingScalar to \a s.
-    void resizingScalar(double s) { m_resizingScalar = ((s > 0) ? s : 1);}
+    void resizingScalar(double s)
+    {
+        m_resizingScalar = ((s > 0) ? s : 1);
+    }
 
     //! Returns the number of iterations for fine tuning.
-    int fineTuningIterations() { return m_fineTuningIterations; }
+    int fineTuningIterations()
+    {
+        return m_fineTuningIterations;
+    }
 
     //! Sets the number of iterations for fine tuning to \a n.
-    void fineTuningIterations(int n) { m_fineTuningIterations =((n >= 0) ? n : 0);}
+    void fineTuningIterations(int n)
+    {
+        m_fineTuningIterations = ((n >= 0) ? n : 0);
+    }
 
     //! Returns the curent setting of option fineTuneScalar.
     /**
-     * This option defines a parameter for scaling the forces in the
-     * fine-tuning iterations.
+     * This option defines a parameter for scaling the forces in the fine-tuning iterations.
      */
-    double fineTuneScalar() { return m_fineTuneScalar; }
+    double fineTuneScalar()
+    {
+        return m_fineTuneScalar;
+    }
 
     //! Sets the option fineTuneScalar to \a s
-    void fineTuneScalar(double s) { m_fineTuneScalar = ((s >= 0) ? s : 1);}
+    void fineTuneScalar(double s)
+    {
+        m_fineTuneScalar = ((s >= 0) ? s : 1);
+    }
 
     //! Returns the current setting of option adjustPostRepStrengthDynamically.
     /**
-     * If set to true, the strength of the repulsive force field is calculated
-     * dynamically by a formula depending on the number of nodes; otherwise the
-     * strength are scaled by PostSpringStrength and PostStrengthOfRepForces.
+     * If set to true, the strength of the repulsive force field is calculated dynamically by a formula depending on the
+     * number of nodes; otherwise the strength are scaled by PostSpringStrength and PostStrengthOfRepForces.
      */
-    boolean adjustPostRepStrengthDynamically() {
-            return m_adjustPostRepStrengthDynamically;
+    boolean adjustPostRepStrengthDynamically()
+    {
+        return m_adjustPostRepStrengthDynamically;
     }
 
     //! Sets the option adjustPostRepStrengthDynamically to \a b.
-    void adjustPostRepStrengthDynamically(boolean b) {
-            m_adjustPostRepStrengthDynamically = b;
+    void adjustPostRepStrengthDynamically(boolean b)
+    {
+        m_adjustPostRepStrengthDynamically = b;
     }
 
     //! Returns the strength of the springs in the postprocessing step.
-    double postSpringStrength() { return m_postSpringStrength; }
-
-    //! Sets the strength of the springs in the postprocessing step to \a x.
-    void postSpringStrength(double x) { m_postSpringStrength  = ((x > 0)? x : 1);}
-
-    //! Returns the strength of the repulsive forces in the postprocessing step.
-    double postStrengthOfRepForces() { return m_postStrengthOfRepForces; }
-
-    //! Sets the strength of the repulsive forces in the postprocessing step to \a x.
-    void postStrengthOfRepForces(double x) {
-            m_postStrengthOfRepForces = ((x > 0)? x : 1);
+    double postSpringStrength()
+    {
+        return m_postSpringStrength;
     }
 
+    //! Sets the strength of the springs in the postprocessing step to \a x.
+    void postSpringStrength(double x)
+    {
+        m_postSpringStrength = ((x > 0) ? x : 1);
+    }
 
-    /** @}
-     *  @name Options for repulsive force approximation methods
-     *  @{
+    //! Returns the strength of the repulsive forces in the postprocessing step.
+    double postStrengthOfRepForces()
+    {
+        return m_postStrengthOfRepForces;
+    }
+
+    //! Sets the strength of the repulsive forces in the postprocessing step to \a x.
+    void postStrengthOfRepForces(double x)
+    {
+        m_postStrengthOfRepForces = ((x > 0) ? x : 1);
+    }
+
+    /**
+     * @}
+     * @name Options for repulsive force approximation methods
+     * @{
      */
-
     //! Returns the current setting of option frGridQuotient.
     /**
-     * The number k of rows and columns of the grid is sqrt(|V|) / frGridQuotient().
-     * (Note that in [Fruchterman,Reingold] frGridQuotient is 2.)
+     * The number k of rows and columns of the grid is sqrt(|V|) / frGridQuotient(). (Note that in
+     * [Fruchterman,Reingold] frGridQuotient is 2.)
      */
-    int  frGridQuotient() {return m_frGridQuotient;}
+    int frGridQuotient()
+    {
+        return m_frGridQuotient;
+    }
 
     //! Sets the option frGridQuotient to \a p.
-    void frGridQuotient(int p) { m_frGridQuotient = ((0<=p) ? p : 2);}
+    void frGridQuotient(int p)
+    {
+        m_frGridQuotient = ((0 <= p) ? p : 2);
+    }
 
     //! Returns the current setting of option nmTreeConstruction.
     /**
-     * This option defines how the reduced bucket quadtree is constructed.
-     * Possible values:
-     *   - \a rtcPathByPath: path by path construction
-     *   - \a rtcSubtreeBySubtree: subtree by subtree construction
+     * This option defines how the reduced bucket quadtree is constructed. Possible values: - \a rtcPathByPath: path by
+     * path construction - \a rtcSubtreeBySubtree: subtree by subtree construction
      */
-    ReducedTreeConstruction nmTreeConstruction() { return m_NMTreeConstruction; }
+    ReducedTreeConstruction nmTreeConstruction()
+    {
+        return m_NMTreeConstruction;
+    }
 
     //! Sets the option nmTreeConstruction to \a rtc.
-    void nmTreeConstruction(ReducedTreeConstruction rtc) { m_NMTreeConstruction = rtc; }
+    void nmTreeConstruction(ReducedTreeConstruction rtc)
+    {
+        m_NMTreeConstruction = rtc;
+    }
 
     //! Returns the current setting of option nmSmallCell.
     /**
-     * This option defines how the smallest quadratic cell that surrounds
-     * the particles of a node in the reduced bucket quadtree is calculated.
-     * Possible values:
-     *   - \a scfIteratively: iteratively (in constant time)
-     *   - \a scfAluru: by the formula by Aluru et al. (in constant time)
+     * This option defines how the smallest quadratic cell that surrounds the particles of a node in the reduced bucket
+     * quadtree is calculated. Possible values: - \a scfIteratively: iteratively (in constant time) - \a scfAluru: by
+     * the formula by Aluru et al. (in constant time)
      */
-    SmallestCellFinding nmSmallCell() { return m_NMSmallCell; }
+    SmallestCellFinding nmSmallCell()
+    {
+        return m_NMSmallCell;
+    }
 
     //! Sets the option nmSmallCell to \a scf.
-    void nmSmallCell(SmallestCellFinding scf) { m_NMSmallCell = scf; }
+    void nmSmallCell(SmallestCellFinding scf)
+    {
+        m_NMSmallCell = scf;
+    }
 
     //! Returns the current setting of option nmParticlesInLeaves.
     /**
-     * Defines the maximal number of particles that are contained in
-     * a leaf of the reduced bucket quadtree.
+     * Defines the maximal number of particles that are contained in a leaf of the reduced bucket quadtree.
      */
-    int nmParticlesInLeaves() { return m_NMParticlesInLeaves; }
+    int nmParticlesInLeaves()
+    {
+        return m_NMParticlesInLeaves;
+    }
 
     //! Sets the option nmParticlesInLeaves to \a n.
-    void nmParticlesInLeaves(int n) { m_NMParticlesInLeaves = ((n>= 1)? n : 1);}
+    void nmParticlesInLeaves(int n)
+    {
+        m_NMParticlesInLeaves = ((n >= 1) ? n : 1);
+    }
 
     //! Returns the precision \a p for the <i>p</i>-term multipole expansions.
-    int nmPrecision() { return m_NMPrecision; }
+    int nmPrecision()
+    {
+        return m_NMPrecision;
+    }
 
     //! Sets the precision for the multipole expansions to \ p.
-    void nmPrecision(int p) { m_NMPrecision  = ((p >= 1 ) ? p : 1);}
-
+    void nmPrecision(int p)
+    {
+        m_NMPrecision = ((p >= 1) ? p : 1);
+    }
     //! @}
-
 //FIXME private:
-
     //high level options
-    boolean                  m_useHighLevelOptions; //!< The option for using high-level options.
-    PageFormatType        m_pageFormat; //!< The option for the page format.
-    double                m_unitEdgeLength; //!< The unit edge length.
-    boolean                  m_newInitialPlacement; //!< The option for new initial placement.
-    QualityVsSpeed        m_qualityVersusSpeed; //!< The option for quality-vs-speed trade-off.
-
+    boolean m_useHighLevelOptions; //!< The option for using high-level options.
+    PageFormatType m_pageFormat; //!< The option for the page format.
+    double m_unitEdgeLength; //!< The unit edge length.
+    boolean m_newInitialPlacement; //!< The option for new initial placement.
+    QualityVsSpeed m_qualityVersusSpeed; //!< The option for quality-vs-speed trade-off.
     //low level options
     //general options
-    int                   m_randSeed; //!< The random seed.
+    int m_randSeed; //!< The random seed.
     EdgeLengthMeasurement m_edgeLengthMeasurement; //!< The option for edge length measurement.
-    AllowedPositions      m_allowedPositions; //!< The option for allowed positions.
-    int                   m_maxIntPosExponent; //!< The option for the used	exponent.
-
+    AllowedPositions m_allowedPositions; //!< The option for allowed positions.
+    int m_maxIntPosExponent; //!< The option for the used	exponent.
     //options for divide et impera step
-    double                m_pageRatio; //!< The desired page ratio.
-    int                   m_stepsForRotatingComponents; //!< The number of rotations.
-    TipOver               m_tipOverCCs; //!< Option for tip-over of connected components.
-    double                m_minDistCC; //!< The separation between connected components.
-    PreSort               m_presortCCs; //!< The option for presorting connected components.
-
+    double m_pageRatio; //!< The desired page ratio.
+    int m_stepsForRotatingComponents; //!< The number of rotations.
+    TipOver m_tipOverCCs; //!< Option for tip-over of connected components.
+    double m_minDistCC; //!< The separation between connected components.
+    PreSort m_presortCCs; //!< The option for presorting connected components.
     //options for multilevel step
-    boolean  		          m_singleLevel; //!< Option for pure single level.
-    int                   m_minGraphSize; //!< The option for minimal graph size.
-    GalaxyChoice          m_galaxyChoice; //!< The selection of galaxy nodes.
-    int                   m_randomTries; //!< The number of random tries.
-    MaxIterChange         m_maxIterChange; //!< The option for how to change MaxIterations.
-                                                    //!< If maxIterChange != micConstant, the iterations are decreased
-                                                    //!< depending on the level, starting from
-                                                    //!< ((maxIterFactor()-1) * fixedIterations())
-    int                   m_maxIterFactor; //!< The factor used for decreasing MaxIterations.
+    boolean m_singleLevel; //!< Option for pure single level.
+    int m_minGraphSize; //!< The option for minimal graph size.
+    GalaxyChoice m_galaxyChoice; //!< The selection of galaxy nodes.
+    int m_randomTries; //!< The number of random tries.
+    MaxIterChange m_maxIterChange; //!< The option for how to change MaxIterations.
+    //!< If maxIterChange != micConstant, the iterations are decreased
+    //!< depending on the level, starting from
+    //!< ((maxIterFactor()-1) * fixedIterations())
+    int m_maxIterFactor; //!< The factor used for decreasing MaxIterations.
     InitialPlacementMult m_initialPlacementMult; //!< The option for creating initial placement.
-
     //options for force calculation step
-    ForceModel            m_forceModel; //!< The used force model.
-    double                m_springStrength; //!< The strengths of springs.
-    double                m_repForcesStrength; //!< The strength of repulsive forces.
+    ForceModel m_forceModel; //!< The used force model.
+    double m_springStrength; //!< The strengths of springs.
+    double m_repForcesStrength; //!< The strength of repulsive forces.
     RepulsiveForcesMethod m_repulsiveForcesCalculation; //!< Option for how to calculate repulsive forces.
-    StopCriterion         m_stopCriterion; //!< The stop criterion.
-    double                m_threshold; //!< The threshold for the stop criterion.
-    int                   m_fixedIterations; //!< The fixed number of iterations for the stop criterion.
-    double                m_forceScalingFactor; //!< The scaling factor for the forces.
-    boolean                  m_coolTemperature; //!< The option for how to scale forces.
-    double                m_coolValue; //!< The value by which forces are decreased.
+    StopCriterion m_stopCriterion; //!< The stop criterion.
+    double m_threshold; //!< The threshold for the stop criterion.
+    int m_fixedIterations; //!< The fixed number of iterations for the stop criterion.
+    double m_forceScalingFactor; //!< The scaling factor for the forces.
+    boolean m_coolTemperature; //!< The option for how to scale forces.
+    double m_coolValue; //!< The value by which forces are decreased.
     InitialPlacementForces m_initialPlacementForces; //!< The option for how the initial placement is done.
-
     //options for postprocessing step
-    boolean                  m_resizeDrawing; //!< The option for resizing the drawing.
-    double                m_resizingScalar; //!< Parameter for resizing the drawing.
-    int                   m_fineTuningIterations; //!< The number of iterations for fine tuning.
-    double                m_fineTuneScalar; //!< Parameter for scaling forces during fine tuning.
-    boolean                  m_adjustPostRepStrengthDynamically; //!< The option adjustPostRepStrengthDynamically.
-    double                m_postSpringStrength; //!< The strength of springs during postprocessing.
-    double                m_postStrengthOfRepForces; //!< The strength of repulsive forces during postprocessing.
-
+    boolean m_resizeDrawing; //!< The option for resizing the drawing.
+    double m_resizingScalar; //!< Parameter for resizing the drawing.
+    int m_fineTuningIterations; //!< The number of iterations for fine tuning.
+    double m_fineTuneScalar; //!< Parameter for scaling forces during fine tuning.
+    boolean m_adjustPostRepStrengthDynamically; //!< The option adjustPostRepStrengthDynamically.
+    double m_postSpringStrength; //!< The strength of springs during postprocessing.
+    double m_postStrengthOfRepForces; //!< The strength of repulsive forces during postprocessing.
     //options for repulsive force approximation methods
-    int                   m_frGridQuotient; //!< The grid quotient.
+    int m_frGridQuotient; //!< The grid quotient.
     ReducedTreeConstruction m_NMTreeConstruction; //!< The option for how to construct reduced bucket quadtree.
-    SmallestCellFinding   m_NMSmallCell; //!< The option for how to calculate smallest quadtratic cells.
-    int                   m_NMParticlesInLeaves; //!< The maximal number of particles in a leaf.
-    int                   m_NMPrecision; //!< The precision for multipole expansions.
-
-    	//other variables
-	double max_integer_position; //!< The maximum value for an integer position.
-	double cool_factor; //!< Needed for scaling the forces if coolTemperature is true.
-	double average_ideal_edgelength; //!< Measured from center to center.
-	double boxlength; //!< Holds the length of the quadratic comput. box.
-	int number_of_components; //!< The number of components of the graph.
-	DPoint down_left_corner; //!< Holds down left corner of the comput. box.
-	NodeArray<Double> radius; //!< Holds the radius of the surrounding circle for each node.
-	double time_total; //!< The runtime (=CPU-time) of the algorithm in seconds.
-
-	FruchtermanReingold FR; //!< Class for repulsive force calculation (Fruchterman, Reingold).
-	NMM NM; //!< Class for repulsive force calculation.
-
+    SmallestCellFinding m_NMSmallCell; //!< The option for how to calculate smallest quadtratic cells.
+    int m_NMParticlesInLeaves; //!< The maximal number of particles in a leaf.
+    int m_NMPrecision; //!< The precision for multipole expansions.
+    //other variables
+    double max_integer_position; //!< The maximum value for an integer position.
+    double cool_factor; //!< Needed for scaling the forces if coolTemperature is true.
+    double average_ideal_edgelength; //!< Measured from center to center.
+    double boxlength; //!< Holds the length of the quadratic comput. box.
+    int number_of_components; //!< The number of components of the graph.
+    DPoint down_left_corner; //!< Holds down left corner of the comput. box.
+    NodeArray<Double> radius; //!< Holds the radius of the surrounding circle for each node.
+    double time_total; //!< The runtime (=CPU-time) of the algorithm in seconds.
+    FruchtermanReingold FR; //!< Class for repulsive force calculation (Fruchterman, Reingold).
+    NMM NM; //!< Class for repulsive force calculation.
 
     FMMMLayout()
     {
@@ -759,24 +934,23 @@ public class FMMMLayout {
         call(GA, edgelength);
     }
 
-/*void call(ClusterGraphAttributes &GA)
-{
-	Graph &G = GA.constGraph();
-	//compute depth of cluster tree, also sets cluster depth values
-	ClusterGraph &CG = GA.constClusterGraph();
-	int cdepth = CG.treeDepth();
-	EdgeArray<double> edgeLength(G);
-	//compute lca of end vertices for each edge
-	edge e;
-	forall_edges(e, G)
-	{
-		edgeLength[e] = cdepth - CG.clusterDepth(CG.commonCluster(e->source(),e->target())) + 1;
-		OGDF_ASSERT(edgeLength[e] > 0)
-	}
-	call(GA,edgeLength);
-	GA.updateClusterPositions();
-}*/
-
+    /*void call(ClusterGraphAttributes &GA)
+     {
+     Graph &G = GA.constGraph();
+     //compute depth of cluster tree, also sets cluster depth values
+     ClusterGraph &CG = GA.constClusterGraph();
+     int cdepth = CG.treeDepth();
+     EdgeArray<double> edgeLength(G);
+     //compute lca of end vertices for each edge
+     edge e;
+     forall_edges(e, G)
+     {
+     edgeLength[e] = cdepth - CG.clusterDepth(CG.commonCluster(e->source(),e->target())) + 1;
+     OGDF_ASSERT(edgeLength[e] > 0)
+     }
+     call(GA,edgeLength);
+     GA.updateClusterPositions();
+     }*/
     void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
     {
         Graph G = GA.constGraph();
@@ -823,22 +997,21 @@ public class FMMMLayout {
     }
 
 
-/*void call(GraphAttributes &AG, char* ps_file)
-{
-	call(AG);
-	create_postscript_drawing(AG,ps_file);
-}
+    /*void call(GraphAttributes &AG, char* ps_file)
+     {
+     call(AG);
+     create_postscript_drawing(AG,ps_file);
+     }
 
 
-void call(
-	GraphAttributes &AG,
-	EdgeArray<double> &edgeLength,
-	char* ps_file)
-{
-	call(AG,edgeLength);
-	create_postscript_drawing(AG,ps_file);
-}*/
-
+     void call(
+     GraphAttributes &AG,
+     EdgeArray<double> &edgeLength,
+     char* ps_file)
+     {
+     call(AG,edgeLength);
+     create_postscript_drawing(AG,ps_file);
+     }*/
     void call_DIVIDE_ET_IMPERA_step(
             Graph G,
             NodeArray<NodeAttributes> A,
@@ -1144,7 +1317,6 @@ void call(
         }
     }
 
-
     void init_ind_ideal_edgelength(
             Graph G,
             NodeArray<NodeAttributes> A,
@@ -1169,7 +1341,6 @@ void call(
             }
         }
     }
-
 
     void set_radii(Graph G, NodeArray<NodeAttributes> A)
     {
@@ -1270,88 +1441,108 @@ void call(
         update_edgelength(S, new_edgelength, E_reduced);
     }
 
+    void delete_parallel_edges(
+            Graph G,
+            EdgeArray<EdgeAttributes> E,
+            Graph G_reduced,
+            List<edge> S,
+            EdgeArray<Double> new_edgelength)
+    {
+        ListIterator<Edge> EdgeIterator;
+        edge e_act, e_save = null;
+        Edge f_act = new Edge();
+        List<Edge> sorted_edges = new ArrayList<Edge>();
+        EdgeArray<edge> original_edge = new EdgeArray<edge>(G_reduced); //helping array
+	int save_s_index = 0, save_t_index = 0, act_s_index = 0, act_t_index = 0;
+        int counter = 1;
+        Graph Graph_ptr = G_reduced;
 
-void delete_parallel_edges(
-	Graph G,
-	EdgeArray<EdgeAttributes> E,
-	Graph G_reduced,
-	List<edge> S,
-	EdgeArray<Double> new_edgelength)
-{
-	EdgeMaxBucketFunc MaxSort;
-	EdgeMinBucketFunc MinSort;
-	ListIterator<Edge> EdgeIterator;
-	edge e_act,e_save;
-	Edge f_act;
-	List<Edge> sorted_edges;
-	EdgeArray<edge> original_edge (G_reduced); //helping array
-	int save_s_index,save_t_index,act_s_index,act_t_index;
-	int counter = 1;
-	Graph* Graph_ptr = &G_reduced;
+        //save the original edges for each edge in G_reduced
+        for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+        {
+            e_act = i.next();
+            if (E.get(e_act).get_copy_edge() != null) //e_act is no self_loops
+            {
+                original_edge.set(E.get(e_act).get_copy_edge(), e_act);
+            }
+        }
 
-	//save the original edges for each edge in G_reduced
-	forall_edges(e_act,G)
-		if(E[e_act].get_copy_edge() != null) //e_act is no self_loops
-			original_edge[E[e_act].get_copy_edge()] = e_act;
+        for (Iterator<edge> i = G_reduced.edgesIterator(); i.hasNext();)
+        {
+            e_act = i.next();
+            f_act.set_Edge(e_act, Graph_ptr);
+            sorted_edges.add(f_act);
+        }
 
-	forall_edges(e_act,G_reduced)
-	{
-		f_act.set_Edge(e_act,Graph_ptr);
-		sorted_edges.pushBack(f_act);
-	}
+        // FIXME: may not be correct
+        Collections.sort(sorted_edges, new java.util.Comparator<Edge>()
+        {
+            @Override
+            public int compare(Edge a, Edge b)
+            {
+		int a_index = a.get_edge().source().index() -
+                    a.get_edge().target().index();
+                int b_index = b.get_edge().source().index() -
+                    b.get_edge().target().index();
 
-	sorted_edges.bucketSort(0,G_reduced.numberOfNodes()-1,MaxSort);
-	sorted_edges.bucketSort(0,G_reduced.numberOfNodes()-1,MinSort);
+                return b_index - a_index;
+            }
+        });
 
-	//now parallel edges are consecutive in sorted_edges
-	for(EdgeIterator = sorted_edges.begin();EdgeIterator.valid();++EdgeIterator)
-	{//for
-		e_act = (*EdgeIterator).get_edge();
-		act_s_index = e_act->source()->index();
-		act_t_index = e_act->target()->index();
+        //now parallel edges are consecutive in sorted_edges
+        for (Edge e : sorted_edges)
+        {//for
+            e_act = e.get_edge();
+            act_s_index = e_act.source().index();
+            act_t_index = e_act.target().index();
 
-		if(EdgeIterator != sorted_edges.begin())
-		{//if
-			if( (act_s_index == save_s_index && act_t_index == save_t_index) ||
-				(act_s_index == save_t_index && act_t_index == save_s_index) )
-			{
-				if(counter == 1) //first parallel edge
-				{
-					S.pushBack(e_save);
-					new_edgelength[e_save] = E[original_edge[e_save]].get_length() +
-						E[original_edge[e_act]].get_length();
-				}
-				else //more then two parallel edges
-					new_edgelength[e_save] +=E[original_edge[e_act]].get_length();
+            if (e != sorted_edges.get(0))
+            {//if
+                if ((act_s_index == save_s_index && act_t_index == save_t_index) ||
+                        (act_s_index == save_t_index && act_t_index == save_s_index))
+                {
+                    if (counter == 1) //first parallel edge
+                    {
+                        S.add(e_save);
+                        new_edgelength.set(e_save, E.get(original_edge.get(e_save)).get_length() +
+                                E.get(original_edge.get(e_act)).get_length());
+                    }
+                    else //more then two parallel edges
+                    {
+                        new_edgelength.set(e_save, new_edgelength.get(e_save) +
+                                E.get(original_edge.get(e_act)).get_length());
+                    }
 
-				E[original_edge[e_act]].set_copy_edge(null); //mark copy of edge as deleted
-				G_reduced.delEdge(e_act);                    //delete copy edge in G_reduced
-				counter++;
-			}
-			else
-			{
-				if (counter > 1)
-				{
-					new_edgelength[e_save]/=counter;
-					counter = 1;
-				}
-				save_s_index = act_s_index;
-				save_t_index = act_t_index;
-				e_save = e_act;
-			}
-		}//if
-		else //first edge
-		{
-			save_s_index = act_s_index;
-			save_t_index = act_t_index;
-			e_save = e_act;
-		}
-	}//for
+                    E.get(original_edge.get(e_act)).set_copy_edge(null); //mark copy of edge as deleted
+                    G_reduced.delEdge(e_act);                    //delete copy edge in G_reduced
+                    counter++;
+                }
+                else
+                {
+                    if (counter > 1)
+                    {
+                        new_edgelength.set(e_save, new_edgelength.get(e_save) / counter);
+                        counter = 1;
+                    }
+                    save_s_index = act_s_index;
+                    save_t_index = act_t_index;
+                    e_save = e_act;
+                }
+            }//if
+            else //first edge
+            {
+                save_s_index = act_s_index;
+                save_t_index = act_t_index;
+                e_save = e_act;
+            }
+        }//for
 
-	//treat special case (last edges were multiple edges)
-	if(counter >1)
-		new_edgelength[e_save]/=counter;
-}
+        //treat special case (last edges were multiple edges)
+        if (counter > 1)
+        {
+            new_edgelength.set(e_save, new_edgelength.get(e_save) / counter);
+        }
+    }
 
     void update_edgelength(
             List<edge> S,
@@ -1456,90 +1647,87 @@ void delete_parallel_edges(
     }
 
 
-/*void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
-{
-	ofstream out_fmmm (ps_file,ios::out);
-	if (!ps_file) cout<<ps_file<<" could not be opened !"<<endl;
-	Graph G = AG.constGraph();
-	node v;
-	edge e;
-	double x_min = AG.x(G.firstNode());
-	double x_max = x_min;
-	double y_min = AG.y(G.firstNode());
-	double y_max = y_min;
-	double max_dist;
-	double scale_factor;
+    /*void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
+     {
+     ofstream out_fmmm (ps_file,ios::out);
+     if (!ps_file) cout<<ps_file<<" could not be opened !"<<endl;
+     Graph G = AG.constGraph();
+     node v;
+     edge e;
+     double x_min = AG.x(G.firstNode());
+     double x_max = x_min;
+     double y_min = AG.y(G.firstNode());
+     double y_max = y_min;
+     double max_dist;
+     double scale_factor;
 
-	forall_nodes(v,G)
-	{
-		if(AG.x(v) < x_min)
-			x_min = AG.x(v);
-		else if(AG.x(v) > x_max)
-			x_max = AG.x(v);
-		if(AG.y(v) < y_min)
-			y_min = AG.y(v);
-		else if(AG.y(v) > y_max)
-			y_max = AG.y(v);
-	}
-	max_dist = max(x_max -x_min,y_max-y_min);
-	scale_factor = 500.0/max_dist;
+     forall_nodes(v,G)
+     {
+     if(AG.x(v) < x_min)
+     x_min = AG.x(v);
+     else if(AG.x(v) > x_max)
+     x_max = AG.x(v);
+     if(AG.y(v) < y_min)
+     y_min = AG.y(v);
+     else if(AG.y(v) > y_max)
+     y_max = AG.y(v);
+     }
+     max_dist = max(x_max -x_min,y_max-y_min);
+     scale_factor = 500.0/max_dist;
 
-	out_fmmm<<"%!PS-Adobe-2.0 "<<endl;
-	out_fmmm<<"%%Pages:  1 "<<endl;
-	out_fmmm<<"% %BoundingBox: "<<x_min<<" "<<x_max<<" "<<y_min<<" "<<y_max<<endl;
-	out_fmmm<<"%%EndComments "<<endl;
-	out_fmmm<<"%%"<<endl;
-	out_fmmm<<"%% Circle"<<endl;
-	out_fmmm<<"/ellipse_dict 4 dict def"<<endl;
-	out_fmmm<<"/ellipse {"<<endl;
-	out_fmmm<<"  ellipse_dict"<<endl;
-	out_fmmm<<"  begin"<<endl;
-	out_fmmm<<"   newpath"<<endl;
-	out_fmmm<<"   /yrad exch def /xrad exch def /ypos exch def /xpos exch def"<<endl;
-	out_fmmm<<"   matrix currentmatrix"<<endl;
-	out_fmmm<<"   xpos ypos translate"<<endl;
-	out_fmmm<<"   xrad yrad scale"<<endl;
-	out_fmmm<<"  0 0 1 0 360 arc"<<endl;
-	out_fmmm<<"  setmatrix"<<endl;
-	out_fmmm<<"  closepath"<<endl;
-	out_fmmm<<" end"<<endl;
-	out_fmmm<<"} def"<<endl;
-	out_fmmm<<"%% Nodes"<<endl;
-	out_fmmm<<"/v { "<<endl;
-	out_fmmm<<" /y exch def"<<endl;
-	out_fmmm<<" /x exch def"<<endl;
-	out_fmmm<<"1.000 1.000 0.894 setrgbcolor"<<endl;
-	out_fmmm<<"x y 10.0 10.0 ellipse fill"<<endl;
-	out_fmmm<<"0.000 0.000 0.000 setrgbcolor"<<endl;
-	out_fmmm<<"x y 10.0 10.0 ellipse stroke"<<endl;
-	out_fmmm<<"} def"<<endl;
-	out_fmmm<<"%% Edges"<<endl;
-	out_fmmm<<"/e { "<<endl;
-	out_fmmm<<" /b exch def"<<endl;
-	out_fmmm<<" /a exch def"<<endl;
-	out_fmmm<<" /y exch def"<<endl;
-	out_fmmm<<" /x exch def"<<endl;
-	out_fmmm<<"x y moveto a b lineto stroke"<<endl;
-	out_fmmm<<"} def"<<endl;
-	out_fmmm<<"%% "<<endl;
-	out_fmmm<<"%% INIT "<<endl;
-	out_fmmm<<"20  200 translate"<<endl;
-	out_fmmm<<scale_factor<<"  "<<scale_factor<<"  scale "<<endl;
-	out_fmmm<<"1 setlinewidth "<<endl;
-	out_fmmm<<"%%BeginProgram "<<endl;
-	forall_edges(e,G)
-		out_fmmm<<AG.x(e->source())<<" "<<AG.y(e->source())<<" "
-		<<AG.x(e->target())<<" "<<AG.y(e->target())<<" e"<<endl;
-	forall_nodes(v,G)
-		out_fmmm<<AG.x(v)<<" "<<AG.y(v) <<" v"<<endl;
-	out_fmmm<<"%%EndProgram "<<endl;
-	out_fmmm<<"showpage "<<endl;
-	out_fmmm<<"%%EOF "<<endl;
-}*/
-
-
+     out_fmmm<<"%!PS-Adobe-2.0 "<<endl;
+     out_fmmm<<"%%Pages:  1 "<<endl;
+     out_fmmm<<"% %BoundingBox: "<<x_min<<" "<<x_max<<" "<<y_min<<" "<<y_max<<endl;
+     out_fmmm<<"%%EndComments "<<endl;
+     out_fmmm<<"%%"<<endl;
+     out_fmmm<<"%% Circle"<<endl;
+     out_fmmm<<"/ellipse_dict 4 dict def"<<endl;
+     out_fmmm<<"/ellipse {"<<endl;
+     out_fmmm<<"  ellipse_dict"<<endl;
+     out_fmmm<<"  begin"<<endl;
+     out_fmmm<<"   newpath"<<endl;
+     out_fmmm<<"   /yrad exch def /xrad exch def /ypos exch def /xpos exch def"<<endl;
+     out_fmmm<<"   matrix currentmatrix"<<endl;
+     out_fmmm<<"   xpos ypos translate"<<endl;
+     out_fmmm<<"   xrad yrad scale"<<endl;
+     out_fmmm<<"  0 0 1 0 360 arc"<<endl;
+     out_fmmm<<"  setmatrix"<<endl;
+     out_fmmm<<"  closepath"<<endl;
+     out_fmmm<<" end"<<endl;
+     out_fmmm<<"} def"<<endl;
+     out_fmmm<<"%% Nodes"<<endl;
+     out_fmmm<<"/v { "<<endl;
+     out_fmmm<<" /y exch def"<<endl;
+     out_fmmm<<" /x exch def"<<endl;
+     out_fmmm<<"1.000 1.000 0.894 setrgbcolor"<<endl;
+     out_fmmm<<"x y 10.0 10.0 ellipse fill"<<endl;
+     out_fmmm<<"0.000 0.000 0.000 setrgbcolor"<<endl;
+     out_fmmm<<"x y 10.0 10.0 ellipse stroke"<<endl;
+     out_fmmm<<"} def"<<endl;
+     out_fmmm<<"%% Edges"<<endl;
+     out_fmmm<<"/e { "<<endl;
+     out_fmmm<<" /b exch def"<<endl;
+     out_fmmm<<" /a exch def"<<endl;
+     out_fmmm<<" /y exch def"<<endl;
+     out_fmmm<<" /x exch def"<<endl;
+     out_fmmm<<"x y moveto a b lineto stroke"<<endl;
+     out_fmmm<<"} def"<<endl;
+     out_fmmm<<"%% "<<endl;
+     out_fmmm<<"%% INIT "<<endl;
+     out_fmmm<<"20  200 translate"<<endl;
+     out_fmmm<<scale_factor<<"  "<<scale_factor<<"  scale "<<endl;
+     out_fmmm<<"1 setlinewidth "<<endl;
+     out_fmmm<<"%%BeginProgram "<<endl;
+     forall_edges(e,G)
+     out_fmmm<<AG.x(e->source())<<" "<<AG.y(e->source())<<" "
+     <<AG.x(e->target())<<" "<<AG.y(e->target())<<" e"<<endl;
+     forall_nodes(v,G)
+     out_fmmm<<AG.x(v)<<" "<<AG.y(v) <<" v"<<endl;
+     out_fmmm<<"%%EndProgram "<<endl;
+     out_fmmm<<"showpage "<<endl;
+     out_fmmm<<"%%EOF "<<endl;
+     }*/
 //------------------------- functions for divide et impera step -----------------------
-
     void create_maximum_connected_subGraphs(
             Graph G,
             NodeArray<NodeAttributes> A,
@@ -1597,27 +1785,29 @@ void delete_parallel_edges(
         }
     }
 
+    void pack_subGraph_drawings(
+            NodeArray<NodeAttributes> A,
+            List<Graph> G_sub,
+            List<NodeArray<NodeAttributes>> A_sub)
+    {
+        //double aspect_ratio_area, bounding_rectangles_area;
+        MAARPacking P;
+        List<Rectangle> R = new ArrayList<Rectangle>();
 
-void pack_subGraph_drawings(
-	NodeArray<NodeAttributes> A,
-	List<Graph> G_sub,
-	List<NodeArray<NodeAttributes>> A_sub)
-{
-	double aspect_ratio_area, bounding_rectangles_area;
-	MAARPacking P;
-	List<Rectangle> R = new ArrayList<Rectangle>();
+        if (stepsForRotatingComponents() == 0) //no rotation
+        {
+            calculate_bounding_rectangles_of_components(R, G_sub, A_sub);
+        }
+        else
+        {
+            rotate_components_and_calculate_bounding_rectangles(R, G_sub, A_sub);
+        }
 
-	if(stepsForRotatingComponents() == 0) //no rotation
-		calculate_bounding_rectangles_of_components(R,G_sub,A_sub);
-	else
-		rotate_components_and_calculate_bounding_rectangles(R,G_sub,A_sub);
-
-	P.pack_rectangles_using_Best_Fit_strategy(R,pageRatio(),presortCCs(),
-		tipOverCCs(),aspect_ratio_area,
-		bounding_rectangles_area);
-	export_node_positions(A,R,G_sub,A_sub);
-}
-
+        P.pack_rectangles_using_Best_Fit_strategy(R, pageRatio(), presortCCs(),
+                tipOverCCs());/*, aspect_ratio_area,
+                bounding_rectangles_area);*/
+        export_node_positions(A, R, G_sub, A_sub);
+    }
 
     void calculate_bounding_rectangles_of_components(
             List<Rectangle> R,
@@ -1744,9 +1934,9 @@ void pack_subGraph_drawings(
                 {
                     v_sub = iter.next();
                     new_pos.m_x = cos_j * old_coords.get(i).get(v_sub).m_x -
-                             sin_j * old_coords.get(i).get(v_sub).m_y;
+                            sin_j * old_coords.get(i).get(v_sub).m_y;
                     new_pos.m_y = sin_j * old_coords.get(i).get(v_sub).m_x +
-                             cos_j * old_coords.get(i).get(v_sub).m_y;
+                            cos_j * old_coords.get(i).get(v_sub).m_y;
                     A_sub.get(i).get(v_sub).set_position(new_pos);
                 }
 
@@ -1879,7 +2069,6 @@ void pack_subGraph_drawings(
         }//for
     }
 
-
 //----------------------- functions for multilevel step -----------------------------
     int get_max_mult_iter(int act_level, int max_level, int node_nr)
     {
@@ -1931,29 +2120,29 @@ void pack_subGraph_drawings(
         }
     }
 
-
 //-------------------------- functions for force calculation ---------------------------
-
-void calculate_forces(
-	Graph G,
-	NodeArray<NodeAttributes> A,
-	EdgeArray<EdgeAttributes> E,
-	NodeArray<DPoint> F,
-	NodeArray<DPoint> F_attr,
-	NodeArray<DPoint> F_rep,
-	NodeArray<DPoint> last_node_movement,
-	int iter,
-	int fine_tuning_step)
-{
-	if(allowedPositions() != AllowedPositions.apAll)
-		make_positions_integer(G,A);
-	calculate_attractive_forces(G,A,E,F_attr);
-	calculate_repulsive_forces(G,A,F_rep);
-	add_attr_rep_forces(G,F_attr,F_rep,F,iter,fine_tuning_step);
-	prevent_oscilations(G,F,last_node_movement,iter);
-	move_nodes(G,A,F);
-	update_boxlength_and_cornercoordinate(G,A);
-}
+    void calculate_forces(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E,
+            NodeArray<DPoint> F,
+            NodeArray<DPoint> F_attr,
+            NodeArray<DPoint> F_rep,
+            NodeArray<DPoint> last_node_movement,
+            int iter,
+            int fine_tuning_step)
+    {
+        if (allowedPositions() != AllowedPositions.apAll)
+        {
+            make_positions_integer(G, A);
+        }
+        calculate_attractive_forces(G, A, E, F_attr);
+        calculate_repulsive_forces(G, A, F_rep);
+        add_attr_rep_forces(G, F_attr, F_rep, F, iter, fine_tuning_step);
+        prevent_oscilations(G, F, last_node_movement, iter);
+        move_nodes(G, A, F);
+        update_boxlength_and_cornercoordinate(G, A);
+    }
 
     void init_boxlength_and_cornercoordinate(
             Graph G,
@@ -1978,7 +2167,6 @@ void calculate_forces(
         down_left_corner.m_x = 0;
         down_left_corner.m_y = 0;
     }
-
 
     void create_initial_placement(Graph G, NodeArray<NodeAttributes> A)
     {
@@ -2109,7 +2297,6 @@ void calculate_forces(
             EdgeArray<EdgeAttributes> E,
             NodeArray<DPoint> F_attr)
     {
-        numexcept N;
         edge e;
         node u, v;
         double norm_v_minus_u, scalar;
@@ -2132,7 +2319,7 @@ void calculate_forces(
             {
                 f_u = nullpoint;
             }
-            else if (!N.f_near_machine_precision(norm_v_minus_u, f_u))
+            else if (!numexcept.f_near_machine_precision(norm_v_minus_u, f_u))
             {
                 scalar = f_attr_scalar(norm_v_minus_u, E.get(e).get_length()) / norm_v_minus_u;
                 f_u.m_x = scalar * vector_v_minus_u.m_x;
@@ -2193,7 +2380,6 @@ void calculate_forces(
             int iter,
             int fine_tuning_step)
     {
-        numexcept N;
         node v;
         DPoint f = new DPoint(), force = new DPoint();
         DPoint nullpoint = new DPoint(0, 0);
@@ -2263,7 +2449,7 @@ void calculate_forces(
             {
                 force = nullpoint;
             }
-            else if (N.f_near_machine_precision(norm_f, force))
+            else if (numexcept.f_near_machine_precision(norm_f, force))
             {
                 restrict_force_to_comp_box(force);
             }
@@ -2291,7 +2477,6 @@ void calculate_forces(
             A.get(v).set_position(A.get(v).get_position().plus(F.get(v)));
         }
     }
-
 
     void update_boxlength_and_cornercoordinate(
             Graph G,
