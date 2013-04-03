@@ -2,7 +2,6 @@ package ogdf.basic;
 
 public class GraphAttributes
 {
-
     public Graph constGraph()
     {
         return null;
@@ -12,9 +11,6 @@ public class GraphAttributes
     {
     }
 
-    /*double &x(node v) {
-     return m_x[v];
-     }*/
     public double x(node v) { return 0.0; }
     public void setX(node v, double value) { }
 
