@@ -1372,85 +1372,88 @@ void delete_parallel_edges(
         return Math.min(0.2, 400.0 / (double) n);
     }
 
-void make_positions_integer(Graph G, NodeArray<NodeAttributes> A)
-{
-	node v;
-	double new_x,new_y;
+    void make_positions_integer(Graph G, NodeArray<NodeAttributes> A)
+    {
+        node v;
+        double new_x, new_y;
 
-	if(allowedPositions() == AllowedPositions.apInteger)
-	{//if
-		//calculate value of max_integer_position
-		max_integer_position = 100 * average_ideal_edgelength * G.numberOfNodes() *
-			G.numberOfNodes();
-	}//if
+        if (allowedPositions() == AllowedPositions.apInteger)
+        {//if
+            //calculate value of max_integer_position
+            max_integer_position = 100 * average_ideal_edgelength * G.numberOfNodes() *
+                    G.numberOfNodes();
+        }//if
 
-	//restrict positions to lie in [-max_integer_position,max_integer_position]
-	//X [-max_integer_position,max_integer_position]
+        //restrict positions to lie in [-max_integer_position,max_integer_position]
+        //X [-max_integer_position,max_integer_position]
         for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
         {
             v = i.next();
-		if( (A.get(v).get_x() > max_integer_position) ||
-			(A.get(v).get_y() > max_integer_position) ||
-			(A.get(v).get_x() < max_integer_position * (-1.0)) ||
-			(A.get(v).get_y() < max_integer_position * (-1.0)) )
-		{
-			DPoint cross_point = new DPoint();
-			DPoint nullpoint = new DPoint(0,0);
-			DPoint old_pos = new DPoint(A.get(v).get_x(),A.get(v).get_y());
-			DPoint lt = new DPoint( max_integer_position * (-1.0),max_integer_position);
-			DPoint rt = new DPoint( max_integer_position,max_integer_position);
-			DPoint lb = new DPoint( max_integer_position * (-1.0),max_integer_position * (-1.0));
-			DPoint rb = new DPoint( max_integer_position,max_integer_position * (-1.0));
-			DLine s = new DLine(nullpoint,old_pos);
-			DLine left_bound = new DLine(lb,lt);
-			DLine right_bound = new DLine(rb,rt);
-			DLine top_bound = new DLine(lt,rt);
-			DLine bottom_bound = new DLine(lb,rb);
+            if ((A.get(v).get_x() > max_integer_position) ||
+                    (A.get(v).get_y() > max_integer_position) ||
+                    (A.get(v).get_x() < max_integer_position * (-1.0)) ||
+                    (A.get(v).get_y() < max_integer_position * (-1.0)))
+            {
+                DPoint cross_point = new DPoint();
+                DPoint nullpoint = new DPoint(0, 0);
+                DPoint old_pos = new DPoint(A.get(v).get_x(), A.get(v).get_y());
+                DPoint lt = new DPoint(max_integer_position * (-1.0), max_integer_position);
+                DPoint rt = new DPoint(max_integer_position, max_integer_position);
+                DPoint lb = new DPoint(max_integer_position * (-1.0), max_integer_position * (-1.0));
+                DPoint rb = new DPoint(max_integer_position, max_integer_position * (-1.0));
+                DLine s = new DLine(nullpoint, old_pos);
+                DLine left_bound = new DLine(lb, lt);
+                DLine right_bound = new DLine(rb, rt);
+                DLine top_bound = new DLine(lt, rt);
+                DLine bottom_bound = new DLine(lb, rb);
 
-			if(s.intersection(left_bound,cross_point))
-			{
-				A.get(v).set_x(cross_point.m_x);
-				A.get(v).set_y(cross_point.m_y);
-			}
-			else if(s.intersection(right_bound,cross_point))
-			{
-				A.get(v).set_x(cross_point.m_x);
-				A.get(v).set_y(cross_point.m_y);
-			}
-			else if(s.intersection(top_bound,cross_point))
-			{
-				A.get(v).set_x(cross_point.m_x);
-				A.get(v).set_y(cross_point.m_y);
-			}
-			else if(s.intersection(bottom_bound,cross_point))
-			{
-				A.get(v).set_x(cross_point.m_x);
-				A.get(v).set_y(cross_point.m_y);
-			}
-			else System.out.println("Error  make_positions_integer()");
-		}
+                if (s.intersection(left_bound, cross_point))
+                {
+                    A.get(v).set_x(cross_point.m_x);
+                    A.get(v).set_y(cross_point.m_y);
+                }
+                else if (s.intersection(right_bound, cross_point))
+                {
+                    A.get(v).set_x(cross_point.m_x);
+                    A.get(v).set_y(cross_point.m_y);
+                }
+                else if (s.intersection(top_bound, cross_point))
+                {
+                    A.get(v).set_x(cross_point.m_x);
+                    A.get(v).set_y(cross_point.m_y);
+                }
+                else if (s.intersection(bottom_bound, cross_point))
+                {
+                    A.get(v).set_x(cross_point.m_x);
+                    A.get(v).set_y(cross_point.m_y);
+                }
+                else
+                {
+                    System.out.println("Error  make_positions_integer()");
+                }
+            }
         }
 
-		//make positions integer
+        //make positions integer
         for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
         {
             v = i.next();
-			new_x = Math.floor(A.get(v).get_x());
-			new_y = Math.floor(A.get(v).get_y());
-			if(new_x < down_left_corner.m_x)
-			{
-				boxlength += 2;
-				down_left_corner.m_x = down_left_corner.m_x-2;
-			}
-			if(new_y < down_left_corner.m_y)
-			{
-				boxlength += 2;
-				down_left_corner.m_y = down_left_corner.m_y-2;
-			}
-			A.get(v).set_x(new_x);
-			A.get(v).set_y(new_y);
-		}
-}
+            new_x = Math.floor(A.get(v).get_x());
+            new_y = Math.floor(A.get(v).get_y());
+            if (new_x < down_left_corner.m_x)
+            {
+                boxlength += 2;
+                down_left_corner.m_x = down_left_corner.m_x - 2;
+            }
+            if (new_y < down_left_corner.m_y)
+            {
+                boxlength += 2;
+                down_left_corner.m_y = down_left_corner.m_y - 2;
+            }
+            A.get(v).set_x(new_x);
+            A.get(v).set_y(new_y);
+        }
+    }
 
 
 /*void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
@@ -1537,55 +1540,62 @@ void make_positions_integer(Graph G, NodeArray<NodeAttributes> A)
 
 //------------------------- functions for divide et impera step -----------------------
 
-void create_maximum_connected_subGraphs(
-	Graph G,
-	NodeArray<NodeAttributes> A,
-	EdgeArray<EdgeAttributes>E,
-	List<Graph> G_sub,
-	List<NodeArray<NodeAttributes>> A_sub,
-	List<EdgeArray<EdgeAttributes>> E_sub,
-	NodeArray<Integer> component)
-{
-	node u_orig,v_orig,v_sub;
-	edge e_sub,e_orig;
-	int i;
+    void create_maximum_connected_subGraphs(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E,
+            List<Graph> G_sub,
+            List<NodeArray<NodeAttributes>> A_sub,
+            List<EdgeArray<EdgeAttributes>> E_sub,
+            NodeArray<Integer> component)
+    {
+        node u_orig, v_orig, v_sub;
+        edge e_sub, e_orig;
+        int i;
 
-	//create the subgraphs and save links to subgraph nodes/edges in A
-	forall_nodes(v_orig,G)
-		A[v_orig].set_subgraph_node(G_sub[component[v_orig]].newNode());
-	forall_edges(e_orig,G)
-	{
-		u_orig = e_orig->source();
-		v_orig = e_orig->target();
-		E[e_orig].set_subgraph_edge( G_sub[component[u_orig]].newEdge
-			(A[u_orig].get_subgraph_node(),A[v_orig].get_subgraph_node()));
-	}
+        //create the subgraphs and save links to subgraph nodes/edges in A
+        for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
+        {
+            v_orig = iter.next();
+            A.get(v_orig).set_subgraph_node(G_sub.get(component.get(v_orig)).newNode());
+        }
 
-	//make A_sub,E_sub valid for the subgraphs
-	for(i = 0; i< number_of_components;i++)
-	{
-		A_sub[i].init(G_sub[i]);
-		E_sub[i].init(G_sub[i]);
-	}
+        for (Iterator<edge> iter = G.edgesIterator(); iter.hasNext();)
+        {
+            e_orig = iter.next();
+            u_orig = e_orig.source();
+            v_orig = e_orig.target();
+            E.get(e_orig).set_subgraph_edge(G_sub.get(component.get(u_orig)).newEdge(A.get(u_orig).get_subgraph_node(), A.get(v_orig).get_subgraph_node()));
+        }
 
-	//import information for A_sub,E_sub and links to the original nodes/edges
-	//of the subGraph nodes/edges
+        //make A_sub,E_sub valid for the subgraphs
+        for (i = 0; i < number_of_components; i++)
+        {
+            A_sub.get(i).init(G_sub.get(i));
+            E_sub.get(i).init(G_sub.get(i));
+        }
 
-	forall_nodes(v_orig,G)
-	{
-		v_sub = A[v_orig].get_subgraph_node();
-		A_sub[component[v_orig]][v_sub].set_NodeAttributes(A[v_orig].get_width(),
-			A[v_orig].get_height(),A[v_orig].get_position(),
-			v_orig,null);
-	}
-	forall_edges(e_orig,G)
-	{
-		e_sub = E[e_orig].get_subgraph_edge();
-		v_orig = e_orig->source();
-		E_sub[component[v_orig]][e_sub].set_EdgeAttributes(E[e_orig].get_length(),
-			e_orig,null);
-	}
-}
+        //import information for A_sub,E_sub and links to the original nodes/edges
+        //of the subGraph nodes/edges
+
+        for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
+        {
+            v_orig = iter.next();
+            v_sub = A.get(v_orig).get_subgraph_node();
+            A_sub.get(component.get(v_orig)).get(v_sub).set_NodeAttributes(A.get(v_orig).get_width(),
+                    A.get(v_orig).get_height(), A.get(v_orig).get_position(),
+                    v_orig, null);
+        }
+
+        for (Iterator<edge> iter = G.edgesIterator(); iter.hasNext();)
+        {
+            e_orig = iter.next();
+            e_sub = E.get(e_orig).get_subgraph_edge();
+            v_orig = e_orig.source();
+            E_sub.get(component.get(v_orig)).get(e_sub).set_EdgeAttributes(E.get(e_orig).get_length(),
+                    e_orig, null);
+        }
+    }
 
 
 void pack_subGraph_drawings(
@@ -1595,7 +1605,7 @@ void pack_subGraph_drawings(
 {
 	double aspect_ratio_area, bounding_rectangles_area;
 	MAARPacking P;
-	List<Rectangle> R;
+	List<Rectangle> R = new ArrayList<Rectangle>();
 
 	if(stepsForRotatingComponents() == 0) //no rotation
 		calculate_bounding_rectangles_of_components(R,G_sub,A_sub);
@@ -1609,259 +1619,317 @@ void pack_subGraph_drawings(
 }
 
 
-void calculate_bounding_rectangles_of_components(
-	List<Rectangle> R,
-	Graph G_sub[],
-	NodeArray<NodeAttributes> A_sub[])
-{
-	int i;
-	Rectangle r;
-	R.clear();
+    void calculate_bounding_rectangles_of_components(
+            List<Rectangle> R,
+            List<Graph> G_sub,
+            List<NodeArray<NodeAttributes>> A_sub)
+    {
+        int i;
+        Rectangle r;
+        R.clear();
 
-	for(i=0;i<number_of_components;i++)
-	{
-		r = calculate_bounding_rectangle(G_sub[i],A_sub[i],i);
-		R.pushBack(r);
-	}
-}
+        for (i = 0; i < number_of_components; i++)
+        {
+            r = calculate_bounding_rectangle(G_sub.get(i), A_sub.get(i), i);
+            R.add(r);
+        }
+    }
 
+    Rectangle calculate_bounding_rectangle(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            int componenet_index)
+    {
+        Rectangle r = new Rectangle();
+        node v;
+        double x_min = Double.MAX_VALUE,
+                x_max = Double.MIN_VALUE,
+                y_min = Double.MAX_VALUE,
+                y_max = Double.MIN_VALUE,
+                act_x_min, act_x_max, act_y_min, act_y_max;
+        double max_boundary;//the maximum of half of the width and half of the height of
+        //each node; (needed to be able to tipp rectangles over without
+        //having access to the height and width of each node)
 
-Rectangle calculate_bounding_rectangle(
-	Graph G,
-	NodeArray<NodeAttributes> A,
-	int componenet_index)
-{
-	Rectangle r;
-	node v;
-	double x_min,x_max,y_min,y_max,act_x_min,act_x_max,act_y_min,act_y_max;
-	double max_boundary;//the maximum of half of the width and half of the height of
-	//each node; (needed to be able to tipp rectangles over without
-	//having access to the height and width of each node)
+        for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
+        {
+            v = iter.next();
+            max_boundary = Math.max(A.get(v).get_width() / 2, A.get(v).get_height() / 2);
+            if (v == G.firstNode())
+            {
+                x_min = A.get(v).get_x() - max_boundary;
+                x_max = A.get(v).get_x() + max_boundary;
+                y_min = A.get(v).get_y() - max_boundary;
+                y_max = A.get(v).get_y() + max_boundary;
+            }
+            else
+            {
+                act_x_min = A.get(v).get_x() - max_boundary;
+                act_x_max = A.get(v).get_x() + max_boundary;
+                act_y_min = A.get(v).get_y() - max_boundary;
+                act_y_max = A.get(v).get_y() + max_boundary;
+                if (act_x_min < x_min)
+                {
+                    x_min = act_x_min;
+                }
+                if (act_x_max > x_max)
+                {
+                    x_max = act_x_max;
+                }
+                if (act_y_min < y_min)
+                {
+                    y_min = act_y_min;
+                }
+                if (act_y_max > y_max)
+                {
+                    y_max = act_y_max;
+                }
+            }
+        }
 
-	forall_nodes(v,G)
-	{
-		max_boundary = max(A[v].get_width()/2, A[v].get_height()/2);
-		if(v == G.firstNode())
-		{
-			x_min = A[v].get_x() - max_boundary;
-			x_max = A[v].get_x() + max_boundary;
-			y_min = A[v].get_y() - max_boundary;
-			y_max = A[v].get_y() + max_boundary;
-		}
-		else
-		{
-			act_x_min = A[v].get_x() - max_boundary;
-			act_x_max = A[v].get_x() + max_boundary;
-			act_y_min = A[v].get_y() - max_boundary;
-			act_y_max = A[v].get_y() + max_boundary;
-			if(act_x_min < x_min) x_min = act_x_min;
-			if(act_x_max > x_max) x_max = act_x_max;
-			if(act_y_min < y_min) y_min = act_y_min;
-			if(act_y_max > y_max) y_max = act_y_max;
-		}
-	}
+        //add offset
+        x_min -= minDistCC() / 2;
+        x_max += minDistCC() / 2;
+        y_min -= minDistCC() / 2;
+        y_max += minDistCC() / 2;
 
-	//add offset
-	x_min -= minDistCC()/2;
-	x_max += minDistCC()/2;
-	y_min -= minDistCC()/2;
-	y_max += minDistCC()/2;
+        r.set_rectangle(x_max - x_min, y_max - y_min, x_min, y_min, componenet_index);
+        return r;
+    }
 
-	r.set_rectangle(x_max-x_min,y_max-y_min,x_min,y_min,componenet_index);
-	return r;
-}
+    void rotate_components_and_calculate_bounding_rectangles(
+            List<Rectangle> R,
+            List<Graph> G_sub,
+            List<NodeArray<NodeAttributes>> A_sub)
+    {
+        int i, j;
+        double sin_j, cos_j;
+        double angle, act_area, act_area_PI_half_rotated = 0.0, best_area;
+        double ratio, new_width, new_height;
+        List<NodeArray<DPoint>> best_coords = new ArrayList<NodeArray<DPoint>>(number_of_components); //FIXME needs init
+        List<NodeArray<DPoint>> old_coords = new ArrayList<NodeArray<DPoint>>(number_of_components); //FIXME needs init
+        node v_sub;
+        Rectangle r_act, r_best;
+        DPoint new_pos = new DPoint(), new_dlc = new DPoint();
 
+        R.clear(); //make R empty
 
-void rotate_components_and_calculate_bounding_rectangles(
-	List<Rectangle>R,
-	Graph G_sub[],
-	NodeArray<NodeAttributes> A_sub[])
-{
-	int i,j;
-	double sin_j,cos_j;
-	double angle,act_area,act_area_PI_half_rotated,best_area;
-	double ratio,new_width,new_height;
-	Array<NodeArray<DPoint> > best_coords(number_of_components);
-	Array<NodeArray<DPoint> > old_coords(number_of_components);
-	node v_sub;
-	Rectangle r_act,r_best;
-	DPoint new_pos,new_dlc;
+        for (i = 0; i < number_of_components; i++)
+        {//allcomponents
 
-	R.clear(); //make R empty
+            //init r_best, best_area and best_(old)coords
+            r_best = calculate_bounding_rectangle(G_sub.get(i), A_sub.get(i), i);
+            best_area = calculate_area(r_best.get_width(), r_best.get_height(),
+                    number_of_components);
+            best_coords.get(i).init(G_sub.get(i));
+            old_coords.get(i).init(G_sub.get(i));
 
-	for(i=0;i<number_of_components;i++)
-	{//allcomponents
+            for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+            {
+                v_sub = iter.next();
+                DPoint p = A_sub.get(i).get(v_sub).get_position();
+                old_coords.get(i).set(v_sub, p);
+                best_coords.get(i).set(v_sub, p);
 
-		//init r_best, best_area and best_(old)coords
-		r_best = calculate_bounding_rectangle(G_sub[i],A_sub[i],i);
-		best_area =  calculate_area(r_best.get_width(),r_best.get_height(),
-			number_of_components);
-		best_coords[i].init(G_sub[i]);
-		old_coords[i].init(G_sub[i]);
+            }
 
-		forall_nodes(v_sub,G_sub[i])
-			old_coords[i][v_sub] = best_coords[i][v_sub] = A_sub[i][v_sub].get_position();
+            //rotate the components
+            for (j = 1; j <= stepsForRotatingComponents(); j++)
+            {
+                //calculate new positions for the nodes, the new rectangle and area
+                angle = (Math.PI * 0.5) * (double) j / (double) (stepsForRotatingComponents() + 1);
+                sin_j = Math.sin(angle);
+                cos_j = Math.cos(angle);
+                for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+                {
+                    v_sub = iter.next();
+                    new_pos.m_x = cos_j * old_coords.get(i).get(v_sub).m_x -
+                             sin_j * old_coords.get(i).get(v_sub).m_y;
+                    new_pos.m_y = sin_j * old_coords.get(i).get(v_sub).m_x +
+                             cos_j * old_coords.get(i).get(v_sub).m_y;
+                    A_sub.get(i).get(v_sub).set_position(new_pos);
+                }
 
-		//rotate the components
-		for(j=1;j<=stepsForRotatingComponents();j++)
-		{
-			//calculate new positions for the nodes, the new rectangle and area
-			angle = Math::pi_2 * (double(j)/double(stepsForRotatingComponents()+1));
-			sin_j = sin(angle);
-			cos_j = cos(angle);
-			forall_nodes(v_sub,G_sub[i])
-			{
-				new_pos.m_x =  cos_j * old_coords[i][v_sub].m_x
-					- sin_j * old_coords[i][v_sub].m_y;
-				new_pos.m_y =   sin_j * old_coords[i][v_sub].m_x
-					+ cos_j * old_coords[i][v_sub].m_y;
-				A_sub[i][v_sub].set_position(new_pos);
-			}
+                r_act = calculate_bounding_rectangle(G_sub.get(i), A_sub.get(i), i);
+                act_area = calculate_area(r_act.get_width(), r_act.get_height(),
+                        number_of_components);
+                if (number_of_components == 1)
+                {
+                    act_area_PI_half_rotated = calculate_area(r_act.get_height(),
+                            r_act.get_width(),
+                            number_of_components);
+                }
 
-			r_act = calculate_bounding_rectangle(G_sub[i],A_sub[i],i);
-			act_area =  calculate_area(r_act.get_width(),r_act.get_height(),
-				number_of_components);
-			if(number_of_components == 1)
-				act_area_PI_half_rotated =calculate_area(r_act.get_height(),
-				r_act.get_width(),
-				number_of_components);
+                //store placement of the nodes with minimal area (in case that
+                //number_of_components >1) else store placement with minimal aspect ratio area
+                if (act_area < best_area)
+                {
+                    r_best = r_act;
+                    best_area = act_area;
+                    for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+                    {
+                        v_sub = iter.next();
 
-			//store placement of the nodes with minimal area (in case that
-			//number_of_components >1) else store placement with minimal aspect ratio area
-			if(act_area < best_area)
-			{
-				r_best = r_act;
-				best_area = act_area;
-				forall_nodes(v_sub,G_sub[i])
-					best_coords[i][v_sub] = A_sub[i][v_sub].get_position();
-			}
-			else if ((number_of_components == 1) && (act_area_PI_half_rotated < best_area))
-			{ //test if rotating further with PI_half would be an improvement
-				r_best = r_act;
-				best_area = act_area_PI_half_rotated;
-				forall_nodes(v_sub,G_sub[i])
-					best_coords[i][v_sub] = A_sub[i][v_sub].get_position();
-				//the needed rotation step follows in the next if statement
-			}
-		}
+                        best_coords.get(i).set(v_sub, A_sub.get(i).get(v_sub).get_position());
+                    }
+                }
+                else if ((number_of_components == 1) && (act_area_PI_half_rotated < best_area))
+                { //test if rotating further with PI_half would be an improvement
+                    r_best = r_act;
+                    best_area = act_area_PI_half_rotated;
+                    for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+                    {
+                        v_sub = iter.next();
 
-		//tipp the smallest rectangle over by angle PI/2 around the origin if it makes the
-		//aspect_ratio of r_best more similar to the desired aspect_ratio
-		ratio = r_best.get_width()/r_best.get_height();
+                        best_coords.get(i).set(v_sub, A_sub.get(i).get(v_sub).get_position());
+                    }
+                    //the needed rotation step follows in the next if statement
+                }
+            }
 
-		if( (pageRatio() <  1 && ratio > 1) ||  (pageRatio() >= 1 && ratio < 1) )
-		{
-			forall_nodes(v_sub,G_sub[i])
-			{
-				new_pos.m_x = best_coords[i][v_sub].m_y*(-1);
-				new_pos.m_y = best_coords[i][v_sub].m_x;
-				best_coords[i][v_sub] = new_pos;
-			}
+            //tipp the smallest rectangle over by angle PI/2 around the origin if it makes the
+            //aspect_ratio of r_best more similar to the desired aspect_ratio
+            ratio = r_best.get_width() / r_best.get_height();
 
-			//calculate new rectangle
-			new_dlc.m_x = r_best.get_old_dlc_position().m_y*(-1)-r_best.get_height();
-			new_dlc.m_y = r_best.get_old_dlc_position().m_x;
-			new_width = r_best.get_height();
-			new_height = r_best.get_width();
-			r_best.set_width(new_width);
-			r_best.set_height(new_height);
-			r_best.set_old_dlc_position(new_dlc);
-		}
+            if ((pageRatio() < 1 && ratio > 1) || (pageRatio() >= 1 && ratio < 1))
+            {
+                for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+                {
+                    v_sub = iter.next();
+                    new_pos.m_x = best_coords.get(i).get(v_sub).m_y * (-1);
+                    new_pos.m_y = best_coords.get(i).get(v_sub).m_x;
+                    best_coords.get(i).set(v_sub, new_pos);
+                }
 
-		//save the computed information in A_sub and R
-		forall_nodes(v_sub,G_sub[i])
-			A_sub[i][v_sub].set_position(best_coords[i][v_sub]);
-		R.pushBack(r_best);
+                //calculate new rectangle
+                new_dlc.m_x = r_best.get_old_dlc_position().m_y * (-1) - r_best.get_height();
+                new_dlc.m_y = r_best.get_old_dlc_position().m_x;
+                new_width = r_best.get_height();
+                new_height = r_best.get_width();
+                r_best.set_width(new_width);
+                r_best.set_height(new_height);
+                r_best.set_old_dlc_position(new_dlc);
+            }
 
-	}//allcomponents
-}
+            //save the computed information in A_sub and R
+            for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+            {
+                v_sub = iter.next();
+                A_sub.get(i).get(v_sub).set_position(best_coords.get(i).get(v_sub));
+            }
+            R.add(r_best);
 
-	double calculate_area(double width,double height,int comp_nr) {
-		if (comp_nr == 1)  //calculate aspect ratio area of the rectangle
-		{
-			double  ratio = width/height;
+        }//allcomponents
+    }
 
-			if(ratio < pageRatio()) //scale width
-				return ( width * height * (pageRatio()/ratio));
-			else //scale height
-				return (width * height * (ratio/pageRatio()));
-		}
-		else  //calculate area of the rectangle
-			return width * height;
-	}
+    double calculate_area(double width, double height, int comp_nr)
+    {
+        if (comp_nr == 1)  //calculate aspect ratio area of the rectangle
+        {
+            double ratio = width / height;
 
+            if (ratio < pageRatio()) //scale width
+            {
+                return (width * height * (pageRatio() / ratio));
+            }
+            else //scale height
+            {
+                return (width * height * (ratio / pageRatio()));
+            }
+        }
+        else  //calculate area of the rectangle
+        {
+            return width * height;
+        }
+    }
 
+    void export_node_positions(
+            NodeArray<NodeAttributes> A,
+            List<Rectangle> R,
+            List<Graph> G_sub,
+            List<NodeArray<NodeAttributes>> A_sub)
+    {
+        ListIterator<Rectangle> RectIterator;
+        int i;
+        node v_sub;
+        DPoint newpos, tipped_pos = new DPoint(), tipped_dlc;
 
-void export_node_positions(
-	NodeArray<NodeAttributes> A,
-	List<Rectangle>  R,
-	Graph G_sub[],
-	NodeArray<NodeAttributes> A_sub[])
-{
-	ListIterator<Rectangle> RectIterator;
-	Rectangle r;
-	int i;
-	node v_sub;
-	DPoint newpos,tipped_pos,tipped_dlc;
+        for (Rectangle r : R)
+        {//for
+            i = r.get_component_index();
+            if (r.is_tipped_over())
+            {//if
+                //calculate tipped coordinates of the nodes
+                for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+                {
+                    v_sub = iter.next();
+                    tipped_pos.m_x = A_sub.get(i).get(v_sub).get_y() * (-1);
+                    tipped_pos.m_y = A_sub.get(i).get(v_sub).get_x();
+                    A_sub.get(i).get(v_sub).set_position(tipped_pos);
+                }
+            }//if
 
-	for(RectIterator = R.begin();RectIterator.valid();++RectIterator)
-	{//for
-		r = *RectIterator;
-		i = r.get_component_index();
-		if(r.is_tipped_over())
-		{//if
-			//calculate tipped coordinates of the nodes
-			forall_nodes(v_sub,G_sub[i])
-			{
-				tipped_pos.m_x = A_sub[i][v_sub].get_y()*(-1);
-				tipped_pos.m_y = A_sub[i][v_sub].get_x();
-				A_sub[i][v_sub].set_position(tipped_pos);
-			}
-		}//if
-
-		forall_nodes(v_sub,G_sub[i])
-		{
-			newpos = A_sub[i][v_sub].get_position() + r.get_new_dlc_position()
-				- r.get_old_dlc_position();
-			A[A_sub[i][v_sub].get_original_node()].set_position(newpos);
-		}
-	}//for
-}
+            for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
+            {
+                v_sub = iter.next();
+                newpos = A_sub.get(i).get(v_sub).get_position().plus(r.get_new_dlc_position()).minus(
+                        r.get_old_dlc_position());
+                A.get(A_sub.get(i).get(v_sub).get_original_node()).set_position(newpos);
+            }
+        }//for
+    }
 
 
 //----------------------- functions for multilevel step -----------------------------
+    int get_max_mult_iter(int act_level, int max_level, int node_nr)
+    {
+        int iter;
+        if (maxIterChange() == MaxIterChange.micConstant) //nothing to do
+        {
+            iter = fixedIterations();
+        }
+        else if (maxIterChange() == MaxIterChange.micLinearlyDecreasing) //linearly decreasing values
+        {
+            if (max_level == 0)
+            {
+                iter = fixedIterations() + ((maxIterFactor() - 1) * fixedIterations());
+            }
+            else
+            {
+                iter = fixedIterations() + (int) ((double) act_level / (double) max_level) *
+                        (((maxIterFactor() - 1)) * fixedIterations());
+            }
+        }
+        else //maxIterChange == micRapidlyDecreasing (rapidly decreasing values)
+        {
+            if (act_level == max_level)
+            {
+                iter = fixedIterations() + (int) ((maxIterFactor() - 1) * fixedIterations());
+            }
+            else if (act_level == max_level - 1)
+            {
+                iter = fixedIterations() + (int) (0.5 * (maxIterFactor() - 1) * fixedIterations());
+            }
+            else if (act_level == max_level - 2)
+            {
+                iter = fixedIterations() + (int) (0.25 * (maxIterFactor() - 1) * fixedIterations());
+            }
+            else //act_level >= max_level - 3
+            {
+                iter = fixedIterations();
+            }
+        }
 
-int get_max_mult_iter(int act_level, int max_level, int node_nr)
-{
-	int iter;
-	if(maxIterChange() == MaxIterChange.micConstant) //nothing to do
-		iter =  fixedIterations();
-	else if (maxIterChange() == MaxIterChange.micLinearlyDecreasing) //linearly decreasing values
-	{
-		if(max_level == 0)
-			iter = fixedIterations() +  ((maxIterFactor()-1) * fixedIterations());
-		else
-			iter = fixedIterations() + int((double(act_level)/double(max_level) ) *
-			((maxIterFactor()-1)) * fixedIterations());
-	}
-	else //maxIterChange == micRapidlyDecreasing (rapidly decreasing values)
-	{
-		if(act_level == max_level)
-			iter = fixedIterations() + int( (maxIterFactor()-1) * fixedIterations());
-		else if(act_level == max_level - 1)
-			iter = fixedIterations() + int(0.5 * (maxIterFactor()-1) * fixedIterations());
-		else if(act_level == max_level - 2)
-			iter = fixedIterations() + int(0.25 * (maxIterFactor()-1) * fixedIterations());
-		else //act_level >= max_level - 3
-			iter = fixedIterations();
-	}
-
-	//helps to get good drawings for small graphs and graphs with few multilevels
-	if((node_nr <= 500) && (iter < 100))
-		return 100;
-	else
-		return iter;
-}
+        //helps to get good drawings for small graphs and graphs with few multilevels
+        if ((node_nr <= 500) && (iter < 100))
+        {
+            return 100;
+        }
+        else
+        {
+            return iter;
+        }
+    }
 
 
 //-------------------------- functions for force calculation ---------------------------
@@ -1887,568 +1955,665 @@ void calculate_forces(
 	update_boxlength_and_cornercoordinate(G,A);
 }
 
+    void init_boxlength_and_cornercoordinate(
+            Graph G,
+            NodeArray<NodeAttributes> A)
+    {
+        //boxlength is set
 
-void init_boxlength_and_cornercoordinate (
-	Graph G,
-	NodeArray<NodeAttributes> A)
-{
-	//boxlength is set
+        double MIN_NODE_SIZE = 10;
+        double BOX_SCALING_FACTOR = 1.1;
+        double w = 0, h = 0;       //helping variables
 
-	double MIN_NODE_SIZE = 10;
-	double BOX_SCALING_FACTOR = 1.1;
-	double w=0,h=0;       //helping variables
+        for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
+        {
+            node v = iter.next();
+            w += Math.max(A.get(v).get_width(), MIN_NODE_SIZE);
+            h += Math.max(A.get(v).get_height(), MIN_NODE_SIZE);
+        }
 
-	node v;
-	forall_nodes(v,G)
-	{
-		w  += max(A[v].get_width(),MIN_NODE_SIZE);
-		h  += max(A[v].get_height(),MIN_NODE_SIZE);
-	}
+        boxlength = Math.ceil(Math.max(w, h) * BOX_SCALING_FACTOR);
 
-	boxlength = ceil(max(w,h) * BOX_SCALING_FACTOR);
+        //down left corner of comp. box is the origin
+        down_left_corner.m_x = 0;
+        down_left_corner.m_y = 0;
+    }
 
-	//down left corner of comp. box is the origin
-	down_left_corner.m_x = 0;
-	down_left_corner.m_y = 0;
+
+    void create_initial_placement(Graph G, NodeArray<NodeAttributes> A)
+    {
+        int BILLION = 1000000000;
+        int i, j, k;
+        node v;
+
+        if (initialPlacementForces() == InitialPlacementForces.ipfKeepPositions) // don't change anything
+        {
+            init_boxlength_and_cornercoordinate(G, A);
+        }
+        else if (initialPlacementForces() == InitialPlacementForces.ipfUniformGrid) //set nodes to the midpoints of a  grid
+        {//(uniform on a grid)
+            init_boxlength_and_cornercoordinate(G, A);
+            int level = (int) (Math.ceil(Math.log(G.numberOfNodes()) / Math.log(4.0)));
+            int m = (int) (Math.pow(2.0, level)) - 1;
+            boolean finished = false;
+            double blall = boxlength / (m + 1); //boxlength for boxes at the lowest level (depth)
+            List<node> all_nodes = new ArrayList<node>(G.numberOfNodes());
+
+            for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
+            {
+                v = iter.next();
+                all_nodes.add(v);
+            }
+            v = all_nodes.get(0);
+            k = 0;
+            i = 0;
+            while ((!finished) && (i <= m))
+            {//while1
+                j = 0;
+                while ((!finished) && (j <= m))
+                {//while2
+                    A.get(v).set_x(boxlength * i / (m + 1) + blall / 2);
+                    A.get(v).set_y(boxlength * j / (m + 1) + blall / 2);
+                    if (k == G.numberOfNodes() - 1)
+                    {
+                        finished = true;
+                    }
+                    else
+                    {
+                        k++;
+                        v = all_nodes.get(k);
+                    }
+                    j++;
+                }//while2
+                i++;
+            }//while1
+        }//(uniform on a grid)
+        else //randomised distribution of the nodes;
+        {//(random)
+            Random random = new Random();
+            init_boxlength_and_cornercoordinate(G, A);
+            if (initialPlacementForces() == InitialPlacementForces.ipfRandomTime)//(RANDOM based on actual CPU-time)
+            {
+                random.setSeed(System.currentTimeMillis() / 1000);
+            }
+            else if (initialPlacementForces() == InitialPlacementForces.ipfRandomRandIterNr)//(RANDOM based on seed)
+            {
+                random.setSeed(randSeed());
+            }
+
+            for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
+            {
+                v = iter.next();
+                DPoint rndp = new DPoint();
+                rndp.m_x = random.nextDouble();//rand_x in [0,1]
+                rndp.m_y = random.nextDouble();//rand_y in [0,1]
+                A.get(v).set_x(rndp.m_x * (boxlength - 2) + 1);
+                A.get(v).set_y(rndp.m_y * (boxlength - 2) + 1);
+            }
+        }//(random)
+        update_boxlength_and_cornercoordinate(G, A);
+    }
+
+    void init_F(Graph G, NodeArray<DPoint> F)
+    {
+        DPoint nullpoint = new DPoint(0, 0);
+
+        for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
+        {
+            node v = iter.next();
+            F.set(v, nullpoint);
+        }
+    }
+
+    void make_initialisations_for_rep_calc_classes(Graph G)
+    {
+        if (repulsiveForcesCalculation() == RepulsiveForcesMethod.rfcExact)
+        {
+            FR.make_initialisations(boxlength, down_left_corner, frGridQuotient());
+        }
+        else if (repulsiveForcesCalculation() == RepulsiveForcesMethod.rfcGridApproximation)
+        {
+            FR.make_initialisations(boxlength, down_left_corner, frGridQuotient());
+        }
+        else //(repulsiveForcesCalculation() == RepulsiveForcesCalculation.rfcNMM
+        {
+            NM.make_initialisations(G, boxlength, down_left_corner,
+                    nmParticlesInLeaves(), nmPrecision(),
+                    nmTreeConstruction(), nmSmallCell());
+        }
+    }
+
+    //! Calculates repulsive forces for each node.
+    void calculate_repulsive_forces(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            NodeArray<DPoint> F_rep)
+    {
+        if (repulsiveForcesCalculation() == RepulsiveForcesMethod.rfcExact)
+        {
+            FR.calculate_exact_repulsive_forces(G, A, F_rep);
+        }
+        else if (repulsiveForcesCalculation() == RepulsiveForcesMethod.rfcGridApproximation)
+        {
+            FR.calculate_approx_repulsive_forces(G, A, F_rep);
+        }
+        else //repulsiveForcesCalculation() == rfcNMM
+        {
+            NM.calculate_repulsive_forces(G, A, F_rep);
+        }
+    }
+
+    void calculate_attractive_forces(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E,
+            NodeArray<DPoint> F_attr)
+    {
+        numexcept N;
+        edge e;
+        node u, v;
+        double norm_v_minus_u, scalar;
+        DPoint vector_v_minus_u, f_u = new DPoint();
+        DPoint nullpoint = new DPoint(0, 0);
+
+        //initialisation
+        init_F(G, F_attr);
+
+        //calculation
+        for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+        {//for
+            e = i.next();
+
+            u = e.source();
+            v = e.target();
+            vector_v_minus_u = A.get(v).get_position().minus(A.get(u).get_position());
+            norm_v_minus_u = vector_v_minus_u.norm();
+            if (vector_v_minus_u == nullpoint)
+            {
+                f_u = nullpoint;
+            }
+            else if (!N.f_near_machine_precision(norm_v_minus_u, f_u))
+            {
+                scalar = f_attr_scalar(norm_v_minus_u, E.get(e).get_length()) / norm_v_minus_u;
+                f_u.m_x = scalar * vector_v_minus_u.m_x;
+                f_u.m_y = scalar * vector_v_minus_u.m_y;
+            }
+
+            F_attr.set(v, F_attr.get(v).minus(f_u));
+            F_attr.set(u, F_attr.get(u).plus(f_u));
+        }//for
+    }
+
+    double f_attr_scalar(double d, double ind_ideal_edge_length)
+    {
+        double s = 0.0;
+
+        if (forceModel() == ForceModel.fmFruchtermanReingold)
+        {
+            s = d * d / (ind_ideal_edge_length * ind_ideal_edge_length * ind_ideal_edge_length);
+        }
+        else if (forceModel() == ForceModel.fmEades)
+        {
+            double c = 10;
+            if (d == 0)
+            {
+                s = -1e10;
+            }
+            else
+            {
+                s = c * (Math.log(d / ind_ideal_edge_length) / Math.log(2)) / (ind_ideal_edge_length);
+            }
+        }
+        else if (forceModel() == ForceModel.fmNew)
+        {
+            double c = Math.log(d / ind_ideal_edge_length) / Math.log(2);
+            if (d > 0)
+            {
+                s = c * d * d /
+                        (ind_ideal_edge_length * ind_ideal_edge_length * ind_ideal_edge_length);
+            }
+            else
+            {
+                s = -1e10;
+            }
+        }
+        else
+        {
+            System.out.println(" Error  f_attr_scalar");
+        }
+
+        return s;
+    }
+
+    void add_attr_rep_forces(
+            Graph G,
+            NodeArray<DPoint> F_attr,
+            NodeArray<DPoint> F_rep,
+            NodeArray<DPoint> F,
+            int iter,
+            int fine_tuning_step)
+    {
+        numexcept N;
+        node v;
+        DPoint f = new DPoint(), force = new DPoint();
+        DPoint nullpoint = new DPoint(0, 0);
+        double norm_f, scalar;
+        double act_spring_strength, act_rep_force_strength;
+
+        //set cool_factor
+        if (coolTemperature() == false)
+        {
+            cool_factor = 1.0;
+        }
+        else if ((coolTemperature() == true) && (fine_tuning_step == 0))
+        {
+            if (iter == 1)
+            {
+                cool_factor = coolValue();
+            }
+            else
+            {
+                cool_factor *= coolValue();
+            }
+        }
+
+        if (fine_tuning_step == 1)
+        {
+            cool_factor /= 10.0; //decrease the temperature rapidly
+        }
+        else if (fine_tuning_step == 2)
+        {
+            if (iter <= fineTuningIterations() - 5)
+            {
+                cool_factor = fineTuneScalar(); //decrease the temperature rapidly
+            }
+            else
+            {
+                cool_factor = (fineTuneScalar() / 10.0);
+            }
+        }
+
+        //set the values for the spring strength and strength of the rep. force field
+        if (fine_tuning_step <= 1)//usual case
+        {
+            act_spring_strength = springStrength();
+            act_rep_force_strength = repForcesStrength();
+        }
+        else if (!adjustPostRepStrengthDynamically())
+        {
+            act_spring_strength = postSpringStrength();
+            act_rep_force_strength = postStrengthOfRepForces();
+        }
+        else //adjustPostRepStrengthDynamically())
+        {
+            act_spring_strength = postSpringStrength();
+            act_rep_force_strength = get_post_rep_force_strength(G.numberOfNodes());
+        }
+
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            f.m_x = act_spring_strength * F_attr.get(v).m_x + act_rep_force_strength * F_rep.get(v).m_x;
+            f.m_y = act_spring_strength * F_attr.get(v).m_y + act_rep_force_strength * F_rep.get(v).m_y;
+            f.m_x = average_ideal_edgelength * average_ideal_edgelength * f.m_x;
+            f.m_y = average_ideal_edgelength * average_ideal_edgelength * f.m_y;
+
+            norm_f = f.norm();
+            if (f == nullpoint)
+            {
+                force = nullpoint;
+            }
+            else if (N.f_near_machine_precision(norm_f, force))
+            {
+                restrict_force_to_comp_box(force);
+            }
+            else
+            {
+                scalar = Math.min(norm_f * cool_factor * forceScalingFactor(),
+                        max_radius(iter)) / norm_f;
+                force.m_x = scalar * f.m_x;
+                force.m_y = scalar * f.m_y;
+            }
+            F.set(v, force);
+        }
+    }
+
+    void move_nodes(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            NodeArray<DPoint> F)
+    {
+        node v;
+
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            A.get(v).set_position(A.get(v).get_position().plus(F.get(v)));
+        }
+    }
+
+
+    void update_boxlength_and_cornercoordinate(
+            Graph G,
+            NodeArray<NodeAttributes> A)
+    {
+        node v;
+        double xmin, xmax, ymin, ymax;
+        DPoint midpoint;
+
+        v = G.firstNode();
+        midpoint = A.get(v).get_position();
+        xmin = xmax = midpoint.m_x;
+        ymin = ymax = midpoint.m_y;
+
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            midpoint = A.get(v).get_position();
+            if (midpoint.m_x < xmin)
+            {
+                xmin = midpoint.m_x;
+            }
+            if (midpoint.m_x > xmax)
+            {
+                xmax = midpoint.m_x;
+            }
+            if (midpoint.m_y < ymin)
+            {
+                ymin = midpoint.m_y;
+            }
+            if (midpoint.m_y > ymax)
+            {
+                ymax = midpoint.m_y;
+            }
+        }
+
+        //set down_left_corner and boxlength
+
+        down_left_corner.m_x = Math.floor(xmin - 1);
+        down_left_corner.m_y = Math.floor(ymin - 1);
+        boxlength = Math.ceil(Math.max(ymax - ymin, xmax - xmin) * 1.01 + 2);
+
+        //exception handling: all nodes have same x and y coordinate
+        if (boxlength <= 2)
+        {
+            boxlength = G.numberOfNodes() * 20;
+            down_left_corner.m_x = Math.floor(xmin) - (boxlength / 2);
+            down_left_corner.m_y = Math.floor(ymin) - (boxlength / 2);
+        }
+
+        //export the boxlength and down_left_corner values to the rep. calc. classes
+
+        if (repulsiveForcesCalculation() == RepulsiveForcesMethod.rfcExact ||
+                repulsiveForcesCalculation() == RepulsiveForcesMethod.rfcGridApproximation)
+        {
+            FR.update_boxlength_and_cornercoordinate(boxlength, down_left_corner);
+        }
+        else //repulsiveForcesCalculation() == rfcNMM
+        {
+            NM.update_boxlength_and_cornercoordinate(boxlength, down_left_corner);
+        }
+    }
+
+    //! Describes the max. radius of a move in one time step, depending on the number of iterations.
+    double max_radius(int iter)
+    {
+        return (iter == 1) ? boxlength / 1000 : boxlength / 5;
+    }
+
+    void set_average_ideal_edgelength(
+            Graph G,
+            EdgeArray<EdgeAttributes> E)
+    {
+        double averagelength = 0;
+        edge e;
+
+        if (G.numberOfEdges() > 0)
+        {
+            for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+            {
+                e = i.next();
+                averagelength += E.get(e).get_length();
+            }
+            average_ideal_edgelength = averagelength / G.numberOfEdges();
+        }
+        else
+        {
+            average_ideal_edgelength = 50;
+        }
+    }
+
+    double get_average_forcevector_length(Graph G, NodeArray<DPoint> F)
+    {
+        double lengthsum = 0;
+        node v;
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            lengthsum += F.get(v).norm();
+        }
+        lengthsum /= G.numberOfNodes();
+        return lengthsum;
+    }
+
+    void prevent_oscilations(
+            Graph G,
+            NodeArray<DPoint> F,
+            NodeArray<DPoint> last_node_movement,
+            int iter)
+    {
+
+        double pi_times_1_over_6 = 0.52359878;
+        double pi_times_2_over_6 = 2 * pi_times_1_over_6;
+        double pi_times_3_over_6 = 3 * pi_times_1_over_6;
+        double pi_times_4_over_6 = 4 * pi_times_1_over_6;
+        double pi_times_5_over_6 = 5 * pi_times_1_over_6;
+        double pi_times_7_over_6 = 7 * pi_times_1_over_6;
+        double pi_times_8_over_6 = 8 * pi_times_1_over_6;
+        double pi_times_9_over_6 = 9 * pi_times_1_over_6;
+        double pi_times_10_over_6 = 10 * pi_times_1_over_6;
+        double pi_times_11_over_6 = 11 * pi_times_1_over_6;
+
+        DPoint nullpoint = new DPoint(0, 0);
+        double fi; //angle in [0,2pi) measured counterclockwise
+        double norm_old, norm_new, quot_old_new;
+
+        if (iter > 1) //usual case
+        {//if1
+            node v;
+            for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+            {
+                v = i.next();
+                DPoint force_new = new DPoint(F.get(v).m_x, F.get(v).m_y);
+                DPoint force_old = new DPoint(last_node_movement.get(v).m_x, last_node_movement.get(v).m_y);
+                norm_new = F.get(v).norm();
+                norm_old = last_node_movement.get(v).norm();
+                if ((norm_new > 0) && (norm_old > 0))
+                {//if2
+                    quot_old_new = norm_old / norm_new;
+
+                    //prevent oszilations
+                    fi = angle(nullpoint, force_old, force_new);
+                    if (((fi <= pi_times_1_over_6) || (fi >= pi_times_11_over_6)) &&
+                            ((norm_new > (norm_old * 2.0))))
+                    {
+                        F.get(v).m_x = quot_old_new * 2.0 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 2.0 * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_1_over_6) && (fi <= pi_times_2_over_6) &&
+                            (norm_new > (norm_old * 1.5)))
+                    {
+                        F.get(v).m_x = quot_old_new * 1.5 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 1.5 * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_2_over_6) && (fi <= pi_times_3_over_6) &&
+                            (norm_new > (norm_old)))
+                    {
+                        F.get(v).m_x = quot_old_new * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_3_over_6) && (fi <= pi_times_4_over_6) &&
+                            (norm_new > (norm_old * 0.66666666)))
+                    {
+                        F.get(v).m_x = quot_old_new * 0.66666666 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 0.66666666 * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_4_over_6) && (fi <= pi_times_5_over_6) &&
+                            (norm_new > (norm_old * 0.5)))
+                    {
+                        F.get(v).m_x = quot_old_new * 0.5 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 0.5 * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_5_over_6) && (fi <= pi_times_7_over_6) &&
+                            (norm_new > (norm_old * 0.33333333)))
+                    {
+                        F.get(v).m_x = quot_old_new * 0.33333333 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 0.33333333 * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_7_over_6) && (fi <= pi_times_8_over_6) &&
+                            (norm_new > (norm_old * 0.5)))
+                    {
+                        F.get(v).m_x = quot_old_new * 0.5 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 0.5 * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_8_over_6) && (fi <= pi_times_9_over_6) &&
+                            (norm_new > (norm_old * 0.66666666)))
+                    {
+                        F.get(v).m_x = quot_old_new * 0.66666666 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 0.66666666 * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_9_over_6) && (fi <= pi_times_10_over_6) &&
+                            (norm_new > (norm_old)))
+                    {
+                        F.get(v).m_x = quot_old_new * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * F.get(v).m_y;
+                    }
+                    else if ((fi >= pi_times_10_over_6) && (fi <= pi_times_11_over_6) &&
+                            (norm_new > (norm_old * 1.5)))
+                    {
+                        F.get(v).m_x = quot_old_new * 1.5 * F.get(v).m_x;
+                        F.get(v).m_y = quot_old_new * 1.5 * F.get(v).m_y;
+                    }
+                }//if2
+                last_node_movement.set(v, F.get(v));
+            }
+        }//if1
+        else if (iter == 1)
+        {
+            init_last_node_movement(G, F, last_node_movement);
+        }
+    }
+
+    double angle(DPoint P, DPoint Q, DPoint R)
+    {
+        double dx1 = Q.m_x - P.m_x;
+        double dy1 = Q.m_y - P.m_y;
+        double dx2 = R.m_x - P.m_x;
+        double dy2 = R.m_y - P.m_y;
+        double fi;//the angle
+
+        if ((dx1 == 0 && dy1 == 0) || (dx2 == 0 && dy2 == 0))
+        {
+            System.out.println("Multilevel::angle()");
+        }
+
+        double norm = (dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2);
+        double cosfi = (dx1 * dx2 + dy1 * dy2) / Math.sqrt(norm);
+
+        if (cosfi >= 1.0)
+        {
+            fi = 0;
+        }
+        if (cosfi <= -1.0)
+        {
+            fi = Math.PI;
+        }
+        else
+        {
+            fi = Math.acos(cosfi);
+            if (dx1 * dy2 < dy1 * dx2)
+            {
+                fi = -fi;
+            }
+            if (fi < 0)
+            {
+                fi += 2 * Math.PI;
+            }
+        }
+        return fi;
+    }
+
+    void init_last_node_movement(
+            Graph G,
+            NodeArray<DPoint> F,
+            NodeArray<DPoint> last_node_movement)
+    {
+        node v;
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            last_node_movement.set(v, F.get(v));
+        }
+    }
+
+    void adapt_drawing_to_ideal_average_edgelength(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            EdgeArray<EdgeAttributes> E)
+    {
+        edge e;
+        node v;
+        double sum_real_edgelength = 0;
+        double sum_ideal_edgelength = 0;
+        double area_scaling_factor;
+        DPoint new_pos = new DPoint();
+
+        for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+        {
+            e = i.next();
+            sum_ideal_edgelength += E.get(e).get_length();
+            sum_real_edgelength += (A.get(e.source()).get_position().minus(A.get(e.target()).get_position())).norm();
+        }
+
+        if (sum_real_edgelength == 0) //very very unlike case
+        {
+            area_scaling_factor = 1;
+        }
+        else
+        {
+            area_scaling_factor = sum_ideal_edgelength / sum_real_edgelength;
+        }
+
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            new_pos.m_x = resizingScalar() * area_scaling_factor * A.get(v).get_position().m_x;
+            new_pos.m_y = resizingScalar() * area_scaling_factor * A.get(v).get_position().m_y;
+            A.get(v).set_position(new_pos);
+        }
+    }
+
+    void restrict_force_to_comp_box(DPoint force)
+    {
+        double x_min = down_left_corner.m_x;
+        double x_max = down_left_corner.m_x + boxlength;
+        double y_min = down_left_corner.m_y;
+        double y_max = down_left_corner.m_y + boxlength;
+        if (force.m_x < x_min)
+        {
+            force.m_x = x_min;
+        }
+        else if (force.m_x > x_max)
+        {
+            force.m_x = x_max;
+        }
+        if (force.m_y < y_min)
+        {
+            force.m_y = y_min;
+        }
+        else if (force.m_y > y_max)
+        {
+            force.m_y = y_max;
+        }
+    }
 }
-
-
-void create_initial_placement (Graph G, NodeArray<NodeAttributes> A)
-{
-	int BILLION = 1000000000;
-	int i,j,k;
-	node v;
-
-	if (initialPlacementForces() == ipfKeepPositions) // don't change anything
-	{
-		init_boxlength_and_cornercoordinate(G,A);
-	}
-	else if (initialPlacementForces() == ipfUniformGrid) //set nodes to the midpoints of a  grid
-	{//(uniform on a grid)
-		init_boxlength_and_cornercoordinate(G,A);
-		int level = static_cast<int>( ceil(Math::log4(G.numberOfNodes())));
-		int m     = static_cast<int>(pow(2.0,level))-1;
-		boolean finished = false;
-		double blall = boxlength/(m+1); //boxlength for boxes at the lowest level (depth)
-		Array<node> all_nodes(G.numberOfNodes());
-
-		k = 0;
-		forall_nodes(v,G)
-		{
-			all_nodes[k] = v;
-			k++;
-		}
-		v = all_nodes[0];
-		k = 0;
-		i = 0;
-		while ((!finished) && (i <= m))
-		{//while1
-			j = 0;
-			while((!finished) && (j <= m))
-			{//while2
-				A[v].set_x(boxlength*i/(m+1) + blall/2);
-				A[v].set_y(boxlength*j/(m+1) + blall/2);
-				if(k == G.numberOfNodes()-1)
-					finished = true;
-				else
-				{
-					k++;
-					v = all_nodes[k];
-				}
-				j++;
-			}//while2
-			i++;
-		}//while1
-	}//(uniform on a grid)
-	else //randomised distribution of the nodes;
-	{//(random)
-		init_boxlength_and_cornercoordinate(G,A);
-		if(initialPlacementForces() == ipfRandomTime)//(RANDOM based on actual CPU-time)
-			srand((unsigned int)time(0));
-		else if(initialPlacementForces() == ipfRandomRandIterNr)//(RANDOM based on seed)
-			srand(randSeed());
-
-		forall_nodes(v,G)
-		{
-			DPoint rndp;
-			rndp.m_x = double(randomNumber(0,BILLION))/BILLION;//rand_x in [0,1]
-			rndp.m_y = double(randomNumber(0,BILLION))/BILLION;//rand_y in [0,1]
-			A[v].set_x(rndp.m_x*(boxlength-2)+ 1);
-			A[v].set_y(rndp.m_y*(boxlength-2)+ 1);
-		}
-	}//(random)
-	update_boxlength_and_cornercoordinate(G,A);
-}
-
-
-void init_F(Graph G, NodeArray<DPoint> F)
-{
-	DPoint nullpoint (0,0);
-	node v;
-	forall_nodes(v,G)
-		F[v] = nullpoint;
-}
-
-
-void make_initialisations_for_rep_calc_classes(Graph G)
-{
-	if(repulsiveForcesCalculation() == RepulsiveForcesCalculation.rfcExact)
-		FR.make_initialisations(boxlength,down_left_corner,frGridQuotient());
-	else if(repulsiveForcesCalculation() == RepulsiveForcesCalculation.rfcGridApproximation)
-		FR.make_initialisations(boxlength,down_left_corner,frGridQuotient());
-	else //(repulsiveForcesCalculation() == RepulsiveForcesCalculation.rfcNMM
-		NM.make_initialisations(G,boxlength,down_left_corner,
-		nmParticlesInLeaves(),nmPrecision(),
-		nmTreeConstruction(),nmSmallCell());
-}
-
-	//! Calculates repulsive forces for each node.
-	void calculate_repulsive_forces(
-		Graph &G,
-		NodeArray<NodeAttributes>& A,
-		NodeArray<DPoint>& F_rep)
-	{
-		if(repulsiveForcesCalculation() == rfcExact )
-			FR.calculate_exact_repulsive_forces(G,A,F_rep);
-		else if(repulsiveForcesCalculation() == rfcGridApproximation )
-			FR.calculate_approx_repulsive_forces(G,A,F_rep);
-		else //repulsiveForcesCalculation() == rfcNMM
-			NM.calculate_repulsive_forces(G,A,F_rep);
-	}
-
-
-
-void calculate_attractive_forces(
-	Graph G,
-	NodeArray<NodeAttributes> & A,
-	EdgeArray<EdgeAttributes> & E,
-	NodeArray<DPoint> F_attr)
-{
-	numexcept N;
-	edge e;
-	node u,v;
-	double norm_v_minus_u,scalar;
-	DPoint vector_v_minus_u,f_u;
-	DPoint nullpoint (0,0);
-
-	//initialisation
-	init_F(G,F_attr);
-
-	//calculation
-	forall_edges (e,G)
-	{//for
-		u = e->source();
-		v = e->target();
-		vector_v_minus_u  = A[v].get_position() - A[u].get_position();
-		norm_v_minus_u = vector_v_minus_u.norm();
-		if(vector_v_minus_u == nullpoint)
-			f_u = nullpoint;
-		else if(!N.f_near_machine_precision(norm_v_minus_u,f_u))
-		{
-			scalar = f_attr_scalar(norm_v_minus_u,E[e].get_length())/norm_v_minus_u;
-			f_u.m_x = scalar * vector_v_minus_u.m_x;
-			f_u.m_y = scalar * vector_v_minus_u.m_y;
-		}
-
-		F_attr[v] = F_attr[v] - f_u;
-		F_attr[u] = F_attr[u] + f_u;
-	}//for
-}
-
-
-double f_attr_scalar(double d, double ind_ideal_edge_length)
-{
-	double s;
-
-	if(forceModel() == fmFruchtermanReingold)
-		s =  d*d/(ind_ideal_edge_length*ind_ideal_edge_length*ind_ideal_edge_length);
-	else if (forceModel() == fmEades)
-	{
-		double c = 10;
-		if (d == 0)
-			s = -1e10;
-		else
-			s =  c * Math::log2(d/ind_ideal_edge_length) /(ind_ideal_edge_length);
-	}
-	else if (forceModel() == fmNew)
-	{
-		double c =  Math::log2(d/ind_ideal_edge_length);
-		if (d > 0)
-			s =  c * d * d /
-			(ind_ideal_edge_length * ind_ideal_edge_length * ind_ideal_edge_length);
-		else
-			s = -1e10;
-	}
-	else cout <<" Error  f_attr_scalar"<<endl;
-
-	return s;
-}
-
-
-void add_attr_rep_forces(
-	Graph G,
-	NodeArray<DPoint> F_attr,
-	NodeArray<DPoint> F_rep,
-	NodeArray<DPoint> F,
-	int iter,
-	int fine_tuning_step)
-{
-	numexcept N;
-	node v;
-	DPoint f,force;
-	DPoint nullpoint (0,0);
-	double norm_f,scalar;
-	double act_spring_strength,act_rep_force_strength;
-
-	//set cool_factor
-	if(coolTemperature() == false)
-		cool_factor = 1.0;
-	else if((coolTemperature() == true) && (fine_tuning_step == 0))
-	{
-		if(iter == 1)
-			cool_factor = coolValue();
-		else
-			cool_factor *= coolValue();
-	}
-
-	if(fine_tuning_step == 1)
-		cool_factor /= 10.0; //decrease the temperature rapidly
-	else if (fine_tuning_step == 2)
-	{
-		if(iter <= fineTuningIterations() -5)
-			cool_factor = fineTuneScalar(); //decrease the temperature rapidly
-		else
-			cool_factor = (fineTuneScalar()/10.0);
-	}
-
-	//set the values for the spring strength and strength of the rep. force field
-	if(fine_tuning_step <= 1)//usual case
-	{
-		act_spring_strength = springStrength();
-		act_rep_force_strength = repForcesStrength();
-	}
-	else if(!adjustPostRepStrengthDynamically())
-	{
-		act_spring_strength = postSpringStrength();
-		act_rep_force_strength = postStrengthOfRepForces();
-	}
-	else //adjustPostRepStrengthDynamically())
-	{
-		act_spring_strength = postSpringStrength();
-		act_rep_force_strength = get_post_rep_force_strength(G.numberOfNodes());
-	}
-
-	forall_nodes(v,G)
-	{
-		f.m_x = act_spring_strength * F_attr[v].m_x + act_rep_force_strength * F_rep[v].m_x;
-		f.m_y = act_spring_strength * F_attr[v].m_y + act_rep_force_strength * F_rep[v].m_y;
-		f.m_x = average_ideal_edgelength * average_ideal_edgelength * f.m_x;
-		f.m_y = average_ideal_edgelength * average_ideal_edgelength * f.m_y;
-
-		norm_f = f.norm();
-		if(f == nullpoint)
-			force = nullpoint;
-		else if(N.f_near_machine_precision(norm_f,force))
-			restrict_force_to_comp_box(force);
-		else
-		{
-			scalar = min (norm_f * cool_factor * forceScalingFactor(),
-				max_radius(iter))/norm_f;
-			force.m_x = scalar * f.m_x;
-			force.m_y = scalar * f.m_y;
-		}
-		F[v] = force;
-	}
-}
-
-
-void move_nodes(
-	Graph G,
-	NodeArray<NodeAttributes> A,
-	NodeArray<DPoint> F)
-{
-	node v;
-
-	forall_nodes(v,G)
-		A[v].set_position(A[v].get_position() + F[v]);
-}
-
-
-void update_boxlength_and_cornercoordinate(
-	Graph G,
-	NodeArray<NodeAttributes> A)
-{
-	node v;
-	double xmin,xmax,ymin,ymax;
-	DPoint midpoint;
-
-
-	v = G.firstNode();
-	midpoint = A[v].get_position();
-	xmin = xmax = midpoint.m_x;
-	ymin = ymax = midpoint.m_y;
-
-	forall_nodes(v,G)
-	{
-		midpoint = A[v].get_position();
-		if (midpoint.m_x < xmin )
-			xmin = midpoint.m_x;
-		if (midpoint.m_x > xmax )
-			xmax = midpoint.m_x;
-		if (midpoint.m_y < ymin )
-			ymin = midpoint.m_y;
-		if (midpoint.m_y > ymax )
-			ymax = midpoint.m_y;
-	}
-
-	//set down_left_corner and boxlength
-
-	down_left_corner.m_x = floor(xmin - 1);
-	down_left_corner.m_y = floor(ymin - 1);
-	boxlength = ceil(max(ymax-ymin, xmax-xmin) *1.01 + 2);
-
-	//exception handling: all nodes have same x and y coordinate
-	if(boxlength <= 2 )
-	{
-		boxlength = G.numberOfNodes()* 20;
-		down_left_corner.m_x = floor(xmin) - (boxlength/2);
-		down_left_corner.m_y = floor(ymin) - (boxlength/2);
-	}
-
-	//export the boxlength and down_left_corner values to the rep. calc. classes
-
-	if(repulsiveForcesCalculation() == rfcExact ||
-		repulsiveForcesCalculation() == rfcGridApproximation)
-		FR.update_boxlength_and_cornercoordinate(boxlength,down_left_corner);
-	else //repulsiveForcesCalculation() == rfcNMM
-		NM.update_boxlength_and_cornercoordinate(boxlength,down_left_corner);
-}
-
-	//! Describes the max. radius of a move in one time step, depending on the number of iterations.
-	double max_radius(int iter) {
-		return (iter == 1) ? boxlength/1000 : boxlength/5;
-	}
-
-
-
-void set_average_ideal_edgelength(
-	Graph G,
-	EdgeArray<EdgeAttributes> E)
-{
-	double averagelength = 0;
-	edge e;
-
-	if(G.numberOfEdges() > 0)
-	{
-		forall_edges(e,G)
-			averagelength += E[e].get_length();
-		average_ideal_edgelength = averagelength/G.numberOfEdges();
-	}
-	else
-		average_ideal_edgelength = 50;
-}
-
-
-double get_average_forcevector_length (Graph G, NodeArray<DPoint> F)
-{
-	double lengthsum = 0;
-	node v;
-	forall_nodes(v,G)
-		lengthsum += F[v].norm();
-	lengthsum /=G.numberOfNodes();
-	return lengthsum;
-}
-
-
-void prevent_oscilations(
-	Graph G,
-	NodeArray<DPoint> F,
-	NodeArray<DPoint> last_node_movement,
-	int iter)
-{
-
-	double pi_times_1_over_6 = 0.52359878;
-	double pi_times_2_over_6 = 2 * pi_times_1_over_6;
-	double pi_times_3_over_6 = 3 * pi_times_1_over_6;
-	double pi_times_4_over_6 = 4 * pi_times_1_over_6;
-	double pi_times_5_over_6 = 5 * pi_times_1_over_6;
-	double pi_times_7_over_6 = 7 * pi_times_1_over_6;
-	double pi_times_8_over_6 = 8 * pi_times_1_over_6;
-	double pi_times_9_over_6 = 9 * pi_times_1_over_6;
-	double pi_times_10_over_6 = 10 * pi_times_1_over_6;
-	double pi_times_11_over_6 = 11 * pi_times_1_over_6;
-
-	DPoint nullpoint (0,0);
-	double fi; //angle in [0,2pi) measured counterclockwise
-	double norm_old,norm_new,quot_old_new;
-
-	if (iter > 1) //usual case
-	{//if1
-		node v;
-		forall_nodes(v,G)
-		{
-			DPoint force_new (F[v].m_x,F[v].m_y);
-			DPoint force_old (last_node_movement[v].m_x,last_node_movement[v].m_y);
-			norm_new = F[v].norm();
-			norm_old  = last_node_movement[v].norm();
-			if ((norm_new > 0) && (norm_old > 0))
-			{//if2
-				quot_old_new =  norm_old / norm_new;
-
-				//prevent oszilations
-				fi = angle(nullpoint,force_old,force_new);
-				if(((fi <= pi_times_1_over_6)||(fi >= pi_times_11_over_6))&&
-					((norm_new > (norm_old*2.0))) )
-				{
-					F[v].m_x = quot_old_new * 2.0 * F[v].m_x;
-					F[v].m_y = quot_old_new * 2.0 * F[v].m_y;
-				}
-				else if ((fi >= pi_times_1_over_6)&&(fi <= pi_times_2_over_6)&&
-					(norm_new > (norm_old*1.5) ) )
-				{
-					F[v].m_x = quot_old_new * 1.5 * F[v].m_x;
-					F[v].m_y = quot_old_new * 1.5 * F[v].m_y;
-				}
-				else if ((fi >= pi_times_2_over_6)&&(fi <= pi_times_3_over_6)&&
-					(norm_new > (norm_old)) )
-				{
-					F[v].m_x = quot_old_new * F[v].m_x;
-					F[v].m_y = quot_old_new * F[v].m_y;
-				}
-				else if ((fi >= pi_times_3_over_6)&&(fi <= pi_times_4_over_6)&&
-					(norm_new > (norm_old*0.66666666)) )
-				{
-					F[v].m_x = quot_old_new * 0.66666666 * F[v].m_x;
-					F[v].m_y = quot_old_new * 0.66666666 * F[v].m_y;
-				}
-				else if ((fi >= pi_times_4_over_6)&&(fi <= pi_times_5_over_6)&&
-					(norm_new > (norm_old*0.5)) )
-				{
-					F[v].m_x = quot_old_new * 0.5 * F[v].m_x;
-					F[v].m_y = quot_old_new * 0.5 * F[v].m_y;
-				}
-				else if ((fi >= pi_times_5_over_6)&&(fi <= pi_times_7_over_6)&&
-					(norm_new > (norm_old*0.33333333)) )
-				{
-					F[v].m_x = quot_old_new * 0.33333333 * F[v].m_x;
-					F[v].m_y = quot_old_new * 0.33333333 * F[v].m_y;
-				}
-				else if ((fi >= pi_times_7_over_6)&&(fi <= pi_times_8_over_6)&&
-					(norm_new > (norm_old*0.5)) )
-				{
-					F[v].m_x = quot_old_new * 0.5 * F[v].m_x;
-					F[v].m_y = quot_old_new * 0.5 * F[v].m_y;
-				}
-				else if ((fi >= pi_times_8_over_6)&&(fi <= pi_times_9_over_6)&&
-					(norm_new > (norm_old*0.66666666)) )
-				{
-					F[v].m_x = quot_old_new * 0.66666666 * F[v].m_x;
-					F[v].m_y = quot_old_new * 0.66666666 * F[v].m_y;
-				}
-				else if ((fi >= pi_times_9_over_6)&&(fi <= pi_times_10_over_6)&&
-					(norm_new > (norm_old)) )
-				{
-					F[v].m_x = quot_old_new * F[v].m_x;
-					F[v].m_y = quot_old_new * F[v].m_y;
-				}
-				else if ((fi >= pi_times_10_over_6)&&(fi <= pi_times_11_over_6)&&
-					(norm_new > (norm_old*1.5) ) )
-				{
-					F[v].m_x = quot_old_new * 1.5 * F[v].m_x;
-					F[v].m_y = quot_old_new * 1.5 * F[v].m_y;
-				}
-			}//if2
-			last_node_movement[v]= F[v];
-		}
-	}//if1
-	else if (iter == 1)
-		init_last_node_movement(G,F,last_node_movement);
-}
-
-
-double angle(DPoint& P, DPoint& Q, DPoint& R)
-{
-	double dx1 = Q.m_x - P.m_x;
-	double dy1 = Q.m_y - P.m_y;
-	double dx2 = R.m_x - P.m_x;
-	double dy2 = R.m_y - P.m_y;
-	double fi;//the angle
-
-	if ((dx1 == 0 && dy1 == 0) || (dx2 == 0 && dy2 == 0))
-		cout<<"Multilevel::angle()"<<endl;
-
-	double norm  = (dx1*dx1+dy1*dy1)*(dx2*dx2+dy2*dy2);
-	double cosfi = (dx1*dx2+dy1*dy2) / sqrt(norm);
-
-	if (cosfi >=  1.0 ) fi = 0;
-	if (cosfi <= -1.0 ) fi = Math::pi;
-	else
-	{
-		fi = acos(cosfi);
-		if (dx1*dy2 < dy1*dx2) fi = -fi;
-		if (fi < 0) fi += 2*Math::pi;
-	}
-	return fi;
-}
-
-
-void init_last_node_movement(
-	Graph G,
-	NodeArray<DPoint> F,
-	NodeArray<DPoint> last_node_movement)
-{
-	node v;
-	forall_nodes(v,G)
-		last_node_movement[v]= F[v];
-}
-
-
-void adapt_drawing_to_ideal_average_edgelength(
-	Graph G,
-	NodeArray<NodeAttributes> A,
-	EdgeArray<EdgeAttributes> E)
-{
-	edge e;
-	node v;
-	double sum_real_edgelength = 0;
-	double sum_ideal_edgelength = 0;
-	double area_scaling_factor;
-	DPoint new_pos;
-
-	forall_edges(e,G)
-	{
-		sum_ideal_edgelength += E[e].get_length();
-		sum_real_edgelength += (A[e->source()].get_position() - A[e->target()].get_position()).norm();
-	}
-
-	if(sum_real_edgelength == 0) //very very unlike case
-		area_scaling_factor = 1;
-	else
-		area_scaling_factor = sum_ideal_edgelength/sum_real_edgelength;
-
-	forall_nodes(v,G)
-	{
-		new_pos.m_x = resizingScalar() * area_scaling_factor * A[v].get_position().m_x;
-		new_pos.m_y = resizingScalar() * area_scaling_factor * A[v].get_position().m_y;
-		A[v].set_position(new_pos);
-	}
-}
-
-	void restrict_force_to_comp_box(DPoint& force) {
-		double x_min = down_left_corner.m_x;
-		double x_max = down_left_corner.m_x+boxlength;
-		double y_min = down_left_corner.m_y;
-		double y_max = down_left_corner.m_y+boxlength;
-		if (force.m_x < x_min )
-			force.m_x = x_min;
-		else if (force.m_x > x_max )
-			force.m_x = x_max;
-		if (force.m_y < y_min )
-			force.m_y = y_min;
-		else if (force.m_y > y_max )
-			force.m_y = y_max;
-	}
-
-
-
-} //end namespace ogdf
