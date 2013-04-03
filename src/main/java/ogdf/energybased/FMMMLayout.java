@@ -934,23 +934,6 @@ public class FMMMLayout
         call(GA, edgelength);
     }
 
-    /*void call(ClusterGraphAttributes &GA)
-     {
-     Graph &G = GA.constGraph();
-     //compute depth of cluster tree, also sets cluster depth values
-     ClusterGraph &CG = GA.constClusterGraph();
-     int cdepth = CG.treeDepth();
-     EdgeArray<double> edgeLength(G);
-     //compute lca of end vertices for each edge
-     edge e;
-     forall_edges(e, G)
-     {
-     edgeLength[e] = cdepth - CG.clusterDepth(CG.commonCluster(e->source(),e->target())) + 1;
-     OGDF_ASSERT(edgeLength[e] > 0)
-     }
-     call(GA,edgeLength);
-     GA.updateClusterPositions();
-     }*/
     void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
     {
         Graph G = GA.constGraph();
@@ -996,22 +979,6 @@ public class FMMMLayout
         }
     }
 
-
-    /*void call(GraphAttributes &AG, char* ps_file)
-     {
-     call(AG);
-     create_postscript_drawing(AG,ps_file);
-     }
-
-
-     void call(
-     GraphAttributes &AG,
-     EdgeArray<double> &edgeLength,
-     char* ps_file)
-     {
-     call(AG,edgeLength);
-     create_postscript_drawing(AG,ps_file);
-     }*/
     void call_DIVIDE_ET_IMPERA_step(
             Graph G,
             NodeArray<NodeAttributes> A,
@@ -1453,7 +1420,7 @@ public class FMMMLayout
         Edge f_act = new Edge();
         List<Edge> sorted_edges = new ArrayList<Edge>();
         EdgeArray<edge> original_edge = new EdgeArray<edge>(G_reduced); //helping array
-	int save_s_index = 0, save_t_index = 0, act_s_index = 0, act_t_index = 0;
+	int save_s_index = 0, save_t_index = 0, act_s_index, act_t_index;
         int counter = 1;
         Graph Graph_ptr = G_reduced;
 
@@ -1646,87 +1613,6 @@ public class FMMMLayout
         }
     }
 
-
-    /*void create_postscript_drawing(GraphAttributes& AG, char* ps_file)
-     {
-     ofstream out_fmmm (ps_file,ios::out);
-     if (!ps_file) cout<<ps_file<<" could not be opened !"<<endl;
-     Graph G = AG.constGraph();
-     node v;
-     edge e;
-     double x_min = AG.x(G.firstNode());
-     double x_max = x_min;
-     double y_min = AG.y(G.firstNode());
-     double y_max = y_min;
-     double max_dist;
-     double scale_factor;
-
-     forall_nodes(v,G)
-     {
-     if(AG.x(v) < x_min)
-     x_min = AG.x(v);
-     else if(AG.x(v) > x_max)
-     x_max = AG.x(v);
-     if(AG.y(v) < y_min)
-     y_min = AG.y(v);
-     else if(AG.y(v) > y_max)
-     y_max = AG.y(v);
-     }
-     max_dist = max(x_max -x_min,y_max-y_min);
-     scale_factor = 500.0/max_dist;
-
-     out_fmmm<<"%!PS-Adobe-2.0 "<<endl;
-     out_fmmm<<"%%Pages:  1 "<<endl;
-     out_fmmm<<"% %BoundingBox: "<<x_min<<" "<<x_max<<" "<<y_min<<" "<<y_max<<endl;
-     out_fmmm<<"%%EndComments "<<endl;
-     out_fmmm<<"%%"<<endl;
-     out_fmmm<<"%% Circle"<<endl;
-     out_fmmm<<"/ellipse_dict 4 dict def"<<endl;
-     out_fmmm<<"/ellipse {"<<endl;
-     out_fmmm<<"  ellipse_dict"<<endl;
-     out_fmmm<<"  begin"<<endl;
-     out_fmmm<<"   newpath"<<endl;
-     out_fmmm<<"   /yrad exch def /xrad exch def /ypos exch def /xpos exch def"<<endl;
-     out_fmmm<<"   matrix currentmatrix"<<endl;
-     out_fmmm<<"   xpos ypos translate"<<endl;
-     out_fmmm<<"   xrad yrad scale"<<endl;
-     out_fmmm<<"  0 0 1 0 360 arc"<<endl;
-     out_fmmm<<"  setmatrix"<<endl;
-     out_fmmm<<"  closepath"<<endl;
-     out_fmmm<<" end"<<endl;
-     out_fmmm<<"} def"<<endl;
-     out_fmmm<<"%% Nodes"<<endl;
-     out_fmmm<<"/v { "<<endl;
-     out_fmmm<<" /y exch def"<<endl;
-     out_fmmm<<" /x exch def"<<endl;
-     out_fmmm<<"1.000 1.000 0.894 setrgbcolor"<<endl;
-     out_fmmm<<"x y 10.0 10.0 ellipse fill"<<endl;
-     out_fmmm<<"0.000 0.000 0.000 setrgbcolor"<<endl;
-     out_fmmm<<"x y 10.0 10.0 ellipse stroke"<<endl;
-     out_fmmm<<"} def"<<endl;
-     out_fmmm<<"%% Edges"<<endl;
-     out_fmmm<<"/e { "<<endl;
-     out_fmmm<<" /b exch def"<<endl;
-     out_fmmm<<" /a exch def"<<endl;
-     out_fmmm<<" /y exch def"<<endl;
-     out_fmmm<<" /x exch def"<<endl;
-     out_fmmm<<"x y moveto a b lineto stroke"<<endl;
-     out_fmmm<<"} def"<<endl;
-     out_fmmm<<"%% "<<endl;
-     out_fmmm<<"%% INIT "<<endl;
-     out_fmmm<<"20  200 translate"<<endl;
-     out_fmmm<<scale_factor<<"  "<<scale_factor<<"  scale "<<endl;
-     out_fmmm<<"1 setlinewidth "<<endl;
-     out_fmmm<<"%%BeginProgram "<<endl;
-     forall_edges(e,G)
-     out_fmmm<<AG.x(e->source())<<" "<<AG.y(e->source())<<" "
-     <<AG.x(e->target())<<" "<<AG.y(e->target())<<" e"<<endl;
-     forall_nodes(v,G)
-     out_fmmm<<AG.x(v)<<" "<<AG.y(v) <<" v"<<endl;
-     out_fmmm<<"%%EndProgram "<<endl;
-     out_fmmm<<"showpage "<<endl;
-     out_fmmm<<"%%EOF "<<endl;
-     }*/
 //------------------------- functions for divide et impera step -----------------------
     void create_maximum_connected_subGraphs(
             Graph G,
@@ -1896,8 +1782,8 @@ public class FMMMLayout
         double sin_j, cos_j;
         double angle, act_area, act_area_PI_half_rotated = 0.0, best_area;
         double ratio, new_width, new_height;
-        List<NodeArray<DPoint>> best_coords = new ArrayList<NodeArray<DPoint>>(number_of_components); //FIXME needs init
-        List<NodeArray<DPoint>> old_coords = new ArrayList<NodeArray<DPoint>>(number_of_components); //FIXME needs init
+        List<NodeArray<DPoint>> best_coords = new ArrayList<NodeArray<DPoint>>(number_of_components);
+        List<NodeArray<DPoint>> old_coords = new ArrayList<NodeArray<DPoint>>(number_of_components);
         node v_sub;
         Rectangle r_act, r_best;
         DPoint new_pos = new DPoint(), new_dlc = new DPoint();
@@ -1911,8 +1797,8 @@ public class FMMMLayout
             r_best = calculate_bounding_rectangle(G_sub.get(i), A_sub.get(i), i);
             best_area = calculate_area(r_best.get_width(), r_best.get_height(),
                     number_of_components);
-            best_coords.get(i).init(G_sub.get(i));
-            old_coords.get(i).init(G_sub.get(i));
+            best_coords.add(i, new NodeArray<DPoint>(G_sub.get(i)));
+            old_coords.add(i, new NodeArray<DPoint>(G_sub.get(i)));
 
             for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
             {
