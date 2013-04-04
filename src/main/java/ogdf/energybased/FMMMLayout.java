@@ -1025,10 +1025,10 @@ public class FMMMLayout
         List<NodeArray<NodeAttributes>> A_mult_ptr = new ArrayList<NodeArray<NodeAttributes>>(max_level + 1);
         List<EdgeArray<EdgeAttributes>> E_mult_ptr = new ArrayList<EdgeArray<EdgeAttributes>>(max_level + 1);
 
-        Mult.create_multilevel_representations(G, A, E, randSeed(),
+        max_level = Mult.create_multilevel_representations(G, A, E, randSeed(),
                 galaxyChoice(), minGraphSize(),
                 randomTries(), G_mult_ptr, A_mult_ptr,
-                E_mult_ptr, max_level);
+                E_mult_ptr);
 
         for (int i = max_level; i >= 0; i--)
         {

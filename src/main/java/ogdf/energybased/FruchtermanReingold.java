@@ -291,7 +291,6 @@ class FruchtermanReingold
         if (d > 0)
         {
             return 1 / d;
-
         }
         else
         {
