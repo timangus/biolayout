@@ -34,9 +34,29 @@ import java.lang.*;
 import java.util.*;
 import ogdf.basic.*;
 
+//FIXME placeholder
+class NMM
+{
+    public void calculate_repulsive_forces(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            NodeArray<DPoint> F_rep)
+    {
+    }
+
+    public void make_initialisations(Graph G, double bl, DPoint d_l_c,
+            int nmParticlesInLeaves, int nmPrecision,
+            FMMMLayout.ReducedTreeConstruction rtc, FMMMLayout.SmallestCellFinding scf)
+    {
+    }
+
+    public void update_boxlength_and_cornercoordinate(double b_l, DPoint d_l_c)
+    {
+    }
+}
+
 public class FMMMLayout
 {
-
     //! Possible page formats.
     enum PageFormatType
     {
