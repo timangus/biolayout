@@ -354,7 +354,7 @@ public class Multilevel
                 //identify nearest_neighbour_node as a pm_node and update its information
 
                 A_mult_ptr.get(act_level).get(nearest_neighbour_node).set_type(3);
-                A_mult_ptr.get(act_level).get(nearest_neighbour_node).get_dedicated_moon_node_List_ptr().add(v);
+                A_mult_ptr.get(act_level).get(nearest_neighbour_node).get_dedicated_moon_node_List().add(v);
             }//forall
         }
     }
@@ -449,11 +449,11 @@ public class Multilevel
             //create entries in lambda Lists
             lambda_s = length_s_edge / newlength;
             lambda_t = length_t_edge / newlength;
-            A_mult_ptr.get(act_level).get(s_node).get_lambda_List_ptr().add(lambda_s);
-            A_mult_ptr.get(act_level).get(t_node).get_lambda_List_ptr().add(lambda_t);
-            A_mult_ptr.get(act_level).get(s_node).get_neighbour_sun_node_List_ptr().add(
+            A_mult_ptr.get(act_level).get(s_node).get_lambda_List().add(lambda_s);
+            A_mult_ptr.get(act_level).get(t_node).get_lambda_List().add(lambda_t);
+            A_mult_ptr.get(act_level).get(s_node).get_neighbour_sun_node_List().add(
                     t_sun_node);
-            A_mult_ptr.get(act_level).get(t_node).get_neighbour_sun_node_List_ptr().add(
+            A_mult_ptr.get(act_level).get(t_node).get_neighbour_sun_node_List().add(
                     s_sun_node);
         }//forall
     }
@@ -465,41 +465,52 @@ void delete_parallel_edges_and_update_edgelength(
 	EdgeArray<Double> new_edgelength,int
 	act_level)
 {
-	EdgeMaxBucketFunc get_max_index;
-	EdgeMinBucketFunc get_min_index;
-	edge e_act, e_save;
-	Edge f_act;
-	List<Edge> sorted_edges;
-	Graph* Graph_ptr = G_mult_ptr[act_level+1];
-	int save_s_index,save_t_index,act_s_index,act_t_index;
+	edge e_act, e_save = null;
+	Edge f_act = new Edge();
+	List<Edge> sorted_edges = new ArrayList<Edge>();
+	Graph Graph_ptr = G_mult_ptr.get(act_level+1);
+	int save_s_index = 0,save_t_index = 0,act_s_index,act_t_index;
 	int counter = 1;
 
 	//make *G_mult_ptr[act_level+1] undirected
-	makeSimpleUndirected(*G_mult_ptr[act_level+1]);
+	SimpleGraphAlg.makeSimpleUndirected(G_mult_ptr.get(act_level+1));
 
 	//sort the List sorted_edges
-	forall_edges(e_act,*Graph_ptr)
-	{
+        for (Iterator<edge> i = Graph_ptr.edgesIterator(); i.hasNext();)
+        {
+            e_act = i.next();
 		f_act.set_Edge(e_act,Graph_ptr);
-		sorted_edges.pushBack(f_act);
+		sorted_edges.add(f_act);
 	}
 
-	sorted_edges.bucketSort(0,Graph_ptr.numberOfNodes()-1,get_max_index);
-	sorted_edges.bucketSort(0,Graph_ptr.numberOfNodes()-1,get_min_index);
+        // FIXME: may not be correct
+        Collections.sort(sorted_edges, new java.util.Comparator<Edge>()
+        {
+            @Override
+            public int compare(Edge a, Edge b)
+            {
+		int a_index = a.get_edge().source().index() -
+                    a.get_edge().target().index();
+                int b_index = b.get_edge().source().index() -
+                    b.get_edge().target().index();
+
+                return b_index - a_index;
+            }
+        });
 
 	//now parallel edges are consecutive in sorted_edges
-	forall_listiterators(Edge, EdgeIterator,sorted_edges)
+	for(Edge EdgeIterator : sorted_edges)
 	{//for
-		e_act = (*EdgeIterator).get_edge();
+		e_act = EdgeIterator.get_edge();
 		act_s_index = e_act.source().index();
 		act_t_index = e_act.target().index();
 
-		if(EdgeIterator != sorted_edges.begin())
+		if(EdgeIterator != sorted_edges.get(0))
 		{//if
 			if( (act_s_index == save_s_index && act_t_index == save_t_index) ||
 				(act_s_index == save_t_index && act_t_index == save_s_index) )
 			{
-				new_edgelength[e_save] += new_edgelength[e_act];
+				new_edgelength.set( e_save, new_edgelength.get(e_save) + new_edgelength.get(e_act));
 				Graph_ptr.delEdge(e_act);
 				counter++;
 			}
@@ -620,7 +631,7 @@ void delete_parallel_edges_and_update_edgelength(
                         }
                     }
                 }
-                if (A_mult_ptr.get(level).get(v).get_lambda_List_ptr().empty())
+                if (A_mult_ptr.get(level).get(v).get_lambda_List().isEmpty())
                 {//special case
                     if (L.isEmpty())
                     {
@@ -632,18 +643,18 @@ void delete_parallel_edges_and_update_edgelength(
                 }//special case
                 else
                 {//usual case
-                    lambdaIterator = A_mult_ptr.get(level).get(v).get_lambda_List_ptr().begin();
+                    lambdaIterator = A_mult_ptr.get(level).get(v).get_lambda_List().begin();
 
-                    for (node adj_sun_ptr : A_mult_ptr.get(level).get(v).get_neighbour_sun_node_List_ptr())
+                    for (node adj_sun_ptr : A_mult_ptr.get(level).get(v).get_neighbour_sun_node_List())
                     {
                         lambda =  * lambdaIterator;
                         adj_sun_pos = A_mult_ptr.get(level).get(adj_sun_ptr).get_position();
                         new_pos = get_waggled_inbetween_position(dedicated_sun_pos, adj_sun_pos,
                                 lambda);
                         L.add(new_pos);
-                        if (lambdaIterator != A_mult_ptr.get(level).get(v).get_lambda_List_ptr().rbegin())
+                        if (lambdaIterator != A_mult_ptr.get(level).get(v).get_lambda_List().rbegin())
                         {
-                            lambdaIterator = A_mult_ptr.get(level).get(v).get_lambda_List_ptr().cyclicSucc(lambdaIterator);
+                            lambdaIterator = A_mult_ptr.get(level).get(v).get_lambda_List().cyclicSucc(lambdaIterator);
                         }
                     }
                 }//usual case
@@ -662,7 +673,7 @@ void delete_parallel_edges_and_update_edgelength(
     {
         node v_high, w_high, sun_node, v, ded_sun;
         List<DPoint> adj_pos = new ArrayList<DPoint>();
-        double angle_1, angle_2, act_angle_1, act_angle_2, next_angle, min_next_angle;
+        double angle_1, angle_2, act_angle_1, act_angle_2, next_angle, min_next_angle = 0.0;
         DPoint start_pos, end_pos;
         int MAX = 10; //the biggest of at most MAX random selected sectors is choosen
         int steps;
@@ -779,7 +790,7 @@ void delete_parallel_edges_and_update_edgelength(
         double moon_dist, sun_dist, lambda;
         node v_adj, sun_node;
         DPoint sun_pos, moon_pos, new_pos, adj_sun_pos;
-        List<DPoint> L = new ArrayList<Dpoint>();
+        List<DPoint> L = new ArrayList<DPoint>();
         ListIterator<double> lambdaIterator;
 
         for (node v_ptr : pm_nodes)
@@ -813,7 +824,7 @@ void delete_parallel_edges_and_update_edgelength(
                     }
                 }
             }//if
-            for (node moon_node_ptr : A_mult_ptr.get(level).get(v_ptr).get_dedicated_moon_node_List_ptr())
+            for (node moon_node_ptr : A_mult_ptr.get(level).get(v_ptr).get_dedicated_moon_node_List())
             {
                 moon_pos = A_mult_ptr.get(level).get(moon_node_ptr).get_position();
                 moon_dist = A_mult_ptr.get(level).get(moon_node_ptr).get_dedicated_sun_distance();
@@ -822,19 +833,19 @@ void delete_parallel_edges_and_update_edgelength(
                 L.add(new_pos);
             }
 
-            if (!A_mult_ptr.get(level).get(v_ptr).get_lambda_List_ptr().empty())
+            if (!A_mult_ptr.get(level).get(v_ptr).get_lambda_List().isEmpty())
             {
-                lambdaIterator = A_mult_ptr.get(level).get(v_ptr).get_lambda_List_ptr().begin();
+                lambdaIterator = A_mult_ptr.get(level).get(v_ptr).get_lambda_List().begin();
 
-                for (node adj_sun_ptr : A_mult_ptr.get(level).get(v_ptr).get_neighbour_sun_node_List_ptr())
+                for (node adj_sun_ptr : A_mult_ptr.get(level).get(v_ptr).get_neighbour_sun_node_List())
                 {
                     lambda =  * lambdaIterator;
                     adj_sun_pos = A_mult_ptr.get(level).get(adj_sun_ptr).get_position();
                     new_pos = get_waggled_inbetween_position(sun_pos, adj_sun_pos, lambda);
                     L.add(new_pos);
-                    if (lambdaIterator != A_mult_ptr.get(level).get(v_ptr).get_lambda_List_ptr().rbegin())
+                    if (lambdaIterator != A_mult_ptr.get(level).get(v_ptr).get_lambda_List().rbegin())
                     {
-                        lambdaIterator = A_mult_ptr.get(level).get(v_ptr).get_lambda_List_ptr().cyclicSucc(lambdaIterator);
+                        lambdaIterator = A_mult_ptr.get(level).get(v_ptr).get_lambda_List().cyclicSucc(lambdaIterator);
                     }
                 }
             }
