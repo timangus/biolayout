@@ -458,30 +458,28 @@ public class Multilevel
         }//forall
     }
 
+    void delete_parallel_edges_and_update_edgelength(
+            List<Graph> G_mult_ptr,
+            List<EdgeArray<EdgeAttributes>> E_mult_ptr,
+            EdgeArray<Double> new_edgelength, int act_level)
+    {
+        edge e_act, e_save = null;
+        Edge f_act = new Edge();
+        List<Edge> sorted_edges = new ArrayList<Edge>();
+        Graph Graph_ptr = G_mult_ptr.get(act_level + 1);
+        int save_s_index = 0, save_t_index = 0, act_s_index, act_t_index;
+        int counter = 1;
 
-void delete_parallel_edges_and_update_edgelength(
-	List<Graph> G_mult_ptr,
-	List<EdgeArray<EdgeAttributes>> E_mult_ptr,
-	EdgeArray<Double> new_edgelength,int
-	act_level)
-{
-	edge e_act, e_save = null;
-	Edge f_act = new Edge();
-	List<Edge> sorted_edges = new ArrayList<Edge>();
-	Graph Graph_ptr = G_mult_ptr.get(act_level+1);
-	int save_s_index = 0,save_t_index = 0,act_s_index,act_t_index;
-	int counter = 1;
+        //make *G_mult_ptr[act_level+1] undirected
+        SimpleGraphAlg.makeSimpleUndirected(G_mult_ptr.get(act_level + 1));
 
-	//make *G_mult_ptr[act_level+1] undirected
-	SimpleGraphAlg.makeSimpleUndirected(G_mult_ptr.get(act_level+1));
-
-	//sort the List sorted_edges
+        //sort the List sorted_edges
         for (Iterator<edge> i = Graph_ptr.edgesIterator(); i.hasNext();)
         {
             e_act = i.next();
-		f_act.set_Edge(e_act,Graph_ptr);
-		sorted_edges.add(f_act);
-	}
+            f_act.set_Edge(e_act, Graph_ptr);
+            sorted_edges.add(f_act);
+        }
 
         // FIXME: may not be correct
         Collections.sort(sorted_edges, new java.util.Comparator<Edge>()
@@ -489,60 +487,65 @@ void delete_parallel_edges_and_update_edgelength(
             @Override
             public int compare(Edge a, Edge b)
             {
-		int a_index = a.get_edge().source().index() -
-                    a.get_edge().target().index();
+                int a_index = a.get_edge().source().index() -
+                        a.get_edge().target().index();
                 int b_index = b.get_edge().source().index() -
-                    b.get_edge().target().index();
+                        b.get_edge().target().index();
 
                 return b_index - a_index;
             }
         });
 
-	//now parallel edges are consecutive in sorted_edges
-	for(Edge EdgeIterator : sorted_edges)
-	{//for
-		e_act = EdgeIterator.get_edge();
-		act_s_index = e_act.source().index();
-		act_t_index = e_act.target().index();
+        //now parallel edges are consecutive in sorted_edges
+        for (Edge EdgeIterator : sorted_edges)
+        {//for
+            e_act = EdgeIterator.get_edge();
+            act_s_index = e_act.source().index();
+            act_t_index = e_act.target().index();
 
-		if(EdgeIterator != sorted_edges.get(0))
-		{//if
-			if( (act_s_index == save_s_index && act_t_index == save_t_index) ||
-				(act_s_index == save_t_index && act_t_index == save_s_index) )
-			{
-				new_edgelength.set( e_save, new_edgelength.get(e_save) + new_edgelength.get(e_act));
-				Graph_ptr.delEdge(e_act);
-				counter++;
-			}
-			else
-			{
-				if (counter > 1)
-				{
-					new_edgelength[e_save] /= counter;
-					counter = 1;
-				}
-				save_s_index = act_s_index;
-				save_t_index = act_t_index;
-				e_save = e_act;
-			}
-		}//if
-		else //first edge
-		{
-			save_s_index = act_s_index;
-			save_t_index = act_t_index;
-			e_save = e_act;
-		}
-	}//for
+            if (EdgeIterator != sorted_edges.get(0))
+            {//if
+                if ((act_s_index == save_s_index && act_t_index == save_t_index) ||
+                        (act_s_index == save_t_index && act_t_index == save_s_index))
+                {
+                    new_edgelength.set(e_save, new_edgelength.get(e_save) + new_edgelength.get(e_act));
+                    Graph_ptr.delEdge(e_act);
+                    counter++;
+                }
+                else
+                {
+                    if (counter > 1)
+                    {
+                        new_edgelength.set(e_save, new_edgelength.get(e_save) / counter);
+                        counter = 1;
+                    }
+                    save_s_index = act_s_index;
+                    save_t_index = act_t_index;
+                    e_save = e_act;
+                }
+            }//if
+            else //first edge
+            {
+                save_s_index = act_s_index;
+                save_t_index = act_t_index;
+                e_save = e_act;
+            }
+        }//for
 
-	//treat special case (last edges were multiple edges)
-	if(counter >1)
-		new_edgelength[e_save] /= counter;
+        //treat special case (last edges were multiple edges)
+        if (counter > 1)
+        {
+            new_edgelength.set(e_save, new_edgelength.get(e_save) / counter);
+        }
 
-	//init *E_mult_ptr[act_level+1] and import EdgeAttributes
-	E_mult_ptr[act_level+1].init(*G_mult_ptr[act_level+1]);
-	forall_edges(e_act,*Graph_ptr)
-		E_mult_ptr.get(act_level+1).get(e_act).set_length(new_edgelength[e_act]);
-}
+        //init *E_mult_ptr[act_level+1] and import EdgeAttributes
+        E_mult_ptr.get(act_level + 1).init(G_mult_ptr.get(act_level + 1));
+        for (Iterator<edge> i = Graph_ptr.edgesIterator(); i.hasNext();)
+        {
+            e_act = i.next();
+            E_mult_ptr.get(act_level + 1).get(e_act).set_length(new_edgelength.get(e_act));
+        }
+    }
 
     void find_initial_placement_for_level(
             int level,
@@ -673,7 +676,7 @@ void delete_parallel_edges_and_update_edgelength(
     {
         node v_high, w_high, sun_node, v, ded_sun;
         List<DPoint> adj_pos = new ArrayList<DPoint>();
-        double angle_1, angle_2, act_angle_1, act_angle_2, next_angle, min_next_angle = 0.0;
+        double angle_1 = 0.0, angle_2 = 0.0, act_angle_1, act_angle_2, next_angle, min_next_angle = 0.0;
         DPoint start_pos, end_pos;
         int MAX = 10; //the biggest of at most MAX random selected sectors is choosen
         int steps;
