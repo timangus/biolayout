@@ -65,9 +65,29 @@ public class SimpleGraphAlg
             }
         }
 
-        /*BucketEdgeArray bucketMin(minIndex), bucketMax(maxIndex);
-        edges.bucketSort(0, G.maxNodeIndex(), bucketMin);
-        edges.bucketSort(0, G.maxNodeIndex(), bucketMax);*/
+        final EdgeArray<Integer> finalMinIndex = minIndex;
+        final EdgeArray<Integer> finalMaxIndex = maxIndex;
+
+        //FIXME needs reversing?
+        Collections.sort(edges, new java.util.Comparator<edge>()
+        {
+            @Override
+            public int compare(edge a, edge b)
+            {
+                return finalMinIndex.get(a) - finalMinIndex.get(b);
+            }
+        });
+
+        Collections.sort(edges, new java.util.Comparator<edge>()
+        {
+            @Override
+            public int compare(edge a, edge b)
+            {
+                return finalMaxIndex.get(a) - finalMaxIndex.get(b);
+            }
+        });
+
+        return edges;
     }
 
 

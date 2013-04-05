@@ -1697,7 +1697,7 @@ public class FMMMLayout
             List<NodeArray<NodeAttributes>> A_sub)
     {
         //double aspect_ratio_area, bounding_rectangles_area;
-        MAARPacking P;
+        MAARPacking P = new MAARPacking();
         List<Rectangle> R = new ArrayList<Rectangle>();
 
         if (stepsForRotatingComponents() == 0) //no rotation
@@ -1710,8 +1710,7 @@ public class FMMMLayout
         }
 
         P.pack_rectangles_using_Best_Fit_strategy(R, pageRatio(), presortCCs(),
-                tipOverCCs());/*, aspect_ratio_area,
-                bounding_rectangles_area);*/
+                tipOverCCs());
         export_node_positions(A, R, G_sub, A_sub);
     }
 
