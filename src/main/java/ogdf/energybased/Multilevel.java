@@ -587,12 +587,12 @@ public class Multilevel
             List<EdgeArray<EdgeAttributes>> E_mult_ptr,
             List<node> pm_nodes)
     {
-        double lambda, dedicated_sun_distance;
+        double lambda = 0.0, dedicated_sun_distance;
         int node_type;
         node v, v_adj, dedicated_sun;
         DPoint new_pos, dedicated_sun_pos, adj_sun_pos;
         List<DPoint> L = new ArrayList();
-        ListIterator<double> lambdaIterator;
+        ListIterator<Double> lambdaIterator;
 
         create_all_placement_sectors(G_mult_ptr, A_mult_ptr, E_mult_ptr, level);
         for (Iterator<node> i = G_mult_ptr.get(level).nodesIterator(); i.hasNext();)
@@ -646,19 +646,18 @@ public class Multilevel
                 }//special case
                 else
                 {//usual case
-                    lambdaIterator = A_mult_ptr.get(level).get(v).get_lambda_List().begin();
+                    lambdaIterator = A_mult_ptr.get(level).get(v).get_lambda_List().listIterator();
 
                     for (node adj_sun_ptr : A_mult_ptr.get(level).get(v).get_neighbour_sun_node_List())
                     {
-                        lambda =  * lambdaIterator;
+                        if (lambdaIterator.hasNext())
+                        {
+                            lambda = lambdaIterator.next();
+                        }
                         adj_sun_pos = A_mult_ptr.get(level).get(adj_sun_ptr).get_position();
                         new_pos = get_waggled_inbetween_position(dedicated_sun_pos, adj_sun_pos,
                                 lambda);
                         L.add(new_pos);
-                        if (lambdaIterator != A_mult_ptr.get(level).get(v).get_lambda_List().rbegin())
-                        {
-                            lambdaIterator = A_mult_ptr.get(level).get(v).get_lambda_List().cyclicSucc(lambdaIterator);
-                        }
                     }
                 }//usual case
 
@@ -730,6 +729,7 @@ public class Multilevel
                 it = adj_pos.listIterator();
                 do
                 {
+                    int adj_pos_index = it.nextIndex();
                     //create act_angle_1
                     start_pos = it.next();
                     DPoint x_parallel_pos = new DPoint(v_high_pos.m_x + 1, v_high_pos.m_y);
@@ -749,17 +749,13 @@ public class Multilevel
                         }
                     }
                     act_angle_2 = act_angle_1 + min_next_angle;
-                    if ((it == adj_pos.begin()) || ((act_angle_2 - act_angle_1) > (angle_2 - angle_1)))
+                    if (adj_pos_index == 0 || ((act_angle_2 - act_angle_1) > (angle_2 - angle_1)))
                     {
                         angle_1 = act_angle_1;
                         angle_2 = act_angle_2;
                     }
-                    if (it != adj_pos.rbegin())
-                    {
-                        it = adj_pos.cyclicSucc(it);
-                    }
                     steps++;
-                } while ((steps <= MAX) && (it != adj_pos.rbegin()));
+                } while ((steps <= MAX) && it.hasNext());
 
                 if (angle_1 == angle_2)
                 {
@@ -790,11 +786,11 @@ public class Multilevel
             List<EdgeArray<EdgeAttributes>> E_mult_ptr,
             List<node> pm_nodes)
     {
-        double moon_dist, sun_dist, lambda;
+        double moon_dist, sun_dist, lambda = 0.0;
         node v_adj, sun_node;
         DPoint sun_pos, moon_pos, new_pos, adj_sun_pos;
         List<DPoint> L = new ArrayList<DPoint>();
-        ListIterator<double> lambdaIterator;
+        ListIterator<Double> lambdaIterator;
 
         for (node v_ptr : pm_nodes)
         {//forall
@@ -838,18 +834,17 @@ public class Multilevel
 
             if (!A_mult_ptr.get(level).get(v_ptr).get_lambda_List().isEmpty())
             {
-                lambdaIterator = A_mult_ptr.get(level).get(v_ptr).get_lambda_List().begin();
+                lambdaIterator = A_mult_ptr.get(level).get(v_ptr).get_lambda_List().listIterator();
 
                 for (node adj_sun_ptr : A_mult_ptr.get(level).get(v_ptr).get_neighbour_sun_node_List())
                 {
-                    lambda =  * lambdaIterator;
+                    if (lambdaIterator.hasNext())
+                    {
+                        lambda = lambdaIterator.next();
+                    }
                     adj_sun_pos = A_mult_ptr.get(level).get(adj_sun_ptr).get_position();
                     new_pos = get_waggled_inbetween_position(sun_pos, adj_sun_pos, lambda);
                     L.add(new_pos);
-                    if (lambdaIterator != A_mult_ptr.get(level).get(v_ptr).get_lambda_List().rbegin())
-                    {
-                        lambdaIterator = A_mult_ptr.get(level).get(v_ptr).get_lambda_List().cyclicSucc(lambdaIterator);
-                    }
                 }
             }
 
