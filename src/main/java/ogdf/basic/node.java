@@ -1,10 +1,32 @@
 package ogdf.basic;
 
-import java.util.List;
+import java.util.*;
 
 public class node
 {
-    public Graph graphOf() { return null; }
-    public int index() { return -1; }
-    public List<edge> adjEdges() { return null; }
+    List<edge> m_edges;
+    int m_id;
+    Graph m_pGraph;
+
+    public node(Graph pGraph, int id)
+    {
+        m_id = id;
+        m_pGraph = pGraph;
+        m_edges = new ArrayList<edge>();
+    }
+
+    public Graph graphOf()
+    {
+        return m_pGraph;
+    }
+
+    public int index()
+    {
+        return m_id;
+    }
+
+    public List<edge> adjEdges()
+    {
+        return m_edges;
+    }
 }

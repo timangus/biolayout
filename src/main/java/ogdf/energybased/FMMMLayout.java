@@ -966,7 +966,6 @@ public class FMMMLayout
 
         if (G.numberOfNodes() > 1)
         {
-            GA.clearAllBends();//all edges are straight-line
             if (useHighLevelOptions())
             {
                 update_low_level_options_due_to_high_level_options_settings();
