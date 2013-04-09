@@ -81,8 +81,8 @@ public class Multilevel
                 edgenumbersum_of_all_levels_is_linear(G_mult_ptr, act_level))
         {
             Graph G_new = new Graph();
-            NodeArray<NodeAttributes> A_new = new NodeArray<NodeAttributes>();
-            EdgeArray<EdgeAttributes> E_new = new EdgeArray<EdgeAttributes>();
+            NodeArray<NodeAttributes> A_new = new NodeArray<NodeAttributes>(NodeAttributes.class);
+            EdgeArray<EdgeAttributes> E_new = new EdgeArray<EdgeAttributes>(EdgeAttributes.class);
             G_mult_ptr.set(act_level + 1, G_new);
             A_mult_ptr.set(act_level + 1, A_new);
             E_mult_ptr.set(act_level + 1, E_new);
@@ -365,7 +365,7 @@ public class Multilevel
             List<EdgeArray<EdgeAttributes>> E_mult_ptr,
             int act_level)
     {
-        EdgeArray<Double> new_edgelength = new EdgeArray<Double>();
+        EdgeArray<Double> new_edgelength = new EdgeArray<Double>(Double.class);
         calculate_mass_of_collapsed_nodes(G_mult_ptr, A_mult_ptr, act_level);
         create_edges_edgedistances_and_lambda_Lists(G_mult_ptr, A_mult_ptr, E_mult_ptr,
                 new_edgelength, act_level);

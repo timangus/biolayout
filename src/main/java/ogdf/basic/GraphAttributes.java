@@ -1,5 +1,8 @@
 package ogdf.basic;
 
+import java.util.*;
+import org.BioLayoutExpress3D.Network.*;
+
 public class GraphAttributes
 {
     Graph graph;
@@ -11,10 +14,35 @@ public class GraphAttributes
     public GraphAttributes(Graph graph)
     {
         this.graph = graph;
-        m_x = new NodeArray<Double>(graph);
-        m_y = new NodeArray<Double>(graph);
-        m_width = new NodeArray<Double>(graph);
-        m_height = new NodeArray<Double>(graph);
+        m_x = new NodeArray<Double>(graph, Double.class);
+        m_y = new NodeArray<Double>(graph, Double.class);
+        m_width = new NodeArray<Double>(graph, Double.class);
+        m_height = new NodeArray<Double>(graph, Double.class);
+    }
+
+    public GraphAttributes(NetworkContainer nc)
+    {
+        this(new Graph());
+
+        Map m = new HashMap<Vertex,node>();
+
+        for (Vertex vertex : nc.getVertices())
+        {
+            node n = graph.newNode();
+            setX(n, vertex.getX());
+            setY(n, vertex.getY());
+            setWidth(n, vertex.getVertexSize());
+            setHeight(n, vertex.getVertexSize());
+            m.put(vertex, n);
+        }
+
+        for (Edge edge : nc.getEdges())
+        {
+            node v = (node)m.get(edge.getFirstVertex());
+            node w = (node) m.get(edge.getSecondVertex());
+
+            edge e = graph.newEdge(v, w);
+        }
     }
 
     public Graph constGraph()

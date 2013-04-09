@@ -98,8 +98,8 @@ public class SimpleGraphAlg
             return;
         }
 
-        EdgeArray<Integer> minIndex = new EdgeArray<Integer>(G);
-        EdgeArray<Integer> maxIndex = new EdgeArray<Integer>(G);
+        EdgeArray<Integer> minIndex = new EdgeArray<Integer>(G, Integer.class);
+        EdgeArray<Integer> maxIndex = new EdgeArray<Integer>(G, Integer.class);
         List<edge> edges = parallelFreeSortUndirected(G, minIndex, maxIndex);
 
         ListIterator<edge> it = edges.listIterator();

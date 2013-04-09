@@ -31,6 +31,9 @@ package ogdf.basic;
  **************************************************************
  */
 import java.util.*;
+import java.lang.reflect.*;
+import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 //! Dynamic arrays indexed with edges.
 /**
@@ -64,38 +67,60 @@ public class EdgeArray<T> extends ArrayList<T>
     /* ~EdgeArrayBase */
     T m_x; //!< The default value for array elements.
 
+    private Constructor<? extends T> ctor;
+
     //! Constructs an empty edge array associated with no graph.
-    public EdgeArray()
+    public EdgeArray(Class<? extends T> impl)
     {
         super();
+        try
+        {
+            ctor = impl.getConstructor();
+        }
+        catch (Exception e)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("Exception while getting constructor\n" + e.getMessage());
+            }
+        }
         m_pGraph = null;
     }
 
-    //! Constructs an edge array associated with \a G.
-    public EdgeArray(Graph G)
+    //! Constructs a edge array associated with \a G.
+    public EdgeArray(Graph G, Class<? extends T> impl)
     {
-        super(G.nodeArrayTableSize());
+        super(G.numberOfEdges());
         m_pGraph = G;
+
+        try
+        {
+            ctor = impl.getConstructor();
+
+            for (int i = 0; i < m_pGraph.numberOfEdges(); i++)
+            {
+                super.add(ctor.newInstance());
+            }
+        }
+        catch (Exception e)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("Exception while getting constructor\n" + e.getMessage());
+            }
+        }
+        //if(G) m_it = pG->registerArray(this);
     }
 
-    //! Constructs an edge array associated with \a G.
+    //! Constructs a node array associated with \a G.
     /**
      * @param G is the associated graph.
      * @param x is the default value for all array elements.
      */
-    public EdgeArray(Graph G, T x)
+    public EdgeArray(Graph G, T x, Class<? extends T> impl)
     {
-        this(G);
+        this(G, impl);
         m_x = x;
-    }
-
-    //! Constructs an edge array that is a copy of \a A.
-    /**
-     * Associates the array with the same graph as \a A and copies all elements.
-     */
-    public EdgeArray(EdgeArray<T> A)
-    {
-        this(A.m_pGraph, A.m_x);
     }
 
     //! Returns true iff the array is associated with a graph.
@@ -120,7 +145,16 @@ public class EdgeArray<T> extends ArrayList<T>
     public void set(edge e, T value)
     {
         assert e != null && e.graphOf() == m_pGraph;
-        super.set(e.index(), value);
+        super.ensureCapacity(e.index() + 1);
+
+        if (e.index() < super.size() && super.get(e.index()) != null)
+        {
+            super.set(e.index(), value);
+        }
+        else
+        {
+            super.add(e.index(), value);
+        }
     }
 
     //! Reinitializes the array. Associates the array with no graph.

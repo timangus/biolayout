@@ -66,7 +66,7 @@ public class FMMMLayout
     };
 
     //! Trade-off between run-time and quality.
-    enum QualityVsSpeed
+    public enum QualityVsSpeed
     {
         qvsGorgeousAndEfficient, //!< Best quality.
         qvsBeautifulAndFast, //!< Medium quality and speed.
@@ -191,13 +191,13 @@ public class FMMMLayout
      * set high-level options; if you want to be more specific, set this parameter to false and set the low level
      * options.
      */
-    boolean useHighLevelOptions()
+    public boolean useHighLevelOptions()
     {
         return m_useHighLevelOptions;
     }
 
     //! Sets the option useHighLevelOptions to \a uho.
-    void useHighLevelOptions(boolean uho)
+    public void useHighLevelOptions(boolean uho)
     {
         m_useHighLevelOptions = uho;
     }
@@ -225,13 +225,13 @@ public class FMMMLayout
     }
 
     //! Returns the current setting of option unitEdgeLength.
-    double unitEdgeLength()
+    public double unitEdgeLength()
     {
         return m_unitEdgeLength;
     }
 
     //! Sets the option unitEdgeLength to \a x.
-    void unitEdgeLength(double x)
+    public void unitEdgeLength(double x)
     {
         m_unitEdgeLength = ((x > 0.0) ? x : 1);
     }
@@ -241,13 +241,13 @@ public class FMMMLayout
      * This option defines if the initial placement of the nodes at the coarsest multilevel is varied for each distinct
      * call of FMMMLayout or keeps always the same.
      */
-    boolean newInitialPlacement()
+    public boolean newInitialPlacement()
     {
         return m_newInitialPlacement;
     }
 
     //! Sets the option newInitialPlacement to \a nip.
-    void newInitialPlacement(boolean nip)
+    public void newInitialPlacement(boolean nip)
     {
         m_newInitialPlacement = nip;
     }
@@ -258,13 +258,13 @@ public class FMMMLayout
      * quality and efficient speed - \a qvsBeautifulAndFast: beautiful quality and fast speed - \a
      * qvsNiceAndIncredibleSpeed: nice quality and incredible speed
      */
-    QualityVsSpeed qualityVersusSpeed()
+    public QualityVsSpeed qualityVersusSpeed()
     {
         return m_qualityVersusSpeed;
     }
 
     //! Sets the option qualityVersusSpeed to \a qvs.
-    void qualityVersusSpeed(QualityVsSpeed qvs)
+    public void qualityVersusSpeed(QualityVsSpeed qvs)
     {
         m_qualityVersusSpeed = qvs;
     }
@@ -941,28 +941,28 @@ public class FMMMLayout
     FruchtermanReingold FR; //!< Class for repulsive force calculation (Fruchterman, Reingold).
     NMM NM; //!< Class for repulsive force calculation.
 
-    FMMMLayout()
+    public FMMMLayout()
     {
         initialize_all_options();
     }
 
 //--------------------------- most important functions --------------------------------
-    void call(GraphAttributes GA)
+    public void call(GraphAttributes GA)
     {
         Graph G = GA.constGraph();
-        EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0);
+        EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0, Double.class);
         call(GA, edgelength);
     }
 
-    void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
+    public void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
     {
         Graph G = GA.constGraph();
-        NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G);       //stores the attributes of the nodes (given by L)
-        EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G);       //stores the edge attributes of G
+        NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G, NodeAttributes.class);       //stores the attributes of the nodes (given by L)
+        EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G, EdgeAttributes.class);       //stores the edge attributes of G
         Graph G_reduced = new Graph();                      //stores a undirected simple and loopfree copy
         //of G
-        EdgeArray<EdgeAttributes> E_reduced = new EdgeArray<EdgeAttributes>();  //stores the edge attributes of G_reduced
-        NodeArray<NodeAttributes> A_reduced = new NodeArray<NodeAttributes>();  //stores the node attributes of G_reduced
+        EdgeArray<EdgeAttributes> E_reduced = new EdgeArray<EdgeAttributes>(EdgeAttributes.class);  //stores the edge attributes of G_reduced
+        NodeArray<NodeAttributes> A_reduced = new NodeArray<NodeAttributes>(NodeAttributes.class);  //stores the node attributes of G_reduced
 
         if (G.numberOfNodes() > 1)
         {
@@ -1003,7 +1003,7 @@ public class FMMMLayout
             NodeArray<NodeAttributes> A,
             EdgeArray<EdgeAttributes> E)
     {
-        NodeArray<Integer> component = new NodeArray<Integer>(G); //holds for each node the index of its component
+        NodeArray<Integer> component = new NodeArray<Integer>(G, Integer.class); //holds for each node the index of its component
         number_of_components = SimpleGraphAlg.connectedComponents(G, component);//calculate components of G
         List<Graph> G_sub = new ArrayList<Graph>(number_of_components);
         List<NodeArray<NodeAttributes>> A_sub = new ArrayList<NodeArray<NodeAttributes>>(number_of_components);
@@ -1081,10 +1081,10 @@ public class FMMMLayout
             int max_mult_iter = get_max_mult_iter(act_level, max_level, G.numberOfNodes());
             double actforcevectorlength = threshold() + 1;
 
-            NodeArray<DPoint> F_rep = new NodeArray<DPoint>(G); //stores rep. forces
-            NodeArray<DPoint> F_attr = new NodeArray<DPoint>(G); //stores attr. forces
-            NodeArray<DPoint> F = new NodeArray<DPoint>(G); //stores resulting forces
-            NodeArray<DPoint> last_node_movement = new NodeArray<DPoint>(G);//stores the force vectors F of the last
+            NodeArray<DPoint> F_rep = new NodeArray<DPoint>(G, DPoint.class); //stores rep. forces
+            NodeArray<DPoint> F_attr = new NodeArray<DPoint>(G, DPoint.class); //stores attr. forces
+            NodeArray<DPoint> F = new NodeArray<DPoint>(G, DPoint.class); //stores resulting forces
+            NodeArray<DPoint> last_node_movement = new NodeArray<DPoint>(G, DPoint.class);//stores the force vectors F of the last
             //iterations (needed to avoid oscillations)
 
             set_average_ideal_edgelength(G, E);//needed for easy scaling of the forces
@@ -1393,7 +1393,7 @@ public class FMMMLayout
         }
 
         //remove parallel (and reversed) edges from G_reduced
-        EdgeArray<Double> new_edgelength = new EdgeArray<Double>(G_reduced);
+        EdgeArray<Double> new_edgelength = new EdgeArray<Double>(G_reduced, Double.class);
         List<edge> S = new ArrayList<edge>();
         S.clear();
         delete_parallel_edges(G, E, G_reduced, S, new_edgelength);
@@ -1438,7 +1438,7 @@ public class FMMMLayout
         edge e_act, e_save = null;
         Edge f_act = new Edge();
         List<Edge> sorted_edges = new ArrayList<Edge>();
-        EdgeArray<edge> original_edge = new EdgeArray<edge>(G_reduced); //helping array
+        EdgeArray<edge> original_edge = new EdgeArray<edge>(G_reduced, edge.class); //helping array
 	int save_s_index = 0, save_t_index = 0, act_s_index, act_t_index;
         int counter = 1;
         Graph Graph_ptr = G_reduced;
@@ -1815,8 +1815,8 @@ public class FMMMLayout
             r_best = calculate_bounding_rectangle(G_sub.get(i), A_sub.get(i), i);
             best_area = calculate_area(r_best.get_width(), r_best.get_height(),
                     number_of_components);
-            best_coords.add(i, new NodeArray<DPoint>(G_sub.get(i)));
-            old_coords.add(i, new NodeArray<DPoint>(G_sub.get(i)));
+            best_coords.add(i, new NodeArray<DPoint>(G_sub.get(i), DPoint.class));
+            old_coords.add(i, new NodeArray<DPoint>(G_sub.get(i), DPoint.class));
 
             for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
             {

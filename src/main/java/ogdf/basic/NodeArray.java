@@ -31,6 +31,9 @@ package ogdf.basic;
  **************************************************************
  */
 import java.util.*;
+import java.lang.reflect.*;
+import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 //! Dynamic arrays indexed with nodes.
 /**
@@ -64,44 +67,60 @@ public class NodeArray<T> extends ArrayList<T>
 
     T m_x; //!< The default value for array elements.
 
+    private Constructor<? extends T> ctor;
+
     //! Constructs an empty node array associated with no graph.
-    public NodeArray()
+    public NodeArray(Class<? extends T> impl)
     {
         super();
+        try
+        {
+            ctor = impl.getConstructor();
+        }
+        catch (Exception e)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("Exception while getting constructor\n" + e.getMessage());
+            }
+        }
         m_pGraph = null;
-
     }
 
     //! Constructs a node array associated with \a G.
-    public NodeArray(Graph G)
+    public NodeArray(Graph G, Class<? extends T> impl)
     {
-        super(G.nodeArrayTableSize());
+        super(G.numberOfNodes());
         m_pGraph = G;
+
+        try
+        {
+            ctor = impl.getConstructor();
+
+            for (int i = 0; i < m_pGraph.numberOfNodes(); i++)
+            {
+                super.add(ctor.newInstance());
+            }
+        }
+        catch (Exception e)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("Exception while getting constructor\n" + e.getMessage());
+            }
+        }
         //if(G) m_it = pG->registerArray(this);
     }
 
-    /*// destructor, unregisters the array
-     virtual ~NodeArrayBase() {
-     if (m_pGraph) m_pGraph->unregisterArray(m_it);
-     }*/
     //! Constructs a node array associated with \a G.
     /**
      * @param G is the associated graph.
      * @param x is the default value for all array elements.
      */
-    public NodeArray(Graph G, T x)
+    public NodeArray(Graph G, T x, Class<? extends T> impl)
     {
-        this(G);
+        this(G, impl);
         m_x = x;
-    }
-
-    //! Constructs a node array that is a copy of \a A.
-    /**
-     * Associates the array with the same graph as \a A and copies all elements.
-     */
-    public NodeArray(NodeArray<T> A)
-    {
-        this(A.m_pGraph, A.m_x);
     }
 
     //! Returns true iff the array is associated with a graph.
@@ -126,7 +145,16 @@ public class NodeArray<T> extends ArrayList<T>
     public void set(node v, T value)
     {
         assert v != null && v.graphOf() == m_pGraph;
-        super.set(v.index(), value);
+        super.ensureCapacity(v.index() + 1);
+
+        if (v.index() < super.size() && super.get(v.index()) != null)
+        {
+            super.set(v.index(), value);
+        }
+        else
+        {
+            super.add(v.index(), value);
+        }
     }
 
     //! Reinitializes the array. Associates the array with no graph.
