@@ -153,19 +153,19 @@ class FruchtermanReingold
 
         //init max_gridindex and set contained_nodes;
 
-        max_gridindex = (int) (Math.sqrt((double) (G.numberOfNodes())) / grid_quotient()) - 1;
-        max_gridindex = ((max_gridindex > 0) ? max_gridindex : 0);
+        max_gridindex = (int) (Math.sqrt((double) (G.numberOfNodes())) / grid_quotient());
+        max_gridindex = ((max_gridindex > 0) ? max_gridindex : 1);
         List<node>[][] contained_nodes = new ArrayList[max_gridindex][max_gridindex];
 
-        for (i = 0; i <= max_gridindex; i++)
+        for (i = 0; i < max_gridindex; i++)
         {
-            for (j = 0; j <= max_gridindex; j++)
+            for (j = 0; j < max_gridindex; j++)
             {
-                contained_nodes[i][j].clear();
+                contained_nodes[i][j] = new ArrayList();
             }
         }
 
-        gridboxlength = boxlength / (max_gridindex + 1);
+        gridboxlength = boxlength / max_gridindex;
         for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
         {
             v = iter.next();
@@ -178,24 +178,22 @@ class FruchtermanReingold
 
         //force calculation
 
-        for (i = 0; i <= max_gridindex; i++)
+        for (i = 0; i < max_gridindex; i++)
         {
-            for (j = 0; j <= max_gridindex; j++)
+            for (j = 0; j < max_gridindex; j++)
             {
                 //step1: calculate forces inside contained_nodes(i,j)
 
                 length = contained_nodes[i][j].size();
-                List<node> nodearray_i_j = new ArrayList<node>(length + 1);
-                k = 1;
+                List<node> nodearray_i_j = new ArrayList<node>();
                 for (node n : contained_nodes[i][j])
                 {
-                    nodearray_i_j.add(k, n);
-                    k++;
+                    nodearray_i_j.add(n);
                 }
 
-                for (k = 1; k < length; k++)
+                for (k = 0; k < length; k++)
                 {
-                    for (l = k + 1; l <= length; l++)
+                    for (l = k + 1; l < length; l++)
                     {
                         u = nodearray_i_j.get(k);
                         v = nodearray_i_j.get(l);
@@ -229,7 +227,7 @@ class FruchtermanReingold
                 {
                     for (l = j - 1; l <= j + 1; l++)
                     {
-                        if ((k >= 0) && (l >= 0) && (k <= max_gridindex) && (l <= max_gridindex))
+                        if ((k >= 0) && (l >= 0) && (k < max_gridindex) && (l < max_gridindex))
                         {
                             neighbour = new DPoint(k, l);
                             if ((k != i) || (l != j))

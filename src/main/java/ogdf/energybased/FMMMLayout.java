@@ -876,7 +876,6 @@ public class FMMMLayout
         m_NMPrecision = ((p >= 1) ? p : 1);
     }
     //! @}
-//FIXME private:
     //high level options
     boolean m_useHighLevelOptions; //!< The option for using high-level options.
     PageFormatType m_pageFormat; //!< The option for the page format.
@@ -1204,7 +1203,7 @@ public class FMMMLayout
         forceModel(ForceModel.fmNew);
         springStrength(1);
         repForcesStrength(1);
-        repulsiveForcesCalculation(RepulsiveForcesMethod.rfcExact); //FIXME
+        repulsiveForcesCalculation(RepulsiveForcesMethod.rfcGridApproximation); //FIXME
         stopCriterion(StopCriterion.scFixedIterationsOrThreshold);
         threshold(0.01);
         fixedIterations(30);
