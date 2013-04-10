@@ -32,6 +32,8 @@ package ogdf.energybased;
  */
 import java.util.*;
 import ogdf.basic.*;
+import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 class PackingRowInfo
 {
@@ -138,7 +140,10 @@ class PQueue
     {
         if (P.size() < 1)
         {
-            System.out.println("Error PQueue:: del_min() ; Heap is empty");
+            if (DEBUG_BUILD)
+            {
+                println("Error PQueue:: del_min() ; Heap is empty");
+            }
         }
         else
         {
@@ -290,7 +295,12 @@ public class MAARPacking
             @Override
             public int compare(Rectangle a, Rectangle b)
             {
-                return a.get_height() - b.get_height() < 0.0 ? -1 : 1;
+                double diff = b.get_height() - a.get_height();
+
+                if (diff == 0.0)
+                    return 0;
+
+                return diff < 0.0 ? -1 : 1;
             }
         });
     }
@@ -302,7 +312,12 @@ public class MAARPacking
             @Override
             public int compare(Rectangle a, Rectangle b)
             {
-                return a.get_width() - b.get_width() < 0.0 ? -1 : 1;
+                double diff = b.get_width() - a.get_width();
+
+                if (diff == 0.0)
+                    return 0;
+
+                return diff < 0.0 ? -1 : 1;
             }
         });
     }
@@ -356,7 +371,7 @@ public class MAARPacking
         }
 
         ListIterator<PackingRowInfo> B_F_item = total_width_of_row.find_min();
-        PackingRowInfo B_F_row = B_F_item.next();
+        PackingRowInfo B_F_row = B_F_item.next(); B_F_item.previous();
         if (better_tipp_rectangle_in_this_row(r, aspect_ratio, allow_tipping_over, B_F_row, area_2))
         {
             index_2 = 4;
@@ -400,8 +415,7 @@ public class MAARPacking
             ListIterator<PackingRowInfo> B_F_item,
             PQueue total_width_of_row)
     {
-        ListIterator<PackingRowInfo> null_list = null;
-        if (B_F_item == null) //insert into a new row
+        if (!B_F_item.hasNext()) //insert into a new row
         {
             B_F_insert_rectangle_in_new_row(r, P, row_of_rectangle, total_width_of_row);
         }
@@ -410,8 +424,7 @@ public class MAARPacking
             double old_max_height;
 
             //update P[B_F_item]
-            PackingRowInfo p = B_F_item.next();
-            B_F_item.previous();
+            PackingRowInfo p = B_F_item.next(); B_F_item.previous();
             old_max_height = p.get_max_height();
             p.set_max_height(Math.max(old_max_height, r.get_height()));
             p.set_total_width(p.get_total_width() + r.get_width());
@@ -441,8 +454,8 @@ public class MAARPacking
         PackingRowInfo p, p_pred;
         DPoint new_dlc_pos = new DPoint();
         double new_x, new_y;
-        List<Double> row_y_min = new ArrayList<Double>(P.size()); //stores the min. y-coordinates for each row in P
-        List<Double> act_row_x_max = new ArrayList<Double>(P.size()); //stores the actual rightmost x-coordinate
+        List<Double> row_y_min = new ArrayList<Double>(); //stores the min. y-coordinates for each row in P
+        List<Double> act_row_x_max = new ArrayList<Double>(); //stores the actual rightmost x-coordinate
         //for each row in P
         //ListIterator< ListIterator<PackingRowInfo> > row_item;
         ListIterator<PackingRowInfo> row_item;
@@ -452,7 +465,8 @@ public class MAARPacking
         //init act_row_x_max;
         for (i = 0; i < P.size(); i++)
         {
-            act_row_x_max.set(i, 0.0);
+            row_y_min.add(new Double(0.0));
+            act_row_x_max.add(new Double(0.0));
         }
 
         //calculate minimum heights of each row
@@ -462,6 +476,7 @@ public class MAARPacking
             if (row_item.previousIndex() < 0)
             {
                 row_y_min.set(0, 0.0);
+                row_item.next();
             }
             else
             {
@@ -479,8 +494,8 @@ public class MAARPacking
         while (R_item.hasNext())
         {
             r = R_item.next();
-            row_item = Rrow_item.next();
-            p = row_item.next();
+            row_item = Rrow_item.next(); Rrow_item.previous();
+            p = row_item.next(); row_item.previous();
             new_x = act_row_x_max.get(p.get_row_index());
             act_row_x_max.set(p.get_row_index(), act_row_x_max.get(p.get_row_index()) + r.get_width());
             new_y = row_y_min.get(p.get_row_index()) + (p.get_max_height() - r.get_height()) / 2;
@@ -488,6 +503,9 @@ public class MAARPacking
             new_dlc_pos.m_x = new_x;
             new_dlc_pos.m_y = new_y;
             r.set_new_dlc_position(new_dlc_pos);
+
+            if (Rrow_item.hasNext())
+                Rrow_item.next();
         }
     }
 

@@ -48,13 +48,13 @@ public class DLine
     //! Returns the start point of the line.
     public DPoint start()
     {
-        return m_start;
+        return new DPoint(m_start);
     }
 
     //! Returns the end point of the line.
     public DPoint end()
     {
-        return m_end;
+        return new DPoint(m_end);
     }
 
     //! Returns the x-coordinate of the difference (end point - start point).

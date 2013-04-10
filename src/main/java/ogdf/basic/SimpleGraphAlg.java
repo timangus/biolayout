@@ -98,9 +98,10 @@ public class SimpleGraphAlg
             return;
         }
 
-        EdgeArray<Integer> minIndex = new EdgeArray<Integer>(G, Integer.class);
-        EdgeArray<Integer> maxIndex = new EdgeArray<Integer>(G, Integer.class);
+        EdgeArray<Integer> minIndex = new EdgeArray<Integer>(G, Factory.INTEGER);
+        EdgeArray<Integer> maxIndex = new EdgeArray<Integer>(G, Factory.INTEGER);
         List<edge> edges = parallelFreeSortUndirected(G, minIndex, maxIndex);
+        List<edge> edgesToDelete = new ArrayList<edge>();
 
         ListIterator<edge> it = edges.listIterator();
         edge ePrev = it.next();
@@ -110,7 +111,6 @@ public class SimpleGraphAlg
             edge e = it.next();
             if (minIndex.get(ePrev) == minIndex.get(e) && maxIndex.get(ePrev) == maxIndex.get(e))
             {
-                G.delEdge(e);
                 if (bAppend)
                 {
                     bAppend = false;
@@ -121,6 +121,11 @@ public class SimpleGraphAlg
                 ePrev = e;
                 bAppend = true;
             }
+        }
+
+        for (edge e : edgesToDelete)
+        {
+            G.delEdge(e);
         }
     }
 

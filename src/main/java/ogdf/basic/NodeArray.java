@@ -52,7 +52,7 @@ public class NodeArray<T> extends ArrayList<T>
     public Graph m_pGraph; //!< The associated graph.
 
     //! Associates the array with a new graph.
-    void reregister(Graph pG)
+    void reregister(Graph pG, Factory<T> f)
     {
         if (m_pGraph != null)
         {
@@ -61,54 +61,26 @@ public class NodeArray<T> extends ArrayList<T>
         if ((m_pGraph = pG) != null)
         {
             //m_it = pG.registerArray(this);
+            createInstances(f);
         }
     }
     /* ~NodeArrayBase */
 
     T m_x; //!< The default value for array elements.
 
-    private Constructor<? extends T> ctor;
-
     //! Constructs an empty node array associated with no graph.
-    public NodeArray(Class<? extends T> impl)
+    public NodeArray()
     {
         super();
-        try
-        {
-            ctor = impl.getConstructor();
-        }
-        catch (Exception e)
-        {
-            if (DEBUG_BUILD)
-            {
-                println("Exception while getting constructor\n" + e.getMessage());
-            }
-        }
         m_pGraph = null;
     }
 
     //! Constructs a node array associated with \a G.
-    public NodeArray(Graph G, Class<? extends T> impl)
+    public NodeArray(Graph G, Factory<T> f)
     {
         super(G.numberOfNodes());
         m_pGraph = G;
-
-        try
-        {
-            ctor = impl.getConstructor();
-
-            for (int i = 0; i < m_pGraph.numberOfNodes(); i++)
-            {
-                super.add(ctor.newInstance());
-            }
-        }
-        catch (Exception e)
-        {
-            if (DEBUG_BUILD)
-            {
-                println("Exception while getting constructor\n" + e.getMessage());
-            }
-        }
+        createInstances(f);
         //if(G) m_it = pG->registerArray(this);
     }
 
@@ -117,10 +89,23 @@ public class NodeArray<T> extends ArrayList<T>
      * @param G is the associated graph.
      * @param x is the default value for all array elements.
      */
-    public NodeArray(Graph G, T x, Class<? extends T> impl)
+    public NodeArray(Graph G, T x, Factory<T> f)
     {
-        this(G, impl);
+        this(G, f);
         m_x = x;
+    }
+
+    private void createInstances(Factory<T> f)
+    {
+        if (f == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < m_pGraph.numberOfNodes(); i++)
+        {
+            super.add(f.newInstance());
+        }
     }
 
     //! Returns true iff the array is associated with a graph.
@@ -139,7 +124,8 @@ public class NodeArray<T> extends ArrayList<T>
     public T get(node v)
     {
         assert v != null && v.graphOf() == m_pGraph;
-        return super.get(v.index());
+        int index = v.index();
+        return super.get(index);
     }
 
     public void set(node v, T value)
@@ -160,14 +146,14 @@ public class NodeArray<T> extends ArrayList<T>
     //! Reinitializes the array. Associates the array with no graph.
     public void init()
     {
-        init(null);
+        init(null, null);
     }
 
     //! Reinitializes the array. Associates the array with \a G.
-    public void init(Graph G)
+    public void init(Graph G, Factory<T> f)
     {
         super.clear();
-        reregister(G);
+        reregister(G, f);
     }
 
     //! Reinitializes the array. Associates the array with \a G.
@@ -175,19 +161,19 @@ public class NodeArray<T> extends ArrayList<T>
      * @param G is the associated graph.
      * @param x is the default value.
      */
-    public void init(Graph G, T x)
+    public void init(Graph G, T x, Factory<T> f)
     {
         super.clear();
         m_x = x;
-        reregister(G);
+        reregister(G, f);
     }
 
     //! Sets all array elements to \a x.
     public void fill(T x)
     {
-        for (T element : this)
+        for (int i = 0; i < size(); i++)
         {
-            element = x;
+            set(i, x);
         }
     }
 }

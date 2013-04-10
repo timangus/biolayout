@@ -32,7 +32,10 @@ package ogdf.energybased;
  */
 import java.lang.*;
 import java.util.*;
+import java.io.*;
 import ogdf.basic.*;
+import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 //FIXME placeholder
 class NMM
@@ -136,7 +139,7 @@ public class FMMMLayout
     };
 
     //! Specifies how to calculate repulsive forces.
-    enum RepulsiveForcesMethod
+    public enum RepulsiveForcesMethod
     {
         rfcExact, //!< Exact calculation.
         rfcGridApproximation, //!< Grid approximation.
@@ -575,13 +578,13 @@ public class FMMMLayout
      * \a rfcGridApproximation: grid approxiamtion (inaccurate) - \a rfcNMM: like in NMM (= New Multipole Method; fast
      * and accurate)
      */
-    RepulsiveForcesMethod repulsiveForcesCalculation()
+    public RepulsiveForcesMethod repulsiveForcesCalculation()
     {
         return m_repulsiveForcesCalculation;
     }
 
     //! Sets the option repulsiveForcesCalculation to \a rfc.
-    void repulsiveForcesCalculation(RepulsiveForcesMethod rfc)
+    public void repulsiveForcesCalculation(RepulsiveForcesMethod rfc)
     {
         m_repulsiveForcesCalculation = rfc;
     }
@@ -950,19 +953,23 @@ public class FMMMLayout
     public void call(GraphAttributes GA)
     {
         Graph G = GA.constGraph();
-        EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0, Double.class);
+        EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0, Factory.DOUBLE);
         call(GA, edgelength);
+        create_postscript_drawing(GA, "/home/tangus2/fmmm-test.ps");
     }
 
     public void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
     {
+        FR = new FruchtermanReingold();
+        NM = new NMM();
+
         Graph G = GA.constGraph();
-        NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G, NodeAttributes.class);       //stores the attributes of the nodes (given by L)
-        EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G, EdgeAttributes.class);       //stores the edge attributes of G
+        NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G, Factory.NODE_ATTRIBUTES);       //stores the attributes of the nodes (given by L)
+        EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G, Factory.EDGE_ATTRIBUTES);       //stores the edge attributes of G
         Graph G_reduced = new Graph();                      //stores a undirected simple and loopfree copy
         //of G
-        EdgeArray<EdgeAttributes> E_reduced = new EdgeArray<EdgeAttributes>(EdgeAttributes.class);  //stores the edge attributes of G_reduced
-        NodeArray<NodeAttributes> A_reduced = new NodeArray<NodeAttributes>(NodeAttributes.class);  //stores the node attributes of G_reduced
+        EdgeArray<EdgeAttributes> E_reduced = new EdgeArray<EdgeAttributes>();  //stores the edge attributes of G_reduced
+        NodeArray<NodeAttributes> A_reduced = new NodeArray<NodeAttributes>();  //stores the node attributes of G_reduced
 
         if (G.numberOfNodes() > 1)
         {
@@ -976,6 +983,7 @@ public class FMMMLayout
             /*double t_total;
              usedTime(t_total);*/
             max_integer_position = Math.pow(2.0, maxIntPosExponent());
+            radius = new NodeArray<Double>();
             init_ind_ideal_edgelength(G, A, E);
             make_simple_loopfree(G, A, E, G_reduced, A_reduced, E_reduced);
             call_DIVIDE_ET_IMPERA_step(G_reduced, A_reduced, E_reduced);
@@ -1003,11 +1011,19 @@ public class FMMMLayout
             NodeArray<NodeAttributes> A,
             EdgeArray<EdgeAttributes> E)
     {
-        NodeArray<Integer> component = new NodeArray<Integer>(G, Integer.class); //holds for each node the index of its component
+        NodeArray<Integer> component = new NodeArray<Integer>(G, Factory.INTEGER); //holds for each node the index of its component
         number_of_components = SimpleGraphAlg.connectedComponents(G, component);//calculate components of G
-        List<Graph> G_sub = new ArrayList<Graph>(number_of_components);
-        List<NodeArray<NodeAttributes>> A_sub = new ArrayList<NodeArray<NodeAttributes>>(number_of_components);
-        List<EdgeArray<EdgeAttributes>> E_sub = new ArrayList<EdgeArray<EdgeAttributes>>(number_of_components);
+        List<Graph> G_sub = new ArrayList<Graph>();
+        List<NodeArray<NodeAttributes>> A_sub = new ArrayList<NodeArray<NodeAttributes>>();
+        List<EdgeArray<EdgeAttributes>> E_sub = new ArrayList<EdgeArray<EdgeAttributes>>();
+
+        for (int i = 0; i < number_of_components; i++)
+        {
+            G_sub.add(new Graph());
+            A_sub.add(new NodeArray<NodeAttributes>());
+            E_sub.add(new EdgeArray<EdgeAttributes>());
+        }
+
         create_maximum_connected_subGraphs(G, A, E, G_sub, A_sub, E_sub, component);
 
         if (number_of_components == 1)
@@ -1040,9 +1056,16 @@ public class FMMMLayout
         {
             m_minGraphSize = G.numberOfNodes();
         }
-        List<Graph> G_mult_ptr = new ArrayList<Graph>(max_level + 1);
-        List<NodeArray<NodeAttributes>> A_mult_ptr = new ArrayList<NodeArray<NodeAttributes>>(max_level + 1);
-        List<EdgeArray<EdgeAttributes>> E_mult_ptr = new ArrayList<EdgeArray<EdgeAttributes>>(max_level + 1);
+        List<Graph> G_mult_ptr = new ArrayList<Graph>();
+        List<NodeArray<NodeAttributes>> A_mult_ptr = new ArrayList<NodeArray<NodeAttributes>>();
+        List<EdgeArray<EdgeAttributes>> E_mult_ptr = new ArrayList<EdgeArray<EdgeAttributes>>();
+
+        for (int i = 0; i < max_level + 1; i++)
+        {
+            G_mult_ptr.add(new Graph());
+            A_mult_ptr.add(new NodeArray<NodeAttributes>());
+            E_mult_ptr.add(new EdgeArray<EdgeAttributes>());
+        }
 
         max_level = Mult.create_multilevel_representations(G, A, E, randSeed(),
                 galaxyChoice(), minGraphSize(),
@@ -1081,10 +1104,10 @@ public class FMMMLayout
             int max_mult_iter = get_max_mult_iter(act_level, max_level, G.numberOfNodes());
             double actforcevectorlength = threshold() + 1;
 
-            NodeArray<DPoint> F_rep = new NodeArray<DPoint>(G, DPoint.class); //stores rep. forces
-            NodeArray<DPoint> F_attr = new NodeArray<DPoint>(G, DPoint.class); //stores attr. forces
-            NodeArray<DPoint> F = new NodeArray<DPoint>(G, DPoint.class); //stores resulting forces
-            NodeArray<DPoint> last_node_movement = new NodeArray<DPoint>(G, DPoint.class);//stores the force vectors F of the last
+            NodeArray<DPoint> F_rep = new NodeArray<DPoint>(G, Factory.DPOINT); //stores rep. forces
+            NodeArray<DPoint> F_attr = new NodeArray<DPoint>(G, Factory.DPOINT); //stores attr. forces
+            NodeArray<DPoint> F = new NodeArray<DPoint>(G, Factory.DPOINT); //stores resulting forces
+            NodeArray<DPoint> last_node_movement = new NodeArray<DPoint>(G, Factory.DPOINT);//stores the force vectors F of the last
             //iterations (needed to avoid oscillations)
 
             set_average_ideal_edgelength(G, E);//needed for easy scaling of the forces
@@ -1181,7 +1204,7 @@ public class FMMMLayout
         forceModel(ForceModel.fmNew);
         springStrength(1);
         repForcesStrength(1);
-        repulsiveForcesCalculation(RepulsiveForcesMethod.rfcNMM);
+        repulsiveForcesCalculation(RepulsiveForcesMethod.rfcExact); //FIXME
         stopCriterion(StopCriterion.scFixedIterationsOrThreshold);
         threshold(0.01);
         fixedIterations(30);
@@ -1330,7 +1353,7 @@ public class FMMMLayout
 
     void set_radii(Graph G, NodeArray<NodeAttributes> A)
     {
-        radius.init(G);
+        radius.init(G, Factory.DOUBLE);
         double w, h;
         for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
         {
@@ -1393,14 +1416,14 @@ public class FMMMLayout
         }
 
         //remove parallel (and reversed) edges from G_reduced
-        EdgeArray<Double> new_edgelength = new EdgeArray<Double>(G_reduced, Double.class);
+        EdgeArray<Double> new_edgelength = new EdgeArray<Double>(G_reduced, Factory.DOUBLE);
         List<edge> S = new ArrayList<edge>();
         S.clear();
         delete_parallel_edges(G, E, G_reduced, S, new_edgelength);
 
         //make A_reduced, E_reduced valid for G_reduced
-        A_reduced.init(G_reduced);
-        E_reduced.init(G_reduced);
+        A_reduced.init(G_reduced, Factory.NODE_ATTRIBUTES);
+        E_reduced.init(G_reduced, Factory.EDGE_ATTRIBUTES);
 
         //import information for A_reduced, E_reduced and links to the original nodes/edges
         //of the copy nodes/edges
@@ -1408,8 +1431,10 @@ public class FMMMLayout
         {
             v_orig = i.next();
             v_reduced = A.get(v_orig).get_copy_node();
-            A_reduced.get(v_reduced).set_NodeAttributes(A.get(v_orig).get_width(), A.get(v_orig).
-                    get_height(), A.get(v_orig).get_position(),
+            A_reduced.get(v_reduced).set_NodeAttributes(
+                    A.get(v_orig).get_width(),
+                    A.get(v_orig).get_height(),
+                    A.get(v_orig).get_position(),
                     v_orig, null);
         }
         for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
@@ -1438,7 +1463,7 @@ public class FMMMLayout
         edge e_act, e_save = null;
         Edge f_act = new Edge();
         List<Edge> sorted_edges = new ArrayList<Edge>();
-        EdgeArray<edge> original_edge = new EdgeArray<edge>(G_reduced, edge.class); //helping array
+        EdgeArray<edge> original_edge = new EdgeArray<edge>(G_reduced, Factory.EDGE); //helping array
 	int save_s_index = 0, save_t_index = 0, act_s_index, act_t_index;
         int counter = 1;
         Graph Graph_ptr = G_reduced;
@@ -1604,9 +1629,9 @@ public class FMMMLayout
                     A.get(v).set_x(cross_point.m_x);
                     A.get(v).set_y(cross_point.m_y);
                 }
-                else
+                else if (DEBUG_BUILD)
                 {
-                    System.out.println("Error  make_positions_integer()");
+                    println("Error  make_positions_integer()");
                 }
             }
         }
@@ -1631,6 +1656,115 @@ public class FMMMLayout
             A.get(v).set_y(new_y);
         }
     }
+
+    void create_postscript_drawing(GraphAttributes AG, String ps_file)
+    {
+        try
+        {
+            PrintWriter out_fmmm = new PrintWriter(new FileWriter(ps_file));
+
+            Graph G = AG.constGraph();
+            node v;
+            edge e;
+            double x_min = AG.x(G.firstNode());
+            double x_max = x_min;
+            double y_min = AG.y(G.firstNode());
+            double y_max = y_min;
+            double max_dist;
+            double scale_factor;
+
+            for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+            {
+                v = i.next();
+
+                if (AG.x(v) < x_min)
+                {
+                    x_min = AG.x(v);
+                }
+                else if (AG.x(v) > x_max)
+                {
+                    x_max = AG.x(v);
+                }
+                if (AG.y(v) < y_min)
+                {
+                    y_min = AG.y(v);
+                }
+                else if (AG.y(v) > y_max)
+                {
+                    y_max = AG.y(v);
+                }
+            }
+            max_dist = Math.max(x_max - x_min, y_max - y_min);
+            scale_factor = 500.0 / max_dist;
+
+            out_fmmm.println("%!PS-Adobe-2.0 ");
+            out_fmmm.println("%%Pages:  1 ");
+            out_fmmm.println("% %BoundingBox: " + x_min + " " + x_max + " " + y_min + " " + y_max);
+            out_fmmm.println("%%EndComments ");
+            out_fmmm.println("%%");
+            out_fmmm.println("%% Circle");
+            out_fmmm.println("/ellipse_dict 4 dict def");
+            out_fmmm.println("/ellipse {");
+            out_fmmm.println("  ellipse_dict");
+            out_fmmm.println("  begin");
+            out_fmmm.println("   newpath");
+            out_fmmm.println("   /yrad exch def /xrad exch def /ypos exch def /xpos exch def");
+            out_fmmm.println("   matrix currentmatrix");
+            out_fmmm.println("   xpos ypos translate");
+            out_fmmm.println("   xrad yrad scale");
+            out_fmmm.println("  0 0 1 0 360 arc");
+            out_fmmm.println("  setmatrix");
+            out_fmmm.println("  closepath");
+            out_fmmm.println(" end");
+            out_fmmm.println("} def");
+            out_fmmm.println("%% Nodes");
+            out_fmmm.println("/v { ");
+            out_fmmm.println(" /y exch def");
+            out_fmmm.println(" /x exch def");
+            out_fmmm.println("1.000 1.000 0.894 setrgbcolor");
+            out_fmmm.println("x y 10.0 10.0 ellipse fill");
+            out_fmmm.println("0.000 0.000 0.000 setrgbcolor");
+            out_fmmm.println("x y 10.0 10.0 ellipse stroke");
+            out_fmmm.println("} def");
+            out_fmmm.println("%% Edges");
+            out_fmmm.println("/e { ");
+            out_fmmm.println(" /b exch def");
+            out_fmmm.println(" /a exch def");
+            out_fmmm.println(" /y exch def");
+            out_fmmm.println(" /x exch def");
+            out_fmmm.println("x y moveto a b lineto stroke");
+            out_fmmm.println("} def");
+            out_fmmm.println("%% ");
+            out_fmmm.println("%% INIT ");
+            out_fmmm.println("20  200 translate");
+            out_fmmm.println(scale_factor + "  " + scale_factor + "  scale ");
+            out_fmmm.println("1 setlinewidth ");
+            out_fmmm.println("%%BeginProgram ");
+
+            for (Iterator<edge> i = G.edgesIterator(); i.hasNext();)
+            {
+                e = i.next();
+                out_fmmm.println(AG.x(e.source()) + " " + AG.y(e.source()) + " " +
+                         AG.x(e.target()) + " " + AG.y(e.target()) + " e");
+            }
+
+            for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+            {
+                v = i.next();
+                out_fmmm.println(AG.x(v) + " " + AG.y(v) + " v");
+            }
+
+            out_fmmm.println("%%EndProgram ");
+            out_fmmm.println("showpage ");
+            out_fmmm.println("%%EOF ");
+
+            out_fmmm.close();
+        }
+        catch (IOException ioe)
+        {
+        }
+    }
+
 
 //------------------------- functions for divide et impera step -----------------------
     void create_maximum_connected_subGraphs(
@@ -1664,8 +1798,8 @@ public class FMMMLayout
         //make A_sub,E_sub valid for the subgraphs
         for (i = 0; i < number_of_components; i++)
         {
-            A_sub.get(i).init(G_sub.get(i));
-            E_sub.get(i).init(G_sub.get(i));
+            A_sub.get(i).init(G_sub.get(i), Factory.NODE_ATTRIBUTES);
+            E_sub.get(i).init(G_sub.get(i), Factory.EDGE_ATTRIBUTES);
         }
 
         //import information for A_sub,E_sub and links to the original nodes/edges
@@ -1815,16 +1949,15 @@ public class FMMMLayout
             r_best = calculate_bounding_rectangle(G_sub.get(i), A_sub.get(i), i);
             best_area = calculate_area(r_best.get_width(), r_best.get_height(),
                     number_of_components);
-            best_coords.add(i, new NodeArray<DPoint>(G_sub.get(i), DPoint.class));
-            old_coords.add(i, new NodeArray<DPoint>(G_sub.get(i), DPoint.class));
+            best_coords.add(i, new NodeArray<DPoint>(G_sub.get(i), Factory.DPOINT));
+            old_coords.add(i, new NodeArray<DPoint>(G_sub.get(i), Factory.DPOINT));
 
             for (Iterator<node> iter = G_sub.get(i).nodesIterator(); iter.hasNext();)
             {
                 v_sub = iter.next();
-                DPoint p = A_sub.get(i).get(v_sub).get_position();
-                old_coords.get(i).set(v_sub, p);
-                best_coords.get(i).set(v_sub, p);
-
+                DPoint p = new DPoint(A_sub.get(i).get(v_sub).get_position());
+                old_coords.get(i).set(v_sub, new DPoint(p));
+                best_coords.get(i).set(v_sub, new DPoint(p));
             }
 
             //rotate the components
@@ -1864,7 +1997,7 @@ public class FMMMLayout
                     {
                         v_sub = iter.next();
 
-                        best_coords.get(i).set(v_sub, A_sub.get(i).get(v_sub).get_position());
+                        best_coords.get(i).set(v_sub, new DPoint(A_sub.get(i).get(v_sub).get_position()));
                     }
                 }
                 else if ((number_of_components == 1) && (act_area_PI_half_rotated < best_area))
@@ -1875,7 +2008,7 @@ public class FMMMLayout
                     {
                         v_sub = iter.next();
 
-                        best_coords.get(i).set(v_sub, A_sub.get(i).get(v_sub).get_position());
+                        best_coords.get(i).set(v_sub, new DPoint(A_sub.get(i).get(v_sub).get_position()));
                     }
                     //the needed rotation step follows in the next if statement
                 }
@@ -1892,7 +2025,7 @@ public class FMMMLayout
                     v_sub = iter.next();
                     new_pos.m_x = best_coords.get(i).get(v_sub).m_y * (-1);
                     new_pos.m_y = best_coords.get(i).get(v_sub).m_x;
-                    best_coords.get(i).set(v_sub, new_pos);
+                    best_coords.get(i).set(v_sub, new DPoint(new_pos));
                 }
 
                 //calculate new rectangle
@@ -2068,13 +2201,11 @@ public class FMMMLayout
         boxlength = Math.ceil(Math.max(w, h) * BOX_SCALING_FACTOR);
 
         //down left corner of comp. box is the origin
-        down_left_corner.m_x = 0;
-        down_left_corner.m_y = 0;
+        down_left_corner = new DPoint(0.0, 0.0);
     }
 
     void create_initial_placement(Graph G, NodeArray<NodeAttributes> A)
     {
-        int BILLION = 1000000000;
         int i, j, k;
         node v;
 
@@ -2148,12 +2279,10 @@ public class FMMMLayout
 
     void init_F(Graph G, NodeArray<DPoint> F)
     {
-        DPoint nullpoint = new DPoint(0, 0);
-
         for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
         {
             node v = iter.next();
-            F.set(v, nullpoint);
+            F.set(v, new DPoint());
         }
     }
 
@@ -2219,7 +2348,7 @@ public class FMMMLayout
             v = e.target();
             vector_v_minus_u = A.get(v).get_position().minus(A.get(u).get_position());
             norm_v_minus_u = vector_v_minus_u.norm();
-            if (vector_v_minus_u == nullpoint)
+            if (vector_v_minus_u.equals(nullpoint))
             {
                 f_u = nullpoint;
             }
@@ -2268,9 +2397,9 @@ public class FMMMLayout
                 s = -1e10;
             }
         }
-        else
+        else if (DEBUG_BUILD)
         {
-            System.out.println(" Error  f_attr_scalar");
+            println(" Error  f_attr_scalar");
         }
 
         return s;
@@ -2364,7 +2493,7 @@ public class FMMMLayout
                 force.m_x = scalar * f.m_x;
                 force.m_y = scalar * f.m_y;
             }
-            F.set(v, force);
+            F.set(v, new DPoint(force));
         }
     }
 
@@ -2513,8 +2642,8 @@ public class FMMMLayout
             for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
             {
                 v = i.next();
-                DPoint force_new = new DPoint(F.get(v).m_x, F.get(v).m_y);
-                DPoint force_old = new DPoint(last_node_movement.get(v).m_x, last_node_movement.get(v).m_y);
+                DPoint force_new = new DPoint(F.get(v));
+                DPoint force_old = new DPoint(last_node_movement.get(v));
                 norm_new = F.get(v).norm();
                 norm_old = last_node_movement.get(v).norm();
                 if ((norm_new > 0) && (norm_old > 0))
@@ -2603,7 +2732,10 @@ public class FMMMLayout
 
         if ((dx1 == 0 && dy1 == 0) || (dx2 == 0 && dy2 == 0))
         {
-            System.out.println("Multilevel::angle()");
+            if (DEBUG_BUILD)
+            {
+                println("Multilevel::angle()");
+            }
         }
 
         double norm = (dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2);
@@ -2641,7 +2773,7 @@ public class FMMMLayout
         for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
         {
             v = i.next();
-            last_node_movement.set(v, F.get(v));
+            last_node_movement.set(v, new DPoint(F.get(v)));
         }
     }
 

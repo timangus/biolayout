@@ -38,6 +38,8 @@ package ogdf.energybased;
 //---------------------------------------------------------------------------
 import java.util.Random;
 import ogdf.basic.DPoint;
+import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 class numexcept
 {
@@ -115,15 +117,15 @@ class numexcept
                     new_point.m_y = old_point.m_y + mindist_y * rand_y * epsilon;
                 } while (old_point == new_point);
             }
-            else
+            else if (DEBUG_BUILD)
             {
-                System.out.println("Error DIM2:: box is equal to old_pos");
+                println("Error DIM2:: box is equal to old_pos");
             }
         }//else1
-        else //mindist < 0
+        else if (DEBUG_BUILD)//mindist < 0
         {//else2
-            System.out.println("Error DIM2:: choose_distinct_random_point_in_disque: old_point not ");
-            System.out.println("in box");
+            println("Error DIM2:: choose_distinct_random_point_in_disque: old_point not ");
+            println("in box");
         }//else2
 
         return new_point;

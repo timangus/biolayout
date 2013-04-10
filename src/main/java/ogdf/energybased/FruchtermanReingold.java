@@ -33,6 +33,8 @@ package ogdf.energybased;
 
 import java.util.*;
 import ogdf.basic.*;
+import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 class FruchtermanReingold
 {
@@ -41,7 +43,7 @@ class FruchtermanReingold
     public void update_boxlength_and_cornercoordinate(double b_l, DPoint d_l_c)
     {
         boxlength = b_l;
-        down_left_corner = d_l_c;
+        down_left_corner = new DPoint(d_l_c);
     }
     private int _grid_quotient;//for coarsening the FrRe-grid
     private int max_gridindex; //maximum index of a grid row/column
@@ -76,30 +78,27 @@ class FruchtermanReingold
         DPoint f_rep_u_on_v = new DPoint();
         DPoint vector_v_minus_u;
         DPoint pos_u, pos_v;
-        DPoint nullpoint = new DPoint(0, 0);
         double norm_v_minus_u;
         int node_number = G.numberOfNodes();
-        List<node> array_of_the_nodes = new ArrayList<node>(node_number + 1);
-        int counter = 1;
+        List<node> array_of_the_nodes = new ArrayList<node>();
         int i, j;
         double scalar;
 
         for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
         {
             v = iter.next();
-            F_rep.set(v, nullpoint);
+            F_rep.set(v, new DPoint());
         }
 
         for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
         {
             v = iter.next();
             array_of_the_nodes.add(v);
-            counter++;
         }
 
-        for (i = 1; i < node_number; i++)
+        for (i = 0; i < node_number; i++)
         {
-            for (j = i + 1; j <= node_number; j++)
+            for (j = i + 1; j < node_number; j++)
             {
                 u = array_of_the_nodes.get(i);
                 v = array_of_the_nodes.get(j);
@@ -117,8 +116,8 @@ class FruchtermanReingold
                     f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
                     f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
                 }
-                F_rep.set(v, F_rep.get(v).plus(f_rep_u_on_v));
-                F_rep.set(u, F_rep.get(u).minus(f_rep_u_on_v));
+                F_rep.set(v, new DPoint(F_rep.get(v).plus(f_rep_u_on_v)));
+                F_rep.set(u, new DPoint(F_rep.get(u).minus(f_rep_u_on_v)));
             }
         }
     }
@@ -136,7 +135,6 @@ class FruchtermanReingold
         DPoint neighbour; // should be IPoint
         DPoint f_rep_u_on_v = new DPoint();
         DPoint vector_v_minus_u;
-        DPoint nullpoint = new DPoint(0, 0);
         DPoint pos_u, pos_v;
         double norm_v_minus_u;
         double scalar;
@@ -150,7 +148,7 @@ class FruchtermanReingold
         for (Iterator<node> iter = G.nodesIterator(); iter.hasNext();)
         {
             v = iter.next();
-            F_rep.set(v, nullpoint);
+            F_rep.set(v, new DPoint());
         }
 
         //init max_gridindex and set contained_nodes;
@@ -217,8 +215,8 @@ class FruchtermanReingold
                             f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
                         }
 
-                        F_rep.set(v, F_rep.get(v).plus(f_rep_u_on_v));
-                        F_rep.set(u, F_rep.get(u).minus(f_rep_u_on_v));
+                        F_rep.set(v, new DPoint(F_rep.get(v).plus(f_rep_u_on_v)));
+                        F_rep.set(u, new DPoint(F_rep.get(u).minus(f_rep_u_on_v)));
                     }
                 }
 
@@ -269,8 +267,8 @@ class FruchtermanReingold
                                     f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
                                     f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
                                 }
-                                F_rep.set(v_it, F_rep.get(v_it).plus(f_rep_u_on_v));
-                                F_rep.set(u_it, F_rep.get(u_it).minus(f_rep_u_on_v));
+                                F_rep.set(v_it, new DPoint(F_rep.get(v_it).plus(f_rep_u_on_v)));
+                                F_rep.set(u_it, new DPoint(F_rep.get(u_it).minus(f_rep_u_on_v)));
                             }//for
                         }
                     }//if1
@@ -282,20 +280,23 @@ class FruchtermanReingold
     public void make_initialisations(double bl, DPoint d_l_c, int grid_quot)
     {
         grid_quotient(grid_quot);
-        down_left_corner = d_l_c; //export this two values from FMMM
+        down_left_corner = new DPoint(d_l_c); //export this two values from FMMM
         boxlength = bl;
     }
 
     public double f_rep_scalar(double d)
     {
-        if (d > 0)
+        if (d > 0.0)
         {
-            return 1 / d;
+            return 1.0 / d;
         }
         else
         {
-            System.out.println("Error  f_rep_scalar nodes at same position");
-            return 0;
+            if (DEBUG_BUILD)
+            {
+                println("Error  f_rep_scalar nodes at same position");
+            }
+            return 0.0;
         }
     }
 }

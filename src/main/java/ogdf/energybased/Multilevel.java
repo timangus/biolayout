@@ -44,6 +44,8 @@ package ogdf.energybased;
 
 import java.util.*;
 import ogdf.basic.*;
+import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
+import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
 public class Multilevel
 {
@@ -81,8 +83,8 @@ public class Multilevel
                 edgenumbersum_of_all_levels_is_linear(G_mult_ptr, act_level))
         {
             Graph G_new = new Graph();
-            NodeArray<NodeAttributes> A_new = new NodeArray<NodeAttributes>(NodeAttributes.class);
-            EdgeArray<EdgeAttributes> E_new = new EdgeArray<EdgeAttributes>(EdgeAttributes.class);
+            NodeArray<NodeAttributes> A_new = new NodeArray<NodeAttributes>();
+            EdgeArray<EdgeAttributes> E_new = new EdgeArray<EdgeAttributes>();
             G_mult_ptr.set(act_level + 1, G_new);
             A_mult_ptr.set(act_level + 1, A_new);
             E_mult_ptr.set(act_level + 1, E_new);
@@ -277,7 +279,7 @@ public class Multilevel
         }//while
 
         //init *A_mult_ptr[act_level+1] and set NodeAttributes information for new nodes
-        A_mult_ptr.get(act_level + 1).init(G_mult_ptr.get(act_level + 1));
+        A_mult_ptr.get(act_level + 1).init(G_mult_ptr.get(act_level + 1), Factory.NODE_ATTRIBUTES);
         for (node sun_node_ptr : sun_nodes)
         {
             newNode = A_mult_ptr.get(act_level).get(sun_node_ptr).get_higher_level_node();
@@ -365,7 +367,7 @@ public class Multilevel
             List<EdgeArray<EdgeAttributes>> E_mult_ptr,
             int act_level)
     {
-        EdgeArray<Double> new_edgelength = new EdgeArray<Double>(Double.class);
+        EdgeArray<Double> new_edgelength = new EdgeArray<Double>();
         calculate_mass_of_collapsed_nodes(G_mult_ptr, A_mult_ptr, act_level);
         create_edges_edgedistances_and_lambda_Lists(G_mult_ptr, A_mult_ptr, E_mult_ptr,
                 new_edgelength, act_level);
@@ -430,7 +432,7 @@ public class Multilevel
 
         //init new_edgelength calculate the values of new_edgelength and the lambda Lists
 
-        new_edgelength.init(G_mult_ptr.get(act_level + 1));
+        new_edgelength.init(G_mult_ptr.get(act_level + 1), Factory.DOUBLE);
         for (edge e_ptr : inter_solar_system_edges)
         {//forall
             s_node = e_ptr.source();
@@ -539,7 +541,7 @@ public class Multilevel
         }
 
         //init *E_mult_ptr[act_level+1] and import EdgeAttributes
-        E_mult_ptr.get(act_level + 1).init(G_mult_ptr.get(act_level + 1));
+        E_mult_ptr.get(act_level + 1).init(G_mult_ptr.get(act_level + 1), Factory.EDGE_ATTRIBUTES);
         for (Iterator<edge> i = Graph_ptr.edgesIterator(); i.hasNext();)
         {
             e_act = i.next();
@@ -607,7 +609,7 @@ public class Multilevel
             {//else
                 L.clear();
                 dedicated_sun = A_mult_ptr.get(level).get(v).get_dedicated_sun_node();
-                dedicated_sun_pos = A_mult_ptr.get(level).get(dedicated_sun).get_position();
+                dedicated_sun_pos = new DPoint(A_mult_ptr.get(level).get(dedicated_sun).get_position());
                 dedicated_sun_distance = A_mult_ptr.get(level).get(v).get_dedicated_sun_distance();
 
                 if (init_placement_way == FMMMLayout.InitialPlacementMult.ipmAdvanced)
@@ -688,8 +690,7 @@ public class Multilevel
             v_high = i.next();
             //find pos of adjacent nodes
             adj_pos.clear();
-            DPoint v_high_pos = new DPoint(A_mult_ptr.get(level + 1).get(v_high).get_x(),
-                    A_mult_ptr.get(level + 1).get(v_high).get_y());
+            DPoint v_high_pos = new DPoint(A_mult_ptr.get(level + 1).get(v_high).get_position());
 
             for (edge e_high : v_high.adjEdges())
             {
@@ -704,8 +705,7 @@ public class Multilevel
                         w_high = e_high.source();
                     }
 
-                    DPoint w_high_pos = new DPoint(A_mult_ptr.get(level + 1).get(w_high).get_x(),
-                            A_mult_ptr.get(level + 1).get(w_high).get_y());
+                    DPoint w_high_pos = new DPoint(A_mult_ptr.get(level + 1).get(w_high).get_position());
                     adj_pos.add(w_high_pos);
                 }
             }
@@ -909,7 +909,10 @@ public class Multilevel
 
         if ((dx1 == 0 && dy1 == 0) || (dx2 == 0 && dy2 == 0))
         {
-            System.out.println("angle()");
+            if (DEBUG_BUILD)
+            {
+                println("angle()");
+            }
         }
 
         double norm = (dx1 * dx1 + dy1 * dy1) * (dx2 * dx2 + dy2 * dy2);

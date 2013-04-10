@@ -33,7 +33,7 @@ package ogdf.energybased;
 
 import ogdf.basic.edge;
 
-class EdgeAttributes
+public class EdgeAttributes
 {
     //helping data structure that stores the graphical attributes of an edge
     //that are needed for the force-directed  algorithms.

@@ -14,10 +14,10 @@ public class GraphAttributes
     public GraphAttributes(Graph graph)
     {
         this.graph = graph;
-        m_x = new NodeArray<Double>(graph, Double.class);
-        m_y = new NodeArray<Double>(graph, Double.class);
-        m_width = new NodeArray<Double>(graph, Double.class);
-        m_height = new NodeArray<Double>(graph, Double.class);
+        m_x = new NodeArray<Double>(graph, Factory.DOUBLE);
+        m_y = new NodeArray<Double>(graph, Factory.DOUBLE);
+        m_width = new NodeArray<Double>(graph, Factory.DOUBLE);
+        m_height = new NodeArray<Double>(graph, Factory.DOUBLE);
     }
 
     public GraphAttributes(NetworkContainer nc)

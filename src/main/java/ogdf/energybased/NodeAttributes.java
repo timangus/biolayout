@@ -42,8 +42,7 @@ public class NodeAttributes
 
     public NodeAttributes()
     {
-        position.m_x = 0;
-        position.m_y = 0;
+        position = new DPoint();
         width = 0;
         height = 0;
         v_lower_level = null;
@@ -55,11 +54,11 @@ public class NodeAttributes
         dedicated_sun_node = null;
         dedicated_sun_distance = 0;
         dedicated_pm_node = null;
-        lambda.clear();
-        neighbour_s_node.clear();
+        lambda = new ArrayList<Double>();
+        neighbour_s_node = new ArrayList<node>();
         //lambda_List_ptr = &lambda;
         //neighbour_s_node_List_ptr = &neighbour_s_node;
-        moon_List.clear();
+        moon_List = new ArrayList<node>();
         //moon_List_ptr = &moon_List;
         placed = false;
         angle_1 = 0;
@@ -70,14 +69,14 @@ public class NodeAttributes
     {
         width = w;
         height = h;
-        position = pos;
+        position = new DPoint(pos);
         v_lower_level = v_low;
         v_higher_level = v_high;
     }
 
     public void set_position(DPoint pos)
     {
-        position = pos;
+        position = new DPoint(pos);
     }
 
     public void set_width(double w)
@@ -102,7 +101,7 @@ public class NodeAttributes
 
     public DPoint get_position()
     {
-        return position;
+        return new DPoint(position);
     }
 
     public double get_x()

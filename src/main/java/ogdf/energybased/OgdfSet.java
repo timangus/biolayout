@@ -65,8 +65,13 @@ public class OgdfSet
         using_S_node = true;
         node v;
 
-        S_node = new ArrayList<node>(G.numberOfNodes());
-        position_in_node_set.init(G);
+        S_node = new ArrayList<node>();
+        for (int i = 0; i < G.numberOfNodes(); i++)
+        {
+            S_node.add(new node(G, i));
+        }
+
+        position_in_node_set = new NodeArray<Integer>(G, Factory.INTEGER);
 
         for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
         {
@@ -134,7 +139,7 @@ public class OgdfSet
         node v, v_adj;
 
         init_node_set(G);
-        mass_of_star.init(G);
+        mass_of_star = new NodeArray<Integer>(G, Factory.INTEGER);
         for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
         {
             v = i.next();
