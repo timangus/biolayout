@@ -37,27 +37,6 @@ import ogdf.basic.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-//FIXME placeholder
-class NMM
-{
-    public void calculate_repulsive_forces(
-            Graph G,
-            NodeArray<NodeAttributes> A,
-            NodeArray<DPoint> F_rep)
-    {
-    }
-
-    public void make_initialisations(Graph G, double bl, DPoint d_l_c,
-            int nmParticlesInLeaves, int nmPrecision,
-            FMMMLayout.ReducedTreeConstruction rtc, FMMMLayout.SmallestCellFinding scf)
-    {
-    }
-
-    public void update_boxlength_and_cornercoordinate(double b_l, DPoint d_l_c)
-    {
-    }
-}
-
 public class FMMMLayout
 {
     //! Possible page formats.
@@ -164,14 +143,14 @@ public class FMMMLayout
     };
 
     //! Specifies how the reduced bucket quadtree is constructed.
-    enum ReducedTreeConstruction
+    public enum ReducedTreeConstruction
     {
         rtcPathByPath, //!< Path-by-path construction.
         rtcSubtreeBySubtree //!< Subtree-by-subtree construction.
     };
 
     //! Specifies how to calculate the smallest quadratic cell surrounding particles of a node in the reduced bucket quadtree.
-    enum SmallestCellFinding
+    public enum SmallestCellFinding
     {
         scfIteratively, //!< Iteratively (in constant time).
         scfAluru        //!< According to formula by Aluru et al. (in constant time).
