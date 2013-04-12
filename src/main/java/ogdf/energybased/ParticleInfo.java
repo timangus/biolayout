@@ -93,7 +93,7 @@ public class ParticleInfo
         marked = false;
     }
 
-    public void set_tmp_cross_ref_item(ListIterator<ParticleInfo> it)
+    public void set_tmp_cross_ref_item(ParticleInfo it)
     {
         tmp_item = it;
     }
@@ -128,7 +128,7 @@ public class ParticleInfo
         return marked;
     }
 
-    public ListIterator<ParticleInfo> get_tmp_cross_ref_item()
+    public ParticleInfo get_tmp_cross_ref_item()
     {
         return tmp_item;
     }
@@ -168,7 +168,7 @@ public class ParticleInfo
     //actual entry of ParticleInfo has to be stored
     ParticleInfo copy_item;  //the item of this entry in the copy List
     boolean marked; //indicates if this ParticleInfo object is marked or not
-    ListIterator<ParticleInfo> tmp_item;	//a temporily item that is used to construct
+    ParticleInfo tmp_item;	//a temporily item that is used to construct
     //the cross references for the copy_Lists
     //and the subLists
 }

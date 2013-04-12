@@ -31,8 +31,42 @@ final public class Complex
         this.imaginary = other.imaginary;
     }
 
-    public Complex add(Complex other)
+    public Complex plus(Complex other)
     {
-        return new Complex((this.real + other.real), (this.imaginary + other.imaginary));
+        return new Complex(this.real + other.real, this.imaginary + other.imaginary);
+    }
+
+    public Complex minus(Complex other)
+    {
+        return new Complex(this.real - other.real, this.imaginary - other.imaginary);
+    }
+
+    public Complex multipliedBy(Complex other)
+    {
+        return new Complex(
+                (this.real * other.real) - (this.imaginary * other.imaginary),
+                (this.real * other.imaginary) + (this.imaginary * other.real));
+    }
+
+    public Complex multipliedBy(double s)
+    {
+        return this.multipliedBy(new Complex(s, 0));
+    }
+
+    public Complex dividedBy(Complex other)
+    {
+        double a = this.real;
+        double b = this.imaginary;
+        double c = other.real;
+        double d = other.imaginary;
+
+        return new Complex(
+                ((a * c) + (b * d)) / ((c * c) + (d * d)),
+                ((b * c) - (a * d)) / ((c * c) + (d * d)));
+    }
+
+    public Complex dividedBy(double s)
+    {
+        return multipliedBy(1.0 / s);
     }
 }

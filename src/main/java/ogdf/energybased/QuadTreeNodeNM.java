@@ -333,9 +333,9 @@ public class QuadTreeNodeNM
         return ME;
     }
 
-    public void get_contained_nodes(List<node> L)
+    public List<node> get_contained_nodes()
     {
-        L = contained_nodes;
+        return contained_nodes;
     }
 
     public void get_I(List<QuadTreeNodeNM> l)

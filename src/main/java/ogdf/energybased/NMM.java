@@ -58,8 +58,8 @@ public class NMM
     boolean using_NMM; //Indicates whether the exact method or NMM is used for force
     //calculation (value depends on MIN_NODE_NUMBER)
     FruchtermanReingold ExactMethod; //needed in case that using_NMM == false
-    int _tree_construction_way;//1 = pathwise;2 = subtreewise
-    int _find_small_cell;//0 = iterative; 1= Aluru
+    FMMMLayout.ReducedTreeConstruction _tree_construction_way;//1 = pathwise;2 = subtreewise
+    FMMMLayout.SmallestCellFinding _find_small_cell;//0 = iterative; 1= Aluru
     int _particles_in_leaves;//max. number of particles for leaves of the quadtree
     int _precision;  //precision for p-term multipole expansion
     double boxlength;//length of drawing box
@@ -157,8 +157,8 @@ public class NMM
             DPoint d_l_c,
             int p_i_l,
             int p,
-            int t_c_w,
-            int f_s_c)
+            FMMMLayout.ReducedTreeConstruction t_c_w,
+            FMMMLayout.SmallestCellFinding f_s_c)
     {
         if (G.numberOfNodes() >= MIN_NODE_NUMBER) //using_NMM
         {
@@ -244,7 +244,8 @@ public class NMM
     {
         List<QuadTreeNodeNM> act_leaf_List, new_leaf_List;
         List<QuadTreeNodeNM> act_leaf_List_ptr, new_leaf_List_ptr, help_ptr;
-        List<ParticleInfo> act_x_List_copy, act_y_List_copy;
+        List<ParticleInfo> act_x_List_copy = new ArrayList<ParticleInfo>();
+        List<ParticleInfo> act_y_List_copy = new ArrayList<ParticleInfo>();
         QuadTreeNodeNM act_node_ptr;
 
         build_up_root_node(G, A, T);
@@ -444,14 +445,14 @@ public class NMM
                 if ((L_x_lt_ptr.get() == null) ||
                         (L_x_lb_ptr.get() != null && L_x_lb_ptr.get().size() > L_x_lt_ptr.get().size()))
                 {//if2
-                    T.create_new_lb_child(L_x_lb_ptr, L_y_lb_ptr);
+                    T.create_new_lb_child(L_x_lb_ptr.get(), L_y_lb_ptr.get());
                     T.go_to_lb_child();
                     decompose_subtreenode(T, act_x_List_copy, act_y_List_copy, new_leaf_List);
                     T.go_to_father();
                 }//if2
                 else //L_x_lt_ptr.get() != null &&  L_x_lb_ptr.get().size() <= L_x_lt_ptr.get().size()
                 {//else1
-                    T.create_new_lt_child(L_x_lt_ptr, L_y_lt_ptr);
+                    T.create_new_lt_child(L_x_lt_ptr.get(), L_y_lt_ptr.get());
                     T.go_to_lt_child();
                     decompose_subtreenode(T, act_x_List_copy, act_y_List_copy, new_leaf_List);
                     T.go_to_father();
@@ -464,14 +465,14 @@ public class NMM
                 if ((L_x_rt_ptr.get() == null) ||
                         (L_x_rb_ptr.get() != null && L_x_rb_ptr.get().size() > L_x_rt_ptr.get().size()))
                 {//if3
-                    T.create_new_rb_child(L_x_rb_ptr, L_y_rb_ptr);
+                    T.create_new_rb_child(L_x_rb_ptr.get(), L_y_rb_ptr.get());
                     T.go_to_rb_child();
                     decompose_subtreenode(T, act_x_List_copy, act_y_List_copy, new_leaf_List);
                     T.go_to_father();
                 }//if3
                 else// L_x_rt_ptr.get() != null && L_x_rb_ptr.get().size() <= L_x_rt_ptr.get().size()
                 {//else3
-                    T.create_new_rt_child(L_x_rt_ptr, L_y_rt_ptr);
+                    T.create_new_rt_child(L_x_rt_ptr.get(), L_y_rt_ptr.get());
                     T.go_to_rt_child();
                     decompose_subtreenode(T, act_x_List_copy, act_y_List_copy, new_leaf_List);
                     T.go_to_father();
@@ -496,28 +497,28 @@ public class NMM
             //create rest of the childnodes
             if ((!act_ptr.child_lb_exists()) && (L_x_lb_ptr.get() != null))
             {
-                T.create_new_lb_child(L_x_lb_ptr, L_y_lb_ptr);
+                T.create_new_lb_child(L_x_lb_ptr.get(), L_y_lb_ptr.get());
                 T.go_to_lb_child();
                 new_leaf_List.add(T.get_act_ptr());
                 T.go_to_father();
             }
             if ((!act_ptr.child_lt_exists()) && (L_x_lt_ptr.get() != null))
             {
-                T.create_new_lt_child(L_x_lt_ptr, L_y_lt_ptr);
+                T.create_new_lt_child(L_x_lt_ptr.get(), L_y_lt_ptr.get());
                 T.go_to_lt_child();
                 new_leaf_List.add(T.get_act_ptr());
                 T.go_to_father();
             }
             if ((!act_ptr.child_rb_exists()) && (L_x_rb_ptr.get() != null))
             {
-                T.create_new_rb_child(L_x_rb_ptr, L_y_rb_ptr);
+                T.create_new_rb_child(L_x_rb_ptr.get(), L_y_rb_ptr.get());
                 T.go_to_rb_child();
                 new_leaf_List.add(T.get_act_ptr());
                 T.go_to_father();
             }
             if ((!act_ptr.child_rt_exists()) && (L_x_rt_ptr.get() != null))
             {
-                T.create_new_rt_child(L_x_rt_ptr, L_y_rt_ptr);
+                T.create_new_rt_child(L_x_rt_ptr.get(), L_y_rt_ptr.get());
                 T.go_to_rt_child();
                 new_leaf_List.add(T.get_act_ptr());
                 T.go_to_father();
@@ -1212,1229 +1213,1408 @@ public class NMM
         }
     }
 
-
 // **********Functions needed for subtree by subtree  treeruction(Begin)*********
+    void build_up_red_quad_tree_subtree_by_subtree(
+            Graph G,
+            NodeArray<NodeAttributes> A,
+            QuadTreeNM T)
+    {
+        List<QuadTreeNodeNM> act_subtree_root_List, new_subtree_root_List;
+        List<QuadTreeNodeNM> act_subtree_root_List_ptr, new_subtree_root_List_ptr, help_ptr;
+        QuadTreeNodeNM subtree_root_ptr;
 
-void build_up_red_quad_tree_subtree_by_subtree(
-	Graph G,
-	NodeArray<NodeAttributes> A,
-	QuadTreeNM T)
-{
-	List<QuadTreeNodeNM> act_subtree_root_List,new_subtree_root_List;
-	List<QuadTreeNodeNM> *act_subtree_root_List_ptr,*new_subtree_root_List_ptr,*help_ptr;
-	QuadTreeNodeNM *subtree_root_ptr;
+        build_up_root_vertex(G, T);
 
-	build_up_root_vertex(G,T);
+        act_subtree_root_List = new ArrayList<QuadTreeNodeNM>();
+        new_subtree_root_List = new ArrayList<QuadTreeNodeNM>();
+        act_subtree_root_List.add(T.get_root_ptr());
+        act_subtree_root_List_ptr = act_subtree_root_List;
+        new_subtree_root_List_ptr = new_subtree_root_List;
 
-	act_subtree_root_List.clear();
-	new_subtree_root_List.clear();
-	act_subtree_root_List.pushFront(T.get_root_ptr());
-	act_subtree_root_List_ptr = &act_subtree_root_List;
-	new_subtree_root_List_ptr = &new_subtree_root_List;
+        while (!act_subtree_root_List_ptr.isEmpty())
+        {
+            while (!act_subtree_root_List_ptr.isEmpty())
+            {
+                subtree_root_ptr = act_subtree_root_List_ptr.remove(0);
+                construct_subtree(A, T, subtree_root_ptr, new_subtree_root_List_ptr);
+            }
+            help_ptr = act_subtree_root_List_ptr;
+            act_subtree_root_List_ptr = new_subtree_root_List_ptr;
+            new_subtree_root_List_ptr = help_ptr;
+        }
+    }
 
-	while(!act_subtree_root_List_ptr.empty())
-	{
-		while(!act_subtree_root_List_ptr.empty())
-		{
-			subtree_root_ptr = act_subtree_root_List_ptr.popFrontRet();
-			construct_subtree(A,T,subtree_root_ptr,*new_subtree_root_List_ptr);
-		}
-		help_ptr = act_subtree_root_List_ptr;
-		act_subtree_root_List_ptr = new_subtree_root_List_ptr;
-		new_subtree_root_List_ptr = help_ptr;
-	}
-}
+    void build_up_root_vertex(Graph G, QuadTreeNM T)
+    {
+        node v;
 
+        T.init_tree();
+        T.get_root_ptr().set_Sm_level(0);
+        T.get_root_ptr().set_Sm_downleftcorner(down_left_corner);
+        T.get_root_ptr().set_Sm_boxlength(boxlength);
+        T.get_root_ptr().set_particlenumber_in_subtree(G.numberOfNodes());
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            T.get_root_ptr().pushBack_contained_nodes(v);
+        }
+    }
 
-void build_up_root_vertex(Graph G, QuadTreeNM T)
-{
-	node v;
+    void construct_subtree(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNM T,
+            QuadTreeNodeNM subtree_root_ptr,
+            List<QuadTreeNodeNM> new_subtree_root_List)
+    {
+        int n = subtree_root_ptr.get_particlenumber_in_subtree();
+        int subtree_depth = (int) (Math.max(1.0, Math.floor(Math.log(n) / Math.log(4.0)) - 2.0));
+        int maxindex = 1;
 
-	T.init_tree();
-	T.get_root_ptr().set_Sm_level(0);
-	T.get_root_ptr().set_Sm_downleftcorner(down_left_corner);
-	T.get_root_ptr().set_Sm_boxlength(boxlength);
-	T.get_root_ptr().set_particlenumber_in_subtree(G.numberOfNodes());
-	for (Iterator<node> i = G.nodesIterator(); i.hasNext();)        {            v = i.next();
-		T.get_root_ptr().pushBack_contained_nodes(v);
-}
+        for (int i = 1; i <= subtree_depth; i++)
+        {
+            maxindex *= 2;
+        }
+        double subtree_min_boxlength = subtree_root_ptr.get_Sm_boxlength() / maxindex;
 
+        if (subtree_min_boxlength >= MIN_BOX_LENGTH)
+        {
+            QuadTreeNodeNM[][] leaf_ptr = new QuadTreeNodeNM[maxindex - 1][maxindex - 1];
 
-void construct_subtree(
-	NodeArray<NodeAttributes> A,
-	QuadTreeNM T,
-	QuadTreeNodeNM *subtree_root_ptr,
-	List<QuadTreeNodeNM> new_subtree_root_List)
-{
-	int n = subtree_root_ptr.get_particlenumber_in_subtree();
-	int subtree_depth =  static_cast<int>(max(1.0,floor(Math::log4(n))-2.0));
-	int maxindex=1;
+            T.set_act_ptr(subtree_root_ptr);
+            if (find_smallest_quad(A, T)) //not all nodes have the same position
+            {
+                construct_complete_subtree(T, subtree_depth, leaf_ptr, 0, 0, 0);
+                set_contained_nodes_for_leaves(A, subtree_root_ptr, leaf_ptr, maxindex);
+                T.set_act_ptr(subtree_root_ptr);
+                set_particlenumber_in_subtree_entries(T);
+                T.set_act_ptr(subtree_root_ptr);
+                construct_reduced_subtree(A, T, new_subtree_root_List);
+            }
+        }
+    }
 
-	for(int i=1; i<=subtree_depth; i++)
-		maxindex *= 2;
-	double subtree_min_boxlength = subtree_root_ptr.get_Sm_boxlength()/maxindex;
+    void construct_complete_subtree(
+            QuadTreeNM T,
+            int subtree_depth,
+            QuadTreeNodeNM[][] leaf_ptr,
+            int act_depth,
+            int act_x_index,
+            int act_y_index)
+    {
+        if (act_depth < subtree_depth)
+        {
+            T.create_new_lt_child();
+            T.create_new_rt_child();
+            T.create_new_lb_child();
+            T.create_new_rb_child();
 
-	if(subtree_min_boxlength >=  MIN_BOX_LENGTH)
-	{
-		Array2D<QuadTreeNodeNM> leaf_ptr(0,maxindex-1,0,maxindex-1);
-		T.set_act_ptr(subtree_root_ptr);
-		if (find_smallest_quad(A,T)) //not all nodes have the same position
-		{
-			construct_complete_subtree(T,subtree_depth,leaf_ptr,0,0,0);
-			set_contained_nodes_for_leaves(A,subtree_root_ptr,leaf_ptr,maxindex);
-			T.set_act_ptr(subtree_root_ptr);
-			set_particlenumber_in_subtree_entries(T);
-			T.set_act_ptr(subtree_root_ptr);
-			construct_reduced_subtree(A,T,new_subtree_root_List);
-		}
-	}
-}
+            T.go_to_lt_child();
+            construct_complete_subtree(T, subtree_depth, leaf_ptr, act_depth + 1, 2 * act_x_index,
+                    2 * act_y_index + 1);
+            T.go_to_father();
 
+            T.go_to_rt_child();
+            construct_complete_subtree(T, subtree_depth, leaf_ptr, act_depth + 1, 2 * act_x_index + 1,
+                    2 * act_y_index + 1);
+            T.go_to_father();
 
-void construct_complete_subtree(
-	QuadTreeNM T,
-	int subtree_depth,
-	Array2D<QuadTreeNodeNM> leaf_ptr,
-	int act_depth,
-	int act_x_index,
-	int act_y_index)
-{
-	if(act_depth < subtree_depth)
-	{
-		T.create_new_lt_child();
-		T.create_new_rt_child();
-		T.create_new_lb_child();
-		T.create_new_rb_child();
+            T.go_to_lb_child();
+            construct_complete_subtree(T, subtree_depth, leaf_ptr, act_depth + 1, 2 * act_x_index,
+                    2 * act_y_index);
+            T.go_to_father();
 
-		T.go_to_lt_child();
-		construct_complete_subtree(T,subtree_depth,leaf_ptr,act_depth+1,2*act_x_index,
-						2*act_y_index+1);
-		T.go_to_father();
+            T.go_to_rb_child();
+            construct_complete_subtree(T, subtree_depth, leaf_ptr, act_depth + 1, 2 * act_x_index + 1,
+                    2 * act_y_index);
+            T.go_to_father();
+        }
+        else if (act_depth == subtree_depth)
+        {
+            leaf_ptr[act_x_index][act_y_index] = T.get_act_ptr();
+        }
+        else if (DEBUG_BUILD)
+        {
+            println("Errorruct_complete_subtree()");
+        }
+    }
 
-		T.go_to_rt_child();
-		construct_complete_subtree(T,subtree_depth,leaf_ptr,act_depth+1,2*act_x_index+1,
-						2*act_y_index+1);
-		T.go_to_father();
+    void set_contained_nodes_for_leaves(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNodeNM subtree_root_ptr,
+            QuadTreeNodeNM[][] leaf_ptr,
+            int maxindex)
+    {
+        node v;
+        QuadTreeNodeNM act_ptr;
+        double xcoord, ycoord;
+        int x_index, y_index;
+        double minboxlength = subtree_root_ptr.get_Sm_boxlength() / maxindex;
 
-		T.go_to_lb_child();
-		construct_complete_subtree(T,subtree_depth,leaf_ptr,act_depth+1,2*act_x_index,
-						2*act_y_index);
-		T.go_to_father();
+        while (!subtree_root_ptr.contained_nodes_empty())
+        {
+            v = subtree_root_ptr.pop_contained_nodes();
+            xcoord = A.get(v).get_x() - subtree_root_ptr.get_Sm_downleftcorner().m_x;
+            ycoord = A.get(v).get_y() - subtree_root_ptr.get_Sm_downleftcorner().m_y;;
+            x_index = (int) (xcoord / minboxlength);
+            y_index = (int) (ycoord / minboxlength);
+            act_ptr = leaf_ptr[x_index][y_index];
+            act_ptr.pushBack_contained_nodes(v);
+            act_ptr.set_particlenumber_in_subtree(act_ptr.get_particlenumber_in_subtree() + 1);
+        }
+    }
 
-		T.go_to_rb_child();
-		construct_complete_subtree(T,subtree_depth,leaf_ptr,act_depth+1,2*act_x_index+1,
-						2*act_y_index);
-		T.go_to_father();
-	}
-	else if (act_depth == subtree_depth)
-	{
-		leaf_ptr(act_x_index,act_y_index) = T.get_act_ptr();
-	}
-	else
-		cout<<"Errorruct_complete_subtree()"<<endl;
-}
+    void set_particlenumber_in_subtree_entries(QuadTreeNM T)
+    {
+        int child_nr;
 
+        if (!T.get_act_ptr().is_leaf())
+        {//if
+            T.get_act_ptr().set_particlenumber_in_subtree(0);
 
-void set_contained_nodes_for_leaves(
-	NodeArray<NodeAttributes> &A,
-	QuadTreeNodeNM subtree_root_ptr,
-	Array2D<QuadTreeNodeNM> &leaf_ptr,
-	int maxindex)
-{
-	node v;
-	QuadTreeNodeNM act_ptr;
-	double xcoord,ycoord;
-	int x_index,y_index;
-	double minboxlength = subtree_root_ptr.get_Sm_boxlength()/maxindex;
+            if (T.get_act_ptr().child_lt_exists())
+            {
+                T.go_to_lt_child();
+                set_particlenumber_in_subtree_entries(T);
+                T.go_to_father();
+                child_nr = T.get_act_ptr().get_child_lt_ptr().get_particlenumber_in_subtree();
+                T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
+                        get_particlenumber_in_subtree());
+            }
+            if (T.get_act_ptr().child_rt_exists())
+            {
+                T.go_to_rt_child();
+                set_particlenumber_in_subtree_entries(T);
+                T.go_to_father();
+                child_nr = T.get_act_ptr().get_child_rt_ptr().get_particlenumber_in_subtree();
+                T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
+                        get_particlenumber_in_subtree());
+            }
+            if (T.get_act_ptr().child_lb_exists())
+            {
+                T.go_to_lb_child();
+                set_particlenumber_in_subtree_entries(T);
+                T.go_to_father();
+                child_nr = T.get_act_ptr().get_child_lb_ptr().get_particlenumber_in_subtree();
+                T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
+                        get_particlenumber_in_subtree());
+            }
+            if (T.get_act_ptr().child_rb_exists())
+            {
+                T.go_to_rb_child();
+                set_particlenumber_in_subtree_entries(T);
+                T.go_to_father();
+                child_nr = T.get_act_ptr().get_child_rb_ptr().get_particlenumber_in_subtree();
+                T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
+                        get_particlenumber_in_subtree());
+            }
+        }//if
+    }
 
-	while(!subtree_root_ptr.contained_nodes_empty())
-	{
-		v = subtree_root_ptr.pop_contained_nodes();
-		xcoord = A[v].get_x()-subtree_root_ptr.get_Sm_downleftcorner().m_x;
-		ycoord = A[v].get_y()-subtree_root_ptr.get_Sm_downleftcorner().m_y;;
-		x_index = int(xcoord/minboxlength);
-		y_index = int(ycoord/minboxlength);
-		act_ptr = leaf_ptr(x_index,y_index);
-		act_ptr.pushBack_contained_nodes(v);
-		act_ptr.set_particlenumber_in_subtree(act_ptr.get_particlenumber_in_subtree()+1);
-	}
-}
+    void construct_reduced_subtree(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNM T,
+            List<QuadTreeNodeNM> new_subtree_root_List)
+    {
+        do
+        {
+            QuadTreeNodeNM act_ptr = T.get_act_ptr();
+            delete_empty_subtrees(T);
+            T.set_act_ptr(act_ptr);
+        } while (check_and_delete_degenerated_node(T) == true);
 
+        if (!T.get_act_ptr().is_leaf() && T.get_act_ptr().get_particlenumber_in_subtree() <=
+                 particles_in_leaves())
+        {
+            delete_sparse_subtree(T, T.get_act_ptr());
+        }
 
-void set_particlenumber_in_subtree_entries(QuadTreeNM T)
-{
-	int child_nr;
+        //push leaves that contain many particles
+        if (T.get_act_ptr().is_leaf() && T.get_act_ptr().
+                get_particlenumber_in_subtree() > particles_in_leaves())
+        {
+            new_subtree_root_List.add(T.get_act_ptr());
+        }
+        //find smallest quad for leaves of T
+        else if (T.get_act_ptr().is_leaf() && T.get_act_ptr().
+                get_particlenumber_in_subtree() <= particles_in_leaves())
+        {
+            find_smallest_quad(A, T);
+        }
+        //recursive calls
+        else if (!T.get_act_ptr().is_leaf())
+        {//else
+            if (T.get_act_ptr().child_lt_exists())
+            {
+                T.go_to_lt_child();
+                construct_reduced_subtree(A, T, new_subtree_root_List);
+                T.go_to_father();
+            }
+            if (T.get_act_ptr().child_rt_exists())
+            {
+                T.go_to_rt_child();
+                construct_reduced_subtree(A, T, new_subtree_root_List);
+                T.go_to_father();
+            }
+            if (T.get_act_ptr().child_lb_exists())
+            {
+                T.go_to_lb_child();
+                construct_reduced_subtree(A, T, new_subtree_root_List);
+                T.go_to_father();
+            }
+            if (T.get_act_ptr().child_rb_exists())
+            {
+                T.go_to_rb_child();
+                construct_reduced_subtree(A, T, new_subtree_root_List);
+                T.go_to_father();
+            }
+        }//else
+    }
 
-	if(!T.get_act_ptr().is_leaf())
-	{//if
-		T.get_act_ptr().set_particlenumber_in_subtree(0);
+    void delete_empty_subtrees(QuadTreeNM T)
+    {
+        int child_part_nr;
+        QuadTreeNodeNM act_ptr = T.get_act_ptr();
 
-		if (T.get_act_ptr().child_lt_exists())
-		{
-			T.go_to_lt_child();
-			set_particlenumber_in_subtree_entries(T);
-			T.go_to_father();
-			child_nr = T.get_act_ptr().get_child_lt_ptr().get_particlenumber_in_subtree();
-			T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
-				get_particlenumber_in_subtree());
-		}
-		if (T.get_act_ptr().child_rt_exists())
-		{
-			T.go_to_rt_child();
-			set_particlenumber_in_subtree_entries(T);
-			T.go_to_father();
-			child_nr = T.get_act_ptr().get_child_rt_ptr().get_particlenumber_in_subtree();
-			T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
-				get_particlenumber_in_subtree());
-		}
-		if (T.get_act_ptr().child_lb_exists())
-		{
-			T.go_to_lb_child();
-			set_particlenumber_in_subtree_entries(T);
-			T.go_to_father();
-			child_nr = T.get_act_ptr().get_child_lb_ptr().get_particlenumber_in_subtree();
-			T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
-				get_particlenumber_in_subtree());
-		}
-		if (T.get_act_ptr().child_rb_exists())
-		{
-			T.go_to_rb_child();
-			set_particlenumber_in_subtree_entries(T);
-			T.go_to_father();
-			child_nr = T.get_act_ptr().get_child_rb_ptr().get_particlenumber_in_subtree();
-			T.get_act_ptr().set_particlenumber_in_subtree(child_nr + T.get_act_ptr().
-				get_particlenumber_in_subtree());
-		}
-	}//if
-}
+        if (act_ptr.child_lt_exists())
+        {
+            child_part_nr = act_ptr.get_child_lt_ptr().get_particlenumber_in_subtree();
+            if (child_part_nr == 0)
+            {
+                T.delete_tree(act_ptr.get_child_lt_ptr());
+                act_ptr.set_child_lt_ptr(null);
+            }
+        }
 
+        if (act_ptr.child_rt_exists())
+        {
+            child_part_nr = act_ptr.get_child_rt_ptr().get_particlenumber_in_subtree();
+            if (child_part_nr == 0)
+            {
+                T.delete_tree(act_ptr.get_child_rt_ptr());
+                act_ptr.set_child_rt_ptr(null);
+            }
+        }
 
-void construct_reduced_subtree(
-	NodeArray<NodeAttributes> A,
-	QuadTreeNM T,
-	List<QuadTreeNodeNM> new_subtree_root_List)
-{
-	do
-	{
-		QuadTreeNodeNM act_ptr = T.get_act_ptr();
-		delete_empty_subtrees(T);
-		T.set_act_ptr(act_ptr);
-	}
-	while(check_and_delete_degenerated_node(T)== true) ;
+        if (act_ptr.child_lb_exists())
+        {
+            child_part_nr = act_ptr.get_child_lb_ptr().get_particlenumber_in_subtree();
+            if (child_part_nr == 0)
+            {
+                T.delete_tree(act_ptr.get_child_lb_ptr());
+                act_ptr.set_child_lb_ptr(null);
+            }
+        }
 
-	if(!T.get_act_ptr().is_leaf() && T.get_act_ptr().get_particlenumber_in_subtree()
-		<=  particles_in_leaves())
-	{
-		delete_sparse_subtree(T,T.get_act_ptr());
-	}
+        if (act_ptr.child_rb_exists())
+        {
+            child_part_nr = act_ptr.get_child_rb_ptr().get_particlenumber_in_subtree();
+            if (child_part_nr == 0)
+            {
+                T.delete_tree(act_ptr.get_child_rb_ptr());
+                act_ptr.set_child_rb_ptr(null);
+            }
+        }
+    }
 
-	//push leaves that contain many particles
-	if(T.get_act_ptr().is_leaf() && T.get_act_ptr().
-		get_particlenumber_in_subtree() > particles_in_leaves())
-		new_subtree_root_List.pushBack(T.get_act_ptr());
+    boolean check_and_delete_degenerated_node(QuadTreeNM T)
+    {
+        QuadTreeNodeNM delete_ptr;
+        QuadTreeNodeNM father_ptr;
+        QuadTreeNodeNM child_ptr;
 
-	//find smallest quad for leaves of T
-	else if(T.get_act_ptr().is_leaf() && T.get_act_ptr().
-		get_particlenumber_in_subtree() <= particles_in_leaves())
-		find_smallest_quad(A,T);
+        boolean lt_child = T.get_act_ptr().child_lt_exists();
+        boolean rt_child = T.get_act_ptr().child_rt_exists();
+        boolean lb_child = T.get_act_ptr().child_lb_exists();
+        boolean rb_child = T.get_act_ptr().child_rb_exists();
+        boolean is_degenerated = false;
 
-	//recursive calls
-	else if(!T.get_act_ptr().is_leaf())
-	{//else
-		if(T.get_act_ptr().child_lt_exists())
-		{
-			T.go_to_lt_child();
-			construct_reduced_subtree(A,T,new_subtree_root_List);
-			T.go_to_father();
-		}
-		if(T.get_act_ptr().child_rt_exists())
-		{
-			T.go_to_rt_child();
-			construct_reduced_subtree(A,T,new_subtree_root_List);
-			T.go_to_father();
-		}
-		if(T.get_act_ptr().child_lb_exists())
-		{
-			T.go_to_lb_child();
-			construct_reduced_subtree(A,T,new_subtree_root_List);
-			T.go_to_father();
-		}
-		if(T.get_act_ptr().child_rb_exists())
-		{
-			T.go_to_rb_child();
-			construct_reduced_subtree(A,T,new_subtree_root_List);
-			T.go_to_father();
-		}
-	}//else
-}
+        if (lt_child && !rt_child && !lb_child && !rb_child)
+        {//if1
+            is_degenerated = true;
+            delete_ptr = T.get_act_ptr();
+            child_ptr = T.get_act_ptr().get_child_lt_ptr();
+            if (T.get_act_ptr() == T.get_root_ptr())//special case
+            {
+                T.set_root_ptr(child_ptr);
+                T.set_act_ptr(T.get_root_ptr());
+            }
+            else//usual case
+            {
+                father_ptr = T.get_act_ptr().get_father_ptr();
+                child_ptr.set_father_ptr(father_ptr);
+                if (father_ptr.get_child_lt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_lb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lb_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rb_ptr(child_ptr);
+                }
+                else if (DEBUG_BUILD)
+                {
+                    println("Error delete_degenerated_node");
+                }
+                T.set_act_ptr(child_ptr);
+            }
+        }//if1
+        else if (!lt_child && rt_child && !lb_child && !rb_child)
+        {//if2
+            is_degenerated = true;
+            delete_ptr = T.get_act_ptr();
+            child_ptr = T.get_act_ptr().get_child_rt_ptr();
+            if (T.get_act_ptr() == T.get_root_ptr())//special case
+            {
+                T.set_root_ptr(child_ptr);
+                T.set_act_ptr(T.get_root_ptr());
+            }
+            else//usual case
+            {
+                father_ptr = T.get_act_ptr().get_father_ptr();
+                child_ptr.set_father_ptr(father_ptr);
+                if (father_ptr.get_child_lt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_lb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lb_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rb_ptr(child_ptr);
+                }
+                else if (DEBUG_BUILD)
+                {
+                    println("Error delete_degenerated_node");
+                }
+                T.set_act_ptr(child_ptr);
+            }
+        }//if2
+        else if (!lt_child && !rt_child && lb_child && !rb_child)
+        {//if3
+            is_degenerated = true;
+            delete_ptr = T.get_act_ptr();
+            child_ptr = T.get_act_ptr().get_child_lb_ptr();
+            if (T.get_act_ptr() == T.get_root_ptr())//special case
+            {
+                T.set_root_ptr(child_ptr);
+                T.set_act_ptr(T.get_root_ptr());
+            }
+            else//usual case
+            {
+                father_ptr = T.get_act_ptr().get_father_ptr();
+                child_ptr.set_father_ptr(father_ptr);
+                if (father_ptr.get_child_lt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_lb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lb_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rb_ptr(child_ptr);
+                }
+                else if (DEBUG_BUILD)
+                {
+                    println("Error delete_degenerated_node");
+                }
+                T.set_act_ptr(child_ptr);
+            }
+        }//if3
+        else if (!lt_child && !rt_child && !lb_child && rb_child)
+        {//if4
+            is_degenerated = true;
+            delete_ptr = T.get_act_ptr();
+            child_ptr = T.get_act_ptr().get_child_rb_ptr();
+            if (T.get_act_ptr() == T.get_root_ptr())//special case
+            {
+                T.set_root_ptr(child_ptr);
+                T.set_act_ptr(T.get_root_ptr());
+            }
+            else//usual case
+            {
+                father_ptr = T.get_act_ptr().get_father_ptr();
+                child_ptr.set_father_ptr(father_ptr);
+                if (father_ptr.get_child_lt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rt_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rt_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_lb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_lb_ptr(child_ptr);
+                }
+                else if (father_ptr.get_child_rb_ptr() == T.get_act_ptr())
+                {
+                    father_ptr.set_child_rb_ptr(child_ptr);
+                }
+                else if (DEBUG_BUILD)
+                {
+                    println("Error delete_degenerated_node");
+                }
+                T.set_act_ptr(child_ptr);
+            }
+        }//if4
+        return is_degenerated;
+    }
 
+    void delete_sparse_subtree(QuadTreeNM T, QuadTreeNodeNM new_leaf_ptr)
+    {
+        collect_contained_nodes(T, new_leaf_ptr);
 
-void delete_empty_subtrees(QuadTreeNM T)
-{
-	int child_part_nr;
-	QuadTreeNodeNM act_ptr = T.get_act_ptr();
+        if (new_leaf_ptr.child_lt_exists())
+        {
+            T.delete_tree(new_leaf_ptr.get_child_lt_ptr());
+            new_leaf_ptr.set_child_lt_ptr(null);
+        }
+        if (new_leaf_ptr.child_rt_exists())
+        {
+            T.delete_tree(new_leaf_ptr.get_child_rt_ptr());
+            new_leaf_ptr.set_child_rt_ptr(null);
+        }
+        if (new_leaf_ptr.child_lb_exists())
+        {
+            T.delete_tree(new_leaf_ptr.get_child_lb_ptr());
+            new_leaf_ptr.set_child_lb_ptr(null);
+        }
+        if (new_leaf_ptr.child_rb_exists())
+        {
+            T.delete_tree(new_leaf_ptr.get_child_rb_ptr());
+            new_leaf_ptr.set_child_rb_ptr(null);
+        }
+    }
 
-	if(act_ptr.child_lt_exists())
-	{
-		child_part_nr = act_ptr.get_child_lt_ptr().get_particlenumber_in_subtree();
-		if(child_part_nr == 0)
-		{
-			T.delete_tree(act_ptr.get_child_lt_ptr());
-			act_ptr.set_child_lt_ptr(null);
-		}
-	}
+    void collect_contained_nodes(QuadTreeNM T, QuadTreeNodeNM new_leaf_ptr)
+    {
+        if (T.get_act_ptr().is_leaf())
+        {
+            while (!T.get_act_ptr().contained_nodes_empty())
+            {
+                new_leaf_ptr.pushBack_contained_nodes(T.get_act_ptr().pop_contained_nodes());
+            }
+        }
+        else if (T.get_act_ptr().child_lt_exists())
+        {
+            T.go_to_lt_child();
+            collect_contained_nodes(T, new_leaf_ptr);
+            T.go_to_father();
+        }
+        if (T.get_act_ptr().child_rt_exists())
+        {
+            T.go_to_rt_child();
+            collect_contained_nodes(T, new_leaf_ptr);
+            T.go_to_father();
+        }
+        if (T.get_act_ptr().child_lb_exists())
+        {
+            T.go_to_lb_child();
+            collect_contained_nodes(T, new_leaf_ptr);
+            T.go_to_father();
+        }
+        if (T.get_act_ptr().child_rb_exists())
+        {
+            T.go_to_rb_child();
+            collect_contained_nodes(T, new_leaf_ptr);
+            T.go_to_father();
+        }
+    }
 
-	if(act_ptr.child_rt_exists())
-	{
-		child_part_nr = act_ptr.get_child_rt_ptr().get_particlenumber_in_subtree();
-		if(child_part_nr == 0)
-		{
-			T.delete_tree(act_ptr.get_child_rt_ptr());
-			act_ptr.set_child_rt_ptr(null);
-		}
-	}
+    boolean find_smallest_quad(NodeArray<NodeAttributes> A, QuadTreeNM T)
+    {
+        assert (!T.get_act_ptr().contained_nodes_empty());
+        //if(T.get_act_ptr().contained_nodes_empty())
+        //  cout<<"Error NMM :: find_smallest_quad()"<<endl;
+        //else
+        // {//else
+        List<node> L = T.get_act_ptr().get_contained_nodes();
+        node v = L.remove(0);
+        double x_min = A.get(v).get_x();
+        double x_max = x_min;
+        double y_min = A.get(v).get_y();
+        double y_max = y_min;
 
-	if(act_ptr.child_lb_exists())
-	{
-		child_part_nr = act_ptr.get_child_lb_ptr().get_particlenumber_in_subtree();
-		if(child_part_nr == 0)
-		{
-			T.delete_tree(act_ptr.get_child_lb_ptr());
-			act_ptr.set_child_lb_ptr(null);
-		}
-	}
-
-	if(act_ptr.child_rb_exists())
-	{
-		child_part_nr = act_ptr.get_child_rb_ptr().get_particlenumber_in_subtree();
-		if(child_part_nr == 0)
-		{
-			T.delete_tree(act_ptr.get_child_rb_ptr());
-			act_ptr.set_child_rb_ptr(null);
-		}
-	}
-}
-
-
-boolean check_and_delete_degenerated_node(QuadTreeNM T)
-{
-	QuadTreeNodeNM delete_ptr;
-	QuadTreeNodeNM father_ptr;
-	QuadTreeNodeNM child_ptr;
-
-	boolean lt_child = T.get_act_ptr().child_lt_exists();
-	boolean rt_child = T.get_act_ptr().child_rt_exists();
-	boolean lb_child = T.get_act_ptr().child_lb_exists();
-	boolean rb_child = T.get_act_ptr().child_rb_exists();
-	boolean is_degenerated = false;
-
-	if(lt_child && !rt_child && !lb_child && !rb_child)
-	{//if1
-		is_degenerated = true;
-		delete_ptr = T.get_act_ptr();
-		child_ptr = T.get_act_ptr().get_child_lt_ptr();
-		if(T.get_act_ptr() == T.get_root_ptr())//special case
-		{
-			T.set_root_ptr(child_ptr);
-			T.set_act_ptr(T.get_root_ptr());
-		}
-		else//usual case
-		{
-			father_ptr = T.get_act_ptr().get_father_ptr();
-			child_ptr.set_father_ptr(father_ptr);
-			if(father_ptr.get_child_lt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lt_ptr(child_ptr);
-			else if(father_ptr.get_child_rt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rt_ptr(child_ptr);
-			else if(father_ptr.get_child_lb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lb_ptr(child_ptr);
-			else if(father_ptr.get_child_rb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rb_ptr(child_ptr);
-			else
-				cout<<"Error delete_degenerated_node"<<endl;
-			T.set_act_ptr(child_ptr);
-		}
-		delete delete_ptr;
-	}//if1
-	else  if(!lt_child && rt_child && !lb_child && !rb_child)
-	{//if2
-		is_degenerated = true;
-		delete_ptr = T.get_act_ptr();
-		child_ptr = T.get_act_ptr().get_child_rt_ptr();
-		if(T.get_act_ptr() == T.get_root_ptr())//special case
-		{
-			T.set_root_ptr(child_ptr);
-			T.set_act_ptr(T.get_root_ptr());
-		}
-		else//usual case
-		{
-			father_ptr = T.get_act_ptr().get_father_ptr();
-			child_ptr.set_father_ptr(father_ptr);
-			if(father_ptr.get_child_lt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lt_ptr(child_ptr);
-			else if(father_ptr.get_child_rt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rt_ptr(child_ptr);
-			else if(father_ptr.get_child_lb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lb_ptr(child_ptr);
-			else if(father_ptr.get_child_rb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rb_ptr(child_ptr);
-			else
-				cout<<"Error delete_degenerated_node"<<endl;
-			T.set_act_ptr(child_ptr);
-		}
-		delete delete_ptr;
-	}//if2
-	else  if(!lt_child && !rt_child && lb_child && !rb_child)
-	{//if3
-		is_degenerated = true;
-		delete_ptr = T.get_act_ptr();
-		child_ptr = T.get_act_ptr().get_child_lb_ptr();
-		if(T.get_act_ptr() == T.get_root_ptr())//special case
-		{
-			T.set_root_ptr(child_ptr);
-			T.set_act_ptr(T.get_root_ptr());
-		}
-		else//usual case
-		{
-			father_ptr = T.get_act_ptr().get_father_ptr();
-			child_ptr.set_father_ptr(father_ptr);
-			if(father_ptr.get_child_lt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lt_ptr(child_ptr);
-			else if(father_ptr.get_child_rt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rt_ptr(child_ptr);
-			else if(father_ptr.get_child_lb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lb_ptr(child_ptr);
-			else if(father_ptr.get_child_rb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rb_ptr(child_ptr);
-			else
-				cout<<"Error delete_degenerated_node"<<endl;
-			T.set_act_ptr(child_ptr);
-		}
-		delete delete_ptr;
-	}//if3
-	else  if(!lt_child && !rt_child && !lb_child && rb_child)
-	{//if4
-		is_degenerated = true;
-		delete_ptr = T.get_act_ptr();
-		child_ptr = T.get_act_ptr().get_child_rb_ptr();
-		if(T.get_act_ptr() == T.get_root_ptr())//special case
-		{
-			T.set_root_ptr(child_ptr);
-			T.set_act_ptr(T.get_root_ptr());
-		}
-		else//usual case
-		{
-			father_ptr = T.get_act_ptr().get_father_ptr();
-			child_ptr.set_father_ptr(father_ptr);
-			if(father_ptr.get_child_lt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lt_ptr(child_ptr);
-			else if(father_ptr.get_child_rt_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rt_ptr(child_ptr);
-			else if(father_ptr.get_child_lb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_lb_ptr(child_ptr);
-			else if(father_ptr.get_child_rb_ptr() == T.get_act_ptr())
-				father_ptr.set_child_rb_ptr(child_ptr);
-			else
-				cout<<"Error delete_degenerated_node"<<endl;
-			T.set_act_ptr(child_ptr);
-		}
-		delete delete_ptr;
-	}//if4
-	return is_degenerated;
-}
-
-
-void delete_sparse_subtree(QuadTreeNM T, QuadTreeNodeNM new_leaf_ptr)
-{
-	collect_contained_nodes(T,new_leaf_ptr);
-
-	if(new_leaf_ptr.child_lt_exists())
-	{
-		T.delete_tree(new_leaf_ptr.get_child_lt_ptr());
-		new_leaf_ptr.set_child_lt_ptr(null);
-	}
-	if(new_leaf_ptr.child_rt_exists())
-	{
-		T.delete_tree(new_leaf_ptr.get_child_rt_ptr());
-		new_leaf_ptr.set_child_rt_ptr(null);
-	}
-	if(new_leaf_ptr.child_lb_exists())
-	{
-		T.delete_tree(new_leaf_ptr.get_child_lb_ptr());
-		new_leaf_ptr.set_child_lb_ptr(null);
-	}
-	if(new_leaf_ptr.child_rb_exists())
-	{
-		T.delete_tree(new_leaf_ptr.get_child_rb_ptr());
-		new_leaf_ptr.set_child_rb_ptr(null);
-	}
-}
-
-
-void collect_contained_nodes(QuadTreeNM T, QuadTreeNodeNM new_leaf_ptr)
-{
-	if(T.get_act_ptr().is_leaf())
-		while(!T.get_act_ptr().contained_nodes_empty())
-			new_leaf_ptr.pushBack_contained_nodes(T.get_act_ptr().pop_contained_nodes());
-	else if(T.get_act_ptr().child_lt_exists())
-	{
-		T.go_to_lt_child();
-		collect_contained_nodes(T,new_leaf_ptr);
-		T.go_to_father();
-	}
-	if(T.get_act_ptr().child_rt_exists())
-	{
-		T.go_to_rt_child();
-		collect_contained_nodes(T,new_leaf_ptr);
-		T.go_to_father();
-	}
-	if(T.get_act_ptr().child_lb_exists())
-	{
-		T.go_to_lb_child();
-		collect_contained_nodes(T,new_leaf_ptr);
-		T.go_to_father();
-	}
-	if(T.get_act_ptr().child_rb_exists())
-	{
-		T.go_to_rb_child();
-		collect_contained_nodes(T,new_leaf_ptr);
-		T.go_to_father();
-	}
-}
-
-
-boolean find_smallest_quad(NodeArray<NodeAttributes> A, QuadTreeNM T)
-{
-	OGDF_ASSERT(!T.get_act_ptr().contained_nodes_empty());
-	//if(T.get_act_ptr().contained_nodes_empty())
-	//  cout<<"Error NMM :: find_smallest_quad()"<<endl;
-	//else
-	// {//else
-	List<node>L;
-	T.get_act_ptr().get_contained_nodes(L);
-	node v = L.popFrontRet();
-	double x_min = A[v].get_x();
-	double x_max = x_min;
-	double y_min = A[v].get_y();
-	double y_max = y_min;
-
-	while(! L.empty())
-	{
-		v = L.popFrontRet();
-		if(A[v].get_x() < x_min)
-			x_min = A[v].get_x();
-		if(A[v].get_x() > x_max)
-			x_max = A[v].get_x();
-		if(A[v].get_y() < y_min)
-			y_min = A[v].get_y();
-		if(A[v].get_y() > y_max)
-			y_max = A[v].get_y();
-	}
-	if(x_min != x_max || y_min != y_max) //nodes are not all at the same position
-	{
-		if(find_sm_cell() == FMMMLayout.scfIteratively)
-			find_small_cell_iteratively(T.get_act_ptr(),x_min,x_max,y_min,y_max);
-		else //find_sm_cell == FMMMLayout.scfAluru
-			find_small_cell_iteratively(T.get_act_ptr(),x_min,x_max,y_min,y_max);
-		return true;
-	}
-	else
-		return false;
-	//}//else
-}
-
+        while (!L.isEmpty())
+        {
+            v = L.remove(0);
+            if (A.get(v).get_x() < x_min)
+            {
+                x_min = A.get(v).get_x();
+            }
+            if (A.get(v).get_x() > x_max)
+            {
+                x_max = A.get(v).get_x();
+            }
+            if (A.get(v).get_y() < y_min)
+            {
+                y_min = A.get(v).get_y();
+            }
+            if (A.get(v).get_y() > y_max)
+            {
+                y_max = A.get(v).get_y();
+            }
+        }
+        if (x_min != x_max || y_min != y_max) //nodes are not all at the same position
+        {
+            if (find_sm_cell() == FMMMLayout.SmallestCellFinding.scfIteratively)
+            {
+                find_small_cell_iteratively(T.get_act_ptr(), x_min, x_max, y_min, y_max);
+            }
+            else //find_sm_cell == FMMMLayout.scfAluru
+            {
+                find_small_cell_iteratively(T.get_act_ptr(), x_min, x_max, y_min, y_max);
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        //}//else
+    }
 
 // ********Functions needed for subtree by subtree  treeruction(END)************
-
-void find_small_cell_iteratively(
-	QuadTreeNodeNM act_ptr,
-	double x_min,
-	double x_max,
-	double y_min,
-	double y_max)
-{
-	int new_level;
-	double new_boxlength;
-	DPoint new_dlc;
-	boolean Sm_cell_found = false;
-
-	while ( !Sm_cell_found && ((x_max-x_min >=MIN_BOX_LENGTH) ||
-		(y_max-y_min >=MIN_BOX_LENGTH)) )
-	{
-		if(in_lt_quad(act_ptr,x_min,x_max,y_min,y_max))
-		{
-			new_level = act_ptr.get_Sm_level()+1;
-			new_boxlength = act_ptr.get_Sm_boxlength()/2;
-			new_dlc.m_x = act_ptr.get_Sm_downleftcorner().m_x;
-			new_dlc.m_y = act_ptr.get_Sm_downleftcorner().m_y+new_boxlength;
-			act_ptr.set_Sm_level(new_level);
-			act_ptr.set_Sm_boxlength(new_boxlength);
-			act_ptr.set_Sm_downleftcorner(new_dlc);
-		}
-		else if(in_rt_quad(act_ptr,x_min,x_max,y_min,y_max))
-		{
-			new_level = act_ptr.get_Sm_level()+1;
-			new_boxlength = act_ptr.get_Sm_boxlength()/2;
-			new_dlc.m_x = act_ptr.get_Sm_downleftcorner().m_x+new_boxlength;
-			new_dlc.m_y = act_ptr.get_Sm_downleftcorner().m_y+new_boxlength;
-			act_ptr.set_Sm_level(new_level);
-			act_ptr.set_Sm_boxlength(new_boxlength);
-			act_ptr.set_Sm_downleftcorner(new_dlc);
-		}
-		else if(in_lb_quad(act_ptr,x_min,x_max,y_min,y_max))
-		{
-			new_level = act_ptr.get_Sm_level()+1;
-			new_boxlength = act_ptr.get_Sm_boxlength()/2;
-			act_ptr.set_Sm_level(new_level);
-			act_ptr.set_Sm_boxlength(new_boxlength);
-		}
-		else if(in_rb_quad(act_ptr,x_min,x_max,y_min,y_max))
-		{
-			new_level = act_ptr.get_Sm_level()+1;
-			new_boxlength = act_ptr.get_Sm_boxlength()/2;
-			new_dlc.m_x = act_ptr.get_Sm_downleftcorner().m_x+new_boxlength;
-			new_dlc.m_y = act_ptr.get_Sm_downleftcorner().m_y;
-			act_ptr.set_Sm_level(new_level);
-			act_ptr.set_Sm_boxlength(new_boxlength);
-			act_ptr.set_Sm_downleftcorner(new_dlc);
-		}
-		else Sm_cell_found = true;
-	}
-}
-
-
-void find_small_cell_by_formula(
-	QuadTreeNodeNM act_ptr,
-	double x_min,
-	double x_max,
-	double y_min,
-	double y_max)
-{
-	numexcept N;
-	int level_offset = act_ptr.get_Sm_level();
-	max_power_of_2_index = 30;//up to this level standard integer arithmetic is used
-	DPoint nullpoint (0,0);
-	IPoint Sm_position;
-	double Sm_dlc_x_coord,Sm_dlc_y_coord;
-	double Sm_boxlength;
-	int Sm_level;
-	DPoint Sm_downleftcorner;
-	int j_x = max_power_of_2_index+1;
-	int j_y = max_power_of_2_index+1;
-	boolean rectangle_is_horizontal_line = false;
-	boolean rectangle_is_vertical_line = false;
-	boolean rectangle_is_point = false;
-
-	//shift boundaries to the origin for easy calculations
-	double x_min_old = x_min;
-	double x_max_old = x_max;
-	double y_min_old = y_min;
-	double y_max_old = y_max;
-
-	Sm_boxlength = act_ptr.get_Sm_boxlength();
-	Sm_dlc_x_coord = act_ptr.get_Sm_downleftcorner().m_x;
-	Sm_dlc_y_coord = act_ptr.get_Sm_downleftcorner().m_y;
-
-	x_min -= Sm_dlc_x_coord;
-	x_max -= Sm_dlc_x_coord;
-	y_min -= Sm_dlc_y_coord;
-	y_max -= Sm_dlc_y_coord;
-
-	//check if iterative way has to be used
-	if (x_min == x_max && y_min == y_max)
-		rectangle_is_point = true;
-	else if(x_min == x_max && y_min != y_max)
-		rectangle_is_vertical_line = true;
-	else //x_min != x_max
-		j_x = static_cast<int>(ceil(Math::log2(Sm_boxlength/(x_max-x_min))));
-
-	if(x_min != x_max && y_min == y_max)
-		rectangle_is_horizontal_line = true;
-	else //y_min != y_max
-		j_y = static_cast<int>(ceil(Math::log2(Sm_boxlength/(y_max-y_min))));
-
-	if(rectangle_is_point)
-	{
-		;//keep the old values
-	}
-	else if ( !N.nearly_equal((x_min_old - x_max_old),(x_min-x_max)) ||
-		!N.nearly_equal((y_min_old - y_max_old),(y_min-y_max)) ||
-		x_min/Sm_boxlength < MIN_BOX_LENGTH || x_max/Sm_boxlength < MIN_BOX_LENGTH ||
-		y_min/Sm_boxlength < MIN_BOX_LENGTH || y_max/Sm_boxlength < MIN_BOX_LENGTH )
-		find_small_cell_iteratively(act_ptr,x_min_old,x_max_old,y_min_old,y_max_old);
-	else if ( ((j_x > max_power_of_2_index) && (j_y > max_power_of_2_index)) ||
-		((j_x > max_power_of_2_index) && !rectangle_is_vertical_line) ||
-		((j_y > max_power_of_2_index) && !rectangle_is_horizontal_line) )
-		find_small_cell_iteratively(act_ptr,x_min_old,x_max_old,y_min_old,y_max_old);
-	else //idea of Aluru et al.
-	{//else
-		int k,a1,a2,A,j_minus_k;
-		double h1,h2;
-		int Sm_x_level,Sm_y_level;
-		int Sm_x_position,Sm_y_position;
-
-		if(x_min != x_max)
-		{//if1
-			//calculate Sm_x_level and Sm_x_position
-			a1 = static_cast<int>(ceil((x_min/Sm_boxlength)*power_of_two(j_x)));
-			a2 = static_cast<int>(floor((x_max/Sm_boxlength)*power_of_two(j_x)));
-			h1 = (Sm_boxlength/power_of_two(j_x))* a1;
-			h2 = (Sm_boxlength/power_of_two(j_x))* a2;
-
-			//special cases: two tangents or left tangent and righ cutline
-			if(((h1 == x_min)&&(h2 == x_max)) || ((h1 == x_min) && (h2 != x_max)) )
-				A = a2;
-			else if (a1 == a2)  //only one cutline
-				A = a1;
-			else  //two cutlines or a right tangent and a left cutline (usual case)
-			{
-				if((a1 % 2) == 0)
-					A = a1;
-				else
-					A = a2;
-			}
-
-			j_minus_k = static_cast<int>(Math::log2(1+(A ^ (A-1)))-1);
-			k = j_x - j_minus_k;
-			Sm_x_level = k-1;
-			Sm_x_position = a1/ power_of_two(j_x - Sm_x_level);
-		}//if1
-
-		if(y_min != y_max)
-		{//if2
-			//calculate Sm_y_level and Sm_y_position
-			a1 = static_cast<int>(ceil((y_min/Sm_boxlength)*power_of_two(j_y)));
-			a2 = static_cast<int>(floor((y_max/Sm_boxlength)*power_of_two(j_y)));
-			h1 = (Sm_boxlength/power_of_two(j_y))* a1;
-			h2 = (Sm_boxlength/power_of_two(j_y))* a2;
-
-			//special cases: two tangents or bottom tangent and top cutline
-			if(((h1 == y_min)&&(h2 == y_max)) || ((h1 == y_min) && (h2 != y_max)) )
-				A = a2;
-			else if (a1 == a2)  //only one cutline
-				A = a1;
-			else  //two cutlines or a top tangent and a bottom cutline (usual case)
-			{
-				if((a1 % 2) == 0)
-					A = a1;
-				else
-					A = a2;
-			}
-
-			j_minus_k = static_cast<int>(Math::log2(1+(A ^ (A-1)))-1);
-			k = j_y - j_minus_k;
-			Sm_y_level = k-1;
-			Sm_y_position = a1/ power_of_two(j_y - Sm_y_level);
-		}//if2
-
-		if((x_min != x_max) &&(y_min != y_max))//a box with area > 0
-		{//if3
-			if (Sm_x_level == Sm_y_level)
-			{
-				Sm_level = Sm_x_level;
-				Sm_position.m_x = Sm_x_position;
-				Sm_position.m_y = Sm_y_position;
-			}
-			else if (Sm_x_level < Sm_y_level)
-			{
-				Sm_level = Sm_x_level;
-				Sm_position.m_x = Sm_x_position;
-				Sm_position.m_y = Sm_y_position/power_of_two(Sm_y_level-Sm_x_level);
-			}
-			else //Sm_x_level > Sm_y_level
-			{
-				Sm_level = Sm_y_level;
-				Sm_position.m_x = Sm_x_position/power_of_two(Sm_x_level-Sm_y_level);
-				Sm_position.m_y = Sm_y_position;
-			}
-		}//if3
-		else if(x_min == x_max) //a vertical line
-		{//if4
-			Sm_level = Sm_y_level;
-			Sm_position.m_x = static_cast<int> (floor((x_min*power_of_two(Sm_level))/
-				Sm_boxlength));
-			Sm_position.m_y = Sm_y_position;
-		}//if4
-		else //y_min == y_max (a horizontal line)
-		{//if5
-			Sm_level = Sm_x_level;
-			Sm_position.m_x = Sm_x_position;
-			Sm_position.m_y = static_cast<int> (floor((y_min*power_of_two(Sm_level))/
-				Sm_boxlength));
-		}//if5
-
-		Sm_boxlength = Sm_boxlength/power_of_two(Sm_level);
-		Sm_downleftcorner.m_x = Sm_dlc_x_coord + Sm_boxlength * Sm_position.m_x;
-		Sm_downleftcorner.m_y = Sm_dlc_y_coord + Sm_boxlength * Sm_position.m_y;
-		act_ptr.set_Sm_level(Sm_level+level_offset);
-		act_ptr.set_Sm_boxlength(Sm_boxlength);
-		act_ptr.set_Sm_downleftcorner(Sm_downleftcorner);
-	}//else
-}
-
-
-void delete_red_quad_tree_and_count_treenodes(QuadTreeNM T)
-{
-	T.delete_tree(T.get_root_ptr());
-}
-
-
-void form_multipole_expansions(
-	NodeArray<NodeAttributes> A,
-	QuadTreeNM T,
-	List<QuadTreeNodeNM> quad_tree_leaves)
-{
-	T.set_act_ptr(T.get_root_ptr());
-	form_multipole_expansion_of_subtree(A,T,quad_tree_leaves);
-}
-
-
-void form_multipole_expansion_of_subtree(
-	NodeArray<NodeAttributes> A,
-	QuadTreeNM T,
-	List<QuadTreeNodeNM> quad_tree_leaves)
-{
-	init_expansion_Lists(T.get_act_ptr());
-	set_center(T.get_act_ptr());
-
-	if(T.get_act_ptr().is_leaf()) //form expansions for leaf nodes
-	{//if
-		quad_tree_leaves.pushBack(T.get_act_ptr());
-		form_multipole_expansion_of_leaf_node(A,T.get_act_ptr());
-	}//if
-	else //rekursive calls and add shifted expansions
-	{//else
-		if(T.get_act_ptr().child_lt_exists())
-		{
-			T.go_to_lt_child();
-			form_multipole_expansion_of_subtree(A,T,quad_tree_leaves);
-			add_shifted_expansion_to_father_expansion(T.get_act_ptr());
-			T.go_to_father();
-		}
-		if(T.get_act_ptr().child_rt_exists())
-		{
-			T.go_to_rt_child();
-			form_multipole_expansion_of_subtree(A,T,quad_tree_leaves);
-			add_shifted_expansion_to_father_expansion(T.get_act_ptr());
-			T.go_to_father();
-		}
-		if(T.get_act_ptr().child_lb_exists())
-		{
-			T.go_to_lb_child();
-			form_multipole_expansion_of_subtree(A,T,quad_tree_leaves);
-			add_shifted_expansion_to_father_expansion(T.get_act_ptr());
-			T.go_to_father();
-		}
-		if(T.get_act_ptr().child_rb_exists())
-		{
-			T.go_to_rb_child();
-			form_multipole_expansion_of_subtree(A,T,quad_tree_leaves);
-			add_shifted_expansion_to_father_expansion(T.get_act_ptr());
-			T.go_to_father();
-		}
-	}//else
-}
-
-
-void init_expansion_Lists(QuadTreeNodeNM act_ptr)
-{
-	int i;
-	Array<complex<double> > nulList (precision()+1);
-
-	for (i = 0;i<=precision();i++)
-		nulList[i] = 0;
-
-	act_ptr.set_multipole_exp(nulList,precision());
-	act_ptr.set_locale_exp(nulList,precision());
-}
-
-
-void set_center(QuadTreeNodeNM act_ptr)
-{
-
-	int BILLION = 1000000000;
-	DPoint Sm_downleftcorner = act_ptr.get_Sm_downleftcorner();
-	double Sm_boxlength = act_ptr.get_Sm_boxlength();
-	double boxcenter_x_coord,boxcenter_y_coord;
-	DPoint Sm_dlc;
-	double rand_y;
-
-	boxcenter_x_coord = Sm_downleftcorner.m_x + Sm_boxlength * 0.5;
-	boxcenter_y_coord = Sm_downleftcorner.m_y + Sm_boxlength * 0.5;
-
-	//for use of complex logarithm: waggle the y-coordinates a little bit
-	//such that the new center is really inside the actual box and near the exact center
-	rand_y = double(randomNumber(1,BILLION)+1)/(BILLION+2);//rand number in (0,1)
-	boxcenter_y_coord = boxcenter_y_coord + 0.001 * Sm_boxlength * rand_y;
-
-	complex<double> boxcenter(boxcenter_x_coord,boxcenter_y_coord);
-	act_ptr.set_Sm_center(boxcenter);
-}
-
-
-void form_multipole_expansion_of_leaf_node(
-	NodeArray<NodeAttributes> A,
-	QuadTreeNodeNM act_ptr)
-{
-	int k;
-	complex<double> Q (0,0);
-	complex<double> z_0 = act_ptr.get_Sm_center();//center of actual box
-	complex<double> nullpoint (0,0);
-	Array<complex<double> > coef (precision()+1);
-	complex<double> z_v_minus_z_0_over_k;
-	List<node> nodes_in_box;
-	int i;
-	ListIterator<node> v_it;
-
-	act_ptr.get_contained_nodes(nodes_in_box);
-
-	for(v_it = nodes_in_box.begin();v_it.valid();++v_it)
-		Q += 1;
-	coef[0] = Q;
-
-	for(i = 1; i<=precision();i++)
-		coef[i] = nullpoint;
-
-	for(v_it = nodes_in_box.begin();v_it.valid();++v_it)
-	{
-		complex<double> z_v (A[*v_it].get_x(),A[*v_it].get_y());
-		z_v_minus_z_0_over_k = z_v - z_0;
-		for(k=1;k<=precision();k++)
-		{
-			coef[k] += ((double(-1))*z_v_minus_z_0_over_k)/double(k);
-			z_v_minus_z_0_over_k *= z_v - z_0;
-		}
-	}
-	act_ptr.replace_multipole_exp(coef,precision());
-}
-
-
-void add_shifted_expansion_to_father_expansion(QuadTreeNodeNM act_ptr)
-{
-	QuadTreeNodeNM father_ptr = act_ptr.get_father_ptr();
-	complex<double> sum;
-	complex<double> z_0,z_1;
-	Array<complex<double> > z_0_minus_z_1_over (precision()+1);
-
-	z_1 = father_ptr.get_Sm_center();
-	z_0 = act_ptr.get_Sm_center();
-	father_ptr.get_multipole_exp()[0] += act_ptr.get_multipole_exp()[0];
-
-	//init z_0_minus_z_1_over
-	z_0_minus_z_1_over[0] = 1;
-	for(int i = 1; i<= precision(); i++)
-		z_0_minus_z_1_over[i] = z_0_minus_z_1_over[i-1] * (z_0 - z_1);
-
-	for(int k=1; k<=precision(); k++)
-	{
-		sum = (act_ptr.get_multipole_exp()[0]*(double(-1))*z_0_minus_z_1_over[k])/
-			double(k) ;
-		for(int s=1; s<=k; s++)
-			sum +=  act_ptr.get_multipole_exp()[s]*z_0_minus_z_1_over[k-s]* binko(k-1,s-1);
-		father_ptr.get_multipole_exp()[k] += sum;
-	}
-}
-
-
-void calculate_local_expansions_and_WSPRLS(
-	NodeArray<NodeAttributes>A,
-	QuadTreeNodeNM act_node_ptr)
-{
-	List<QuadTreeNodeNM> I,L,L2,E,D1,D2,M;
-	QuadTreeNodeNM *father_ptr,*selected_node_ptr;
-	ListIterator<QuadTreeNodeNM> ptr_it;
-
-	//Step 0: Initializations
-	if(! act_node_ptr.is_root())
-		father_ptr = act_node_ptr.get_father_ptr();
-	I.clear();L.clear();L2.clear();D1.clear();D2.clear();M.clear();
-
-	//Step 1: calculate Lists I (min. ill sep. set), L (interaction List of well sep.
-	//nodes , they are used to form the Local Expansions from the multipole expansions),
-	//L2 (non bordering leaves that have a larger or equal Sm-cell and  are ill separated;
-	//empty if the actual node is a leaf)
-	//calculate List D1(bordering leaves that have a larger or equal Sm-cell and are
-	//ill separated) and D2 (non bordering leaves that have a larger or equal Sm-cell and
-	//are ill separated;empty if the actual node is an interior node)
-
-	//special case: act_node is the root of T
-	if (act_node_ptr.is_root())
-	{//if
-		E.clear();
-		if(act_node_ptr.child_lt_exists())
-			E.pushBack(act_node_ptr.get_child_lt_ptr());
-		if(act_node_ptr.child_rt_exists())
-			E.pushBack(act_node_ptr.get_child_rt_ptr());
-		if(act_node_ptr.child_lb_exists())
-			E.pushBack(act_node_ptr.get_child_lb_ptr());
-		if(act_node_ptr.child_rb_exists())
-			E.pushBack(act_node_ptr.get_child_rb_ptr());
-	}//if
-
-	//usual case: act_node is an interior node of T
-	else
-	{
-		father_ptr.get_D1(E); //bordering leaves of father
-		father_ptr.get_I(I);  //min ill sep. nodes of father
-
-
-		for(ptr_it = I.begin();ptr_it.valid();++ptr_it)
-			E.pushBack(*ptr_it);
-		I.clear();
-	}
-
-
-	while (!E.empty())
-	{//while
-		selected_node_ptr = E.popFrontRet();
-		if (well_separated(act_node_ptr,selected_node_ptr))
-			L.pushBack(selected_node_ptr);
-		else if (act_node_ptr.get_Sm_level() < selected_node_ptr.get_Sm_level())
-			I.pushBack(selected_node_ptr);
-		else if(!selected_node_ptr.is_leaf())
-		{
-			if(selected_node_ptr.child_lt_exists())
-				E.pushBack(selected_node_ptr.get_child_lt_ptr());
-			if(selected_node_ptr.child_rt_exists())
-				E.pushBack(selected_node_ptr.get_child_rt_ptr());
-			if(selected_node_ptr.child_lb_exists())
-				E.pushBack(selected_node_ptr.get_child_lb_ptr());
-			if(selected_node_ptr.child_rb_exists())
-				E.pushBack(selected_node_ptr.get_child_rb_ptr());
-		}
-		else if(bordering(act_node_ptr,selected_node_ptr))
-			D1.pushBack(selected_node_ptr);
-		else if( (selected_node_ptr != act_node_ptr)&&(act_node_ptr.is_leaf()))
-			D2.pushBack(selected_node_ptr); //direct calculation (no errors produced)
-		else if((selected_node_ptr != act_node_ptr)&&!(act_node_ptr.is_leaf()))
-			L2.pushBack(selected_node_ptr);
-	}//while
-
-	act_node_ptr.set_I(I);
-	act_node_ptr.set_D1(D1);
-	act_node_ptr.set_D2(D2);
-
-	//Step 2: add local expansions from father(act_node_ptr) and calculate locale
-	//expansions for all nodes in L
-	if(!act_node_ptr.is_root())
-		add_shifted_local_exp_of_parent(act_node_ptr);
-
-	for(ptr_it = L.begin();ptr_it.valid();++ptr_it)
-		add_local_expansion(*ptr_it,act_node_ptr);
-
-	//Step 3: calculate locale expansions for all nodes in D2 (simpler than in Step 2)
-
-	for(ptr_it = L2.begin();ptr_it.valid();++ptr_it)
-		add_local_expansion_of_leaf(A,*ptr_it,act_node_ptr);
-
-	//Step 4: recursive calls if act_node is not a leaf
-	if(!act_node_ptr.is_leaf())
-	{
-		if(act_node_ptr.child_lt_exists())
-			calculate_local_expansions_and_WSPRLS(A,act_node_ptr.get_child_lt_ptr());
-		if(act_node_ptr.child_rt_exists())
-			calculate_local_expansions_and_WSPRLS(A,act_node_ptr.get_child_rt_ptr());
-		if(act_node_ptr.child_lb_exists())
-			calculate_local_expansions_and_WSPRLS(A,act_node_ptr.get_child_lb_ptr());
-		if(act_node_ptr.child_rb_exists())
-			calculate_local_expansions_and_WSPRLS(A,act_node_ptr.get_child_rb_ptr());
-	}
-
-	//Step 5: WSPRLS(Well Separateness Preserving Refinement of leaf surroundings)
-	//if act_node is a leaf than calculate the list D1,D2 and M from I and D1
-	else // *act_node_ptr is a leaf
-	{//else
-		act_node_ptr.get_D1(D1);
-		act_node_ptr.get_D2(D2);
-
-		while(!I.empty())
-		{//while
-			selected_node_ptr = I.popFrontRet();
-			if(selected_node_ptr.is_leaf())
-			{
-				//here D1 contains larger AND smaller bordering leaves!
-				if(bordering(act_node_ptr,selected_node_ptr))
-					D1.pushBack(selected_node_ptr);
-				else
-					D2.pushBack(selected_node_ptr);
-			}
-			else //!selected_node_ptr.is_leaf()
-			{
-				if(bordering(act_node_ptr,selected_node_ptr))
-				{
-					if(selected_node_ptr.child_lt_exists())
-						I.pushBack(selected_node_ptr.get_child_lt_ptr());
-					if(selected_node_ptr.child_rt_exists())
-						I.pushBack(selected_node_ptr.get_child_rt_ptr());
-					if(selected_node_ptr.child_lb_exists())
-						I.pushBack(selected_node_ptr.get_child_lb_ptr());
-					if(selected_node_ptr.child_rb_exists())
-						I.pushBack(selected_node_ptr.get_child_rb_ptr());
-				}
-				else
-					M.pushBack(selected_node_ptr);
-			}
-		}//while
-		act_node_ptr.set_D1(D1);
-		act_node_ptr.set_D2(D2);
-		act_node_ptr.set_M(M);
-	}//else
-}
-
-
-boolean well_separated(QuadTreeNodeNM node_1_ptr, QuadTreeNodeNM node_2_ptr)
-{
-	numexcept N;
-	double boxlength_1 = node_1_ptr.get_Sm_boxlength();
-	double boxlength_2 = node_2_ptr.get_Sm_boxlength();
-	double x1_min,x1_max,y1_min,y1_max,x2_min,x2_max,y2_min,y2_max;
-	boolean x_overlap,y_overlap;
-
-	if(boxlength_1 <= boxlength_2)
-	{
-		x1_min = node_1_ptr.get_Sm_downleftcorner().m_x;
-		x1_max = node_1_ptr.get_Sm_downleftcorner().m_x+boxlength_1;
-		y1_min = node_1_ptr.get_Sm_downleftcorner().m_y;
-		y1_max = node_1_ptr.get_Sm_downleftcorner().m_y+boxlength_1;
-
-		//blow the box up
-		x2_min = node_2_ptr.get_Sm_downleftcorner().m_x-boxlength_2;
-		x2_max = node_2_ptr.get_Sm_downleftcorner().m_x+2*boxlength_2;
-		y2_min = node_2_ptr.get_Sm_downleftcorner().m_y-boxlength_2;
-		y2_max = node_2_ptr.get_Sm_downleftcorner().m_y+2*boxlength_2;
-	}
-	else //boxlength_1 > boxlength_2
-	{
-		//blow the box up
-		x1_min = node_1_ptr.get_Sm_downleftcorner().m_x-boxlength_1;
-		x1_max = node_1_ptr.get_Sm_downleftcorner().m_x+2*boxlength_1;
-		y1_min = node_1_ptr.get_Sm_downleftcorner().m_y-boxlength_1;
-		y1_max = node_1_ptr.get_Sm_downleftcorner().m_y+2*boxlength_1;
-
-		x2_min = node_2_ptr.get_Sm_downleftcorner().m_x;
-		x2_max = node_2_ptr.get_Sm_downleftcorner().m_x+boxlength_2;
-		y2_min = node_2_ptr.get_Sm_downleftcorner().m_y;
-		y2_max = node_2_ptr.get_Sm_downleftcorner().m_y+boxlength_2;
-	}
-
-	//test if boxes overlap
-	if((x1_max <= x2_min)|| N.nearly_equal(x1_max,x2_min)||
-		(x2_max <= x1_min)|| N.nearly_equal(x2_max,x1_min))
-		x_overlap = false;
-	else
-		x_overlap = true;
-	if((y1_max <= y2_min)|| N.nearly_equal(y1_max,y2_min)||
-		(y2_max <= y1_min)|| N.nearly_equal(y2_max,y1_min))
-		y_overlap = false;
-	else
-		y_overlap = true;
-
-	if (x_overlap  && y_overlap)
-		return false;
-	else
-		return true;
-}
-
-
-boolean bordering(QuadTreeNodeNM node_1_ptr,QuadTreeNodeNM node_2_ptr)
-{
-	numexcept N;
-	double boxlength_1 = node_1_ptr.get_Sm_boxlength();
-	double boxlength_2 = node_2_ptr.get_Sm_boxlength();
-	double x1_min = node_1_ptr.get_Sm_downleftcorner().m_x;
-	double x1_max = node_1_ptr.get_Sm_downleftcorner().m_x+boxlength_1;
-	double y1_min = node_1_ptr.get_Sm_downleftcorner().m_y;
-	double y1_max = node_1_ptr.get_Sm_downleftcorner().m_y+boxlength_1;
-	double x2_min = node_2_ptr.get_Sm_downleftcorner().m_x;
-	double x2_max = node_2_ptr.get_Sm_downleftcorner().m_x+boxlength_2;
-	double y2_min = node_2_ptr.get_Sm_downleftcorner().m_y;
-	double y2_max = node_2_ptr.get_Sm_downleftcorner().m_y+boxlength_2;
-
-	if( ( (x2_min <= x1_min || N.nearly_equal(x2_min,x1_min)) &&
-		(x1_max <= x2_max || N.nearly_equal(x1_max,x2_max)) &&
-		(y2_min <= y1_min || N.nearly_equal(y2_min,y1_min)) &&
-		(y1_max <= y2_max || N.nearly_equal(y1_max,y2_max))    ) ||
-		( (x1_min <= x2_min || N.nearly_equal(x1_min,x2_min)) &&
-		(x2_max <= x1_max || N.nearly_equal(x2_max,x1_max)) &&
-		(y1_min <= y2_min || N.nearly_equal(y1_min,y2_min)) &&
-		(y2_max <= y1_max || N.nearly_equal(y2_max,y1_max))    ) )
-		return false; //one box contains the other box(inclusive neighbours)
-	else
-	{//else
-		if (boxlength_1 <= boxlength_2)
-		{ //shift box1
-			if (x1_min < x2_min)
-			{ x1_min +=boxlength_1;x1_max +=boxlength_1; }
-			else if  (x1_max > x2_max)
-			{ x1_min -=boxlength_1;x1_max -=boxlength_1; }
-			if (y1_min < y2_min)
-			{ y1_min +=boxlength_1;y1_max +=boxlength_1; }
-			else if  (y1_max > y2_max)
-			{ y1_min -=boxlength_1;y1_max -=boxlength_1; }
-		}
-		else //boxlength_1 > boxlength_2
-		{//shift box2
-			if (x2_min < x1_min)
-			{ x2_min +=boxlength_2;x2_max +=boxlength_2; }
-			else if  (x2_max > x1_max)
-			{ x2_min -=boxlength_2;x2_max -=boxlength_2; }
-			if (y2_min < y1_min)
-			{ y2_min +=boxlength_2;y2_max +=boxlength_2; }
-			else if  (y2_max > y1_max)
-			{ y2_min -=boxlength_2;y2_max -=boxlength_2; }
-		}
-		if( ( (x2_min <= x1_min || N.nearly_equal(x2_min,x1_min)) &&
-			(x1_max <= x2_max || N.nearly_equal(x1_max,x2_max)) &&
-			(y2_min <= y1_min || N.nearly_equal(y2_min,y1_min)) &&
-			(y1_max <= y2_max || N.nearly_equal(y1_max,y2_max))    ) ||
-			( (x1_min <= x2_min || N.nearly_equal(x1_min,x2_min)) &&
-			(x2_max <= x1_max || N.nearly_equal(x2_max,x1_max)) &&
-			(y1_min <= y2_min || N.nearly_equal(y1_min,y2_min)) &&
-			(y2_max <= y1_max || N.nearly_equal(y2_max,y1_max))    ) )
-			return true;
-		else
-			return false;
-	}//else
-}
+    void find_small_cell_iteratively(
+            QuadTreeNodeNM act_ptr,
+            double x_min,
+            double x_max,
+            double y_min,
+            double y_max)
+    {
+        int new_level;
+        double new_boxlength;
+        DPoint new_dlc = new DPoint();
+        boolean Sm_cell_found = false;
+
+        while (!Sm_cell_found && ((x_max - x_min >= MIN_BOX_LENGTH) ||
+                (y_max - y_min >= MIN_BOX_LENGTH)))
+        {
+            if (in_lt_quad(act_ptr, x_min, x_max, y_min, y_max))
+            {
+                new_level = act_ptr.get_Sm_level() + 1;
+                new_boxlength = act_ptr.get_Sm_boxlength() / 2;
+                new_dlc.m_x = act_ptr.get_Sm_downleftcorner().m_x;
+                new_dlc.m_y = act_ptr.get_Sm_downleftcorner().m_y + new_boxlength;
+                act_ptr.set_Sm_level(new_level);
+                act_ptr.set_Sm_boxlength(new_boxlength);
+                act_ptr.set_Sm_downleftcorner(new_dlc);
+            }
+            else if (in_rt_quad(act_ptr, x_min, x_max, y_min, y_max))
+            {
+                new_level = act_ptr.get_Sm_level() + 1;
+                new_boxlength = act_ptr.get_Sm_boxlength() / 2;
+                new_dlc.m_x = act_ptr.get_Sm_downleftcorner().m_x + new_boxlength;
+                new_dlc.m_y = act_ptr.get_Sm_downleftcorner().m_y + new_boxlength;
+                act_ptr.set_Sm_level(new_level);
+                act_ptr.set_Sm_boxlength(new_boxlength);
+                act_ptr.set_Sm_downleftcorner(new_dlc);
+            }
+            else if (in_lb_quad(act_ptr, x_min, x_max, y_min, y_max))
+            {
+                new_level = act_ptr.get_Sm_level() + 1;
+                new_boxlength = act_ptr.get_Sm_boxlength() / 2;
+                act_ptr.set_Sm_level(new_level);
+                act_ptr.set_Sm_boxlength(new_boxlength);
+            }
+            else if (in_rb_quad(act_ptr, x_min, x_max, y_min, y_max))
+            {
+                new_level = act_ptr.get_Sm_level() + 1;
+                new_boxlength = act_ptr.get_Sm_boxlength() / 2;
+                new_dlc.m_x = act_ptr.get_Sm_downleftcorner().m_x + new_boxlength;
+                new_dlc.m_y = act_ptr.get_Sm_downleftcorner().m_y;
+                act_ptr.set_Sm_level(new_level);
+                act_ptr.set_Sm_boxlength(new_boxlength);
+                act_ptr.set_Sm_downleftcorner(new_dlc);
+            }
+            else
+            {
+                Sm_cell_found = true;
+            }
+        }
+    }
+
+    void find_small_cell_by_formula(
+            QuadTreeNodeNM act_ptr,
+            double x_min,
+            double x_max,
+            double y_min,
+            double y_max)
+    {
+        int level_offset = act_ptr.get_Sm_level();
+        max_power_of_2_index = 30;//up to this level standard integer arithmetic is used
+        DPoint Sm_position = new DPoint(); // IPoint
+        double Sm_dlc_x_coord, Sm_dlc_y_coord;
+        double Sm_boxlength;
+        int Sm_level;
+        DPoint Sm_downleftcorner = new DPoint();
+        int j_x = max_power_of_2_index + 1;
+        int j_y = max_power_of_2_index + 1;
+        boolean rectangle_is_horizontal_line = false;
+        boolean rectangle_is_vertical_line = false;
+        boolean rectangle_is_point = false;
+
+        //shift boundaries to the origin for easy calculations
+        double x_min_old = x_min;
+        double x_max_old = x_max;
+        double y_min_old = y_min;
+        double y_max_old = y_max;
+
+        Sm_boxlength = act_ptr.get_Sm_boxlength();
+        Sm_dlc_x_coord = act_ptr.get_Sm_downleftcorner().m_x;
+        Sm_dlc_y_coord = act_ptr.get_Sm_downleftcorner().m_y;
+
+        x_min -= Sm_dlc_x_coord;
+        x_max -= Sm_dlc_x_coord;
+        y_min -= Sm_dlc_y_coord;
+        y_max -= Sm_dlc_y_coord;
+
+        //check if iterative way has to be used
+        if (x_min == x_max && y_min == y_max)
+        {
+            rectangle_is_point = true;
+        }
+        else if (x_min == x_max && y_min != y_max)
+        {
+            rectangle_is_vertical_line = true;
+        }
+        else //x_min != x_max
+        {
+            j_x = (int) (Math.ceil(Math.log(Sm_boxlength / (x_max - x_min)) / Math.log(2.0)));
+        }
+
+        if (x_min != x_max && y_min == y_max)
+        {
+            rectangle_is_horizontal_line = true;
+        }
+        else //y_min != y_max
+        {
+            j_y = (int) (Math.ceil(Math.log(Sm_boxlength / (y_max - y_min)) / Math.log(2.0)));
+        }
+
+        if (rectangle_is_point)
+        {
+            ;//keep the old values
+        }
+        else if (!numexcept.nearly_equal((x_min_old - x_max_old), (x_min - x_max)) ||
+                !numexcept.nearly_equal((y_min_old - y_max_old), (y_min - y_max)) ||
+                x_min / Sm_boxlength < MIN_BOX_LENGTH || x_max / Sm_boxlength < MIN_BOX_LENGTH ||
+                y_min / Sm_boxlength < MIN_BOX_LENGTH || y_max / Sm_boxlength < MIN_BOX_LENGTH)
+        {
+            find_small_cell_iteratively(act_ptr, x_min_old, x_max_old, y_min_old, y_max_old);
+        }
+        else if (((j_x > max_power_of_2_index) && (j_y > max_power_of_2_index)) ||
+                ((j_x > max_power_of_2_index) && !rectangle_is_vertical_line) ||
+                ((j_y > max_power_of_2_index) && !rectangle_is_horizontal_line))
+        {
+            find_small_cell_iteratively(act_ptr, x_min_old, x_max_old, y_min_old, y_max_old);
+        }
+        else //idea of Aluru et al.
+        {//else
+            int k, a1, a2, A, j_minus_k;
+            double h1, h2;
+            int Sm_x_level = 0, Sm_y_level = 0;
+            int Sm_x_position = 0, Sm_y_position = 0;
+
+            if (x_min != x_max)
+            {//if1
+                //calculate Sm_x_level and Sm_x_position
+                a1 = (int) (Math.ceil((x_min / Sm_boxlength) * power_of_two(j_x)));
+                a2 = (int) (Math.floor((x_max / Sm_boxlength) * power_of_two(j_x)));
+                h1 = (Sm_boxlength / power_of_two(j_x)) * a1;
+                h2 = (Sm_boxlength / power_of_two(j_x)) * a2;
+
+                //special cases: two tangents or left tangent and righ cutline
+                if (((h1 == x_min) && (h2 == x_max)) || ((h1 == x_min) && (h2 != x_max)))
+                {
+                    A = a2;
+                }
+                else if (a1 == a2)  //only one cutline
+                {
+                    A = a1;
+                }
+                else  //two cutlines or a right tangent and a left cutline (usual case)
+                {
+                    if ((a1 % 2) == 0)
+                    {
+                        A = a1;
+                    }
+                    else
+                    {
+                        A = a2;
+                    }
+                }
+
+                j_minus_k = (int) ((Math.log(1 + (A ^ (A - 1))) / Math.log(2.0)) - 1);
+                k = j_x - j_minus_k;
+                Sm_x_level = k - 1;
+                Sm_x_position = a1 / power_of_two(j_x - Sm_x_level);
+            }//if1
+
+            if (y_min != y_max)
+            {//if2
+                //calculate Sm_y_level and Sm_y_position
+                a1 = (int) (Math.ceil((y_min / Sm_boxlength) * power_of_two(j_y)));
+                a2 = (int) (Math.floor((y_max / Sm_boxlength) * power_of_two(j_y)));
+                h1 = (Sm_boxlength / power_of_two(j_y)) * a1;
+                h2 = (Sm_boxlength / power_of_two(j_y)) * a2;
+
+                //special cases: two tangents or bottom tangent and top cutline
+                if (((h1 == y_min) && (h2 == y_max)) || ((h1 == y_min) && (h2 != y_max)))
+                {
+                    A = a2;
+                }
+                else if (a1 == a2)  //only one cutline
+                {
+                    A = a1;
+                }
+                else  //two cutlines or a top tangent and a bottom cutline (usual case)
+                {
+                    if ((a1 % 2) == 0)
+                    {
+                        A = a1;
+                    }
+                    else
+                    {
+                        A = a2;
+                    }
+                }
+
+                j_minus_k = (int) ((Math.log(1 + (A ^ (A - 1))) / Math.log(2.0)) - 1);
+                k = j_y - j_minus_k;
+                Sm_y_level = k - 1;
+                Sm_y_position = a1 / power_of_two(j_y - Sm_y_level);
+            }//if2
+
+            if ((x_min != x_max) && (y_min != y_max))//a box with area > 0
+            {//if3
+                if (Sm_x_level == Sm_y_level)
+                {
+                    Sm_level = Sm_x_level;
+                    Sm_position.m_x = Sm_x_position;
+                    Sm_position.m_y = Sm_y_position;
+                }
+                else if (Sm_x_level < Sm_y_level)
+                {
+                    Sm_level = Sm_x_level;
+                    Sm_position.m_x = Sm_x_position;
+                    Sm_position.m_y = Sm_y_position / power_of_two(Sm_y_level - Sm_x_level);
+                }
+                else //Sm_x_level > Sm_y_level
+                {
+                    Sm_level = Sm_y_level;
+                    Sm_position.m_x = Sm_x_position / power_of_two(Sm_x_level - Sm_y_level);
+                    Sm_position.m_y = Sm_y_position;
+                }
+            }//if3
+            else if (x_min == x_max) //a vertical line
+            {//if4
+                Sm_level = Sm_y_level;
+                Sm_position.m_x = (int) (Math.floor((x_min * power_of_two(Sm_level)) /
+                        Sm_boxlength));
+                Sm_position.m_y = Sm_y_position;
+            }//if4
+            else //y_min == y_max (a horizontal line)
+            {//if5
+                Sm_level = Sm_x_level;
+                Sm_position.m_x = Sm_x_position;
+                Sm_position.m_y = (int) (Math.floor((y_min * power_of_two(Sm_level)) /
+                        Sm_boxlength));
+            }//if5
+
+            Sm_boxlength = Sm_boxlength / power_of_two(Sm_level);
+            Sm_downleftcorner.m_x = Sm_dlc_x_coord + Sm_boxlength * Sm_position.m_x;
+            Sm_downleftcorner.m_y = Sm_dlc_y_coord + Sm_boxlength * Sm_position.m_y;
+            act_ptr.set_Sm_level(Sm_level + level_offset);
+            act_ptr.set_Sm_boxlength(Sm_boxlength);
+            act_ptr.set_Sm_downleftcorner(Sm_downleftcorner);
+        }//else
+    }
+
+    void delete_red_quad_tree_and_count_treenodes(QuadTreeNM T)
+    {
+        T.delete_tree(T.get_root_ptr());
+    }
+
+    void form_multipole_expansions(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNM T,
+            List<QuadTreeNodeNM> quad_tree_leaves)
+    {
+        T.set_act_ptr(T.get_root_ptr());
+        form_multipole_expansion_of_subtree(A, T, quad_tree_leaves);
+    }
+
+    void form_multipole_expansion_of_subtree(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNM T,
+            List<QuadTreeNodeNM> quad_tree_leaves)
+    {
+        init_expansion_Lists(T.get_act_ptr());
+        set_center(T.get_act_ptr());
+
+        if (T.get_act_ptr().is_leaf()) //form expansions for leaf nodes
+        {//if
+            quad_tree_leaves.add(T.get_act_ptr());
+            form_multipole_expansion_of_leaf_node(A, T.get_act_ptr());
+        }//if
+        else //rekursive calls and add shifted expansions
+        {//else
+            if (T.get_act_ptr().child_lt_exists())
+            {
+                T.go_to_lt_child();
+                form_multipole_expansion_of_subtree(A, T, quad_tree_leaves);
+                add_shifted_expansion_to_father_expansion(T.get_act_ptr());
+                T.go_to_father();
+            }
+            if (T.get_act_ptr().child_rt_exists())
+            {
+                T.go_to_rt_child();
+                form_multipole_expansion_of_subtree(A, T, quad_tree_leaves);
+                add_shifted_expansion_to_father_expansion(T.get_act_ptr());
+                T.go_to_father();
+            }
+            if (T.get_act_ptr().child_lb_exists())
+            {
+                T.go_to_lb_child();
+                form_multipole_expansion_of_subtree(A, T, quad_tree_leaves);
+                add_shifted_expansion_to_father_expansion(T.get_act_ptr());
+                T.go_to_father();
+            }
+            if (T.get_act_ptr().child_rb_exists())
+            {
+                T.go_to_rb_child();
+                form_multipole_expansion_of_subtree(A, T, quad_tree_leaves);
+                add_shifted_expansion_to_father_expansion(T.get_act_ptr());
+                T.go_to_father();
+            }
+        }//else
+    }
+
+    void init_expansion_Lists(QuadTreeNodeNM act_ptr)
+    {
+        int i;
+        Complex[] nulList = new Complex[precision() + 1];
+
+        for (Complex n : nulList)
+        {
+            n = new Complex();
+        }
+
+        act_ptr.set_multipole_exp(nulList, precision());
+        act_ptr.set_locale_exp(nulList, precision());
+    }
+
+    void set_center(QuadTreeNodeNM act_ptr)
+    {
+
+        Random random = new Random();
+        DPoint Sm_downleftcorner = act_ptr.get_Sm_downleftcorner();
+        double Sm_boxlength = act_ptr.get_Sm_boxlength();
+        double boxcenter_x_coord, boxcenter_y_coord;
+        DPoint Sm_dlc;
+        double rand_y;
+
+        boxcenter_x_coord = Sm_downleftcorner.m_x + Sm_boxlength * 0.5;
+        boxcenter_y_coord = Sm_downleftcorner.m_y + Sm_boxlength * 0.5;
+
+        //for use of complex logarithm: waggle the y-coordinates a little bit
+        //such that the new center is really inside the actual box and near the exact center
+        rand_y = random.nextDouble();//rand number in (0,1)
+        boxcenter_y_coord = boxcenter_y_coord + 0.001 * Sm_boxlength * rand_y;
+
+        Complex boxcenter = new Complex(boxcenter_x_coord, boxcenter_y_coord);
+        act_ptr.set_Sm_center(boxcenter);
+    }
+
+    void form_multipole_expansion_of_leaf_node(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNodeNM act_ptr)
+    {
+        int k;
+        Complex Q = new Complex(0, 0);
+        Complex z_0 = act_ptr.get_Sm_center();//center of actual box
+        Complex[] coef = new Complex[precision() + 1];
+        Complex z_v_minus_z_0_over_k;
+        List<node> nodes_in_box;
+        int i;
+
+        nodes_in_box = act_ptr.get_contained_nodes();
+
+        for (node v_it : nodes_in_box)
+        {
+            Q.plus(new Complex(1.0));
+        }
+
+        coef[0] = Q;
+
+        for (i = 1; i <= precision(); i++)
+        {
+            coef[i] = new Complex();
+        }
+
+        for (node v_it : nodes_in_box)
+        {
+            Complex z_v = new Complex(A.get(v_it).get_x(), A.get(v_it).get_y());
+            z_v_minus_z_0_over_k = z_v.minus(z_0);
+            for (k = 1; k <= precision(); k++)
+            {
+                coef[k] = coef[k].plus(z_v_minus_z_0_over_k.multipliedBy(-1.0).dividedBy(k));
+                z_v_minus_z_0_over_k = z_v_minus_z_0_over_k.multipliedBy(z_v.minus(z_0));
+            }
+        }
+        act_ptr.replace_multipole_exp(coef, precision());
+    }
+
+    void add_shifted_expansion_to_father_expansion(QuadTreeNodeNM act_ptr)
+    {
+        QuadTreeNodeNM father_ptr = act_ptr.get_father_ptr();
+        Complex sum;
+        Complex z_0, z_1;
+        Complex[] z_0_minus_z_1_over = new Complex[precision() + 1];
+
+        z_1 = father_ptr.get_Sm_center();
+        z_0 = act_ptr.get_Sm_center();
+        father_ptr.get_multipole_exp()[0] = act_ptr.get_multipole_exp()[0].plus(act_ptr.get_multipole_exp()[0]);
+
+        //init z_0_minus_z_1_over
+        z_0_minus_z_1_over[0] = new Complex(1.0);
+
+        for (int i = 1; i <= precision(); i++)
+        {
+            z_0_minus_z_1_over[i] = z_0_minus_z_1_over[i - 1].multipliedBy(z_0.minus(z_1));
+        }
+
+        for (int k = 1; k <= precision(); k++)
+        {
+            sum = (act_ptr.get_multipole_exp()[0].multipliedBy(-1.0)).multipliedBy(z_0_minus_z_1_over[k]).dividedBy(k);
+
+            for (int s = 1; s <= k; s++)
+            {
+                sum = sum.plus(act_ptr.get_multipole_exp()[s].multipliedBy(z_0_minus_z_1_over[k - s]).multipliedBy(binko(k - 1, s - 1)));
+            }
+            father_ptr.get_multipole_exp()[k] = father_ptr.get_multipole_exp()[k].plus(sum);
+        }
+    }
+
+    void calculate_local_expansions_and_WSPRLS(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNodeNM act_node_ptr)
+    {
+        List<QuadTreeNodeNM> I, L, L2, E, D1, D2, M;
+        QuadTreeNodeNM father_ptr = null, selected_node_ptr;
+
+        //Step 0: Initializations
+        if (!act_node_ptr.is_root())
+        {
+            father_ptr = act_node_ptr.get_father_ptr();
+        }
+
+        I = new ArrayList<QuadTreeNodeNM>();
+        L = new ArrayList<QuadTreeNodeNM>();
+        L2 = new ArrayList<QuadTreeNodeNM>();
+        E = new ArrayList<QuadTreeNodeNM>();
+        D1 = new ArrayList<QuadTreeNodeNM>();
+        D2 = new ArrayList<QuadTreeNodeNM>();
+        M = new ArrayList<QuadTreeNodeNM>();
+
+        //Step 1: calculate Lists I (min. ill sep. set), L (interaction List of well sep.
+        //nodes , they are used to form the Local Expansions from the multipole expansions),
+        //L2 (non bordering leaves that have a larger or equal Sm-cell and  are ill separated;
+        //empty if the actual node is a leaf)
+        //calculate List D1(bordering leaves that have a larger or equal Sm-cell and are
+        //ill separated) and D2 (non bordering leaves that have a larger or equal Sm-cell and
+        //are ill separated;empty if the actual node is an interior node)
+
+        //special case: act_node is the root of T
+        if (act_node_ptr.is_root())
+        {//if
+            E.clear();
+            if (act_node_ptr.child_lt_exists())
+            {
+                E.add(act_node_ptr.get_child_lt_ptr());
+            }
+            if (act_node_ptr.child_rt_exists())
+            {
+                E.add(act_node_ptr.get_child_rt_ptr());
+            }
+            if (act_node_ptr.child_lb_exists())
+            {
+                E.add(act_node_ptr.get_child_lb_ptr());
+            }
+            if (act_node_ptr.child_rb_exists())
+            {
+                E.add(act_node_ptr.get_child_rb_ptr());
+            }
+        }//if
+        //usual case: act_node is an interior node of T
+        else
+        {
+            father_ptr.get_D1(E); //bordering leaves of father
+            father_ptr.get_I(I);  //min ill sep. nodes of father
+
+            for (QuadTreeNodeNM ptr_it : I)
+            {
+                E.add(ptr_it);
+            }
+            I.clear();
+        }
+
+
+        while (!E.isEmpty())
+        {//while
+            selected_node_ptr = E.remove(0);
+            if (well_separated(act_node_ptr, selected_node_ptr))
+            {
+                L.add(selected_node_ptr);
+            }
+            else if (act_node_ptr.get_Sm_level() < selected_node_ptr.get_Sm_level())
+            {
+                I.add(selected_node_ptr);
+            }
+            else if (!selected_node_ptr.is_leaf())
+            {
+                if (selected_node_ptr.child_lt_exists())
+                {
+                    E.add(selected_node_ptr.get_child_lt_ptr());
+                }
+                if (selected_node_ptr.child_rt_exists())
+                {
+                    E.add(selected_node_ptr.get_child_rt_ptr());
+                }
+                if (selected_node_ptr.child_lb_exists())
+                {
+                    E.add(selected_node_ptr.get_child_lb_ptr());
+                }
+                if (selected_node_ptr.child_rb_exists())
+                {
+                    E.add(selected_node_ptr.get_child_rb_ptr());
+                }
+            }
+            else if (bordering(act_node_ptr, selected_node_ptr))
+            {
+                D1.add(selected_node_ptr);
+            }
+            else if ((selected_node_ptr != act_node_ptr) && (act_node_ptr.is_leaf()))
+            {
+                D2.add(selected_node_ptr); //direct calculation (no errors produced)
+            }
+            else if ((selected_node_ptr != act_node_ptr) && !(act_node_ptr.is_leaf()))
+            {
+                L2.add(selected_node_ptr);
+            }
+        }//while
+
+        act_node_ptr.set_I(I);
+        act_node_ptr.set_D1(D1);
+        act_node_ptr.set_D2(D2);
+
+        //Step 2: add local expansions from father(act_node_ptr) and calculate locale
+        //expansions for all nodes in L
+        if (!act_node_ptr.is_root())
+        {
+            add_shifted_local_exp_of_parent(act_node_ptr);
+        }
+
+        for (QuadTreeNodeNM ptr_it : L)
+        {
+            add_local_expansion(ptr_it, act_node_ptr);
+        }
+
+        //Step 3: calculate locale expansions for all nodes in D2 (simpler than in Step 2)
+
+        for (QuadTreeNodeNM ptr_it : L2)
+        {
+            add_local_expansion_of_leaf(A, ptr_it, act_node_ptr);
+        }
+
+        //Step 4: recursive calls if act_node is not a leaf
+        if (!act_node_ptr.is_leaf())
+        {
+            if (act_node_ptr.child_lt_exists())
+            {
+                calculate_local_expansions_and_WSPRLS(A, act_node_ptr.get_child_lt_ptr());
+            }
+            if (act_node_ptr.child_rt_exists())
+            {
+                calculate_local_expansions_and_WSPRLS(A, act_node_ptr.get_child_rt_ptr());
+            }
+            if (act_node_ptr.child_lb_exists())
+            {
+                calculate_local_expansions_and_WSPRLS(A, act_node_ptr.get_child_lb_ptr());
+            }
+            if (act_node_ptr.child_rb_exists())
+            {
+                calculate_local_expansions_and_WSPRLS(A, act_node_ptr.get_child_rb_ptr());
+            }
+        }
+        //Step 5: WSPRLS(Well Separateness Preserving Refinement of leaf surroundings)
+        //if act_node is a leaf than calculate the list D1,D2 and M from I and D1
+        else // *act_node_ptr is a leaf
+        {//else
+            act_node_ptr.get_D1(D1);
+            act_node_ptr.get_D2(D2);
+
+            while (!I.isEmpty())
+            {//while
+                selected_node_ptr = I.remove(0);
+                if (selected_node_ptr.is_leaf())
+                {
+                    //here D1 contains larger AND smaller bordering leaves!
+                    if (bordering(act_node_ptr, selected_node_ptr))
+                    {
+                        D1.add(selected_node_ptr);
+                    }
+                    else
+                    {
+                        D2.add(selected_node_ptr);
+                    }
+                }
+                else //!selected_node_ptr.is_leaf()
+                {
+                    if (bordering(act_node_ptr, selected_node_ptr))
+                    {
+                        if (selected_node_ptr.child_lt_exists())
+                        {
+                            I.add(selected_node_ptr.get_child_lt_ptr());
+                        }
+                        if (selected_node_ptr.child_rt_exists())
+                        {
+                            I.add(selected_node_ptr.get_child_rt_ptr());
+                        }
+                        if (selected_node_ptr.child_lb_exists())
+                        {
+                            I.add(selected_node_ptr.get_child_lb_ptr());
+                        }
+                        if (selected_node_ptr.child_rb_exists())
+                        {
+                            I.add(selected_node_ptr.get_child_rb_ptr());
+                        }
+                    }
+                    else
+                    {
+                        M.add(selected_node_ptr);
+                    }
+                }
+            }//while
+            act_node_ptr.set_D1(D1);
+            act_node_ptr.set_D2(D2);
+            act_node_ptr.set_M(M);
+        }//else
+    }
+
+    boolean well_separated(QuadTreeNodeNM node_1_ptr, QuadTreeNodeNM node_2_ptr)
+    {
+        double boxlength_1 = node_1_ptr.get_Sm_boxlength();
+        double boxlength_2 = node_2_ptr.get_Sm_boxlength();
+        double x1_min, x1_max, y1_min, y1_max, x2_min, x2_max, y2_min, y2_max;
+        boolean x_overlap, y_overlap;
+
+        if (boxlength_1 <= boxlength_2)
+        {
+            x1_min = node_1_ptr.get_Sm_downleftcorner().m_x;
+            x1_max = node_1_ptr.get_Sm_downleftcorner().m_x + boxlength_1;
+            y1_min = node_1_ptr.get_Sm_downleftcorner().m_y;
+            y1_max = node_1_ptr.get_Sm_downleftcorner().m_y + boxlength_1;
+
+            //blow the box up
+            x2_min = node_2_ptr.get_Sm_downleftcorner().m_x - boxlength_2;
+            x2_max = node_2_ptr.get_Sm_downleftcorner().m_x + 2 * boxlength_2;
+            y2_min = node_2_ptr.get_Sm_downleftcorner().m_y - boxlength_2;
+            y2_max = node_2_ptr.get_Sm_downleftcorner().m_y + 2 * boxlength_2;
+        }
+        else //boxlength_1 > boxlength_2
+        {
+            //blow the box up
+            x1_min = node_1_ptr.get_Sm_downleftcorner().m_x - boxlength_1;
+            x1_max = node_1_ptr.get_Sm_downleftcorner().m_x + 2 * boxlength_1;
+            y1_min = node_1_ptr.get_Sm_downleftcorner().m_y - boxlength_1;
+            y1_max = node_1_ptr.get_Sm_downleftcorner().m_y + 2 * boxlength_1;
+
+            x2_min = node_2_ptr.get_Sm_downleftcorner().m_x;
+            x2_max = node_2_ptr.get_Sm_downleftcorner().m_x + boxlength_2;
+            y2_min = node_2_ptr.get_Sm_downleftcorner().m_y;
+            y2_max = node_2_ptr.get_Sm_downleftcorner().m_y + boxlength_2;
+        }
+
+        //test if boxes overlap
+        if ((x1_max <= x2_min) || numexcept.nearly_equal(x1_max, x2_min) ||
+                (x2_max <= x1_min) || numexcept.nearly_equal(x2_max, x1_min))
+        {
+            x_overlap = false;
+        }
+        else
+        {
+            x_overlap = true;
+        }
+        if ((y1_max <= y2_min) || numexcept.nearly_equal(y1_max, y2_min) ||
+                (y2_max <= y1_min) || numexcept.nearly_equal(y2_max, y1_min))
+        {
+            y_overlap = false;
+        }
+        else
+        {
+            y_overlap = true;
+        }
+
+        if (x_overlap && y_overlap)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    boolean bordering(QuadTreeNodeNM node_1_ptr, QuadTreeNodeNM node_2_ptr)
+    {
+        double boxlength_1 = node_1_ptr.get_Sm_boxlength();
+        double boxlength_2 = node_2_ptr.get_Sm_boxlength();
+        double x1_min = node_1_ptr.get_Sm_downleftcorner().m_x;
+        double x1_max = node_1_ptr.get_Sm_downleftcorner().m_x + boxlength_1;
+        double y1_min = node_1_ptr.get_Sm_downleftcorner().m_y;
+        double y1_max = node_1_ptr.get_Sm_downleftcorner().m_y + boxlength_1;
+        double x2_min = node_2_ptr.get_Sm_downleftcorner().m_x;
+        double x2_max = node_2_ptr.get_Sm_downleftcorner().m_x + boxlength_2;
+        double y2_min = node_2_ptr.get_Sm_downleftcorner().m_y;
+        double y2_max = node_2_ptr.get_Sm_downleftcorner().m_y + boxlength_2;
+
+        if (((x2_min <= x1_min || numexcept.nearly_equal(x2_min, x1_min)) &&
+                (x1_max <= x2_max || numexcept.nearly_equal(x1_max, x2_max)) &&
+                (y2_min <= y1_min || numexcept.nearly_equal(y2_min, y1_min)) &&
+                (y1_max <= y2_max || numexcept.nearly_equal(y1_max, y2_max))) ||
+                ((x1_min <= x2_min || numexcept.nearly_equal(x1_min, x2_min)) &&
+                (x2_max <= x1_max || numexcept.nearly_equal(x2_max, x1_max)) &&
+                (y1_min <= y2_min || numexcept.nearly_equal(y1_min, y2_min)) &&
+                (y2_max <= y1_max || numexcept.nearly_equal(y2_max, y1_max))))
+        {
+            return false; //one box contains the other box(inclusive neighbours)
+        }
+        else
+        {//else
+            if (boxlength_1 <= boxlength_2)
+            { //shift box1
+                if (x1_min < x2_min)
+                {
+                    x1_min += boxlength_1;
+                    x1_max += boxlength_1;
+                }
+                else if (x1_max > x2_max)
+                {
+                    x1_min -= boxlength_1;
+                    x1_max -= boxlength_1;
+                }
+                if (y1_min < y2_min)
+                {
+                    y1_min += boxlength_1;
+                    y1_max += boxlength_1;
+                }
+                else if (y1_max > y2_max)
+                {
+                    y1_min -= boxlength_1;
+                    y1_max -= boxlength_1;
+                }
+            }
+            else //boxlength_1 > boxlength_2
+            {//shift box2
+                if (x2_min < x1_min)
+                {
+                    x2_min += boxlength_2;
+                    x2_max += boxlength_2;
+                }
+                else if (x2_max > x1_max)
+                {
+                    x2_min -= boxlength_2;
+                    x2_max -= boxlength_2;
+                }
+                if (y2_min < y1_min)
+                {
+                    y2_min += boxlength_2;
+                    y2_max += boxlength_2;
+                }
+                else if (y2_max > y1_max)
+                {
+                    y2_min -= boxlength_2;
+                    y2_max -= boxlength_2;
+                }
+            }
+            if (((x2_min <= x1_min || numexcept.nearly_equal(x2_min, x1_min)) &&
+                    (x1_max <= x2_max || numexcept.nearly_equal(x1_max, x2_max)) &&
+                    (y2_min <= y1_min || numexcept.nearly_equal(y2_min, y1_min)) &&
+                    (y1_max <= y2_max || numexcept.nearly_equal(y1_max, y2_max))) ||
+                    ((x1_min <= x2_min || numexcept.nearly_equal(x1_min, x2_min)) &&
+                    (x2_max <= x1_max || numexcept.nearly_equal(x2_max, x1_max)) &&
+                    (y1_min <= y2_min || numexcept.nearly_equal(y1_min, y2_min)) &&
+                    (y2_max <= y1_max || numexcept.nearly_equal(y2_max, y1_max))))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }//else
+    }
 
 
 void add_shifted_local_exp_of_parent(QuadTreeNodeNM node_ptr)
 {
 	QuadTreeNodeNM father_ptr = node_ptr.get_father_ptr();
 
-	complex<double> z_0 = father_ptr.get_Sm_center();
-	complex<double> z_1 = node_ptr.get_Sm_center();
-	Array<complex<double> > z_1_minus_z_0_over (precision()+1);
+	Complex z_0 = father_ptr.get_Sm_center();
+	Complex z_1 = node_ptr.get_Sm_center();
+	Complex[] z_1_minus_z_0_over = new Complex[precision()+1];
 
 	//init z_1_minus_z_0_over
-	z_1_minus_z_0_over[0] = 1;
+	z_1_minus_z_0_over[0] = new Complex(1.0);
 	for(int i = 1; i<= precision(); i++)
-		z_1_minus_z_0_over[i] = z_1_minus_z_0_over[i-1] * (z_1 - z_0);
+		z_1_minus_z_0_over[i] = z_1_minus_z_0_over[i-1].multipliedBy(z_1.minus(z_0));
 
 
 	for(int l = 0; l <= precision();l++)
 	{
-		complex<double> sum (0,0);
+		Complex sum = new Complex(0,0);
 		for(int k = l;k<=precision();k++)
-			sum += binko(k,l)*father_ptr.get_local_exp()[k]*z_1_minus_z_0_over[k-l];
-		node_ptr.get_local_exp()[l] += sum;
+			sum = sum.plus(father_ptr.get_local_exp()[k].multipliedBy(binko(k,l)).multipliedBy(z_1_minus_z_0_over[k-l]));
+
+		node_ptr.get_local_exp()[l] = node_ptr.get_local_exp()[l].plus(sum);
 	}
 }
 
 
 void add_local_expansion(QuadTreeNodeNM ptr_0, QuadTreeNodeNM ptr_1)
 {
-	complex<double> z_0 = ptr_0.get_Sm_center();
-	complex<double> z_1 = ptr_1.get_Sm_center();
-	complex<double> sum, z_error;
-	complex<double> factor;
-	complex<double> z_1_minus_z_0_over_k;
-	complex<double> z_1_minus_z_0_over_s;
-	complex<double> pow_minus_1_s_plus_1;
-	complex<double> pow_minus_1_s;
+	Complex z_0 = ptr_0.get_Sm_center();
+	Complex z_1 = ptr_1.get_Sm_center();
+	Complex sum, z_error;
+	Complex factor;
+	Complex z_1_minus_z_0_over_k;
+	Complex z_1_minus_z_0_over_s;
+	Complex pow_minus_1_s_plus_1;
+	Complex pow_minus_1_s;
 
 	//Error-Handling for complex logarithm
-	if ((std::real(z_1-z_0) <=0) && (std::imag(z_1-z_0) == 0)) //no cont. compl. log fct exists !!!
+	if ((real(z_1-z_0) <=0) && (imag(z_1-z_0) == 0)) //no cont. compl. log fct exists !!!
 	{
 		z_error = log(z_1 -z_0 + 0.0000001);
 		sum = ptr_0.get_multipole_exp()[0] * z_error;
@@ -2460,7 +2640,7 @@ void add_local_expansion(QuadTreeNodeNM ptr_0, QuadTreeNodeNM ptr_1)
 			double(s));
 		factor = pow_minus_1_s/z_1_minus_z_0_over_s;
 		z_1_minus_z_0_over_s *= z_1-z_0;
-		complex<double> sum_2 (0,0);
+		Complex sum_2 (0,0);
 
 		z_1_minus_z_0_over_k = z_1 - z_0;
 		for(int k=1; k<=precision(); k++)
@@ -2480,22 +2660,22 @@ void add_local_expansion_of_leaf(
 {
 	List<node> contained_nodes;
 	double multipole_0_of_v = 1;//only the first coefficient is not zero
-	complex<double> z_1 = ptr_1.get_Sm_center();
-	complex<double> z_error;
-	complex<double> z_1_minus_z_0_over_s;
-	complex<double> pow_minus_1_s_plus_1;
+	Complex z_1 = ptr_1.get_Sm_center();
+	Complex z_error;
+	Complex z_1_minus_z_0_over_s;
+	Complex pow_minus_1_s_plus_1;
 
 	ptr_0.get_contained_nodes(contained_nodes);
 
 	forall_listiterators(node, v_it, contained_nodes)
 	{//forall
 		//set position of v as center ( (1,0,....,0) are the multipole coefficients at v)
-		complex<double> z_0  (A[*v_it].get_x(),A[*v_it].get_y());
+		Complex z_0  (A[*v_it].get_x(),A[*v_it].get_y());
 
 		//now transform multipole_0_of_v to the locale expansion around z_1
 
 		//Error-Handling for complex logarithm
-		if ((std::real(z_1-z_0) <=0) && (std::imag(z_1-z_0) == 0)) //no cont. compl. log fct exists!
+		if ((real(z_1-z_0) <=0) && (imag(z_1-z_0) == 0)) //no cont. compl. log fct exists!
 		{
 			z_error = log(z_1 -z_0 + 0.0000001);
 			ptr_1.get_local_exp()[0] += multipole_0_of_v * z_error;
@@ -2521,10 +2701,10 @@ void transform_local_exp_to_forces(
 	NodeArray<DPoint> F_local_exp)
 {
 	List<node> contained_nodes;
-	complex<double> sum;
-	complex<double> complex_null (0,0);
-	complex<double> z_0;
-	complex<double> z_v_minus_z_0_over_k_minus_1;
+	Complex sum;
+	Complex complex_null (0,0);
+	Complex z_0;
+	Complex z_v_minus_z_0_over_k_minus_1;
 	DPoint force_vector;
 
 	//calculate derivative of the potential polynom (= local expansion at leaf nodes)
@@ -2538,7 +2718,7 @@ void transform_local_exp_to_forces(
 
 		forall_listiterators(node, v_ptr,contained_nodes)
 		{
-			complex<double> z_v (A[*v_ptr].get_x(),A[*v_ptr].get_y());
+			Complex z_v (A[*v_ptr].get_x(),A[*v_ptr].get_y());
 			sum = complex_null;
 			z_v_minus_z_0_over_k_minus_1 = 1;
 			for(int k=1; k<=precision(); k++)
@@ -2563,9 +2743,9 @@ void transform_multipole_exp_to_forces(
 	List<QuadTreeNodeNM> M;
 	List<node> act_contained_nodes;
 	ListIterator<node> v_ptr;
-	complex<double> sum;
-	complex<double> z_0;
-	complex<double> z_v_minus_z_0_over_minus_k_minus_1;
+	Complex sum;
+	Complex z_0;
+	Complex z_v_minus_z_0_over_minus_k_minus_1;
 	DPoint force_vector;
 
 	//for each leaf u in the M-List of an actual leaf v do:
@@ -2582,7 +2762,7 @@ void transform_multipole_exp_to_forces(
 			z_0 = (*M_node_ptr_ptr).get_Sm_center();
 			forall_listiterators(node, v_ptr,act_contained_nodes)
 			{
-				complex<double> z_v (A[*v_ptr].get_x(),A[*v_ptr].get_y());
+				Complex z_v (A[*v_ptr].get_x(),A[*v_ptr].get_y());
 				z_v_minus_z_0_over_minus_k_minus_1 = 1.0/(z_v-z_0);
 				sum = (*M_node_ptr_ptr).get_multipole_exp()[0]*
 					z_v_minus_z_0_over_minus_k_minus_1;
@@ -2608,7 +2788,6 @@ void calculate_neighbourcell_forces(
 	List <QuadTreeNodeNM> quad_tree_leaves,
 	NodeArray<DPoint> F_direct)
 {
-	numexcept N;
 	List<node> act_contained_nodes,neighbour_contained_nodes,non_neighbour_contained_nodes;
 	List<QuadTreeNodeNM> neighboured_leaves;
 	List<QuadTreeNodeNM> non_neighboured_leaves;
@@ -2649,11 +2828,11 @@ void calculate_neighbourcell_forces(
 					pos_v = A[v].get_position();
 					if (pos_u == pos_v)
 					{//if2  (Exception handling if two nodes have the same position)
-						pos_u = N.choose_distinct_random_point_in_radius_epsilon(pos_u);
+						pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
 					}//if2
 					vector_v_minus_u = pos_v - pos_u;
 					norm_v_minus_u = vector_v_minus_u.norm();
-					if(!N.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
+					if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
 					{
 						scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
 						f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
@@ -2692,11 +2871,11 @@ void calculate_neighbourcell_forces(
 							pos_v = A[*v_ptr].get_position();
 							if (pos_u == pos_v)
 							{//if2  (Exception handling if two nodes have the same position)
-								pos_u = N.choose_distinct_random_point_in_radius_epsilon(pos_u);
+								pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
 							}//if2
 							vector_v_minus_u = pos_v - pos_u;
 							norm_v_minus_u = vector_v_minus_u.norm();
-							if(!N.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
+							if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
 							{
 								scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
 								f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
@@ -2724,11 +2903,11 @@ void calculate_neighbourcell_forces(
 						pos_v = A[*v_ptr].get_position();
 						if (pos_u == pos_v)
 						{//if2  (Exception handling if two nodes have the same position)
-							pos_u = N.choose_distinct_random_point_in_radius_epsilon(pos_u);
+							pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
 						}//if2
 						vector_v_minus_u = pos_v - pos_u;
 						norm_v_minus_u = vector_v_minus_u.norm();
-						if(!N.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
+						if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
 						{
 							scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
 							f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
@@ -2743,10 +2922,10 @@ void calculate_neighbourcell_forces(
 			forall_listiterators(node, v_ptr, act_contained_nodes)
 			{
 				pos_v = A[*v_ptr].get_position();
-				pos_u = N.choose_distinct_random_point_in_radius_epsilon(pos_v);
+				pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_v);
 				vector_v_minus_u = pos_v - pos_u;
 				norm_v_minus_u = vector_v_minus_u.norm();
-				if(!N.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
+				if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
 				{
 					scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
 					f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
@@ -2759,34 +2938,36 @@ void calculate_neighbourcell_forces(
 }
 
 
-void add_rep_forces(
-	Graph& G,
-	NodeArray<DPoint> F_direct,
-	NodeArray<DPoint> F_multipole_exp,
-	NodeArray<DPoint> F_local_exp,
-	NodeArray<DPoint> F_rep)
-{
-	node v;
-	for (Iterator<node> i = G.nodesIterator(); i.hasNext();)        {            v = i.next();
-	{
-		F_rep[v] = F_direct[v]+F_local_exp[v]+F_multipole_exp[v];
-	}
-}
+    void add_rep_forces(
+            Graph G,
+            NodeArray<DPoint> F_direct,
+            NodeArray<DPoint> F_multipole_exp,
+            NodeArray<DPoint> F_local_exp,
+            NodeArray<DPoint> F_rep)
+    {
+        node v;
+        for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
+        {
+            v = i.next();
+            F_rep.set(v, F_direct.get(v) + F_local_exp.get(v) + F_multipole_exp.get(v));
+        }
+    }
 
-
-double f_rep_scalar(double d)
-{
-	if (d > 0)
-	{
-		return 1/d;
-	}
-	else
-	{
-		cout<<"Error  f_rep_scalar nodes at same position"<<endl;
-		return 0;
-	}
-}
-
+    double f_rep_scalar(double d)
+    {
+        if (d > 0)
+        {
+            return 1 / d;
+        }
+        else
+        {
+            if (DEBUG_BUILD)
+            {
+                println("Error  f_rep_scalar nodes at same position");
+            }
+            return 0;
+        }
+    }
 
 void init_binko(int t)
 {
@@ -2811,42 +2992,55 @@ void init_binko(int t)
 		}
 }
 
+    double binko(int n, int k)
+    {
+        return BK[n][k];
+    }
 
-void free_binko()
-{
-	for(int i = 0;i<= 2*precision();i++)
-		delete [] BK[i];
-	delete [] BK;
-}
+    //The way to construct the reduced tree (0) = level by level (1) path by path
+    //(2) subtree by subtree
+    FMMMLayout.ReducedTreeConstruction tree_construction_way()
+    {
+        return _tree_construction_way;
+    }
 
+    void tree_construction_way(FMMMLayout.ReducedTreeConstruction a)
+    {
+        _tree_construction_way = a;
+    }
 
-double binko(int n, int k)
-{
-	return BK[n][k];
-}
+    //(0) means that the smallest quadratic cell that surrounds a node of the
+    //quadtree is calculated iteratively in constant time (1) means that it is
+    //calculated by the formula of Aluru et al. in constant time
+    FMMMLayout.SmallestCellFinding find_sm_cell()
+    {
+        return _find_small_cell;
+    }
 
-	//The way to construct the reduced tree (0) = level by level (1) path by path
-	//(2) subtree by subtree
-	int tree_construction_way() { return _tree_construction_way; }
+    void find_sm_cell(FMMMLayout.SmallestCellFinding a)
+    {
+        _find_small_cell = a;
+    }
 
-	void tree_construction_way(int a) {
-		_tree_construction_way = (((0<=a)&&(a<=2)) ? a : 0);
-	}
+    //Max. number of particles that are contained in a leaf of the red. quadtree.
+    void particles_in_leaves(int b)
+    {
+        _particles_in_leaves = ((b >= 1) ? b : 1);
+    }
 
-	//(0) means that the smallest quadratic cell that surrounds a node of the
-	//quadtree is calculated iteratively in constant time (1) means that it is
-	//calculated by the formula of Aluru et al. in constant time
-	int find_sm_cell() { return _find_small_cell; }
+    int particles_in_leaves()
+    {
+        return _particles_in_leaves;
+    }
 
-	void find_sm_cell(int a) {
-		_find_small_cell = (((0<=a)&&(a<=1)) ? a : 0);
-	}
+    //The precision p for the p-term multipole expansions.
+    void precision(int p)
+    {
+        _precision = ((p >= 1) ? p : 1);
+    }
 
-	//Max. number of particles that are contained in a leaf of the red. quadtree.
-	void particles_in_leaves (int b) { _particles_in_leaves = ((b>= 1)? b : 1); }
-	int particles_in_leaves () { return _particles_in_leaves; }
-
-	//The precision p for the p-term multipole expansions.
-	void precision (int p) { _precision  = ((p >= 1 ) ? p : 1); }
-	int  precision () { return _precision; }
+    int precision()
+    {
+        return _precision;
+    }
 }
