@@ -338,24 +338,24 @@ public class QuadTreeNodeNM
         return contained_nodes;
     }
 
-    public void get_I(List<QuadTreeNodeNM> l)
+    public List<QuadTreeNodeNM> get_I()
     {
-        l = I;
+        return I;
     }
 
-    public void get_D1(List<QuadTreeNodeNM> l)
+    public List<QuadTreeNodeNM> get_D1()
     {
-        l = D1;
+        return D1;
     }
 
-    public void get_D2(List<QuadTreeNodeNM> l)
+    public List<QuadTreeNodeNM> get_D2()
     {
-        l = D2;
+        return D2;
     }
 
-    public void get_M(List<QuadTreeNodeNM> l)
+    public List<QuadTreeNodeNM> get_M()
     {
-        l = M;
+        return M;
     }
 
     public QuadTreeNodeNM get_father_ptr()

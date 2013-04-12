@@ -2269,8 +2269,8 @@ public class NMM
         //usual case: act_node is an interior node of T
         else
         {
-            father_ptr.get_D1(E); //bordering leaves of father
-            father_ptr.get_I(I);  //min ill sep. nodes of father
+            E = father_ptr.get_D1(); //bordering leaves of father
+            I = father_ptr.get_I();  //min ill sep. nodes of father
 
             for (QuadTreeNodeNM ptr_it : I)
             {
@@ -2371,8 +2371,8 @@ public class NMM
         //if act_node is a leaf than calculate the list D1,D2 and M from I and D1
         else // *act_node_ptr is a leaf
         {//else
-            act_node_ptr.get_D1(D1);
-            act_node_ptr.get_D2(D2);
+            D1 = act_node_ptr.get_D1();
+            D2 = act_node_ptr.get_D2();
 
             while (!I.isEmpty())
             {//while
@@ -2576,367 +2576,373 @@ public class NMM
         }//else
     }
 
+    void add_shifted_local_exp_of_parent(QuadTreeNodeNM node_ptr)
+    {
+        QuadTreeNodeNM father_ptr = node_ptr.get_father_ptr();
 
-void add_shifted_local_exp_of_parent(QuadTreeNodeNM node_ptr)
-{
-	QuadTreeNodeNM father_ptr = node_ptr.get_father_ptr();
+        Complex z_0 = father_ptr.get_Sm_center();
+        Complex z_1 = node_ptr.get_Sm_center();
+        Complex[] z_1_minus_z_0_over = new Complex[precision() + 1];
 
-	Complex z_0 = father_ptr.get_Sm_center();
-	Complex z_1 = node_ptr.get_Sm_center();
-	Complex[] z_1_minus_z_0_over = new Complex[precision()+1];
-
-	//init z_1_minus_z_0_over
-	z_1_minus_z_0_over[0] = new Complex(1.0);
-	for(int i = 1; i<= precision(); i++)
-		z_1_minus_z_0_over[i] = z_1_minus_z_0_over[i-1].multipliedBy(z_1.minus(z_0));
-
-
-	for(int l = 0; l <= precision();l++)
-	{
-		Complex sum = new Complex(0,0);
-		for(int k = l;k<=precision();k++)
-			sum = sum.plus(father_ptr.get_local_exp()[k].multipliedBy(binko(k,l)).multipliedBy(z_1_minus_z_0_over[k-l]));
-
-		node_ptr.get_local_exp()[l] = node_ptr.get_local_exp()[l].plus(sum);
-	}
-}
+        //init z_1_minus_z_0_over
+        z_1_minus_z_0_over[0] = new Complex(1.0);
+        for (int i = 1; i <= precision(); i++)
+        {
+            z_1_minus_z_0_over[i] = z_1_minus_z_0_over[i - 1].multipliedBy(z_1.minus(z_0));
+        }
 
 
-void add_local_expansion(QuadTreeNodeNM ptr_0, QuadTreeNodeNM ptr_1)
-{
-	Complex z_0 = ptr_0.get_Sm_center();
-	Complex z_1 = ptr_1.get_Sm_center();
-	Complex sum, z_error;
-	Complex factor;
-	Complex z_1_minus_z_0_over_k;
-	Complex z_1_minus_z_0_over_s;
-	Complex pow_minus_1_s_plus_1;
-	Complex pow_minus_1_s;
+        for (int l = 0; l <= precision(); l++)
+        {
+            Complex sum = new Complex(0, 0);
+            for (int k = l; k <= precision(); k++)
+            {
+                sum = sum.plus(father_ptr.get_local_exp()[k].multipliedBy(binko(k, l)).multipliedBy(z_1_minus_z_0_over[k - l]));
+            }
 
-	//Error-Handling for complex logarithm
-	if ((real(z_1-z_0) <=0) && (imag(z_1-z_0) == 0)) //no cont. compl. log fct exists !!!
-	{
-		z_error = log(z_1 -z_0 + 0.0000001);
-		sum = ptr_0.get_multipole_exp()[0] * z_error;
-	}
-	else
-		sum = ptr_0.get_multipole_exp()[0]* log(z_1-z_0);
+            node_ptr.get_local_exp()[l] = node_ptr.get_local_exp()[l].plus(sum);
+        }
+    }
 
+    void add_local_expansion(QuadTreeNodeNM ptr_0, QuadTreeNodeNM ptr_1)
+    {
+        Complex z_0 = ptr_0.get_Sm_center();
+        Complex z_1 = ptr_1.get_Sm_center();
+        Complex sum, z_error;
+        Complex factor;
+        Complex z_1_minus_z_0_over_k;
+        Complex z_1_minus_z_0_over_s;
+        Complex pow_minus_1_s_plus_1;
+        Complex pow_minus_1_s;
 
-	z_1_minus_z_0_over_k = z_1 - z_0;
-	for(int k = 1; k<=precision(); k++)
-	{
-		sum += ptr_0.get_multipole_exp()[k]/z_1_minus_z_0_over_k;
-		z_1_minus_z_0_over_k *= z_1-z_0;
-	}
-	ptr_1.get_local_exp()[0] += sum;
-
-	z_1_minus_z_0_over_s = z_1 - z_0;
-	for (int s = 1; s <= precision(); s++)
-	{
-		pow_minus_1_s_plus_1 = (((s+1)% 2 == 0) ? 1 : -1);
-		pow_minus_1_s = ((pow_minus_1_s_plus_1 == double(1))? -1 : 1);
-		sum = pow_minus_1_s_plus_1*ptr_0.get_multipole_exp()[0]/(z_1_minus_z_0_over_s *
-			double(s));
-		factor = pow_minus_1_s/z_1_minus_z_0_over_s;
-		z_1_minus_z_0_over_s *= z_1-z_0;
-		Complex sum_2 (0,0);
-
-		z_1_minus_z_0_over_k = z_1 - z_0;
-		for(int k=1; k<=precision(); k++)
-		{
-			sum_2 += binko(s+k-1,k-1)*ptr_0.get_multipole_exp()[k]/z_1_minus_z_0_over_k;
-			z_1_minus_z_0_over_k *= z_1-z_0;
-		}
-		ptr_1.get_local_exp()[s] += sum + factor* sum_2;
-	}
-}
+        //Error-Handling for complex logarithm
+        if ((z_1.minus(z_0).r() <= 0) && (z_1.minus(z_0).i() == 0)) //no cont. compl. log fct exists !!!
+        {
+            z_error = log(z_1 - z_0 + 0.0000001);
+            sum = ptr_0.get_multipole_exp()[0].multipliedBy(z_error);
+        }
+        else
+        {
+            sum = ptr_0.get_multipole_exp()[0].multipliedBy(log(z_1 - z_0));
+        }
 
 
-void add_local_expansion_of_leaf(
-	NodeArray<NodeAttributes>A,
-	QuadTreeNodeNM ptr_0,
-	QuadTreeNodeNM ptr_1)
-{
-	List<node> contained_nodes;
-	double multipole_0_of_v = 1;//only the first coefficient is not zero
-	Complex z_1 = ptr_1.get_Sm_center();
-	Complex z_error;
-	Complex z_1_minus_z_0_over_s;
-	Complex pow_minus_1_s_plus_1;
+        z_1_minus_z_0_over_k = z_1.minus(z_0);
+        for (int k = 1; k <= precision(); k++)
+        {
+            sum = sum.plus(ptr_0.get_multipole_exp()[k].dividedBy(z_1_minus_z_0_over_k));
+            z_1_minus_z_0_over_k = z_1_minus_z_0_over_k.multipliedBy(z_1.minus(z_0));
+        }
+        ptr_1.get_local_exp()[0] = ptr_1.get_local_exp()[0].plus(sum);
 
-	ptr_0.get_contained_nodes(contained_nodes);
+        z_1_minus_z_0_over_s = z_1.minus(z_0);
+        for (int s = 1; s <= precision(); s++)
+        {
+            pow_minus_1_s_plus_1 = new Complex(((s + 1) % 2 == 0) ? 1.0 : -1.0);
+            pow_minus_1_s = new Complex((pow_minus_1_s_plus_1.r() == 1.0) ? -1 : 1);
+            sum = pow_minus_1_s_plus_1.multipliedBy(ptr_0.get_multipole_exp()[0]).dividedBy(
+                    (z_1_minus_z_0_over_s.multipliedBy(s)));
+            factor = pow_minus_1_s.dividedBy(z_1_minus_z_0_over_s);
+            z_1_minus_z_0_over_s = z_1_minus_z_0_over_s.multipliedBy(z_1.minus(z_0));
+            Complex sum_2 = new Complex(0, 0);
 
-	forall_listiterators(node, v_it, contained_nodes)
-	{//forall
-		//set position of v as center ( (1,0,....,0) are the multipole coefficients at v)
-		Complex z_0  (A[*v_it].get_x(),A[*v_it].get_y());
+            z_1_minus_z_0_over_k = z_1.minus(z_0);
+            for (int k = 1; k <= precision(); k++)
+            {
+                sum_2 = sum_2.plus(ptr_0.get_multipole_exp()[k].multipliedBy(
+                        binko(s + k - 1, k - 1)).dividedBy(z_1_minus_z_0_over_k));
+                z_1_minus_z_0_over_k = z_1_minus_z_0_over_k.multipliedBy(z_1.minus(z_0));
+            }
+            ptr_1.get_local_exp()[s] = ptr_1.get_local_exp()[s].plus(sum.plus(factor.multipliedBy(sum_2)));
+        }
+    }
 
-		//now transform multipole_0_of_v to the locale expansion around z_1
+    void add_local_expansion_of_leaf(
+            NodeArray<NodeAttributes> A,
+            QuadTreeNodeNM ptr_0,
+            QuadTreeNodeNM ptr_1)
+    {
+        List<node> contained_nodes;
+        double multipole_0_of_v = 1;//only the first coefficient is not zero
+        Complex z_1 = ptr_1.get_Sm_center();
+        Complex z_error;
+        Complex z_1_minus_z_0_over_s;
+        Complex pow_minus_1_s_plus_1;
 
-		//Error-Handling for complex logarithm
-		if ((real(z_1-z_0) <=0) && (imag(z_1-z_0) == 0)) //no cont. compl. log fct exists!
-		{
-			z_error = log(z_1 -z_0 + 0.0000001);
-			ptr_1.get_local_exp()[0] += multipole_0_of_v * z_error;
-		}
-		else
-			ptr_1.get_local_exp()[0] +=  multipole_0_of_v * log(z_1-z_0);
+        contained_nodes = ptr_0.get_contained_nodes();
 
-		z_1_minus_z_0_over_s = z_1 - z_0;
-		for (int s = 1;s <= precision();s++)
-		{
-			pow_minus_1_s_plus_1 = (((s+1)% 2 == 0) ? 1 : -1);
-			ptr_1.get_local_exp()[s] += pow_minus_1_s_plus_1*multipole_0_of_v/
-				(z_1_minus_z_0_over_s * double(s));
-			z_1_minus_z_0_over_s *= z_1-z_0;
-		}
-	}//forall
-}
+        for (node v_it : contained_nodes)
+        {//forall
+            //set position of v as center ( (1,0,....,0) are the multipole coefficients at v)
+            Complex z_0 = new Complex(A.get(v_it).get_x(), A.get(v_it).get_y());
+
+            //now transform multipole_0_of_v to the locale expansion around z_1
+
+            //Error-Handling for complex logarithm
+            if (z_1.minus(z_0).r() <= 0 && z_1.minus(z_0).i() == 0) //no cont. compl. log fct exists!
+            {
+                z_error = log(z_1.minus(z_0) + 0.0000001);
+                ptr_1.get_local_exp()[0] = ptr_1.get_local_exp()[0].plus(z_error.multipliedBy(multipole_0_of_v));
+            }
+            else
+            {
+                ptr_1.get_local_exp()[0] = ptr_1.get_local_exp()[0].plus(multipole_0_of_v * log(z_1.minus(z_0)));
+            }
+
+            z_1_minus_z_0_over_s = z_1.minus(z_0);
+            for (int s = 1; s <= precision(); s++)
+            {
+                pow_minus_1_s_plus_1 = new Complex(((s + 1) % 2 == 0) ? 1.0 : -1.0);
+                ptr_1.get_local_exp()[s] = ptr_1.get_local_exp()[s].plus(
+                        pow_minus_1_s_plus_1.multipliedBy(multipole_0_of_v).dividedBy(
+                        z_1_minus_z_0_over_s.multipliedBy(s)));
+                z_1_minus_z_0_over_s = z_1_minus_z_0_over_s.plus(z_1.minus(z_0));
+            }
+        }//forall
+    }
+
+    void transform_local_exp_to_forces(
+            NodeArray<NodeAttributes> A,
+            List<QuadTreeNodeNM> quad_tree_leaves,
+            NodeArray<DPoint> F_local_exp)
+    {
+        List<node> contained_nodes;
+        Complex sum;
+        Complex z_0;
+        Complex z_v_minus_z_0_over_k_minus_1;
+        DPoint force_vector = new DPoint();
+
+        //calculate derivative of the potential polynom (= local expansion at leaf nodes)
+        //and evaluate it for each node in contained_nodes()
+        //and transform the complex number back to the real-world, to obtain the force
+
+        for (QuadTreeNodeNM leaf_ptr_ptr : quad_tree_leaves)
+        {
+            contained_nodes = leaf_ptr_ptr.get_contained_nodes();
+            z_0 = leaf_ptr_ptr.get_Sm_center();
+
+            for (node v_ptr : contained_nodes)
+            {
+                Complex z_v = new Complex(A.get(v_ptr).get_x(), A.get(v_ptr).get_y());
+                sum = new Complex(0.0, 0.0);
+                z_v_minus_z_0_over_k_minus_1 = new Complex(1.0);
+                for (int k = 1; k <= precision(); k++)
+                {
+                    sum = sum.plus(leaf_ptr_ptr.get_local_exp()[k].multipliedBy(k).multipliedBy(
+                            z_v_minus_z_0_over_k_minus_1));
+                    z_v_minus_z_0_over_k_minus_1 = z_v_minus_z_0_over_k_minus_1.multipliedBy(z_v.minus(z_0));
+                }
+                force_vector.m_x = sum.r();
+                force_vector.m_y = (-1.0) * sum.i();
+                F_local_exp.set(v_ptr, force_vector);
+            }
+        }
+    }
+
+    void transform_multipole_exp_to_forces(
+            NodeArray<NodeAttributes> A,
+            List<QuadTreeNodeNM> quad_tree_leaves,
+            NodeArray<DPoint> F_multipole_exp)
+    {
+        List<QuadTreeNodeNM> M;
+        List<node> act_contained_nodes;
+        Complex sum;
+        Complex z_0;
+        Complex z_v_minus_z_0_over_minus_k_minus_1;
+        DPoint force_vector = new DPoint();
+
+        //for each leaf u in the M-List of an actual leaf v do:
+        //calculate derivative of the multipole expansion function at u
+        //and evaluate it for each node in v.get_contained_nodes()
+        //and transform the complex number back to the real-world, to obtain the force
+
+        for (QuadTreeNodeNM act_leaf_ptr_ptr : quad_tree_leaves)
+        {
+            act_contained_nodes = act_leaf_ptr_ptr.get_contained_nodes();
+            M = act_leaf_ptr_ptr.get_M();
+            for (QuadTreeNodeNM M_node_ptr_ptr : M)
+            {
+                z_0 = M_node_ptr_ptr.get_Sm_center();
+                for (node v_ptr : act_contained_nodes)
+                {
+                    Complex z_v = new Complex(A.get(v_ptr).get_x(), A.get(v_ptr).get_y());
+                    z_v_minus_z_0_over_minus_k_minus_1 = new Complex(1.0).dividedBy(z_v.minus(z_0));
+                    sum = M_node_ptr_ptr.get_multipole_exp()[0].multipliedBy(
+                            z_v_minus_z_0_over_minus_k_minus_1);
+
+                    for (int k = 1; k <= precision(); k++)
+                    {
+                        z_v_minus_z_0_over_minus_k_minus_1 =
+                                z_v_minus_z_0_over_minus_k_minus_1.dividedBy(z_v.minus(z_0));
+                        sum = sum.minus(M_node_ptr_ptr.get_multipole_exp()[k].multipliedBy(k).multipliedBy(
+                                z_v_minus_z_0_over_minus_k_minus_1));
+                    }
+                    force_vector.m_x = sum.r();
+                    force_vector.m_y = (-1.0) * sum.i();
+                    F_multipole_exp.set(v_ptr, F_multipole_exp.get(v_ptr).plus(force_vector));
+
+                }
+            }
+        }
+    }
 
 
-void transform_local_exp_to_forces(
-	NodeArray <NodeAttributes>A,
-	List<QuadTreeNodeNM> quad_tree_leaves,
-	NodeArray<DPoint> F_local_exp)
-{
-	List<node> contained_nodes;
-	Complex sum;
-	Complex complex_null (0,0);
-	Complex z_0;
-	Complex z_v_minus_z_0_over_k_minus_1;
-	DPoint force_vector;
+    void calculate_neighbourcell_forces(
+            NodeArray<NodeAttributes> A,
+            List<QuadTreeNodeNM> quad_tree_leaves,
+            NodeArray<DPoint> F_direct)
+    {
+        List<node> act_contained_nodes, neighbour_contained_nodes, non_neighbour_contained_nodes;
+        List<QuadTreeNodeNM> neighboured_leaves;
+        List<QuadTreeNodeNM> non_neighboured_leaves;
+        double act_leaf_boxlength, neighbour_leaf_boxlength;
+        DPoint act_leaf_dlc, neighbour_leaf_dlc;
+        DPoint f_rep_u_on_v = new DPoint();
+        DPoint vector_v_minus_u;
+        DPoint pos_u, pos_v;
+        double norm_v_minus_u, scalar;
+        int length;
+        node u, v;
 
-	//calculate derivative of the potential polynom (= local expansion at leaf nodes)
-	//and evaluate it for each node in contained_nodes()
-	//and transform the complex number back to the real-world, to obtain the force
+        for (QuadTreeNodeNM act_leaf_ptr : quad_tree_leaves)
+        {//forall
+            act_contained_nodes = act_leaf_ptr.get_contained_nodes();
 
-	forall_listiterators( QuadTreeNodeNM, leaf_ptr_ptr,quad_tree_leaves)
-	{
-		(*leaf_ptr_ptr).get_contained_nodes(contained_nodes);
-		z_0 = (*leaf_ptr_ptr).get_Sm_center();
+            if (act_contained_nodes.size() <= particles_in_leaves())
+            {//if (usual case)
 
-		forall_listiterators(node, v_ptr,contained_nodes)
-		{
-			Complex z_v (A[*v_ptr].get_x(),A[*v_ptr].get_y());
-			sum = complex_null;
-			z_v_minus_z_0_over_k_minus_1 = 1;
-			for(int k=1; k<=precision(); k++)
-			{
-				sum += double(k) * (*leaf_ptr_ptr).get_local_exp()[k] *
-					z_v_minus_z_0_over_k_minus_1;
-				z_v_minus_z_0_over_k_minus_1 *= z_v - z_0;
-			}
-			force_vector.m_x = sum.real();
-			force_vector.m_y = (-1) * sum.imag();
-			F_local_exp[*v_ptr] = force_vector;
-		}
-	}
-}
+                //Step1:calculate forces inside act_contained_nodes
 
+                length = act_contained_nodes.size();
+                node[] numbered_nodes = new node[length + 1];
+                int k = 1;
+                for (node v_ptr : act_contained_nodes)
+                {
+                    numbered_nodes[k] = v_ptr;
+                    k++;
+                }
 
-void transform_multipole_exp_to_forces(
-	NodeArray<NodeAttributes> A,
-	List<QuadTreeNodeNM> quad_tree_leaves,
-	NodeArray<DPoint> F_multipole_exp)
-{
-	List<QuadTreeNodeNM> M;
-	List<node> act_contained_nodes;
-	ListIterator<node> v_ptr;
-	Complex sum;
-	Complex z_0;
-	Complex z_v_minus_z_0_over_minus_k_minus_1;
-	DPoint force_vector;
+                for (k = 1; k < length; k++)
+                {
+                    for (int l = k + 1; l <= length; l++)
+                    {
+                        u = numbered_nodes[k];
+                        v = numbered_nodes[l];
+                        pos_u = A.get(u).get_position();
+                        pos_v = A.get(v).get_position();
+                        if (pos_u == pos_v)
+                        {//if2  (Exception handling if two nodes have the same position)
+                            pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
+                        }//if2
+                        vector_v_minus_u = pos_v.minus(pos_u);
+                        norm_v_minus_u = vector_v_minus_u.norm();
+                        if (!numexcept.f_rep_near_machine_precision(norm_v_minus_u, f_rep_u_on_v))
+                        {
+                            scalar = f_rep_scalar(norm_v_minus_u) / norm_v_minus_u;
+                            f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
+                            f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
+                        }
+                        F_direct.set(v, F_direct.get(v).plus(f_rep_u_on_v));
+                        F_direct.set(u, F_direct.get(u).minus(f_rep_u_on_v));
+                    }
+                }
 
-	//for each leaf u in the M-List of an actual leaf v do:
-	//calculate derivative of the multipole expansion function at u
-	//and evaluate it for each node in v.get_contained_nodes()
-	//and transform the complex number back to the real-world, to obtain the force
+                //Step 2: calculated forces to nodes in act_contained_nodes() of
+                //leaf_ptr.get_D1()
 
-	forall_listiterators(QuadTreeNodeNM, act_leaf_ptr_ptr,quad_tree_leaves)
-	{
-		(*act_leaf_ptr_ptr).get_contained_nodes(act_contained_nodes);
-		(*act_leaf_ptr_ptr).get_M(M);
-		forall_listiterators(QuadTreeNodeNM, M_node_ptr_ptr,M)
-		{
-			z_0 = (*M_node_ptr_ptr).get_Sm_center();
-			forall_listiterators(node, v_ptr,act_contained_nodes)
-			{
-				Complex z_v (A[*v_ptr].get_x(),A[*v_ptr].get_y());
-				z_v_minus_z_0_over_minus_k_minus_1 = 1.0/(z_v-z_0);
-				sum = (*M_node_ptr_ptr).get_multipole_exp()[0]*
-					z_v_minus_z_0_over_minus_k_minus_1;
+                neighboured_leaves = act_leaf_ptr.get_D1();
+                act_leaf_boxlength = act_leaf_ptr.get_Sm_boxlength();
+                act_leaf_dlc = act_leaf_ptr.get_Sm_downleftcorner();
 
-				for(int k=1; k<=precision(); k++)
-				{
-					z_v_minus_z_0_over_minus_k_minus_1 /= z_v - z_0;
-					sum -= double(k) * (*M_node_ptr_ptr).get_multipole_exp()[k] *
-						z_v_minus_z_0_over_minus_k_minus_1;
-				}
-				force_vector.m_x = sum.real();
-				force_vector.m_y = (-1) * sum.imag();
-				F_multipole_exp[*v_ptr] =  F_multipole_exp[*v_ptr] + force_vector;
+                for (QuadTreeNodeNM neighbour_leaf_ptr : neighboured_leaves)
+                {//forall2
+                    //forget boxes that have already been looked at
 
-			}
-		}
-	}
-}
+                    neighbour_leaf_boxlength = neighbour_leaf_ptr.get_Sm_boxlength();
+                    neighbour_leaf_dlc = neighbour_leaf_ptr.get_Sm_downleftcorner();
 
+                    if ((act_leaf_boxlength > neighbour_leaf_boxlength) ||
+                            (act_leaf_boxlength == neighbour_leaf_boxlength &&
+                            act_leaf_dlc.m_x < neighbour_leaf_dlc.m_x) ||
+                             (act_leaf_boxlength == neighbour_leaf_boxlength &&
+                            act_leaf_dlc.m_x == neighbour_leaf_dlc.m_x &&
+                            act_leaf_dlc.m_y < neighbour_leaf_dlc.m_y))
+                    {//if
+                        neighbour_contained_nodes = neighbour_leaf_ptr.get_contained_nodes();
+                        for (node v_ptr : act_contained_nodes)
+                        {
+                            for (node u_ptr : neighbour_contained_nodes)
+                            {//for
+                                pos_u = A.get(u_ptr).get_position();
+                                pos_v = A.get(v_ptr).get_position();
+                                if (pos_u == pos_v)
+                                {//if2  (Exception handling if two nodes have the same position)
+                                    pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
+                                }//if2
+                                vector_v_minus_u = pos_v.minus(pos_u);
+                                norm_v_minus_u = vector_v_minus_u.norm();
+                                if (!numexcept.f_rep_near_machine_precision(norm_v_minus_u, f_rep_u_on_v))
+                                {
+                                    scalar = f_rep_scalar(norm_v_minus_u) / norm_v_minus_u;
+                                    f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
+                                    f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
+                                }
+                                F_direct.set(v_ptr, F_direct.get(v_ptr).plus(f_rep_u_on_v));
+                                F_direct.set(u_ptr, F_direct.get(u_ptr).minus(f_rep_u_on_v));
+                            }//for
+                        }
+                    }//if
+                }//forall2
 
-void calculate_neighbourcell_forces(
-	NodeArray<NodeAttributes> A,
-	List <QuadTreeNodeNM> quad_tree_leaves,
-	NodeArray<DPoint> F_direct)
-{
-	List<node> act_contained_nodes,neighbour_contained_nodes,non_neighbour_contained_nodes;
-	List<QuadTreeNodeNM> neighboured_leaves;
-	List<QuadTreeNodeNM> non_neighboured_leaves;
-	double act_leaf_boxlength,neighbour_leaf_boxlength;
-	DPoint act_leaf_dlc,neighbour_leaf_dlc;
-	DPoint f_rep_u_on_v;
-	DPoint vector_v_minus_u;
-	DPoint nullpoint(0,0);
-	DPoint pos_u,pos_v;
-	double norm_v_minus_u,scalar;
-	int length;
-	node u,v;
+                //Step 3: calculated forces to nodes in act_contained_nodes() of
+                //leaf_ptr.get_D2()
 
-	forall_listiterators(QuadTreeNodeNM, act_leaf_ptr,quad_tree_leaves)
-	{//forall
-		(*act_leaf_ptr).get_contained_nodes(act_contained_nodes);
-
-		if(act_contained_nodes.size() <= particles_in_leaves())
-		{//if (usual case)
-
-			//Step1:calculate forces inside act_contained_nodes
-
-			length = act_contained_nodes.size();
-			Array<node> numbered_nodes (length+1);
-			int k = 1;
-			forall_listiterators(node, v_ptr,act_contained_nodes)
-			{
-				numbered_nodes[k]= *v_ptr;
-				k++;
-			}
-
-			for(k = 1; k<length; k++)
-				for(int l = k+1; l<=length; l++)
-				{
-					u = numbered_nodes[k];
-					v = numbered_nodes[l];
-					pos_u = A[u].get_position();
-					pos_v = A[v].get_position();
-					if (pos_u == pos_v)
-					{//if2  (Exception handling if two nodes have the same position)
-						pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
-					}//if2
-					vector_v_minus_u = pos_v - pos_u;
-					norm_v_minus_u = vector_v_minus_u.norm();
-					if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
-					{
-						scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
-						f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
-						f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
-					}
-					F_direct[v] = F_direct[v] + f_rep_u_on_v;
-					F_direct[u] = F_direct[u] - f_rep_u_on_v;
-				}
-
-				//Step 2: calculated forces to nodes in act_contained_nodes() of
-				//leaf_ptr.get_D1()
-
-				(*act_leaf_ptr).get_D1(neighboured_leaves);
-				act_leaf_boxlength = (*act_leaf_ptr).get_Sm_boxlength();
-				act_leaf_dlc = (*act_leaf_ptr).get_Sm_downleftcorner();
-
-				forall_listiterators(QuadTreeNodeNM, neighbour_leaf_ptr,neighboured_leaves)
-				{//forall2
-					//forget boxes that have already been looked at
-
-					neighbour_leaf_boxlength = (*neighbour_leaf_ptr).get_Sm_boxlength();
-					neighbour_leaf_dlc = (*neighbour_leaf_ptr).get_Sm_downleftcorner();
-
-					if( (act_leaf_boxlength > neighbour_leaf_boxlength) ||
-						(act_leaf_boxlength == neighbour_leaf_boxlength &&
-						act_leaf_dlc.m_x < neighbour_leaf_dlc.m_x)
-						|| (act_leaf_boxlength == neighbour_leaf_boxlength &&
-						act_leaf_dlc.m_x ==  neighbour_leaf_dlc.m_x &&
-						act_leaf_dlc.m_y < neighbour_leaf_dlc.m_y) )
-					{//if
-						(*neighbour_leaf_ptr).get_contained_nodes(neighbour_contained_nodes);
-						forall_listiterators(node, v_ptr,act_contained_nodes)
-							forall_listiterators(node, u_ptr, neighbour_contained_nodes)
-						{//for
-							pos_u = A[*u_ptr].get_position();
-							pos_v = A[*v_ptr].get_position();
-							if (pos_u == pos_v)
-							{//if2  (Exception handling if two nodes have the same position)
-								pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
-							}//if2
-							vector_v_minus_u = pos_v - pos_u;
-							norm_v_minus_u = vector_v_minus_u.norm();
-							if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
-							{
-								scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
-								f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
-								f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
-							}
-							F_direct[*v_ptr] = F_direct[*v_ptr] + f_rep_u_on_v;
-							F_direct[*u_ptr] = F_direct[*u_ptr] - f_rep_u_on_v;
-						}//for
-					}//if
-				}//forall2
-
-				//Step 3: calculated forces to nodes in act_contained_nodes() of
-				//leaf_ptr.get_D2()
-
-				(*act_leaf_ptr).get_D2(non_neighboured_leaves);
-				forall_listiterators(QuadTreeNodeNM, non_neighbour_leaf_ptr,
-					non_neighboured_leaves)
-				{//forall3
-					(*non_neighbour_leaf_ptr).get_contained_nodes(
-						non_neighbour_contained_nodes);
-					forall_listiterators(node,v_ptr,act_contained_nodes)
-						forall_listiterators(node, u_ptr,non_neighbour_contained_nodes)
-					{//for
-						pos_u = A[*u_ptr].get_position();
-						pos_v = A[*v_ptr].get_position();
-						if (pos_u == pos_v)
-						{//if2  (Exception handling if two nodes have the same position)
-							pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
-						}//if2
-						vector_v_minus_u = pos_v - pos_u;
-						norm_v_minus_u = vector_v_minus_u.norm();
-						if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
-						{
-							scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
-							f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
-							f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
-						}
-						F_direct[*v_ptr] = F_direct[*v_ptr] + f_rep_u_on_v;
-					}//for
-				}//forall3
-		}//if(usual case)
-		else //special case (more then particles_in_leaves() particles in this leaf)
-		{//else
-			forall_listiterators(node, v_ptr, act_contained_nodes)
-			{
-				pos_v = A[*v_ptr].get_position();
-				pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_v);
-				vector_v_minus_u = pos_v - pos_u;
-				norm_v_minus_u = vector_v_minus_u.norm();
-				if(!numexcept.f_rep_near_machine_precision(norm_v_minus_u,f_rep_u_on_v))
-				{
-					scalar = f_rep_scalar(norm_v_minus_u)/norm_v_minus_u ;
-					f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
-					f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
-				}
-				F_direct[*v_ptr] =  F_direct[*v_ptr] + f_rep_u_on_v;
-			}
-		}//else
-	}//forall
-}
-
+                non_neighboured_leaves = act_leaf_ptr.get_D2();
+                for (QuadTreeNodeNM non_neighbour_leaf_ptr : non_neighboured_leaves)
+                {//forall3
+                    non_neighbour_contained_nodes = non_neighbour_leaf_ptr.get_contained_nodes();
+                    for (node v_ptr : act_contained_nodes)
+                    {
+                        for (node u_ptr : non_neighbour_contained_nodes)
+                        {//for
+                            pos_u = A.get(u_ptr).get_position();
+                            pos_v = A.get(v_ptr).get_position();
+                            if (pos_u == pos_v)
+                            {//if2  (Exception handling if two nodes have the same position)
+                                pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_u);
+                            }//if2
+                            vector_v_minus_u = pos_v.minus(pos_u);
+                            norm_v_minus_u = vector_v_minus_u.norm();
+                            if (!numexcept.f_rep_near_machine_precision(norm_v_minus_u, f_rep_u_on_v))
+                            {
+                                scalar = f_rep_scalar(norm_v_minus_u) / norm_v_minus_u;
+                                f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
+                                f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
+                            }
+                            F_direct.set(v_ptr, F_direct.get(v_ptr).plus(f_rep_u_on_v));
+                        }//for
+                    }
+                }//forall3
+            }//if(usual case)
+            else //special case (more then particles_in_leaves() particles in this leaf)
+            {//else
+                for (node v_ptr : act_contained_nodes)
+                {
+                    pos_v = A.get(v_ptr).get_position();
+                    pos_u = numexcept.choose_distinct_random_point_in_radius_epsilon(pos_v);
+                    vector_v_minus_u = pos_v.minus(pos_u);
+                    norm_v_minus_u = vector_v_minus_u.norm();
+                    if (!numexcept.f_rep_near_machine_precision(norm_v_minus_u, f_rep_u_on_v))
+                    {
+                        scalar = f_rep_scalar(norm_v_minus_u) / norm_v_minus_u;
+                        f_rep_u_on_v.m_x = scalar * vector_v_minus_u.m_x;
+                        f_rep_u_on_v.m_y = scalar * vector_v_minus_u.m_y;
+                    }
+                    F_direct.set(v_ptr, F_direct.get(v_ptr).plus(f_rep_u_on_v));
+                }
+            }//else
+        }//forall
+    }
 
     void add_rep_forces(
             Graph G,
@@ -2949,7 +2955,7 @@ void calculate_neighbourcell_forces(
         for (Iterator<node> i = G.nodesIterator(); i.hasNext();)
         {
             v = i.next();
-            F_rep.set(v, F_direct.get(v) + F_local_exp.get(v) + F_multipole_exp.get(v));
+            F_rep.set(v, F_direct.get(v).plus(F_local_exp.get(v).plus(F_multipole_exp.get(v))));
         }
     }
 
@@ -2969,28 +2975,24 @@ void calculate_neighbourcell_forces(
         }
     }
 
-void init_binko(int t)
-{
-	typedef double*  double_ptr;
+    void init_binko(int t)
+    {
+        BK = new double[t + 1][t + 1];
 
-	BK = new double_ptr[t+1];
+        //Pascal's triangle
+        for (int i = 0; i <= t; i++)
+        {
+            BK[i][0] = BK[i][i] = 1;
+        }
 
-	for(int i = 0; i<= t ; i++)
-	{//for
-		BK[i] = new double[i+1];
-	}//for
-
-	//Pascal's triangle
-
-	for (int i = 0; i <= t; i++)
-		BK[i][0] = BK[i][i] = 1;
-
-	for (int i = 2; i <= t; i ++)
-		for (int j = 1; j < i; j++)
-		{
-			BK[i][j] = BK[i-1][j-1]+BK[i-1][j];
-		}
-}
+        for (int i = 2; i <= t; i++)
+        {
+            for (int j = 1; j < i; j++)
+            {
+                BK[i][j] = BK[i - 1][j - 1] + BK[i - 1][j];
+            }
+        }
+    }
 
     double binko(int n, int k)
     {

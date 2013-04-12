@@ -7,7 +7,9 @@ package org.BioLayoutExpress3D.Utils;
 final public class Complex
 {
     private final double real;
+    public double r() { return real; }
     private final double imaginary;
+    public double i() { return imaginary; }
 
     public Complex()
     {
