@@ -2618,12 +2618,12 @@ public class NMM
         //Error-Handling for complex logarithm
         if ((z_1.minus(z_0).r() <= 0) && (z_1.minus(z_0).i() == 0)) //no cont. compl. log fct exists !!!
         {
-            z_error = log(z_1 - z_0 + 0.0000001);
+            z_error = z_1.minus(z_0).plus(0.0000001).log();
             sum = ptr_0.get_multipole_exp()[0].multipliedBy(z_error);
         }
         else
         {
-            sum = ptr_0.get_multipole_exp()[0].multipliedBy(log(z_1 - z_0));
+            sum = ptr_0.get_multipole_exp()[0].multipliedBy(z_1.minus(z_0).log());
         }
 
 
@@ -2681,12 +2681,13 @@ public class NMM
             //Error-Handling for complex logarithm
             if (z_1.minus(z_0).r() <= 0 && z_1.minus(z_0).i() == 0) //no cont. compl. log fct exists!
             {
-                z_error = log(z_1.minus(z_0) + 0.0000001);
+                z_error = z_1.minus(z_0).plus(0.0000001).log();
                 ptr_1.get_local_exp()[0] = ptr_1.get_local_exp()[0].plus(z_error.multipliedBy(multipole_0_of_v));
             }
             else
             {
-                ptr_1.get_local_exp()[0] = ptr_1.get_local_exp()[0].plus(multipole_0_of_v * log(z_1.minus(z_0)));
+                ptr_1.get_local_exp()[0] = ptr_1.get_local_exp()[0].plus(
+                        z_1.minus(z_0).log()).multipliedBy(multipole_0_of_v);
             }
 
             z_1_minus_z_0_over_s = z_1.minus(z_0);

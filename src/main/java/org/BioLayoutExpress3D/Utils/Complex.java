@@ -38,9 +38,19 @@ final public class Complex
         return new Complex(this.real + other.real, this.imaginary + other.imaginary);
     }
 
+    public Complex plus(double s)
+    {
+        return this.plus(new Complex(s, 0));
+    }
+
     public Complex minus(Complex other)
     {
         return new Complex(this.real - other.real, this.imaginary - other.imaginary);
+    }
+
+    public Complex minus(double s)
+    {
+        return this.minus(new Complex(s, 0));
     }
 
     public Complex multipliedBy(Complex other)
@@ -70,5 +80,11 @@ final public class Complex
     public Complex dividedBy(double s)
     {
         return multipliedBy(1.0 / s);
+    }
+
+    public Complex log()
+    {
+        // Ummmmmmmmmm?
+        return null;
     }
 }
