@@ -714,7 +714,7 @@ public class NMM
             {
                 if (r_item.nextIndex() < act_ptr.get_x_List_ptr().size())
                 {
-                    last_left_item = act_ptr.get_x_List_ptr().get(l_item.nextIndex());
+                    last_left_item = act_ptr.get_x_List_ptr().get(r_item.nextIndex());
                 }
                 else
                 {
@@ -795,12 +795,16 @@ public class NMM
             {
                 if (r_item.nextIndex() < act_ptr.get_y_List_ptr().size())
                 {
-                    last_left_item = act_ptr.get_y_List_ptr().get(l_item.nextIndex());
+                    last_left_item = act_ptr.get_y_List_ptr().get(r_item.nextIndex());
                 }
                 else
                 {
                     right_particleList_empty = true;
                 }
+            }
+            else
+            {
+                break;
             }
         }//while
 
@@ -965,287 +969,256 @@ public class NMM
         }//while
     }
 
-void split_in_y_direction(
-	QuadTreeNodeNM act_ptr,
-	List<ParticleInfo> L_x_ptr,
-	List<ParticleInfo> L_x_b_ptr,
-	List<ParticleInfo> L_x_t_ptr,
-	List<ParticleInfo> L_y_ptr,
-	List<ParticleInfo> L_y_b_ptr,
-	List<ParticleInfo> L_y_t_ptr)
-{
-	ListIterator<ParticleInfo> l_item = L_y_ptr.begin();
-	ListIterator<ParticleInfo> r_item = L_y_ptr.rbegin();
-	ListIterator<ParticleInfo> last_left_item;
-	double act_Sm_boxlength_half = act_ptr.get_Sm_boxlength()/2;
-	double y_mid_coord = act_ptr.get_Sm_downleftcorner().m_y+ act_Sm_boxlength_half;
-	double l_ycoord,r_ycoord;
-	boolean last_left_item_found = false;
-	boolean left_particleList_empty = false;
-	boolean right_particleList_empty = false;
-	boolean left_particleList_larger = true;
+    void split_in_y_direction(
+            QuadTreeNodeNM act_ptr,
+            ref<List<ParticleInfo>> L_x_ptr,
+            ref<List<ParticleInfo>> L_x_b_ptr,
+            ref<List<ParticleInfo>> L_x_t_ptr,
+            ref<List<ParticleInfo>> L_y_ptr,
+            ref<List<ParticleInfo>> L_y_b_ptr,
+            ref<List<ParticleInfo>> L_y_t_ptr)
+    {
+        ListIterator<ParticleInfo> l_item = L_y_ptr.get().listIterator();
+        ListIterator<ParticleInfo> r_item = L_y_ptr.get().listIterator(L_y_ptr.get().size());
+        ParticleInfo last_left_item = null;
+        double act_Sm_boxlength_half = act_ptr.get_Sm_boxlength() / 2;
+        double y_mid_coord = act_ptr.get_Sm_downleftcorner().m_y + act_Sm_boxlength_half;
+        double l_ycoord, r_ycoord;
+        boolean left_particleList_empty = false;
+        boolean right_particleList_empty = false;
+        boolean left_particleList_larger = true;
 
-	//traverse *L_y_ptr from left and right
+        //traverse *L_y_ptr from left and right
 
-	while(!last_left_item_found)
-	{//while
-		l_ycoord = (*l_item).get_x_y_coord();
-		r_ycoord = (*r_item).get_x_y_coord();
-		if(l_ycoord >= y_mid_coord)
-		{
-			left_particleList_larger = false;
-			last_left_item_found = true;
-			if(l_item != L_y_ptr.begin())
-				last_left_item = L_y_ptr.cyclicPred(l_item);
-			else
-				left_particleList_empty = true;
-		}
-		else if(r_ycoord < y_mid_coord)
-		{
-			last_left_item_found = true;
-			if(r_item != L_y_ptr.rbegin())
-				last_left_item = r_item;
-			else
-				right_particleList_empty = true;
-		}
-		if(!last_left_item_found)
-		{
-			l_item = L_y_ptr.cyclicSucc(l_item);
-			r_item = L_y_ptr.cyclicPred(r_item);
-		}
-	}//while
+        while (l_item.hasNext() && r_item.hasPrevious())
+        {//while
+            l_ycoord = l_item.next().get_x_y_coord();
+            r_ycoord = r_item.previous().get_x_y_coord();
+            if (l_ycoord >= y_mid_coord)
+            {
+                left_particleList_larger = false;
+                if (l_item.previousIndex() >= 0)
+                {
+                    last_left_item = L_y_ptr.get().get(l_item.previousIndex());
+                }
+                else
+                {
+                    left_particleList_empty = true;
+                }
+            }
+            else if (r_ycoord < y_mid_coord)
+            {
+                if (r_item.nextIndex() < L_y_ptr.get().size())
+                {
+                    last_left_item = L_y_ptr.get().get(r_item.nextIndex());
+                }
+                else
+                {
+                    right_particleList_empty = true;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }//while
 
- //create *L_x_l(b)_ptr
+        //create *L_x_l(b)_ptr
 
-	if(left_particleList_empty)
-	{
-		L_x_b_ptr = null;
-		L_y_b_ptr = null;
-		L_x_t_ptr = L_x_ptr;
-		L_y_t_ptr = L_y_ptr;
-	}
-	else if(right_particleList_empty)
-	{
-		L_x_b_ptr = L_x_ptr;
-		L_y_b_ptr = L_y_ptr;
-		L_x_t_ptr = null;
-		L_y_t_ptr = null;
-	}
-	else if(left_particleList_larger)
-		y_move_right_subLists(L_x_ptr,L_x_b_ptr,L_x_t_ptr,L_y_ptr,L_y_b_ptr,L_y_t_ptr,
-			last_left_item);
-	else //left particleList is smaller or equal to right particleList
-		y_move_left_subLists(L_x_ptr,L_x_b_ptr,L_x_t_ptr,L_y_ptr,L_y_b_ptr,L_y_t_ptr,
-			last_left_item);
-}
+        if (left_particleList_empty)
+        {
+            L_x_b_ptr.set(null);
+            L_y_b_ptr.set(null);
+            L_x_t_ptr.set(L_x_ptr.get());
+            L_y_t_ptr.set(L_y_ptr.get());
+        }
+        else if (right_particleList_empty)
+        {
+            L_x_b_ptr.set(L_x_ptr.get());
+            L_y_b_ptr.set(L_y_ptr.get());
+            L_x_t_ptr.set(null);
+            L_y_t_ptr.set(null);
+        }
+        else if (left_particleList_larger)
+        {
+            y_move_right_subLists(L_x_ptr, L_x_b_ptr, L_x_t_ptr, L_y_ptr, L_y_b_ptr, L_y_t_ptr,
+                    last_left_item);
+        }
+        else //left particleList is smaller or equal to right particleList
+        {
+            y_move_left_subLists(L_x_ptr, L_x_b_ptr, L_x_t_ptr, L_y_ptr, L_y_b_ptr, L_y_t_ptr,
+                    last_left_item);
+        }
+    }
 
+    void y_move_left_subLists(
+            ref<List<ParticleInfo>> L_x_ptr,
+            ref<List<ParticleInfo>> L_x_l_ptr,
+            ref<List<ParticleInfo>> L_x_r_ptr,
+            ref<List<ParticleInfo>> L_y_ptr,
+            ref<List<ParticleInfo>> L_y_l_ptr,
+            ref<List<ParticleInfo>> L_y_r_ptr,
+            ParticleInfo last_left_item)
+    {
+        ParticleInfo p_in_L_x_info, p_in_L_y_info;
 
-void y_move_left_subLists(
-	List<ParticleInfo> L_x_ptr,
-	List <ParticleInfo> L_x_l_ptr,
-	List<ParticleInfo> L_x_r_ptr,
-	List<ParticleInfo> L_y_ptr,
-	List <ParticleInfo> L_y_l_ptr,
-	List<ParticleInfo> L_y_r_ptr,
-	ListIterator<ParticleInfo> last_left_item)
-{
-	ParticleInfo p_in_L_x_info,p_in_L_y_info;
-	ListIterator<ParticleInfo> p_in_L_x_item,p_in_L_y_item,del_item;
-	boolean last_item_reached =false;
+        L_x_r_ptr.set(L_x_ptr.get());
+        L_y_r_ptr.set(L_y_ptr.get());
+        L_x_l_ptr.set(new ArrayList<ParticleInfo>());
+        L_y_l_ptr.set(new ArrayList<ParticleInfo>());
 
-	L_x_r_ptr = L_x_ptr;
-	L_y_r_ptr = L_y_ptr;
-	L_x_l_ptr = new List<ParticleInfo>;
-	L_y_l_ptr = new List<ParticleInfo>;
+        //build up the L_y_Lists and update crossreferences in *L_x_l_ptr
+        for (int i = 0; i <= L_y_r_ptr.get().indexOf(last_left_item); i++)
+        {//while
+            p_in_L_y_info = L_y_r_ptr.get().get(i);
 
-	p_in_L_y_item = L_y_r_ptr.begin();
+            //create *L_x(y)_l_ptr
+            L_y_l_ptr.get().add(p_in_L_y_info);
+            p_in_L_x_info = p_in_L_y_info.get_cross_ref_item();
+            p_in_L_x_info.set_cross_ref_item(L_y_l_ptr.get().get(L_y_l_ptr.get().size() - 1));
+            p_in_L_x_info.mark(); //mark this element of the List
 
-	//build up the L_y_Lists and update crossreferences in *L_x_l_ptr
-	while(!last_item_reached)
-	{//while
-		p_in_L_y_info = *p_in_L_y_item;
-		del_item = p_in_L_y_item;
+            //create *L_y_r_ptr
+            L_y_r_ptr.get().remove(p_in_L_y_info);
+        }//while
 
-		//create *L_x(y)_l_ptr
-		L_y_l_ptr.pushBack(p_in_L_y_info);
-		p_in_L_x_item = p_in_L_y_info.get_cross_ref_item();
-		p_in_L_x_info = *p_in_L_x_item;
-		p_in_L_x_info.set_cross_ref_item(L_y_l_ptr.rbegin());
-		p_in_L_x_info.mark(); //mark this element of the List
-		*p_in_L_x_item = p_in_L_x_info;
+        //build up the L_x Lists and update crossreferences in *L_y_l_ptr
+        for (int i = 0; i < L_x_r_ptr.get().size(); i++)
+        {//while
+            p_in_L_x_info = L_x_r_ptr.get().get(i);
 
-		if(p_in_L_y_item != last_left_item)
-			p_in_L_y_item = L_y_r_ptr.cyclicSucc(p_in_L_y_item);
-		else
-			last_item_reached = true;
+            if (p_in_L_x_info.is_marked())
+            {
+                p_in_L_x_info.unmark();
+                L_x_l_ptr.get().add(p_in_L_x_info);
+                p_in_L_y_info = p_in_L_x_info.get_cross_ref_item();
+                p_in_L_y_info.set_cross_ref_item(L_x_l_ptr.get().get(L_x_l_ptr.get().size() - 1));
+            }
 
-		//create *L_y_r_ptr
-		L_y_r_ptr.del(del_item);
-	}//while
+            //create *L_x_r_ptr
+            if (p_in_L_x_info.is_marked())
+            {
+                L_x_r_ptr.get().remove(p_in_L_x_info);
+            }
+        }//while
+    }
 
-	//build up the L_x Lists and update crossreferences in *L_y_l_ptr
+    void y_move_right_subLists(
+            ref<List<ParticleInfo>> L_x_ptr,
+            ref<List<ParticleInfo>> L_x_l_ptr,
+            ref<List<ParticleInfo>> L_x_r_ptr,
+            ref<List<ParticleInfo>> L_y_ptr,
+            ref<List<ParticleInfo>> L_y_l_ptr,
+            ref<List<ParticleInfo>> L_y_r_ptr,
+            ParticleInfo last_left_item)
+    {
+        ParticleInfo p_in_L_x_info, p_in_L_y_info;
 
-	last_item_reached = false;
-	p_in_L_x_item = L_x_r_ptr.begin();
+        L_x_l_ptr.set(L_x_ptr.get());
+        L_y_l_ptr.set(L_y_ptr.get());
+        L_x_r_ptr.set(new ArrayList<ParticleInfo>());
+        L_y_r_ptr.set(new ArrayList<ParticleInfo>());
 
-	while(!last_item_reached)
-	{//while
-		del_item = p_in_L_x_item;
+        //build up the L_y_Lists and update crossreferences in *L_x_r_ptr
+        for (int i = L_y_l_ptr.get().indexOf(last_left_item) + 1; i < L_y_l_ptr.get().size(); i++)
+        {//while
+            p_in_L_y_info = L_y_r_ptr.get().get(i);
 
-		if((*del_item).is_marked())
-		{
-			p_in_L_x_info = *p_in_L_x_item;
-			p_in_L_x_info.unmark();
-			L_x_l_ptr.pushBack(p_in_L_x_info);
-			p_in_L_y_item = p_in_L_x_info.get_cross_ref_item();
-			p_in_L_y_info = *p_in_L_y_item;
-			p_in_L_y_info.set_cross_ref_item(L_x_l_ptr.rbegin());
-			*p_in_L_y_item = p_in_L_y_info;
-		}
+            //create *L_x(y)_r_ptr
+            L_y_r_ptr.get().add(p_in_L_y_info);
+            p_in_L_x_info = p_in_L_y_info.get_cross_ref_item();
+            p_in_L_x_info.set_cross_ref_item(L_y_r_ptr.get().get(L_y_r_ptr.get().size() - 1));
+            p_in_L_x_info.mark(); //mark this element of the List
 
-		if(p_in_L_x_item != L_x_r_ptr.rbegin())
-			p_in_L_x_item = L_x_r_ptr.cyclicSucc(p_in_L_x_item);
-		else
-			last_item_reached = true;
+            //create *L_y_l_ptr
+            L_y_l_ptr.get().remove(p_in_L_y_info);
+        }//while
 
-		//create *L_x_r_ptr
-		if((*del_item).is_marked())
-			L_x_r_ptr.del(del_item);
-	}//while
-}
+        //build up the L_x Lists and update crossreferences in *L_y_r_ptr
+        for (int i = 0; i < L_x_l_ptr.get().size(); i++)
+        {//while
+            p_in_L_x_info = L_x_l_ptr.get().get(i);
 
+            if (p_in_L_x_info.is_marked())
+            {
+                p_in_L_x_info.unmark();
+                L_x_l_ptr.get().add(p_in_L_x_info);
+                p_in_L_y_info = p_in_L_x_info.get_cross_ref_item();
+                p_in_L_y_info.set_cross_ref_item(L_x_r_ptr.get().get(L_x_r_ptr.get().size() - 1));
+            }
 
-void y_move_right_subLists(
-	List<ParticleInfo> L_x_ptr,
-	List <ParticleInfo> L_x_l_ptr,
-	List<ParticleInfo> L_x_r_ptr,
-	List<ParticleInfo> L_y_ptr,
-	List <ParticleInfo> L_y_l_ptr,
-	List<ParticleInfo> L_y_r_ptr,
-	ListIterator<ParticleInfo> last_left_item)
-{
-	ParticleInfo p_in_L_x_info,p_in_L_y_info;
-	ListIterator<ParticleInfo> p_in_L_x_item,p_in_L_y_item,del_item;
-	boolean last_item_reached =false;
+            //create *L_x_r_ptr
+            if (p_in_L_x_info.is_marked())
+            {
+                L_x_l_ptr.get().remove(p_in_L_x_info);
+            }
+        }//while
+    }
 
-	L_x_l_ptr = L_x_ptr;
-	L_y_l_ptr = L_y_ptr;
-	L_x_r_ptr = new List<ParticleInfo>;
-	L_y_r_ptr = new List<ParticleInfo>;
+    void build_up_sorted_subLists(
+            List<ParticleInfo> L_x_copy,
+            List<ParticleInfo> L_y_copy)
+    {
+        ParticleInfo P_x, P_y;
+        List<ParticleInfo> L_x_ptr = new ArrayList<ParticleInfo>();
+        List<ParticleInfo> L_y_ptr = new ArrayList<ParticleInfo>();
+        ListIterator<ParticleInfo> it;
+        ParticleInfo new_cross_ref_item;
 
-	p_in_L_y_item = L_y_l_ptr.cyclicSucc(last_left_item);
+        it = L_x_copy.listIterator();
+        while (it.hasNext())
+        {
+            P_x = it.next();
 
-	//build up the L_y_Lists and update crossreferences in *L_x_r_ptr
-	while(!last_item_reached)
-	{//while
-		p_in_L_y_info = *p_in_L_y_item;
-		del_item = p_in_L_y_item;
+            if (P_x.get_subList_ptr() != null)
+            {
+                //reset values
+                L_x_ptr = P_x.get_subList_ptr();
+                P_x.set_subList_ptr(null); //clear subList_ptr
+                P_x.set_copy_item(null);   //clear copy_item
+                P_x.unmark(); //unmark this element
+                P_x.set_tmp_cross_ref_item(null);//clear tmp_cross_ref_item
 
-		//create *L_x(y)_r_ptr
-		L_y_r_ptr.pushBack(p_in_L_y_info);
-		p_in_L_x_item = p_in_L_y_info.get_cross_ref_item();
-		p_in_L_x_info = *p_in_L_x_item;
-		p_in_L_x_info.set_cross_ref_item(L_y_r_ptr.rbegin());
-		p_in_L_x_info.mark(); //mark this element of the List
-		*p_in_L_x_item = p_in_L_x_info;
+                //update *L_x_ptr
+                L_x_ptr.add(P_x);
 
-		if(p_in_L_y_item != L_y_l_ptr.rbegin())
-			p_in_L_y_item = L_y_l_ptr.cyclicSucc(p_in_L_y_item);
-		else
-			last_item_reached = true;
+                //update L_x_copy
+                P_x.set_tmp_cross_ref_item(P_x);
+            }
+        }
 
-		//create *L_y_l_ptr
-		L_y_l_ptr.del(del_item);
-	}//while
+        it = L_x_copy.listIterator();
+        while (it.hasNext())
+        {
+            P_y = it.next();
 
-	//build up the L_x Lists and update crossreferences in *L_y_r_ptr
+            if (P_y.get_subList_ptr() != null)
+            {
+                //reset values
+                L_y_ptr = P_y.get_subList_ptr();
+                P_y.set_subList_ptr(null); //clear subList_ptr
+                P_y.set_copy_item(null);   //clear copy_item
+                P_y.unmark(); //unmark this element
+                P_y.set_tmp_cross_ref_item(null);//clear tmp_cross_ref_item
 
-	last_item_reached = false;
-	p_in_L_x_item = L_x_l_ptr.begin();
+                //update *L_x(y)_ptr
 
-	while(!last_item_reached)
-	{//while
-		del_item = p_in_L_x_item;
-
-		if((*del_item).is_marked())
-		{
-			p_in_L_x_info = *p_in_L_x_item;
-			p_in_L_x_info.unmark();
-			L_x_r_ptr.pushBack(p_in_L_x_info);
-			p_in_L_y_item = p_in_L_x_info.get_cross_ref_item();
-			p_in_L_y_info = *p_in_L_y_item;
-			p_in_L_y_info.set_cross_ref_item(L_x_r_ptr.rbegin());
-			*p_in_L_y_item = p_in_L_y_info;
-		}
-
-		if(p_in_L_x_item != L_x_l_ptr.rbegin())
-			p_in_L_x_item = L_x_l_ptr.cyclicSucc(p_in_L_x_item);
-		else
-			last_item_reached = true;
-
-		//create *L_x_r_ptr
-		if((*del_item).is_marked())
-			L_x_l_ptr.del(del_item);
-	}//while
-}
-
-
-void build_up_sorted_subLists(
-	List<ParticleInfo> L_x_copy,
-	List<ParticleInfo> L_y_copy)
-{
-	ParticleInfo P_x,P_y;
-	List<ParticleInfo>  *L_x_ptr,*L_y_ptr;
-	ListIterator<ParticleInfo> it,new_cross_ref_item;
-
-	for(it = L_x_copy.begin();it.valid();++it)
-		if((*it).get_subList_ptr() != null)
-		{
-			//reset values
-			P_x = *it;
-			L_x_ptr = P_x.get_subList_ptr();
-			P_x.set_subList_ptr(null); //clear subList_ptr
-			P_x.set_copy_item(null);   //clear copy_item
-			P_x.unmark(); //unmark this element
-			P_x.set_tmp_cross_ref_item(null);//clear tmp_cross_ref_item
-
-			//update *L_x_ptr
-			L_x_ptr.pushBack(P_x);
-
-			//update L_x_copy
-			P_x.set_tmp_cross_ref_item(L_x_ptr.rbegin());
-			*it = P_x;
-		}
-
-	for(it = L_y_copy.begin();it.valid();++it)
-		if((*it).get_subList_ptr() != null)
-		{
-			//reset values
-			P_y = *it;
-			L_y_ptr = P_y.get_subList_ptr();
-			P_y.set_subList_ptr(null); //clear subList_ptr
-			P_y.set_copy_item(null);   //clear copy_item
-			P_y.unmark(); //unmark this element
-			P_y.set_tmp_cross_ref_item(null);//clear tmp_cross_ref_item
-
-			//update *L_x(y)_ptr
-
-			new_cross_ref_item = (*P_y.get_cross_ref_item()).get_tmp_cross_ref_item();
-			P_y.set_cross_ref_item(new_cross_ref_item);
-			L_y_ptr.pushBack(P_y);
-			P_x  = *new_cross_ref_item;
-			P_x.set_cross_ref_item(L_y_ptr.rbegin());
-			*new_cross_ref_item = P_x;
-		}
-}
+                new_cross_ref_item = P_y.get_cross_ref_item().get_tmp_cross_ref_item();
+                P_y.set_cross_ref_item(new_cross_ref_item);
+                L_y_ptr.add(P_y);
+                P_x = new_cross_ref_item;
+                P_x.set_cross_ref_item(P_y);
+            }
+        }
+    }
 
 
 // **********Functions needed for subtree by subtree  treeruction(Begin)*********
 
 void build_up_red_quad_tree_subtree_by_subtree(
-	Graph& G,
+	Graph G,
 	NodeArray<NodeAttributes> A,
-	QuadTreeNM& T)
+	QuadTreeNM T)
 {
 	List<QuadTreeNodeNM> act_subtree_root_List,new_subtree_root_List;
 	List<QuadTreeNodeNM> *act_subtree_root_List_ptr,*new_subtree_root_List_ptr,*help_ptr;
@@ -1273,7 +1246,7 @@ void build_up_red_quad_tree_subtree_by_subtree(
 }
 
 
-void build_up_root_vertex(GraphG, QuadTreeNM& T)
+void build_up_root_vertex(Graph G, QuadTreeNM T)
 {
 	node v;
 
@@ -1287,9 +1260,9 @@ void build_up_root_vertex(GraphG, QuadTreeNM& T)
 }
 
 
-voidruct_subtree(
+void construct_subtree(
 	NodeArray<NodeAttributes> A,
-	QuadTreeNM& T,
+	QuadTreeNM T,
 	QuadTreeNodeNM *subtree_root_ptr,
 	List<QuadTreeNodeNM> new_subtree_root_List)
 {
@@ -1318,8 +1291,8 @@ voidruct_subtree(
 }
 
 
-voidruct_complete_subtree(
-	QuadTreeNM& T,
+void construct_complete_subtree(
+	QuadTreeNM T,
 	int subtree_depth,
 	Array2D<QuadTreeNodeNM> leaf_ptr,
 	int act_depth,
@@ -1388,7 +1361,7 @@ void set_contained_nodes_for_leaves(
 }
 
 
-void set_particlenumber_in_subtree_entries(QuadTreeNM& T)
+void set_particlenumber_in_subtree_entries(QuadTreeNM T)
 {
 	int child_nr;
 
@@ -1436,9 +1409,9 @@ void set_particlenumber_in_subtree_entries(QuadTreeNM& T)
 }
 
 
-voidruct_reduced_subtree(
+void construct_reduced_subtree(
 	NodeArray<NodeAttributes> A,
-	QuadTreeNM& T,
+	QuadTreeNM T,
 	List<QuadTreeNodeNM> new_subtree_root_List)
 {
 	do
@@ -1496,7 +1469,7 @@ voidruct_reduced_subtree(
 }
 
 
-void delete_empty_subtrees(QuadTreeNM& T)
+void delete_empty_subtrees(QuadTreeNM T)
 {
 	int child_part_nr;
 	QuadTreeNodeNM act_ptr = T.get_act_ptr();
@@ -1543,7 +1516,7 @@ void delete_empty_subtrees(QuadTreeNM& T)
 }
 
 
-boolean check_and_delete_degenerated_node(QuadTreeNM& T)
+boolean check_and_delete_degenerated_node(QuadTreeNM T)
 {
 	QuadTreeNodeNM delete_ptr;
 	QuadTreeNodeNM father_ptr;
@@ -1671,7 +1644,7 @@ boolean check_and_delete_degenerated_node(QuadTreeNM& T)
 }
 
 
-void delete_sparse_subtree(QuadTreeNM& T, QuadTreeNodeNM new_leaf_ptr)
+void delete_sparse_subtree(QuadTreeNM T, QuadTreeNodeNM new_leaf_ptr)
 {
 	collect_contained_nodes(T,new_leaf_ptr);
 
@@ -1698,7 +1671,7 @@ void delete_sparse_subtree(QuadTreeNM& T, QuadTreeNodeNM new_leaf_ptr)
 }
 
 
-void collect_contained_nodes(QuadTreeNM& T, QuadTreeNodeNM new_leaf_ptr)
+void collect_contained_nodes(QuadTreeNM T, QuadTreeNodeNM new_leaf_ptr)
 {
 	if(T.get_act_ptr().is_leaf())
 		while(!T.get_act_ptr().contained_nodes_empty())
@@ -1730,7 +1703,7 @@ void collect_contained_nodes(QuadTreeNM& T, QuadTreeNodeNM new_leaf_ptr)
 }
 
 
-boolean find_smallest_quad(NodeArray<NodeAttributes> A, QuadTreeNM& T)
+boolean find_smallest_quad(NodeArray<NodeAttributes> A, QuadTreeNM T)
 {
 	OGDF_ASSERT(!T.get_act_ptr().contained_nodes_empty());
 	//if(T.get_act_ptr().contained_nodes_empty())
@@ -2000,7 +1973,7 @@ void find_small_cell_by_formula(
 }
 
 
-void delete_red_quad_tree_and_count_treenodes(QuadTreeNM& T)
+void delete_red_quad_tree_and_count_treenodes(QuadTreeNM T)
 {
 	T.delete_tree(T.get_root_ptr());
 }
@@ -2008,7 +1981,7 @@ void delete_red_quad_tree_and_count_treenodes(QuadTreeNM& T)
 
 void form_multipole_expansions(
 	NodeArray<NodeAttributes> A,
-	QuadTreeNM& T,
+	QuadTreeNM T,
 	List<QuadTreeNodeNM> quad_tree_leaves)
 {
 	T.set_act_ptr(T.get_root_ptr());
@@ -2018,7 +1991,7 @@ void form_multipole_expansions(
 
 void form_multipole_expansion_of_subtree(
 	NodeArray<NodeAttributes> A,
-	QuadTreeNM& T,
+	QuadTreeNM T,
 	List<QuadTreeNodeNM> quad_tree_leaves)
 {
 	init_expansion_Lists(T.get_act_ptr());
