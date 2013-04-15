@@ -74,11 +74,11 @@ public class QuadTreeNodeNM
         Sm_center = new Complex();
         ME = null;
         LE = null;
-        contained_nodes.clear();
-        I.clear();
-        D1.clear();
-        D2.clear();
-        M.clear();
+        contained_nodes = new ArrayList<node>();
+        I = new ArrayList<QuadTreeNodeNM>();
+        D1 = new ArrayList<QuadTreeNodeNM>();
+        D2 = new ArrayList<QuadTreeNodeNM>();
+        M = new ArrayList<QuadTreeNodeNM>();
         father_ptr = null;
         child_lt_ptr = child_rt_ptr = child_lb_ptr = child_rb_ptr = null;
     }
@@ -335,27 +335,27 @@ public class QuadTreeNodeNM
 
     public List<node> get_contained_nodes()
     {
-        return contained_nodes;
+        return new ArrayList<node>(contained_nodes);
     }
 
     public List<QuadTreeNodeNM> get_I()
     {
-        return I;
+        return new ArrayList<QuadTreeNodeNM>(I);
     }
 
     public List<QuadTreeNodeNM> get_D1()
     {
-        return D1;
+        return new ArrayList<QuadTreeNodeNM>(D1);
     }
 
     public List<QuadTreeNodeNM> get_D2()
     {
-        return D2;
+        return new ArrayList<QuadTreeNodeNM>(D2);
     }
 
     public List<QuadTreeNodeNM> get_M()
     {
-        return M;
+        return new ArrayList<QuadTreeNodeNM>(M);
     }
 
     public QuadTreeNodeNM get_father_ptr()

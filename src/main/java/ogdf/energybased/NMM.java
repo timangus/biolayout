@@ -77,6 +77,7 @@ public class NMM
         //set MIN_NODE_NUMBER and using_NMM
         MIN_NODE_NUMBER = 175;
         using_NMM = true;
+        ExactMethod = new FruchtermanReingold();
 
         //setting predefined parameters
         precision(4);
@@ -1278,7 +1279,7 @@ public class NMM
 
         if (subtree_min_boxlength >= MIN_BOX_LENGTH)
         {
-            QuadTreeNodeNM[][] leaf_ptr = new QuadTreeNodeNM[maxindex - 1][maxindex - 1];
+            QuadTreeNodeNM[][] leaf_ptr = new QuadTreeNodeNM[maxindex][maxindex];
 
             T.set_act_ptr(subtree_root_ptr);
             if (find_smallest_quad(A, T)) //not all nodes have the same position
@@ -2112,12 +2113,11 @@ public class NMM
 
     void init_expansion_Lists(QuadTreeNodeNM act_ptr)
     {
-        int i;
         Complex[] nulList = new Complex[precision() + 1];
 
-        for (Complex n : nulList)
+        for (int i = 0; i < nulList.length; i++)
         {
-            n = new Complex();
+            nulList[i] = new Complex();
         }
 
         act_ptr.set_multipole_exp(nulList, precision());

@@ -1182,7 +1182,7 @@ public class FMMMLayout
         forceModel(ForceModel.fmNew);
         springStrength(1);
         repForcesStrength(1);
-        repulsiveForcesCalculation(RepulsiveForcesMethod.rfcGridApproximation); //FIXME
+        repulsiveForcesCalculation(RepulsiveForcesMethod.rfcNMM);
         stopCriterion(StopCriterion.scFixedIterationsOrThreshold);
         threshold(0.01);
         fixedIterations(30);
