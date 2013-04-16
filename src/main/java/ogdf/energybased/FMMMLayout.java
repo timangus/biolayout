@@ -34,6 +34,7 @@ import java.lang.*;
 import java.util.*;
 import java.io.*;
 import ogdf.basic.*;
+import org.BioLayoutExpress3D.Utils.ref;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -933,7 +934,6 @@ public class FMMMLayout
         Graph G = GA.constGraph();
         EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0, Factory.DOUBLE);
         call(GA, edgelength);
-        create_postscript_drawing(GA, "/home/tangus2/fmmm-test.ps");
     }
 
     public void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
@@ -1807,7 +1807,8 @@ public class FMMMLayout
             List<Graph> G_sub,
             List<NodeArray<NodeAttributes>> A_sub)
     {
-        //double aspect_ratio_area, bounding_rectangles_area;
+        ref<Double> aspect_ratio_area = new ref<Double>(0.0);
+        ref<Double> bounding_rectangles_area = new ref<Double>(0.0);
         MAARPacking P = new MAARPacking();
         List<Rectangle> R = new ArrayList<Rectangle>();
 
@@ -1821,7 +1822,7 @@ public class FMMMLayout
         }
 
         P.pack_rectangles_using_Best_Fit_strategy(R, pageRatio(), presortCCs(),
-                tipOverCCs());
+                tipOverCCs(), aspect_ratio_area, bounding_rectangles_area);
         export_node_positions(A, R, G_sub, A_sub);
     }
 

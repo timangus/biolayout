@@ -32,6 +32,7 @@ package ogdf.energybased;
  */
 import java.util.*;
 import ogdf.basic.*;
+import org.BioLayoutExpress3D.Utils.ref;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -88,7 +89,7 @@ class HelpRecord
     {
     }
 
-    void set_ListIterator(ListIterator<PackingRowInfo> it)
+    void set_ListIterator(PackingRowInfo it)
     {
         iterator = it;
     }
@@ -98,7 +99,7 @@ class HelpRecord
         value = v;
     }
 
-    ListIterator<PackingRowInfo> get_ListIterator()
+    PackingRowInfo get_ListIterator()
     {
         return iterator;
     }
@@ -108,7 +109,7 @@ class HelpRecord
         return value;
     }
     private double value;
-    private ListIterator<PackingRowInfo> iterator;
+    private PackingRowInfo iterator;
 }
 
 class PQueue
@@ -124,7 +125,7 @@ class PQueue
     }
 
     //Inserts content with value value into the priority queue and restores the heap.
-    void insert(double value, ListIterator<PackingRowInfo> iterator)
+    void insert(double value, PackingRowInfo iterator)
     {
         HelpRecord h = new HelpRecord();
         h.set_value(value);
@@ -160,7 +161,7 @@ class PQueue
     }
 
     //Returns the content with the minimum value.
-    ListIterator<PackingRowInfo> find_min()
+    PackingRowInfo find_min()
     {
         assert (P.size() >= 1);
         //if(P.size() < 1)
@@ -233,14 +234,14 @@ public class MAARPacking
             List<Rectangle> R,
             double aspect_ratio,
             FMMMLayout.PreSort presort,
-            FMMMLayout.TipOver allow_tipping_over)
+            FMMMLayout.TipOver allow_tipping_over,
+            ref<Double> aspect_ratio_area,
+            ref<Double> bounding_rectangles_area)
     {
-        double aspect_ratio_area = 0.0;
-        double bounding_rectangles_area;
-        double area = 0.0;
-        ListIterator<PackingRowInfo> B_F_item;
+        ref<Double> area = new ref<Double>(0.0);
+        PackingRowInfo B_F_item;
         List<PackingRowInfo> P = new ArrayList<PackingRowInfo>(); //represents the packing of the rectangles
-        List<ListIterator<PackingRowInfo>> row_of_rectangle = new ArrayList<ListIterator<PackingRowInfo>>(); //stores for each rectangle
+        List<PackingRowInfo> row_of_rectangle = new ArrayList<PackingRowInfo>(); //stores for each rectangle
         //r at pos. i in R the ListIterator of the row in P
         //where r is placed (at pos i in row_of_rectangle)
         List<Rectangle> rectangle_order = new ArrayList<Rectangle>();//holds the order in which the
@@ -258,13 +259,15 @@ public class MAARPacking
         }
 
         //init rectangle_order
-        for (Rectangle r : R)
+        for (int i = 0; i < R.size(); i++)
         {
-            rectangle_order.add(r);
+            rectangle_order.add(R.get(i));
         }
 
-        for (Rectangle r : R)
+        for (int i = 0; i < R.size(); i++)
         {
+            Rectangle r = R.get(i);
+
             if (P.isEmpty())
             {
                 if (better_tipp_rectangle_in_new_row(r, aspect_ratio, allow_tipping_over, area))
@@ -272,8 +275,8 @@ public class MAARPacking
                     r = tipp_over(r);
                 }
                 B_F_insert_rectangle_in_new_row(r, P, row_of_rectangle, total_width_of_row);
-                aspect_ratio_area = calculate_aspect_ratio_area(r.get_width(), r.get_height(),
-                        aspect_ratio);
+                aspect_ratio_area.set(calculate_aspect_ratio_area(r.get_width(), r.get_height(),
+                        aspect_ratio));
             }
             else
             {
@@ -283,9 +286,11 @@ public class MAARPacking
 
                 B_F_insert_rectangle(r, P, row_of_rectangle, B_F_item, total_width_of_row);
             }
+
+            R.set(i, r);
         }
         export_new_rectangle_positions(P, row_of_rectangle, rectangle_order);
-        bounding_rectangles_area = calculate_bounding_rectangles_area(R);
+        bounding_rectangles_area.set(calculate_bounding_rectangles_area(R));
     }
 
     public void presort_rectangles_by_height(List<Rectangle> R)
@@ -325,7 +330,7 @@ public class MAARPacking
     public void B_F_insert_rectangle_in_new_row(
             Rectangle r,
             List<PackingRowInfo> P,
-            List<ListIterator<PackingRowInfo>> row_of_rectangle,
+            List<PackingRowInfo> row_of_rectangle,
             PQueue total_width_of_row)
     {
         PackingRowInfo p = new PackingRowInfo();
@@ -337,7 +342,7 @@ public class MAARPacking
         P.add(p);
 
         //remember in which row of P r is placed by updating row_of_rectangle
-        row_of_rectangle.add(P.listIterator());
+        row_of_rectangle.add(p);
 
         //update area_height,area_width
         area_width = Math.max(r.get_width(), area_width);
@@ -345,18 +350,18 @@ public class MAARPacking
 
 
         //update total_width_of_row
-        total_width_of_row.insert(r.get_width(), P.listIterator());
+        total_width_of_row.insert(r.get_width(), p);
     }
 
-    public ListIterator<PackingRowInfo> find_Best_Fit_insert_position(
+    public PackingRowInfo find_Best_Fit_insert_position(
             Rectangle rect_item,
             FMMMLayout.TipOver allow_tipping_over,
             double aspect_ratio,
-            double aspect_ratio_area,
+            ref<Double> aspect_ratio_area,
             PQueue total_width_of_row)
     {
         numexcept N;
-        double area_2 = 0.0;
+        ref<Double> area_2 = new ref<Double>(0.0);
         int best_try_index, index_2;
         Rectangle r = rect_item;
 
@@ -370,8 +375,7 @@ public class MAARPacking
             best_try_index = 1;
         }
 
-        ListIterator<PackingRowInfo> B_F_item = total_width_of_row.find_min();
-        PackingRowInfo B_F_row = B_F_item.next(); B_F_item.previous();
+        PackingRowInfo B_F_row = total_width_of_row.find_min();
         if (better_tipp_rectangle_in_this_row(r, aspect_ratio, allow_tipping_over, B_F_row, area_2))
         {
             index_2 = 4;
@@ -381,9 +385,9 @@ public class MAARPacking
             index_2 = 3;
         }
 
-        if ((area_2 <= aspect_ratio_area) || numexcept.nearly_equal(aspect_ratio_area, area_2))
+        if ((area_2.get() <= aspect_ratio_area.get()) || numexcept.nearly_equal(aspect_ratio_area.get(), area_2.get()))
         {
-            aspect_ratio_area = area_2;
+            aspect_ratio_area.set(area_2.get());
             best_try_index = index_2;
         }
 
@@ -399,23 +403,23 @@ public class MAARPacking
         }
         else if (best_try_index == 3)
         {
-            return B_F_item;
+            return B_F_row;
         }
         else //best_try_index == 4
         {
             tipp_over(rect_item);
-            return B_F_item;
+            return B_F_row;
         }
     }
 
     public void B_F_insert_rectangle(
             Rectangle r,
             List<PackingRowInfo> P,
-            List<ListIterator<PackingRowInfo>> row_of_rectangle,
-            ListIterator<PackingRowInfo> B_F_item,
+            List<PackingRowInfo> row_of_rectangle,
+            PackingRowInfo B_F_item,
             PQueue total_width_of_row)
     {
-        if (!B_F_item.hasNext()) //insert into a new row
+        if (B_F_item == null) //insert into a new row
         {
             B_F_insert_rectangle_in_new_row(r, P, row_of_rectangle, total_width_of_row);
         }
@@ -424,7 +428,7 @@ public class MAARPacking
             double old_max_height;
 
             //update P[B_F_item]
-            PackingRowInfo p = B_F_item.next(); B_F_item.previous();
+            PackingRowInfo p = B_F_item;
             old_max_height = p.get_max_height();
             p.set_max_height(Math.max(old_max_height, r.get_height()));
             p.set_total_width(p.get_total_width() + r.get_width());
@@ -446,7 +450,7 @@ public class MAARPacking
 
     public void export_new_rectangle_positions(
             List<PackingRowInfo> P,
-            List<ListIterator<PackingRowInfo>> row_of_rectangle,
+            List<PackingRowInfo> row_of_rectangle,
             List<Rectangle> rectangle_order)
     {
         int i;
@@ -460,7 +464,7 @@ public class MAARPacking
         //ListIterator< ListIterator<PackingRowInfo> > row_item;
         ListIterator<PackingRowInfo> row_item;
         ListIterator<Rectangle> R_item;
-        ListIterator<ListIterator<PackingRowInfo>> Rrow_item;
+        ListIterator<PackingRowInfo> Rrow_item;
 
         //init act_row_x_max;
         for (i = 0; i < P.size(); i++)
@@ -494,8 +498,7 @@ public class MAARPacking
         while (R_item.hasNext())
         {
             r = R_item.next();
-            row_item = Rrow_item.next(); Rrow_item.previous();
-            p = row_item.next(); row_item.previous();
+            p = Rrow_item.next(); Rrow_item.previous();
             new_x = act_row_x_max.get(p.get_row_index());
             act_row_x_max.set(p.get_row_index(), act_row_x_max.get(p.get_row_index()) + r.get_width());
             new_y = row_y_min.get(p.get_row_index()) + (p.get_max_height() - r.get_height()) / 2;
@@ -543,7 +546,7 @@ public class MAARPacking
             Rectangle r,
             double aspect_ratio,
             FMMMLayout.TipOver allow_tipping_over,
-            double best_area)
+            ref<Double> best_area)
     {
         double height, width, act_area;
         boolean rotate = false;
@@ -551,7 +554,7 @@ public class MAARPacking
         //first try: new row insert position
         width = Math.max(area_width, r.get_width());
         height = area_height + r.get_height();
-        best_area = calculate_aspect_ratio_area(width, height, aspect_ratio);
+        best_area.set(calculate_aspect_ratio_area(width, height, aspect_ratio));
 
 
         //second try: new row insert position with tipping r over
@@ -561,9 +564,9 @@ public class MAARPacking
             width = Math.max(area_width, r.get_height());
             height = area_height + r.get_width();
             act_area = calculate_aspect_ratio_area(width, height, aspect_ratio);
-            if (act_area < 0.99999 * best_area)
+            if (act_area < 0.99999 * best_area.get())
             {
-                best_area = act_area;
+                best_area.set(act_area);
                 rotate = true;
             }
         }
@@ -575,7 +578,7 @@ public class MAARPacking
             double aspect_ratio,
             FMMMLayout.TipOver allow_tipping_over,
             PackingRowInfo B_F_row,
-            double best_area)
+            ref<Double> best_area)
     {
         double height, width, act_area;
         boolean rotate = false;
@@ -583,7 +586,7 @@ public class MAARPacking
         //first try: BEST_FIT insert position
         width = Math.max(area_width, B_F_row.get_total_width() + r.get_width());
         height = Math.max(area_height, area_height - B_F_row.get_max_height() + r.get_height());
-        best_area = calculate_aspect_ratio_area(width, height, aspect_ratio);
+        best_area.set(calculate_aspect_ratio_area(width, height, aspect_ratio));
 
         //second try: BEST_FIT insert position  with skipping r over
         if ((allow_tipping_over == FMMMLayout.TipOver.toNoGrowingRow && r.get_width() <=
@@ -592,9 +595,9 @@ public class MAARPacking
             width = Math.max(area_width, B_F_row.get_total_width() + r.get_height());
             height = Math.max(area_height, area_height - B_F_row.get_max_height() + r.get_width());
             act_area = calculate_aspect_ratio_area(width, height, aspect_ratio);
-            if (act_area < 0.99999 * best_area)
+            if (act_area < 0.99999 * best_area.get())
             {
-                best_area = act_area;
+                best_area.set(act_area);
                 rotate = true;
             }
         }
