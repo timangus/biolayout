@@ -84,13 +84,13 @@ final public class Complex
 
     public Complex log()
     {
-        double rpart = Math.sqrt(this.real * this.real + this.imaginary * this.imaginary);
+        double rpart = 0.5 * Math.log(this.real * this.real + this.imaginary * this.imaginary);
         double ipart = Math.atan2(this.imaginary, this.real);
         if (ipart > Math.PI)
         {
             ipart = ipart - 2.0 * Math.PI;
         }
 
-        return new Complex(Math.log(rpart), ipart);
+        return new Complex(rpart, ipart);
     }
 }
