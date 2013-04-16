@@ -10,6 +10,7 @@ public class GraphAttributes
     NodeArray<Double> m_y;
     NodeArray<Double> m_width;
     NodeArray<Double> m_height;
+    Map<Vertex,node> m;
 
     public GraphAttributes(Graph graph)
     {
@@ -18,13 +19,14 @@ public class GraphAttributes
         m_y = new NodeArray<Double>(graph, Factory.DOUBLE);
         m_width = new NodeArray<Double>(graph, Factory.DOUBLE);
         m_height = new NodeArray<Double>(graph, Factory.DOUBLE);
+        m = null;
     }
 
     public GraphAttributes(NetworkContainer nc)
     {
         this(new Graph());
 
-        Map m = new HashMap<Vertex,node>();
+        m = new HashMap<Vertex,node>();
 
         for (Vertex vertex : nc.getVertices())
         {
@@ -39,9 +41,18 @@ public class GraphAttributes
         for (Edge edge : nc.getEdges())
         {
             node v = (node)m.get(edge.getFirstVertex());
-            node w = (node) m.get(edge.getSecondVertex());
+            node w = (node)m.get(edge.getSecondVertex());
 
             edge e = graph.newEdge(v, w);
+        }
+    }
+
+    public void applyTo(NetworkContainer nc)
+    {
+        for (Vertex vertex : nc.getVertices())
+        {
+            node n = m.get(vertex);
+            vertex.setVertexLocation((float)x(n), (float)y(n), 0.0f);
         }
     }
 
