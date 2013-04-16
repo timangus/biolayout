@@ -52,7 +52,7 @@ public class GraphAttributes
         for (Vertex vertex : nc.getVertices())
         {
             node n = m.get(vertex);
-            vertex.setVertexLocation((float)x(n), (float)y(n), 0.0f);
+            vertex.setVertexLocation((float)x(n), (float)y(n), NetworkContainer.CANVAS_Z_SIZE * 0.5f);
         }
     }
 

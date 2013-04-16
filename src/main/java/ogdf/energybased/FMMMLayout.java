@@ -35,6 +35,7 @@ import java.util.*;
 import java.io.*;
 import ogdf.basic.*;
 import org.BioLayoutExpress3D.Utils.ref;
+import org.BioLayoutExpress3D.CoreUI.Dialogs.LayoutProgressBarDialog;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
@@ -135,7 +136,7 @@ public class FMMMLayout
     };
 
     //! Specifies how the initial placement is done.
-    enum InitialPlacementForces
+    public enum InitialPlacementForces
     {
         ipfUniformGrid, //!< Uniform placement on a grid.
         ipfRandomTime, //!< Random placement (based on current time).
@@ -661,13 +662,13 @@ public class FMMMLayout
      * \a ipfRandomTime: random based on actual time - \a ipfRandomRandIterNr: random based on randIterNr() - \a
      * ipfKeepPositions: no change in placement
      */
-    InitialPlacementForces initialPlacementForces()
+    public InitialPlacementForces initialPlacementForces()
     {
         return m_initialPlacementForces;
     }
 
     //! Sets the option initialPlacementForces to \a ipf.
-    void initialPlacementForces(InitialPlacementForces ipf)
+    public void initialPlacementForces(InitialPlacementForces ipf)
     {
         m_initialPlacementForces = ipf;
     }
@@ -928,18 +929,21 @@ public class FMMMLayout
         initialize_all_options();
     }
 
+    private LayoutProgressBarDialog progressDialog;
+
 //--------------------------- most important functions --------------------------------
-    public void call(GraphAttributes GA)
+    public void call(GraphAttributes GA, LayoutProgressBarDialog progressDialog)
     {
         Graph G = GA.constGraph();
         EdgeArray<Double> edgelength = new EdgeArray<Double>(G, 1.0, Factory.DOUBLE);
-        call(GA, edgelength);
+        call(GA, edgelength, progressDialog);
     }
 
-    public void call(GraphAttributes GA, EdgeArray<Double> edgeLength)
+    public void call(GraphAttributes GA, EdgeArray<Double> edgeLength, LayoutProgressBarDialog progressDialog)
     {
         FR = new FruchtermanReingold();
         NM = new NMM();
+        this.progressDialog = progressDialog;
 
         Graph G = GA.constGraph();
         NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G, Factory.NODE_ATTRIBUTES);       //stores the attributes of the nodes (given by L)
@@ -1004,16 +1008,9 @@ public class FMMMLayout
 
         create_maximum_connected_subGraphs(G, A, E, G_sub, A_sub, E_sub, component);
 
-        if (number_of_components == 1)
+        for (int i = 0; i < number_of_components; i++)
         {
-            call_MULTILEVEL_step_for_subGraph(G_sub.get(0), A_sub.get(0), E_sub.get(0), -1);
-        }
-        else
-        {
-            for (int i = 0; i < number_of_components; i++)
-            {
-                call_MULTILEVEL_step_for_subGraph(G_sub.get(i), A_sub.get(i), E_sub.get(i), i);
-            }
+            call_MULTILEVEL_step_for_subGraph(G_sub.get(i), A_sub.get(i), E_sub.get(i), i, number_of_components);
         }
 
         pack_subGraph_drawings(A, G_sub, A_sub);
@@ -1024,7 +1021,8 @@ public class FMMMLayout
             Graph G,
             NodeArray<NodeAttributes> A,
             EdgeArray<EdgeAttributes> E,
-            int comp_index)
+            int comp_index,
+            int num_components)
     {
         Multilevel Mult = new Multilevel();
 
@@ -1062,7 +1060,7 @@ public class FMMMLayout
                 update_boxlength_and_cornercoordinate(G_mult_ptr.get(i), A_mult_ptr.get(i));
             }
             call_FORCE_CALCULATION_step(G_mult_ptr.get(i), A_mult_ptr.get(i), E_mult_ptr.get(i),
-                    i, max_level);
+                    i, max_level, comp_index, num_components);
         }
         //Mult.delete_multilevel_representations(G_mult_ptr,A_mult_ptr,E_mult_ptr,max_level);
     }
@@ -1072,7 +1070,9 @@ public class FMMMLayout
             NodeArray<NodeAttributes> A,
             EdgeArray<EdgeAttributes> E,
             int act_level,
-            int max_level)
+            int max_level,
+            int comp_index,
+            int num_components)
     {
         int ITERBOUND = 10000;//needed to guarantee termination if
         //stopCriterion() == scThreshold
@@ -1081,6 +1081,11 @@ public class FMMMLayout
             int iter = 1;
             int max_mult_iter = get_max_mult_iter(act_level, max_level, G.numberOfNodes());
             double actforcevectorlength = threshold() + 1;
+
+            if (stopCriterion() == StopCriterion.scThreshold)
+            {
+                max_mult_iter = ITERBOUND;
+            }
 
             NodeArray<DPoint> F_rep = new NodeArray<DPoint>(G, Factory.DPOINT); //stores rep. forces
             NodeArray<DPoint> F_attr = new NodeArray<DPoint>(G, Factory.DPOINT); //stores attr. forces
@@ -1091,9 +1096,14 @@ public class FMMMLayout
             set_average_ideal_edgelength(G, E);//needed for easy scaling of the forces
             make_initialisations_for_rep_calc_classes(G);
 
+            progressDialog.prepareProgressBar(max_mult_iter,
+                    "FMMM layout" +
+                    ", component " + (comp_index + 1) + " of " + num_components +
+                    ", level " + ((max_level - act_level) + 1) + " of " + (max_level + 1));
+
             while (((stopCriterion() == StopCriterion.scFixedIterations) && (iter <= max_mult_iter)) ||
                     ((stopCriterion() == StopCriterion.scThreshold) && (actforcevectorlength >= threshold()) &&
-                    (iter <= ITERBOUND)) ||
+                    (iter <= max_mult_iter)) ||
                     ((stopCriterion() == StopCriterion.scFixedIterationsOrThreshold) && (iter <= max_mult_iter) &&
                     (actforcevectorlength >= threshold())))
             {//while
@@ -1102,12 +1112,13 @@ public class FMMMLayout
                 {
                     actforcevectorlength = get_average_forcevector_length(G, F);
                 }
+                progressDialog.incrementProgress(iter);
                 iter++;
             }//while
 
             if (act_level == 0)
             {
-                call_POSTPROCESSING_step(G, A, E, F, F_attr, F_rep, last_node_movement);
+                call_POSTPROCESSING_step(G, A, E, F, F_attr, F_rep, last_node_movement, comp_index, num_components);
             }
 
             //deallocate_memory_for_rep_calc_classes();
@@ -1121,8 +1132,15 @@ public class FMMMLayout
             NodeArray<DPoint> F,
             NodeArray<DPoint> F_attr,
             NodeArray<DPoint> F_rep,
-            NodeArray<DPoint> last_node_movement)
+            NodeArray<DPoint> last_node_movement,
+            int comp_index,
+            int num_components)
     {
+        progressDialog.prepareProgressBar(fineTuningIterations(),
+                    "FMMM layout" +
+                    ", component " + (comp_index + 1) + " of " + num_components +
+                    ", post-processing");
+
         for (int i = 1; i <= 10; i++)
         {
             calculate_forces(G, A, E, F, F_attr, F_rep, last_node_movement, i, 1);
@@ -1136,6 +1154,7 @@ public class FMMMLayout
 
         for (int i = 1; i <= fineTuningIterations(); i++)
         {
+            progressDialog.incrementProgress(i);
             calculate_forces(G, A, E, F, F_attr, F_rep, last_node_movement, i, 2);
         }
 
