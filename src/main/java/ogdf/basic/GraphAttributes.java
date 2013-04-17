@@ -49,10 +49,46 @@ public class GraphAttributes
 
     public void applyTo(NetworkContainer nc)
     {
+        double xMin = Double.MAX_VALUE;
+        double xMax = Double.MIN_VALUE;
+        double yMin = Double.MAX_VALUE;
+        double yMax = Double.MIN_VALUE;
+
+        for (Iterator<node> i = graph.nodesIterator(); i.hasNext();)
+        {
+            node v = i.next();
+
+            if (x(v) < xMin)
+            {
+                xMin = x(v);
+            }
+            else if (x(v) > xMax)
+            {
+                xMax = x(v);
+            }
+            if (y(v) < yMin)
+            {
+                yMin = y(v);
+            }
+            else if (y(v) > yMax)
+            {
+                yMax = y(v);
+            }
+        }
+
+        double maxDimension = Math.max(xMax - xMin, yMax - yMin);
+        double maxTargetDimension = Math.max(NetworkContainer.CANVAS_X_SIZE, NetworkContainer.CANVAS_Y_SIZE);
+        double scale = maxTargetDimension / maxDimension;
+        double xOffset = -xMin;
+        double yOffset = -yMin;
+
         for (Vertex vertex : nc.getVertices())
         {
             node n = m.get(vertex);
-            vertex.setVertexLocation((float)x(n), (float)y(n), NetworkContainer.CANVAS_Z_SIZE * 0.5f);
+            vertex.setVertexLocation(
+                    (float)((x(n) + xOffset) * scale),
+                    (float)((y(n) + yOffset) * scale),
+                    NetworkContainer.CANVAS_Z_SIZE * 0.5f);
         }
     }
 
