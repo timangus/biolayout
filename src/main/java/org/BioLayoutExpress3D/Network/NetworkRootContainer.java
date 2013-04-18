@@ -3,6 +3,8 @@ package org.BioLayoutExpress3D.Network;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+import ogdf.basic.GraphAttributes;
+import ogdf.energybased.FMMMLayout;
 import org.BioLayoutExpress3D.CoreUI.*;
 import org.BioLayoutExpress3D.CoreUI.Dialogs.*;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
@@ -152,43 +154,90 @@ public final class NetworkRootContainer extends NetworkContainer
     }
 
     @Override
-    public void optimize()
+    public void optimize(GraphLayoutAlgorithm gla)
     {
-        if (WEIGHTED_EDGES)
+        LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
+
+        switch (gla)
         {
-            normaliseWeights();
-            layoutClassSetsManager.getCurrentClassSetAllClasses().setClassColor( 0, new Color(0, 144, 0) );
-        }
+            case FMMM:
+                GraphAttributes GA = new GraphAttributes(this);
+                FMMMLayout fmmm = new FMMMLayout();
 
-        setKvalue();
+                fmmm.useHighLevelOptions(false);
+                fmmm.unitEdgeLength(FMMM_DESIRED_EDGE_LENGTH.get());
+                fmmm.newInitialPlacement(true);
 
-        if ( !TILED_LAYOUT.get() )
-        {
-            super.optimize();
-        }
-        else
-        {
-            int componentNumber = 0;
-            for (NetworkComponentContainer ncc : componentCollection)
-                ncc.optimize(++componentNumber);
+                switch (FMMM_QUALITY_VS_SPEED.get())
+                {
+                    case HIGH_QUALITY_LOW_SPEED:
+                        fmmm.qualityVersusSpeed(FMMMLayout.QualityVsSpeed.qvsBeautifulAndFast);
+                        break;
+                    case MEDIUM_QUALITY_MEDIUM_SPEED:
+                        fmmm.qualityVersusSpeed(FMMMLayout.QualityVsSpeed.qvsGorgeousAndEfficient);
+                        break;
+                    case LOW_QUALITY_HIGH_SPEED:
+                        fmmm.qualityVersusSpeed(FMMMLayout.QualityVsSpeed.qvsNiceAndIncredibleSpeed);
+                        break;
+                }
 
-            frLayout.clean();
+                switch (FMMM_FORCE_MODEL.get())
+                {
+                    case EADES:
+                        fmmm.repulsiveForcesCalculation(FMMMLayout.RepulsiveForcesMethod.rfcExact);
+                        break;
+                    case FRUCHTERMAN_RHEINGOLD:
+                        fmmm.repulsiveForcesCalculation(FMMMLayout.RepulsiveForcesMethod.rfcGridApproximation);
+                        break;
+                    case NMM:
+                        fmmm.repulsiveForcesCalculation(FMMMLayout.RepulsiveForcesMethod.rfcNMM);
+                        break;
+                }
 
-            Collections.sort( componentCollection, new NetworkComponentSorter() );
+                fmmm.initialPlacementForces(FMMMLayout.InitialPlacementForces.ipfUniformGrid);
+                fmmm.call(GA, layoutProgressBarDialog);
+                GA.applyTo(this);
+                break;
 
-            LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
-            layoutProgressBarDialog.prepareProgressBar(componentCollection.size(), "Tiling Graph Components");
-            layoutProgressBarDialog.startProgressBar();
+            default:
+            case FRUCHTERMAN_RHEINGOLD:
+                if (WEIGHTED_EDGES)
+                {
+                    normaliseWeights();
+                }
 
-            for (NetworkComponentContainer ncc :componentCollection)
-            {
-                layoutProgressBarDialog.incrementProgress();
-                tilingLevelsContainer.addNetworkComponentContainer(ncc);
-            }
+                setKvalue();
 
-            tilingLevelsContainer.optimize();
+                if (!TILED_LAYOUT.get())
+                {
+                    super.optimize(gla);
+                }
+                else
+                {
+                    int componentNumber = 0;
+                    for (NetworkComponentContainer ncc : componentCollection)
+                    {
+                        ncc.optimize(++componentNumber);
+                    }
 
-            layoutProgressBarDialog.endProgressBar();
+                    frLayout.clean();
+
+                    Collections.sort(componentCollection, new NetworkComponentSorter());
+
+                    layoutProgressBarDialog.prepareProgressBar(componentCollection.size(), "Tiling Graph Components");
+                    layoutProgressBarDialog.startProgressBar();
+
+                    for (NetworkComponentContainer ncc : componentCollection)
+                    {
+                        layoutProgressBarDialog.incrementProgress();
+                        tilingLevelsContainer.addNetworkComponentContainer(ncc);
+                    }
+
+                    tilingLevelsContainer.optimize();
+
+                    layoutProgressBarDialog.endProgressBar();
+                }
+                break;
         }
     }
 
@@ -196,14 +245,14 @@ public final class NetworkRootContainer extends NetworkContainer
     public void optimize(int componentID) {}
 
     @Override
-    public void relayout()
+    public void relayout(GraphLayoutAlgorithm gla)
     {
         isOptimized = false;
         isRelayout = true;
 
         if ( !TILED_LAYOUT.get() )
         {
-            super.relayout();
+            super.relayout(gla);
         }
         else
         {

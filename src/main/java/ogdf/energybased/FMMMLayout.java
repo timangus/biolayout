@@ -602,13 +602,13 @@ public class FMMMLayout
     }
 
     //! Returns the fixed number of iterations for the stop criterion.
-    int fixedIterations()
+    public int fixedIterations()
     {
         return m_fixedIterations;
     }
 
     //! Sets the fixed number of iterations for the stop criterion to \a n.
-    void fixedIterations(int n)
+    public void fixedIterations(int n)
     {
         m_fixedIterations = ((n >= 1) ? n : 1);
     }
@@ -710,13 +710,13 @@ public class FMMMLayout
     }
 
     //! Returns the number of iterations for fine tuning.
-    int fineTuningIterations()
+    public int fineTuningIterations()
     {
         return m_fineTuningIterations;
     }
 
     //! Sets the number of iterations for fine tuning to \a n.
-    void fineTuningIterations(int n)
+    public void fineTuningIterations(int n)
     {
         m_fineTuningIterations = ((n >= 0) ? n : 0);
     }
@@ -945,6 +945,9 @@ public class FMMMLayout
         NM = new NMM();
         this.progressDialog = progressDialog;
 
+        progressDialog.prepareProgressBar(100, "FMMM layout");
+        progressDialog.startProgressBar();
+
         Graph G = GA.constGraph();
         NodeArray<NodeAttributes> A = new NodeArray<NodeAttributes>(G, Factory.NODE_ATTRIBUTES);       //stores the attributes of the nodes (given by L)
         EdgeArray<EdgeAttributes> E = new EdgeArray<EdgeAttributes>(G, Factory.EDGE_ATTRIBUTES);       //stores the edge attributes of G
@@ -986,6 +989,9 @@ public class FMMMLayout
                 GA.setY(v, 0.0);
             }
         }
+
+        progressDialog.endProgressBar();
+        progressDialog.stopProgressBar();
     }
 
     void call_DIVIDE_ET_IMPERA_step(

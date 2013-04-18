@@ -205,6 +205,10 @@ public final class GlobalEnvironment
     public static final PrefBool COLLAPSE_NODES_BY_VOLUME = new PrefBool(false, "collapse_nodes_by_volume", true);
     public static final PrefBool CONFIRM_PREFERENCES_SAVE  = new PrefBool(true, "confirm_preferences_save", true);
 
+    public static enum GraphLayoutAlgorithm { FRUCHTERMAN_RHEINGOLD, FMMM, ALWAYS_ASK }
+    public static final PrefEnum<GraphLayoutAlgorithm> GRAPH_LAYOUT_ALGORITHM = new PrefEnum<GraphLayoutAlgorithm>(
+            GraphLayoutAlgorithm.class, GraphLayoutAlgorithm.ALWAYS_ASK, "graph_layout_algorithm", true);
+
     public static final boolean RANDOM_INITIAL_LAYOUT_COORDS = true;
     public static final double REFERENCE_K_VALUE = 30.0;
     public static final PrefBool RESIZE_NODES_AND_ARROWHEADS_TO_KVALUE = new PrefBool(true, "resize_nodes_and_arrowheads_to_kvalue", true);
@@ -215,6 +219,14 @@ public final class GlobalEnvironment
     public static final PrefFloat KVALUE_MODIFIER = new PrefFloat(1.0f, "kvalue_modifier", true);
     public static final PrefInt BURST_LAYOUT_ITERATIONS = new PrefInt(20, "burst_layout_iterations", true);
     public static final PrefInt MINIMUM_COMPONENT_SIZE = new PrefInt(1, "minimum_component_size", true);
+
+    public static final PrefFloat FMMM_DESIRED_EDGE_LENGTH = new PrefFloat(20.0f, "fmmm_desired_edge_length", true);
+    public static enum FmmmQualityVsSpeed { HIGH_QUALITY_LOW_SPEED, MEDIUM_QUALITY_MEDIUM_SPEED, LOW_QUALITY_HIGH_SPEED }
+    public static final PrefEnum<FmmmQualityVsSpeed> FMMM_QUALITY_VS_SPEED = new PrefEnum<FmmmQualityVsSpeed>(
+            FmmmQualityVsSpeed.class, FmmmQualityVsSpeed.MEDIUM_QUALITY_MEDIUM_SPEED, "fmmm_quality_vs_speed", true);
+    public static enum FmmmForceModel { EADES, FRUCHTERMAN_RHEINGOLD, NMM }
+    public static final PrefEnum<FmmmForceModel> FMMM_FORCE_MODEL = new PrefEnum<FmmmForceModel>(
+            FmmmForceModel.class, FmmmForceModel.NMM, "fmmm_force_model", true);
 
     public static final String DEFAULT_SURFACE_IMAGE_FILES_PATH = IMAGE_FILES_PATH + "SurfaceImages/";
     private static final String DEFAULT_SURFACE_IMAGE_FILE_NAME = "SurfaceImagesData.txt";

@@ -1337,12 +1337,25 @@ public final class LayoutFrame extends JFrame implements GraphListener
             graph.getSelectionManager().getGroupManager().resetState();
             nc.createNetworkComponentsContainer();
 
-            if ( !nc.getVertices().isEmpty() ) // fail-safe check in case the parsed file is an empty graph
+            if (!nc.getVertices().isEmpty()) // fail-safe check in case the parsed file is an empty graph
             {
-                if ( !nc.isOptimized() )
-                    nc.optimize();
+                if (!nc.isOptimized())
+                {
+                    GraphLayoutAlgorithm gla = GRAPH_LAYOUT_ALGORITHM.get();
+
+                    if (gla == GraphLayoutAlgorithm.ALWAYS_ASK)
+                    {
+                        // Ask the user
+                        LayoutAlgorithmSelectionDialog lasd = new LayoutAlgorithmSelectionDialog(this);
+                        gla = lasd.getGraphLayoutAlgorithm();
+                    }
+
+                    nc.optimize(gla);
+                }
                 else
+                {
                     nc.setKvalue();
+                }
             }
 
             // skip resizeNodesAndArrowHeadsToKvalue() if the file is a layout file (for now, in the future it will be incorporated within the layout algorithm)

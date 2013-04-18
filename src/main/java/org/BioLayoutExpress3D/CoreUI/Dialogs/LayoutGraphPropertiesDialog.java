@@ -127,6 +127,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox generalCollapseNodesByVolume = null;
     private JCheckBox generalConfirmPreferencesSave = null;
 
+    private JRadioButton frRadioButton = null;
+    private JRadioButton fmmmRadioButton = null;
+    private JRadioButton askRadioButton = null;
+
     private JCheckBox layoutResizeNodesAndArrowheadsToKvalue = null;
     private JCheckBox layoutUseEdgeWeightsForLayout = null;
     private JCheckBox layoutTiledLayout = null;
@@ -135,6 +139,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JTextField layoutIterationsField = null;
     private JTextField layoutBurstIterationsField = null;
     private JTextField layoutMinimumComponentSizeField = null;
+
+    private FloatNumberField fmmmDesiredEdgeLength = null;
+    private JComboBox fmmmForceModel = null;
+    private JComboBox fmmmQualityVsSpeed = null;
 
     private SimpleSlider _3DNodeTesselationSlider = null;
     private JCheckBox showNodes = null;
@@ -737,6 +745,27 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         container.add(newComponent);
     }
 
+    private void addPanelToGrid(String title, JComponent component, Container container,
+            int x, int y, int xSpan, int ySpan)
+    {
+        TitledBorder border = BorderFactory.createTitledBorder(ETCHED, title);
+        border.setTitleJustification(TitledBorder.DEFAULT_JUSTIFICATION);
+        border.setTitlePosition(TitledBorder.DEFAULT_POSITION);
+
+        JPanel newPanel = new JPanel(new FlowLayout(FlowLayout.LEADING), true);
+        newPanel.add(component);
+        newPanel.setBorder(border);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = x;
+        c.gridy = y;
+        c.gridwidth = xSpan;
+        c.gridheight = ySpan;
+        c.fill = GridBagConstraints.BOTH;
+
+        container.add(newPanel, c);
+    }
+
     private void addShaderColumnPanel(JComponent component, int index, boolean isLastShaderColumnPanel)
     {
         JPanel advancedShadersPanelTemp = new JPanel(true);
@@ -1075,35 +1104,107 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         layoutBurstIterationsField.setDocument( new TextFieldFilter(TextFieldFilter.NUMERIC) );
         layoutMinimumComponentSizeField.setDocument( new TextFieldFilter(TextFieldFilter.NUMERIC) );
 
-        JPanel layoutLargePanel = new JPanel(true);
-        layoutLargePanel.setLayout( new BoxLayout(layoutLargePanel, BoxLayout.Y_AXIS) );
+        // Algorithm selection
+        JPanel algorithmPanel = new JPanel(true);
+        algorithmPanel.setLayout(new BoxLayout(algorithmPanel, BoxLayout.X_AXIS));
+
+        ButtonGroup layoutAlgorithmGroup = new ButtonGroup();
+
+        frRadioButton = new JRadioButton("Fruchterman-Rheingold");
+        frRadioButton.setToolTipText("Fruchterman-Rheingold");
+        layoutAlgorithmGroup.add(frRadioButton);
+        algorithmPanel.add(frRadioButton);
+
+        fmmmRadioButton = new JRadioButton("FMMM");
+        fmmmRadioButton.setToolTipText("FMMM");
+        layoutAlgorithmGroup.add(fmmmRadioButton);
+        algorithmPanel.add(fmmmRadioButton);
+
+        askRadioButton = new JRadioButton("Always Ask");
+        askRadioButton.setToolTipText("Always Ask");
+        layoutAlgorithmGroup.add(askRadioButton);
+        algorithmPanel.add(askRadioButton);
+
+        // FR options
+        JPanel fruchtermanRheingoldPanel = new JPanel(true);
+        fruchtermanRheingoldPanel.setLayout( new BoxLayout(fruchtermanRheingoldPanel, BoxLayout.Y_AXIS) );
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Resize Nodes And Arrowheads To Kvalue");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutResizeNodesAndArrowheadsToKvalue, "(e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutResizeNodesAndArrowheadsToKvalue, "(e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Use Edge Weights For Layout");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutUseEdgeWeightsForLayout, "             (e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutUseEdgeWeightsForLayout, "             (e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Tiled Layout");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutTiledLayout, "            (e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutTiledLayout, "            (e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Starting Temperature");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutStartingTemperatureField, "           (e.g. 100.0)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutStartingTemperatureField, "           (e.g. 100.0)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Number Of Layout Iterations");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutIterationsField, "           (e.g. 100)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutIterationsField, "           (e.g. 100)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "K-Value Modifier");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutKvalueField, "          (e.g. 1.0)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutKvalueField, "          (e.g. 1.0)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Burst Layout Iterations");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutBurstIterationsField, "           (e.g. 20)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutBurstIterationsField, "           (e.g. 20)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Minimum Component Size");
-        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutMinimumComponentSizeField, "           (e.g. 3)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, layoutLargePanel);
+        addTitledButtonBorder(layoutPropertiesPanelBorder, layoutMinimumComponentSizeField, "           (e.g. 3)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fruchtermanRheingoldPanel);
+
+        // FMMM options
+        JPanel fmmmPanel = new JPanel(true);
+        fmmmPanel.setLayout(new BoxLayout(fmmmPanel, BoxLayout.Y_AXIS));
+
+        // FMMM edge length
+        fmmmDesiredEdgeLength = new FloatNumberField(20.0f, 10);
+        fmmmDesiredEdgeLength.addCaretListener(this);
+        fmmmDesiredEdgeLength.setToolTipText("Desired Edge Length");
+        fmmmDesiredEdgeLength.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
+        layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Desired Edge Length");
+        addTitledButtonBorder(layoutPropertiesPanelBorder, fmmmDesiredEdgeLength, "",
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fmmmPanel);
+
+        // FMMM force model
+        fmmmForceModel = new JComboBox();
+        for (FmmmForceModel fm : FmmmForceModel.values())
+        {
+            String s = Utils.titleCaseOf(fm.toString());
+            fmmmForceModel.addItem(s);
+        }
+        fmmmForceModel.addActionListener(this);
+        fmmmForceModel.setActionCommand(CHANGE_ACTION_COMMAND);
+        fmmmForceModel.setToolTipText("Force Model");
+        layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Force Model");
+        addTitledButtonBorder(layoutPropertiesPanelBorder, fmmmForceModel, "",
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fmmmPanel);
+
+        // FMMM quality
+        fmmmQualityVsSpeed = new JComboBox();
+        for (FmmmQualityVsSpeed qvs : FmmmQualityVsSpeed.values())
+        {
+            String s = Utils.titleCaseOf(qvs.toString());
+            fmmmQualityVsSpeed.addItem(s);
+        }
+        fmmmQualityVsSpeed.addActionListener(this);
+        fmmmQualityVsSpeed.setActionCommand(CHANGE_ACTION_COMMAND);
+        fmmmQualityVsSpeed.setToolTipText("Quality vs. Speed");
+        layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Quality Vs Speed");
+        addTitledButtonBorder(layoutPropertiesPanelBorder, fmmmQualityVsSpeed, "",
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, fmmmPanel);
+
+        // Layout algorithm option panels
+        JPanel layoutLargePanel = new JPanel(true);
+        layoutLargePanel.setLayout( new GridBagLayout() );
+
+        addPanelToGrid("Algorithm", algorithmPanel, layoutLargePanel, 0, 0, 2, 1);
+        addPanelToGrid("Fruchterman-Rheingold", fruchtermanRheingoldPanel, layoutLargePanel, 0, 1, 1, 1);
+        addPanelToGrid("FMMM", fmmmPanel, layoutLargePanel, 1, 1, 1, 1);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Layout Options");
-        addTitledButtonBorderLarge(layoutPropertiesPanelBorder, layoutLargePanel, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
+        addTitledButtonBorderLarge(layoutPropertiesPanelBorder, layoutLargePanel,
+                TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
         addCommandButtonsToTab(panel, tabNumber);
         tabbedPane.addTab("Layout", null, panel, "Layout Properties");
@@ -2910,6 +3011,14 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setSelected( USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() );
         parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setEnabled(USE_MULTICORE_PROCESS);
 
+        GraphLayoutAlgorithm gla = GRAPH_LAYOUT_ALGORITHM.get();
+        frRadioButton.setSelected(gla == GraphLayoutAlgorithm.FRUCHTERMAN_RHEINGOLD);
+        fmmmRadioButton.setSelected(gla == GraphLayoutAlgorithm.FMMM);
+        askRadioButton.setSelected(gla == GraphLayoutAlgorithm.ALWAYS_ASK);
+        fmmmDesiredEdgeLength.setValue(FMMM_DESIRED_EDGE_LENGTH.get());
+        fmmmForceModel.setSelectedIndex(FMMM_FORCE_MODEL.getIndex());
+        fmmmQualityVsSpeed.setSelectedIndex(FMMM_QUALITY_VS_SPEED.getIndex());
+
         layoutResizeNodesAndArrowheadsToKvalue.setSelected( RESIZE_NODES_AND_ARROWHEADS_TO_KVALUE.get() );
         layoutUseEdgeWeightsForLayout.setSelected( USE_EDGE_WEIGHTS_FOR_LAYOUT.get() );
         layoutTiledLayout.setSelected( TILED_LAYOUT.get() );
@@ -3218,6 +3327,19 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         layoutFrame.getNetworkRootContainer().getFRLayout().setTemperature( STARTING_TEMPERATURE.get() );
         layoutFrame.getNetworkRootContainer().getFRLayout().setKValueModifier( KVALUE_MODIFIER.get() );
 
+        if (frRadioButton.isSelected())
+        {
+            GRAPH_LAYOUT_ALGORITHM.set(GraphLayoutAlgorithm.FRUCHTERMAN_RHEINGOLD);
+        }
+        else if (fmmmRadioButton.isSelected())
+        {
+            GRAPH_LAYOUT_ALGORITHM.set(GraphLayoutAlgorithm.FMMM);
+        }
+        else if (askRadioButton.isSelected())
+        {
+            GRAPH_LAYOUT_ALGORITHM.set(GraphLayoutAlgorithm.ALWAYS_ASK);
+        }
+
         RESIZE_NODES_AND_ARROWHEADS_TO_KVALUE.set( layoutResizeNodesAndArrowheadsToKvalue.isSelected() );
         USE_EDGE_WEIGHTS_FOR_LAYOUT.set( layoutUseEdgeWeightsForLayout.isSelected() );
         TILED_LAYOUT.set( layoutTiledLayout.isSelected() );
@@ -3226,6 +3348,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         KVALUE_MODIFIER.set( layoutKvalueField.getValue() );
         BURST_LAYOUT_ITERATIONS.set( Integer.parseInt( layoutBurstIterationsField.getText() ) );
         MINIMUM_COMPONENT_SIZE.set( Integer.parseInt( layoutMinimumComponentSizeField.getText() ) );
+
+        FMMM_DESIRED_EDGE_LENGTH.set(fmmmDesiredEdgeLength.getValue());
+        FMMM_FORCE_MODEL.set(FmmmForceModel.values()[fmmmForceModel.getSelectedIndex()]);
+        FMMM_QUALITY_VS_SPEED.set(FmmmQualityVsSpeed.values()[fmmmQualityVsSpeed.getSelectedIndex()]);
 
         MCL_INFLATION_VALUE.set( MCL_inflationField.getValue() );
         MCL_PRE_INFLATION_VALUE.set( MCL_preInflationField.getValue() );
