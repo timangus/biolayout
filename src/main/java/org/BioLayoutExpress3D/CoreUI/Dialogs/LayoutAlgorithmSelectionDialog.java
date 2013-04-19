@@ -22,7 +22,7 @@ public final class LayoutAlgorithmSelectionDialog extends JDialog implements Act
 
     public LayoutAlgorithmSelectionDialog(JFrame frame)
     {
-        super(frame, "Select a Layout Algorithm", true);
+        super(frame, "Layout Algorithm", true);
         this.setIconImage(BIOLAYOUT_ICON_IMAGE);
 
         initComponents();
@@ -63,7 +63,7 @@ public final class LayoutAlgorithmSelectionDialog extends JDialog implements Act
 
         this.add(buttonsPanel, BorderLayout.SOUTH);
 
-        this.setSize(new Dimension(320, 120));
+        this.pack();
         this.setLocation((SCREEN_DIMENSION.width - this.getWidth()) / 2, (SCREEN_DIMENSION.height - this.getHeight()) / 2);
         this.setVisible(true);
     }
