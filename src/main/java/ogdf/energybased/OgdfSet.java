@@ -47,12 +47,12 @@ public class OgdfSet
     private NodeArray<Integer> mass_of_star; //the sum of the masses of a node and its neighbours
     private Random random;
 
-    public OgdfSet()
+    public OgdfSet(Random random)
     {
         last_selectable_index_of_S_node = -1;
         S_node = null;
         using_S_node = false;
-        random = new Random();
+        this.random = random;
     }
 
     public void set_seed(int rand_seed)

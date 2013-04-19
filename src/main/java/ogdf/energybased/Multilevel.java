@@ -52,9 +52,9 @@ public class Multilevel
     int bad_edgenr_counter;
     Random random;
 
-    public Multilevel()
+    public Multilevel(Random random)
     {
-        random = new Random();
+        this.random = random;
     }
 
     int create_multilevel_representations(
@@ -172,7 +172,7 @@ public class Multilevel
             int random_tries,
             int act_level)
     {
-        OgdfSet Node_Set = new OgdfSet();
+        OgdfSet Node_Set = new OgdfSet(random);
         node v, sun_node, planet_node, newNode, pos_moon_node;
         edge e;
         double dist_to_sun;

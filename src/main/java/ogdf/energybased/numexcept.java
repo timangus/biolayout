@@ -41,11 +41,13 @@ import ogdf.basic.DPoint;
 import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
 import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
 
-class numexcept
+public class numexcept
 {
     final static double epsilon = 0.1;
     final static double POS_SMALL_DOUBLE = 1e-300;
     final static double POS_BIG_DOUBLE = 1e+300;
+
+    static public Random random = null;
 
     //Returns a distinct random point within the smallest disque D with center
     //old_point that is contained in the box defined by xmin,...,ymax; The size of
@@ -69,8 +71,6 @@ class numexcept
         mindist_to_ymax = ymax - old_point.m_y;
 
         mindist = Math.min(Math.min(mindist_to_xmin, mindist_to_xmax), Math.min(mindist_to_ymin, mindist_to_ymax));
-
-        Random random = new Random();
 
         if (mindist > 0)
         {
@@ -152,8 +152,6 @@ class numexcept
         double POS_BIG_LIMIT = POS_BIG_DOUBLE * 1e-190;
         double POS_SMALL_LIMIT = POS_SMALL_DOUBLE * 1e190;
 
-        Random random = new Random();
-
         if (distance > POS_BIG_LIMIT)
         {
             //create random number in range (0,1)
@@ -192,7 +190,6 @@ class numexcept
     {
         double POS_BIG_LIMIT = POS_BIG_DOUBLE * 1e-190;
         double POS_SMALL_LIMIT = POS_SMALL_DOUBLE * 1e190;
-        Random random = new Random();
 
         if (distance < POS_SMALL_LIMIT)
         {

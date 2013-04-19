@@ -70,10 +70,13 @@ public class NMM
     double[][] BK; //holds the binomial coefficients
     List<DPoint> rep_forces;	//stores the rep. forces of the last iteration
     //(needed for error calculation)
+    Random random;
 
 
-    public NMM()
+    public NMM(Random random)
     {
+        this.random = random;
+
         //set MIN_NODE_NUMBER and using_NMM
         MIN_NODE_NUMBER = 175;
         using_NMM = true;
@@ -2126,8 +2129,6 @@ public class NMM
 
     void set_center(QuadTreeNodeNM act_ptr)
     {
-
-        Random random = new Random();
         DPoint Sm_downleftcorner = act_ptr.get_Sm_downleftcorner();
         double Sm_boxlength = act_ptr.get_Sm_boxlength();
         double boxcenter_x_coord, boxcenter_y_coord;

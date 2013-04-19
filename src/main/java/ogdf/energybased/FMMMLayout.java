@@ -923,6 +923,7 @@ public class FMMMLayout
     double time_total; //!< The runtime (=CPU-time) of the algorithm in seconds.
     FruchtermanReingold FR; //!< Class for repulsive force calculation (Fruchterman, Reingold).
     NMM NM; //!< Class for repulsive force calculation.
+    Random random;
 
     public FMMMLayout()
     {
@@ -941,8 +942,10 @@ public class FMMMLayout
 
     public void call(GraphAttributes GA, EdgeArray<Double> edgeLength, LayoutProgressBarDialog progressDialog)
     {
+        random = new Random(37112);
+        numexcept.random = random;
         FR = new FruchtermanReingold();
-        NM = new NMM();
+        NM = new NMM(random);
         this.progressDialog = progressDialog;
 
         progressDialog.prepareProgressBar(100, "FMMM layout");
@@ -1030,7 +1033,7 @@ public class FMMMLayout
             int comp_index,
             int num_components)
     {
-        Multilevel Mult = new Multilevel();
+        Multilevel Mult = new Multilevel(random);
 
         int max_level = 30;//sufficient for all graphs with upto pow(2,30) nodes!
         //adapt mingraphsize such that no levels are created beyond input graph.
@@ -2257,7 +2260,6 @@ public class FMMMLayout
         }//(uniform on a grid)
         else //randomised distribution of the nodes;
         {//(random)
-            Random random = new Random();
             init_boxlength_and_cornercoordinate(G, A);
             if (initialPlacementForces() == InitialPlacementForces.ipfRandomTime)//(RANDOM based on actual CPU-time)
             {
