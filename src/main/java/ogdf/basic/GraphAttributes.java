@@ -89,6 +89,9 @@ public class GraphAttributes
                     (float)((x(n) + xOffset) * scale),
                     (float)((y(n) + yOffset) * scale),
                     NetworkContainer.CANVAS_Z_SIZE * 0.5f);
+
+            // Seems like a sensible default
+            vertex.setVertexSize(3.0f);
         }
     }
 
