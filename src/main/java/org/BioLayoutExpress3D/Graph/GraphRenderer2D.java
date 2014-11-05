@@ -2687,14 +2687,12 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
                 else if (e.getKeyChar() == 'v' || e.getKeyChar() == 'V')
                 {
                     USE_VSYNCH.set( !USE_VSYNCH.get() );
-                    layoutFrame.setUseVSynch( USE_VSYNCH.get() );
                     graph.setGraphRendererThreadUpdaterTargetFPS();
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == 'l' || e.getKeyChar() == 'L')
                 {
                     MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.set( !MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
-                    layoutFrame.setMaterialOldLCDStyleTransparencyShading( MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == 'j' || e.getKeyChar() == 'J')

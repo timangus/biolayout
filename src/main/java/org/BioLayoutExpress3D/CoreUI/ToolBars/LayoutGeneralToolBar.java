@@ -98,11 +98,6 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(GRAPH_SAVE), splitCapitalizeFirstCharactersInvertOrderAndAddWhiteSpaceBetweenNames(GRAPH_SAVE), GRAPH_SAVE.ordinal() );
     }
 
-    public void setGraphPrintAction(AbstractAction action)
-    {
-        setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(GRAPH_PRINT), splitCapitalizeFirstCharactersInvertOrderAndAddWhiteSpaceBetweenNames(GRAPH_PRINT), GRAPH_PRINT.ordinal() );
-    }
-
     public void setSnapshotAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(SNAPSHOT), capitalizeFirstCharacter(SNAPSHOT), SNAPSHOT.ordinal() );
@@ -153,7 +148,6 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         allToolBarButtons[_2D_3D.ordinal()].setBorderPainted(false);
         allToolBarButtons[_2D_3D.ordinal()].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
         set2D3DButton();
-        if (BIOLAYOUT_USE_STATIC_COLOR) allToolBarButtons[_2D_3D.ordinal()].setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         allToolBarButtons[_2D_3D.ordinal()].setContentAreaFilled(false);
         allToolBarButtons[_2D_3D.ordinal()].setFocusPainted(false);
 

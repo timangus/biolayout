@@ -22,8 +22,8 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     */
     public static final long serialVersionUID = 111222333444555694L;
 
-    protected static enum GraphPropertiesToolBarButtons { GENERAL, LAYOUT, RENDERING, MCL, SIMULATION, PARALLELISM, SEARCH, NODES, EDGES, CLASSES }
-    protected static enum GeneralToolBarButtons { GRAPH_OPEN, GRAPH_LAST_OPEN, GRAPH_SAVE, GRAPH_PRINT, SNAPSHOT, GRAPH_STATISTICS, GRAPH_FIND, RUN_MCL, RUN_SPN, CLASS_VIEWER, ANIMATION_CONTROL, BURST_LAYOUT_ITERATIONS, _2D_3D, HOME }
+    protected static enum GraphPropertiesToolBarButtons { GENERAL, LAYOUT, RENDERING, MCL, SIMULATION, SEARCH, NODES, EDGES, CLASSES }
+    protected static enum GeneralToolBarButtons { GRAPH_OPEN, GRAPH_LAST_OPEN, GRAPH_SAVE, SNAPSHOT, GRAPH_STATISTICS, GRAPH_FIND, RUN_MCL, RUN_SPN, CLASS_VIEWER, ANIMATION_CONTROL, BURST_LAYOUT_ITERATIONS, _2D_3D, HOME }
     protected static enum NavigationToolBarButtons { UP, DOWN, LEFT, RIGHT, ROTATE_UP, ROTATE_DOWN, ROTATE_LEFT, ROTATE_RIGHT, ZOOM_IN, ZOOM_OUT, RESET_VIEW, NAVIGATION_WIZARD }
     protected static final int NUMBER_OF_GRAPH_PROPERTIES_TOOLBAR_BUTTONS = GraphPropertiesToolBarButtons.values().length;
     protected static final int NUMBER_OF_GENERAL_TOOLBAR_BUTTONS = GeneralToolBarButtons.values().length;
@@ -61,7 +61,6 @@ public abstract class LayoutAbstractToolBar extends JToolBar
 
         // set tool tip to be heavyweight so as to be visible on top of the main OpenGL heavyweight canvas
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
-        if (BIOLAYOUT_USE_STATIC_COLOR) this.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         this.setOrientation(orientation);
 
         constructorInitializationFinished = true;
@@ -114,7 +113,6 @@ public abstract class LayoutAbstractToolBar extends JToolBar
         allToolBarButtons[index].setBorderPainted(false);
         allToolBarButtons[index].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
         setToolBarButtonImages(allToolBarButtons[index], actionName);
-        if (BIOLAYOUT_USE_STATIC_COLOR) allToolBarButtons[index].setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         allToolBarButtons[index].setContentAreaFilled(false);
         allToolBarButtons[index].setFocusPainted(false);
     }
@@ -131,7 +129,6 @@ public abstract class LayoutAbstractToolBar extends JToolBar
         button.setBorderPainted(false);
         button.setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
         setToolBarButtonImages(button, actionName);
-        if (BIOLAYOUT_USE_STATIC_COLOR) button.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
     }

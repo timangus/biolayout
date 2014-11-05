@@ -3917,7 +3917,6 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                 else if (e.getKeyChar() == 'v' || e.getKeyChar() == 'V')
                 {
                     USE_VSYNCH.set( !USE_VSYNCH.get() );
-                    layoutFrame.setUseVSynch( USE_VSYNCH.get() );
                     graph.setGraphRendererThreadUpdaterTargetFPS();
                     refreshDisplay();
                 }
@@ -3942,19 +3941,16 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                 else if (e.getKeyChar() == 'l' || e.getKeyChar() == 'L')
                 {
                     MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.set( !MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
-                    layoutFrame.setMaterialOldLCDStyleTransparencyShading( MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == 'c' || e.getKeyChar() == 'C')
                 {
                     SHOW_3D_FRUSTUM.set( !SHOW_3D_FRUSTUM.get() );
-                    layoutFrame.setShow3DFrustum( SHOW_3D_FRUSTUM.get() );
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == 'b' || e.getKeyChar() == 'B')
                 {
                     SHOW_3D_SHADOWS.set( !SHOW_3D_SHADOWS.get() );
-                    layoutFrame.setShow3DShadows( SHOW_3D_SHADOWS.get() );
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == 'm' || e.getKeyChar() == 'M')
@@ -3965,7 +3961,6 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                         CHANGE_SPHERICAL_MAPPING_ENABLED = true;
                         CHANGE_TEXTURE_ENABLED = TEXTURE_ENABLED.get();
                         ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = true;
-                        layoutFrame.setShow3DEnvironmentMapping( SHOW_3D_ENVIRONMENT_MAPPING.get() );
 
                         if ( SHOW_3D_ENVIRONMENT_MAPPING.get() && !MATERIAL_SPHERICAL_MAPPING.get() )
                             MATERIAL_SPHERICAL_MAPPING.set(true);
@@ -3996,7 +3991,6 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                     if (!animationRender)
                     {
                         WIREFRAME_SELECTION_MODE.set( !WIREFRAME_SELECTION_MODE.get() );
-                        layoutFrame.setWireframeSelectionMode( WIREFRAME_SELECTION_MODE.get() );
 
                         updateNodesAndSelectedNodesDisplayList();
                     }
@@ -4022,7 +4016,6 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                 else if (e.getKeyChar() == 'i' || e.getKeyChar() == 'I')
                 {
                     MATERIAL_EMBOSS_NODE_TEXTURE.set( !MATERIAL_EMBOSS_NODE_TEXTURE.get() );
-                    layoutFrame.setEmbossNodeTexture( MATERIAL_EMBOSS_NODE_TEXTURE.get() );
                     refreshDisplay();
                 }
                 else if (e.getKeyChar() == '1')

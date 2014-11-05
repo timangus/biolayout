@@ -43,7 +43,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     */
     public static final long serialVersionUID = 111222333444555699L;
 
-    public static enum LayoutGraphPropertiesTabTypes { GENERAL, LAYOUT, RENDERING, MCL, SIMULATION, PARALLELISM, SEARCH, NODES, EDGES, CLASSES }
+    public static enum LayoutGraphPropertiesTabTypes { GENERAL, LAYOUT, RENDERING, MCL, SIMULATION, SEARCH, NODES, EDGES, CLASSES }
     private static final int NUMBER_OF_TOTAL_TABS = LayoutGraphPropertiesTabTypes.values().length;
     private static final int NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN = 3;
     private static final String SHADER_CHECKBOX_MESSAGE = "Shader";
@@ -54,7 +54,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JPanel renderingPropertiesPanel = null;
     private JPanel MCL_propertiesPanel = null;
     private JPanel simulationPropertiesPanel = null;
-    private JPanel parallelismPropertiesPanel = null;
     private JPanel searchPropertiesPanel = null;
     private JPanel nodesPropertiesPanel = null;
     private JPanel edgesPropertiesPanel = null;
@@ -65,7 +64,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private AbstractAction renderingPropertiesAction = null;
     private AbstractAction MCL_propertiesAction = null;
     private AbstractAction simulationPropertiesAction = null;
-    private AbstractAction parallelismPropertiesAction = null;
     private AbstractAction searchPropertiesAction = null;
     private AbstractAction nodesPropertiesAction = null;
     private AbstractAction edgesPropertiesAction = null;
@@ -112,11 +110,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox generalyEdStyleRenderingForGraphmlFiles = null;
     private JCheckBox generalyEdStyleComponentContainersRenderingForGraphmlFiles = null;
 
-    private JRadioButton generalHighQualityAntiAlias = null;
-    private JRadioButton generalNormalQualityAntiAlias = null;
-    private JRadioButton generalNoAntiAlias = null;
-    private JCheckBox useVSynch = null;
-
     private JCheckBox generalShowNavigationWizardOnStartup = null;
     private JCheckBox generalShowLayoutIterations = null;
     private JCheckBox generalValidateXMLFiles = null;
@@ -149,16 +142,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
     private SimpleSlider _3DNodeTesselationSlider = null;
     private JCheckBox showNodes = null;
-    private JCheckBox show3DFrustum = null;
-    private JCheckBox show3DShadows = null;
-    private JCheckBox show3DEnvironmentMapping = null;
     private SimpleSlider highResImageRenderScaleSlider = null;
-    private JCheckBox fastSelectionMode = null;
-    private JCheckBox wireframeSelectionMode = null;
     private JCheckBox advancedKeyboardRenderingControl = null;
-    private JCheckBox anaglyphStereoscopic3DView = null;
-    private GraphAnaglyphGlasses3DOptionsDialog graphAnaglyphGlasses3DOptionsDialog = null;
-    private JButton anaglyphStereoscopic3DViewOptions = null;
     private SimpleSlider lightingPositionXSlider = null;
     private SimpleSlider lightingPositionYSlider = null;
     private SimpleSlider lightingPositionZSlider = null;
@@ -169,13 +154,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private SimpleSlider materialShininess = null;
     private JCheckBox materialGouraudLighting = null;
     private JCheckBox materialSphericalMapping = null;
-    private JCheckBox materialEmbossNodeTexture = null;
     private JCheckBox materialAntiAliasShading = null;
     private JCheckBox materialAnimatedShading = null;
     private JCheckBox materialStateShading = null;
-    private JCheckBox materialOldLCDStyleTransparencyShading = null;
-    private JCheckBox materialErosionShading = null;
-    private JCheckBox materialNormalsSelectionMode = null; //FIXME remove?
     private JCheckBox nodeSurfaceImageTextureCheckBox = null;
     private JComboBox nodeSurfaceImageTextureComboBox = null;
     private JTextField nodeSurfaceImageTextureFileTextField = null;
@@ -204,29 +185,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox useSPNAnimatedTransitionsShadingCheckBox = null;
     private JButton runSPNSimulationButton = null;
 
-    private JRadioButton parallelismUseExpressionCorrelationCalculationNCoreParallelism = null;
-    private JRadioButton parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing = null;
-    private JLabel parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSizeLabel = null;
-    private JComboBox<Integer> parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize = null;
-    private JRadioButton parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing = null;
-    private JLabel parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSizeAndTypeLabel = null;
-    private JComboBox<Integer> parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize = null;
-    private JComboBox<GLSLTextureTypes> parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType = null;
-    private JCheckBox parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU = null;
-    private JLabel parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel = null;
-    private JComboBox parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods = null;
-    private JRadioButton parallelismUseLayoutNCoreParallelism = null;
-    private JRadioButton parallelismUseLayoutOpenCLGPUComputing = null;
-    private JCheckBox parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing = null;
-    private JLabel parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel = null;
-    private JComboBox<Integer> parallelismUseLayoutOpenCLGPUComputingIterationSize = null;
-    private JCheckBox parallelismUseGPUComputingLayoutCompareGPUWithCPU = null;
-    private JLabel parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethodsLabel = null;
-    private JComboBox<String> parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods = null;
-    private JCheckBox parallelismUseAtomicSynchronizationForLayoutNCoreParallelism = null;
-    private JCheckBox parallelismUseMCLNCoreParallelism = null;
-    private JCheckBox parallelismUseSPNNCoreParallelism = null;
-
     private JComboBox<SearchURL> searchURLComboBox = null;
     private JTextField customURLTextField = null;
     private JRadioButton presetRadioButton = null;
@@ -241,11 +199,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JButton nodeRevertOverride = null;
     private ColorButton nodeColorButton = null;
     private ModelShapeEditorParentUIDialog modelShapeEditorParentUIDialog = null;
-    private JComboBox<Integer> nodeSizeComboBox = null;
     private ClassComboBox nodeClassComboBox = null;
-    private FloatNumberField graphmlViewNodeDepthPositioningTextField = null;
-    private JLabel graphmlViewNodeDepthZPositioningLabel = null;
-    private JButton graphmlAllViewNodeDepthResetPositioningsButton = null;
     private JTextField nodeClassSetName = null;
     private JTextField nodeClassName = null;
     private JButton newClassInClassSetButton = null;
@@ -265,7 +219,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private boolean updateGraphAnaglyphGlasses3DOptionsDialogPreferencesCallBackChange = false;
     private boolean updateModelShapeEditorParentUIDialogPreferencesCallBackChange = false;
     private boolean refreshClassViewer = false;
-    private boolean wireframeSelectionModeWasNotSelected = false;
     private boolean sphericalMappingWasNotSelected = false;
     private boolean texturingWasNotSelected = false;
     private int howManyNodesSelected = 0;
@@ -359,20 +312,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             }
         };
 
-        parallelismPropertiesAction = new AbstractAction("Parallelism Properties")
-        {
-            /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
-            public static final long serialVersionUID = 117222333444555682L;
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                showPropertiesDialog(PARALLELISM);
-            }
-        };
-
         searchPropertiesAction = new AbstractAction("Search Properties")
         {
             /**
@@ -439,7 +378,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         renderingPropertiesPanel = createPropertiesPanel();
         MCL_propertiesPanel = createPropertiesPanel();
         simulationPropertiesPanel = createPropertiesPanel();
-        parallelismPropertiesPanel = createPropertiesPanel();
         searchPropertiesPanel = createPropertiesPanel();
         nodesPropertiesPanel = createPropertiesPanel();
         edgesPropertiesPanel = createPropertiesPanel();
@@ -447,8 +385,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         allApplyButtons = new JButton[NUMBER_OF_TOTAL_TABS];
 
-        graphAnaglyphGlasses3DOptionsDialog = new GraphAnaglyphGlasses3DOptionsDialog(this);
-        graphAnaglyphGlasses3DOptionsDialog.setListener(this);
         modelShapeEditorParentUIDialog = new ModelShapeEditorParentUIDialog( this, layoutFrame.getGraph() );
         modelShapeEditorParentUIDialog.setListener(this);
 
@@ -457,7 +393,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         createRenderingPropertiesTab( renderingPropertiesPanel, tabbedPane, RENDERING.ordinal() );
         createMCLPropertiesTab( MCL_propertiesPanel, tabbedPane, MCL.ordinal() );
         createSimulationPropertiesTab( simulationPropertiesPanel, tabbedPane, SIMULATION.ordinal() );
-        createParallelismPropertiesTab( parallelismPropertiesPanel, tabbedPane, PARALLELISM.ordinal() );
         createSearchPropertiesTab( searchPropertiesPanel, tabbedPane, SEARCH.ordinal() );
         createNodesPropertiesTab( nodesPropertiesPanel, tabbedPane, NODES.ordinal() );
         createEdgesPropertiesTab( edgesPropertiesPanel, tabbedPane, EDGES.ordinal() );
@@ -565,10 +500,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                         if ( graphNode.getNodeSize() != graphNodeNext.getNodeSize() )
                             multipleSize = true;
 
-                        if ( nc.getIsGraphml() && graphmlViewNodeDepthPositioningTextField.isEnabled() )
-                            if ( nc.getGraphmlNetworkContainer().getAllGraphmlNodesMap().get( graphNode.getNodeName() ).first[4] != nc.getGraphmlNetworkContainer().getAllGraphmlNodesMap().get( graphNodeNext.getNodeName() ).first[4] )
-                                multipleGraphmlNodeDepth = true;
-
                         if ( (graphNode.getVertexClass() != null) && (graphNodeNext.getVertexClass() != null) )
                             if ( graphNode.getVertexClass().getClassID() != graphNodeNext.getVertexClass().getClassID() )
                                 multipleClass = true;
@@ -606,31 +537,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 {
                     nodeColorButton.isBlank = false;
                     nodeColorButton.setBackground( graphNode.getColor() );
-                }
-
-                if (!multipleSize)
-                {
-                    int selectedNodeSize = (int) graphNode.getNodeSize();
-                    int index = selectedNodeSize - 1;
-                    nodeSizeComboBox.setSelectedIndex(index < nodeSizeComboBox.getItemCount() ? index : 0);
-                }
-                else
-                {
-                    nodeSizeComboBox.setSelectedIndex(0);
-                }
-
-                if ( nc.getIsGraphml() && graphmlViewNodeDepthPositioningTextField.isEnabled() )
-                {
-                    if (multipleGraphmlNodeDepth)
-                        graphmlViewNodeDepthPositioningTextField.setText("0.0");
-                    else
-                    {
-                        // inverse value to give the user the impression that a positive depth (Z) value is nearer to the viewer
-                        float graphmlNodeViewDepth = -nc.getGraphmlNetworkContainer().getAllGraphmlNodesMap().get( graphNode.getNodeName() ).first[4];
-                        // also get rid of - (negative sign) if value is -0.0f (yes, floats were keeping the sign!!!)
-                        if (graphmlNodeViewDepth == 0.0f) graphmlNodeViewDepth = 0.0f;
-                        graphmlViewNodeDepthPositioningTextField.setText( Float.toString(graphmlNodeViewDepth) );
-                    }
                 }
 
                 if (multiple2DShape)
@@ -678,8 +584,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             tabbedPane.setSelectedComponent(MCL_propertiesPanel);
         else if ( layoutGraphPropertiesTabType.equals(SIMULATION) )
             tabbedPane.setSelectedComponent(simulationPropertiesPanel);
-        else if ( layoutGraphPropertiesTabType.equals(PARALLELISM) )
-            tabbedPane.setSelectedComponent(parallelismPropertiesPanel);
         else if ( layoutGraphPropertiesTabType.equals(SEARCH) )
             tabbedPane.setSelectedComponent(searchPropertiesPanel);
         else if ( layoutGraphPropertiesTabType.equals(NODES) )
@@ -851,7 +755,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         JPanel graphOptionsPanel1 = new JPanel(true);
         JPanel graphOptionsPanel2 = new JPanel(true);
         JPanel graphOptionsPanel3 = new JPanel(true);
-        JPanel graphicsRenderingOptionsPanel = new JPanel(true);
         JPanel generalOptionsPanel = new JPanel(true);
 
         generalColor = new ColorButton(" ");
@@ -906,23 +809,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalyEdStyleComponentContainersRenderingForGraphmlFiles.setEnabled(false);
         generalyEdStyleComponentContainersRenderingForGraphmlFiles.setToolTipText("yEd-style Component Containers Rendering for Graphml files");
 
-        generalHighQualityAntiAlias = new JRadioButton("Texture MipMapping & High Quality FullScreen Anti-Aliasing (FSAA 4x)");
-        generalHighQualityAntiAlias.setActionCommand(CHANGE_ACTION_COMMAND);
-        generalHighQualityAntiAlias.addActionListener(this);
-        generalHighQualityAntiAlias.setToolTipText("Texture MipMapping & High Quality FullScreen Anti-Aliasing (FSAA 4x)");
-        generalNormalQualityAntiAlias = new JRadioButton("Texture MipMapping & Normal Quality FullScreen Anti-Aliasing (FSAA 2x)");
-        generalNormalQualityAntiAlias.setActionCommand(CHANGE_ACTION_COMMAND);
-        generalNormalQualityAntiAlias.addActionListener(this);
-        generalNormalQualityAntiAlias.setToolTipText("Texture MipMapping & Normal Quality FullScreen Anti-Aliasing (FSAA 2x)");
-        generalNoAntiAlias = new JRadioButton("No Texture MipMapping & No FullScreen Anti-Aliasing");
-        generalNoAntiAlias.setActionCommand(CHANGE_ACTION_COMMAND);
-        generalNoAntiAlias.addActionListener(this);
-        generalNoAntiAlias.setToolTipText("No Texture MipMapping & No FullScreen Anti-Aliasing");
-        useVSynch = new JCheckBox("Use VSynch for rendering");
-        useVSynch.setActionCommand(CHANGE_ACTION_COMMAND);
-        useVSynch.addActionListener(this);
-        useVSynch.setToolTipText("Use VSynch for rendering");
-
         generalUseInstallDirForScreenshots = new JCheckBox("Use application's install directory for Render Image To File screenshots");
         generalUseInstallDirForScreenshots.setActionCommand(CHANGE_ACTION_COMMAND);
         generalUseInstallDirForScreenshots.addActionListener(this);
@@ -965,11 +851,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalConfirmPreferencesSave.setToolTipText("Confirm Preferences Save On Exit");
 
         Border paneEdge = BorderFactory.createEmptyBorder(0, 10, 10, 10);
-
-        ButtonGroup antiAliasGroup = new ButtonGroup();
-        antiAliasGroup.add(generalHighQualityAntiAlias);
-        antiAliasGroup.add(generalNormalQualityAntiAlias);
-        antiAliasGroup.add(generalNoAntiAlias);
 
         colorPanel2.add(generalColor);
         colorPanel2.add( new JLabel("Background Color") );
@@ -1018,17 +899,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         graphOptionsPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
         graphOptionsPanel.add(graphOptionsPanel3);
 
-        graphicsRenderingOptionsPanel.setBorder(paneEdge);
-        graphicsRenderingOptionsPanel.setLayout( new BoxLayout(graphicsRenderingOptionsPanel, BoxLayout.Y_AXIS) );
-        graphicsRenderingOptionsPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
-        graphicsRenderingOptionsPanel.add(generalHighQualityAntiAlias);
-        graphicsRenderingOptionsPanel.add( Box.createRigidArea( new Dimension(4, 4) ) );
-        graphicsRenderingOptionsPanel.add(generalNormalQualityAntiAlias);
-        graphicsRenderingOptionsPanel.add( Box.createRigidArea( new Dimension(4, 4) ) );
-        graphicsRenderingOptionsPanel.add(generalNoAntiAlias);
-        graphicsRenderingOptionsPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
-        graphicsRenderingOptionsPanel.add(useVSynch);
-
         generalOptionsPanel.setBorder(paneEdge);
         generalOptionsPanel.setLayout( new BoxLayout(generalOptionsPanel, BoxLayout.Y_AXIS) );
 
@@ -1075,9 +945,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         generalPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "General Graph Options");
         addTitledButtonBorder(generalPropertiesPanelBorder, graphOptionsPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
-
-        generalPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "General Graphics Quality Rendering Options  (Texture MipMapping & FSAA options below need to Save Preferences & restart the application to apply changes)");
-        addTitledButtonBorder(generalPropertiesPanelBorder, graphicsRenderingOptionsPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
         generalPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "General Options");
         addTitledButtonBorder(generalPropertiesPanelBorder, generalOptionsPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
@@ -1274,58 +1141,18 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         showNodes.setActionCommand(CHANGE_ACTION_COMMAND);
         showNodes.addActionListener(this);
         showNodes.setToolTipText("Show Nodes During Graph Navigation");
-        show3DFrustum = new JCheckBox("Show 3D Frustum");
-        show3DFrustum.setActionCommand(CHANGE_ACTION_COMMAND);
-        show3DFrustum.addActionListener(this);
-        show3DFrustum.setToolTipText("Show 3D Frustum");
-        show3DShadows = new JCheckBox("Show 3D Node Projection Shadows");
-        show3DShadows.setActionCommand(CHANGE_ACTION_COMMAND);
-        show3DShadows.addActionListener(this);
-        show3DShadows.setToolTipText("Show 3D Node Projection Shadows");
-        show3DEnvironmentMapping = new JCheckBox("Show 3D Node Environment Mapping");
-        show3DEnvironmentMapping.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
-        show3DEnvironmentMapping.addActionListener(this);
-        show3DEnvironmentMapping.setToolTipText("Show 3D Node Environment Mapping");
-        fastSelectionMode = new JCheckBox("Fast Selection Mode");
-        fastSelectionMode.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
-        fastSelectionMode.addActionListener(this);
-        fastSelectionMode.setToolTipText("Fast Selection Mode (performs better on newer graphics hardware)");
-        wireframeSelectionMode = new JCheckBox("Wireframe Selection Mode");
-        wireframeSelectionMode.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
-        wireframeSelectionMode.addActionListener(this);
-        wireframeSelectionMode.setToolTipText("Wireframe Selection Mode");
         advancedKeyboardRenderingControl = new JCheckBox("Advanced Keyboard Rendering Control");
         advancedKeyboardRenderingControl.setActionCommand(CHANGE_ACTION_COMMAND);
         advancedKeyboardRenderingControl.addActionListener(this);
         advancedKeyboardRenderingControl.setToolTipText("Advanced Keyboard Rendering Control");
-        anaglyphStereoscopic3DView = new JCheckBox("Anaglyph Stereoscopic 3D View");
-        anaglyphStereoscopic3DView.setActionCommand(CHANGE_ACTION_COMMAND_ALL);
-        anaglyphStereoscopic3DView.addActionListener(this);
-        anaglyphStereoscopic3DView.setToolTipText("Anaglyph Stereoscopic 3D View");
-        anaglyphStereoscopic3DViewOptions = new JButton( graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction() );
-        anaglyphStereoscopic3DViewOptions.setToolTipText("Anaglyph Stereoscopic 3D View Options");
-        graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction().setEnabled(false);
-        anaglyphStereoscopic3DViewOptions.setEnabled(false);
 
         JPanel showOptionsPanel = new JPanel(true);
         showOptionsPanel.setLayout( new BoxLayout(showOptionsPanel, BoxLayout.Y_AXIS) );
         showOptionsPanel.add(showNodes);
-        showOptionsPanel.add(show3DFrustum);
-        showOptionsPanel.add(show3DShadows);
-        showOptionsPanel.add(show3DEnvironmentMapping);
-
-        JPanel anaglyphStereoscopicPanel = new JPanel(true);
-        anaglyphStereoscopicPanel.setLayout( new BoxLayout(anaglyphStereoscopicPanel, BoxLayout.X_AXIS) );
-        anaglyphStereoscopicPanel.add(anaglyphStereoscopic3DView);
-        anaglyphStereoscopicPanel.add( Box.createRigidArea( new Dimension(3, 3) ) );
-        anaglyphStereoscopicPanel.add(anaglyphStereoscopic3DViewOptions);
 
         JPanel set2OptionsPanel = new JPanel(true);
         set2OptionsPanel.setLayout( new GridLayout(4, 1) );
-        set2OptionsPanel.add(fastSelectionMode);
-        set2OptionsPanel.add(wireframeSelectionMode);
         set2OptionsPanel.add(advancedKeyboardRenderingControl);
-        set2OptionsPanel.add(anaglyphStereoscopicPanel);
 
         nodeOptionsPanel.add(_3DNodeTesselationSlider);
         nodeOptionsPanel.add( Box.createRigidArea( new Dimension(3, 3) ) );
@@ -1404,11 +1231,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialSphericalMapping.addActionListener(this);
         materialSphericalMapping.setToolTipText("Spherical Mapping");
 
-        materialEmbossNodeTexture = new JCheckBox("Emboss Node Texture");
-        materialEmbossNodeTexture.setActionCommand(CHANGE_ACTION_COMMAND);
-        materialEmbossNodeTexture.addActionListener(this);
-        materialEmbossNodeTexture.setToolTipText("Emboss Node Texture");
-
         materialAntiAliasShading = new JCheckBox("AntiAlias Shading");
         materialAntiAliasShading.setActionCommand(CHANGE_ACTION_COMMAND);
         materialAntiAliasShading.addActionListener(this);
@@ -1424,39 +1246,20 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialStateShading.addActionListener(this);
         materialStateShading.setToolTipText("Alternate Shader Rendering (For all shaders using the Oren-Nayar diffure model, Bump3D/Water3D Second Light Source, Toon/Gooch Colored Silhouette, Random Rotate Glyphbombing, Voronoi Blobs & Fractal Mandelbrot/Julia Set)");
 
-        materialOldLCDStyleTransparencyShading = new JCheckBox("Old LCD Style Transparency Advanced Shading");
-        materialOldLCDStyleTransparencyShading.setActionCommand(CHANGE_ACTION_COMMAND);
-        materialOldLCDStyleTransparencyShading.addActionListener(this);
-        materialOldLCDStyleTransparencyShading.setToolTipText("Old LCD Style Transparency Advanced Shading");
-
-        materialErosionShading = new JCheckBox("Erosion Shading");
-        materialErosionShading.setActionCommand(CHANGE_ACTION_COMMAND);
-        materialErosionShading.addActionListener(this);
-        materialErosionShading.setToolTipText("Erosion Shading (For Cloud, Lava, Marble, Granite & Wood Shaders)");
-
-        materialNormalsSelectionMode = new JCheckBox("Normals Selection Mode");
-        materialNormalsSelectionMode.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
-        materialNormalsSelectionMode.addActionListener(this);
-        materialNormalsSelectionMode.setToolTipText("Normals Selection Mode (Using Geometry Shaders Technology utilizing OpenGL 3.0 capable hardware & needs the WireFrame Selection Mode turned on)");
-
         JPanel materialOptionsAndShading1Panel = new JPanel(true);
         materialOptionsAndShading1Panel.setLayout( new BoxLayout(materialOptionsAndShading1Panel, BoxLayout.Y_AXIS) );
         materialOptionsAndShading1Panel.add(materialSpecular);
         materialOptionsAndShading1Panel.add(materialGouraudLighting);
         materialOptionsAndShading1Panel.add(materialSphericalMapping);
-        materialOptionsAndShading1Panel.add(materialEmbossNodeTexture);
 
         JPanel materialOptionsAndShading2Panel = new JPanel(true);
         materialOptionsAndShading2Panel.setLayout( new BoxLayout(materialOptionsAndShading2Panel, BoxLayout.Y_AXIS) );
         materialOptionsAndShading2Panel.add(materialAntiAliasShading);
         materialOptionsAndShading2Panel.add(materialAnimatedShading);
         materialOptionsAndShading2Panel.add(materialStateShading);
-        materialOptionsAndShading2Panel.add(materialOldLCDStyleTransparencyShading);
 
         JPanel materialOptionsAndShading3Panel = new JPanel(true);
         materialOptionsAndShading3Panel.setLayout( new BoxLayout(materialOptionsAndShading3Panel, BoxLayout.Y_AXIS) );
-        materialOptionsAndShading3Panel.add(materialErosionShading);
-        materialOptionsAndShading3Panel.add(materialNormalsSelectionMode);
 
         materialOptionsAndShadingPanel.add(materialOptionsAndShading1Panel);
         materialOptionsAndShadingPanel.add( Box.createRigidArea( new Dimension(30, 10) ) );
@@ -1513,9 +1316,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         materialOptionsShadingAndTexturePanel.add(materialOptionsAndShadingPanel);
         materialOptionsShadingAndTexturePanel.add(textureOptionsPanel);
 
-        JPanel advancedShadersPanel = new JPanel(true);
-        advancedShadersPanel.setLayout( new BoxLayout(advancedShadersPanel, BoxLayout.X_AXIS) );
-
         ShaderLightingSFXs.ShaderTypes[] allShaderTypes = ShaderLightingSFXs.ShaderTypes.values();
         String shaderEffectName = "";
         allShadings = new JCheckBox[ShaderLightingSFXs.NUMBER_OF_AVAILABLE_SHADERS];
@@ -1529,14 +1329,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             allShadings[i].setToolTipText(shaderEffectName + " " + SHADER_CHECKBOX_MESSAGE);
         }
 
-        int index = 0;
-        int numberOfColumns = ShaderLightingSFXs.NUMBER_OF_AVAILABLE_SHADERS / NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN + ( ( (ShaderLightingSFXs.NUMBER_OF_AVAILABLE_SHADERS % NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN) != 0) ? 1 : 0 );
-        for (int i = 0; i < numberOfColumns; i++)
-        {
-            addShaderColumnPanel( advancedShadersPanel, index, ( i == (numberOfColumns - 1) ) );
-            index += NUMBER_OF_SHADER_CHECKBOXES_PER_COLUMN;
-        }
-
         JPanel renderingLargePanel = new JPanel(true);
         renderingLargePanel.setLayout( new BoxLayout(renderingLargePanel, BoxLayout.Y_AXIS) );
 
@@ -1548,9 +1340,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         renderingPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "3D Node Material & Shading Options");
         addTitledButtonBorder(renderingPropertiesPanelBorder, materialOptionsShadingAndTexturePanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, renderingLargePanel);
-
-        renderingPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "3D Node Advanced (Per-Pixel) GLSL Shaders Options" + ( (USE_SHADERS_PROCESS) ? "" : " (not available with the current configuration)") );
-        addTitledButtonBorder(renderingPropertiesPanelBorder, advancedShadersPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, renderingLargePanel);
 
         renderingPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "OpenGL Rendering Options");
         addTitledButtonBorderLarge(renderingPropertiesPanelBorder, renderingLargePanel, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
@@ -1754,193 +1543,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         tabbedPane.addTab("Simulation", null, panel, "Simulation Properties");
     }
 
-    private void createParallelismPropertiesTab(JPanel panel, JTabbedPane tabbedPane, int tabNumber)
-    {
-        TitledBorder parallelismPropertiesPanelBorder = null;
-
-        JPanel parallelismPanel = new JPanel(true);
-        parallelismPanel.setLayout( new BoxLayout(parallelismPanel, BoxLayout.Y_AXIS) );
-
-        final String[] SELECTED_CORRELATION_CALCULATION_GPU_COMPUTING_CPU_COMPARISON_METHODS = (!USE_MULTICORE_PROCESS)
-                                                                                               ? ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } )
-                                                                                               : ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } );
-
-        parallelismUseExpressionCorrelationCalculationNCoreParallelism = new JRadioButton("Use Expression Correlation Calculation CPU N-Core Parallelism");
-        parallelismUseExpressionCorrelationCalculationNCoreParallelism.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseExpressionCorrelationCalculationNCoreParallelism.addActionListener(this);
-        parallelismUseExpressionCorrelationCalculationNCoreParallelism.setToolTipText("Use Expression Correlation Calculation CPU N-Core Parallelism");
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing = new JRadioButton("Use Expression Correlation Calculation OpenCL GPU Computing");
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.addActionListener(this);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.setToolTipText("Use Expression Correlation Calculation OpenCL GPU Computing. A high-end GPU is needed, recommended hardware is the NVidia Geforce GTX 285 or Tesla series & the ATI Radeon HD 5800 series and above with at least 1GB of VRAM.");
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSizeLabel = new JLabel("OpenCL Iteration Size:");
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize = new JComboBox<Integer>();
-        for (int i = OPENCL_GPU_COMPUTING_ITERATION_SIZES.length - 1; i >= 0; i--)
-            parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.addItem(OPENCL_GPU_COMPUTING_ITERATION_SIZES[i]);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setSelectedItem( Integer.toString(OPENCL_DEFAULT_EXPRESSION_CORRELATION_ITERATION_SIZE) );
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.addActionListener(this);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setToolTipText("OpenCL Iteration Size");
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing = new JRadioButton("Use Expression Correlation Calculation GLSL GPGPU Computing");
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing.addActionListener(this);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing.setToolTipText("Use Expression Correlation Calculation GLSL GPGPU Computing. A high-end GPU is needed. Use this option at your own risk. Recommended hardware is the NVidia Geforce GTX 285 or Tesla series & the ATI Radeon HD 5800 series and above with at least 1GB of VRAM.");
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSizeAndTypeLabel = new JLabel("GLSL Texture Size & Type:");
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize = new JComboBox<Integer>();
-        for (int i = GLSL_MAX_TEXTURE_SIZE; i >= GLSL_TEXTURE_STEP; i -= GLSL_TEXTURE_STEP)
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.addItem(i);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setSelectedItem( Integer.toString(GLSL_DEFAULT_TEXTURE_SIZE) );
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.addActionListener(this);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setToolTipText("GLSL Texture Size");
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType = new JComboBox<GLSLTextureTypes>( GLSLTextureTypes.values() );
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.addActionListener(this);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.setToolTipText("GLSL Texture Type");
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU = new JCheckBox("Compare GPU With CPU   (Shows GPU Calc & GPU Calc With Transfers vs CPU Time)");
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.addActionListener(this);
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.setToolTipText("Compare GPU Computing Expression Correlation Calculations with the CPU (the Correlation Calculations are run on both the GPU & the CPU and it shows GPU Calc & GPU Calc With Transfers vs CPU Time)");
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel = new JLabel("CPU Comparison Method:");
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods = new JComboBox<String>(SELECTED_CORRELATION_CALCULATION_GPU_COMPUTING_CPU_COMPARISON_METHODS);
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.addActionListener(this);
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setToolTipText("CPU Comparison Method");
-
-        ButtonGroup expressionParallelismGroup = new ButtonGroup();
-        expressionParallelismGroup.add(parallelismUseExpressionCorrelationCalculationNCoreParallelism);
-        expressionParallelismGroup.add(parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing);
-        expressionParallelismGroup.add(parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing);
-
-        final String[] SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS = (!USE_MULTICORE_PROCESS)
-                                                                              ? ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } )
-                                                                              : ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } );
-
-        parallelismUseLayoutNCoreParallelism = new JRadioButton("Use Layout CPU N-Core Parallelism");
-        parallelismUseLayoutNCoreParallelism.setToolTipText("Use Layout CPU N-Core Parallelism");
-        parallelismUseLayoutNCoreParallelism.addActionListener(this);
-        parallelismUseLayoutNCoreParallelism.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseLayoutOpenCLGPUComputing = new JRadioButton("Use Layout OpenCL GPU Computing");
-        parallelismUseLayoutOpenCLGPUComputing.setToolTipText("Use Layout OpenCL GPU Computing. A high-end GPU is needed, recommended hardware is the NVidia Geforce GTX 285 or Tesla series & the ATI Radeon HD 5800 series and above with at least 1GB of VRAM.");
-        parallelismUseLayoutOpenCLGPUComputing.addActionListener(this);
-        parallelismUseLayoutOpenCLGPUComputing.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing = new JCheckBox("Use Indices 1D Kernel With Iterations");
-        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.addActionListener(this);
-        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setToolTipText("Use Indices 1D Kernel With Iterations (Used as a safety measure for very large networks that may freeze the GPU if processed in one go)");
-        parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel = new JLabel("OpenCL Iteration Size:");
-        parallelismUseLayoutOpenCLGPUComputingIterationSize = new JComboBox<Integer>();
-        for (int i = OPENCL_GPU_COMPUTING_ITERATION_SIZES.length - 1; i >= 0; i--)
-            parallelismUseLayoutOpenCLGPUComputingIterationSize.addItem(OPENCL_GPU_COMPUTING_ITERATION_SIZES[i]);
-        parallelismUseLayoutOpenCLGPUComputingIterationSize.setSelectedItem( Integer.toString(OPENCL_DEFAULT_LAYOUT_ITERATION_SIZE) );
-        parallelismUseLayoutOpenCLGPUComputingIterationSize.addActionListener(this);
-        parallelismUseLayoutOpenCLGPUComputingIterationSize.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseLayoutOpenCLGPUComputingIterationSize.setToolTipText("OpenCL Iteration Size");
-        parallelismUseGPUComputingLayoutCompareGPUWithCPU = new JCheckBox("Compare GPU With CPU   (Shows GPU Calc & GPU Calc With Transfers vs CPU time)");
-        parallelismUseGPUComputingLayoutCompareGPUWithCPU.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseGPUComputingLayoutCompareGPUWithCPU.addActionListener(this);
-        parallelismUseGPUComputingLayoutCompareGPUWithCPU.setToolTipText("Compare GPU Computing Expression Correlation Calculations with the CPU (the Correlation Calculations are run on both the GPU & the CPU and it shows GPU Calc & GPU Calc With Transfers vs CPU time)");
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethodsLabel = new JLabel("CPU Comparison Method:");
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods = new JComboBox<String>(SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS);
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.addActionListener(this);
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.setToolTipText("CPU Comparison Method");
-        parallelismUseAtomicSynchronizationForLayoutNCoreParallelism = new JCheckBox("Use Atomic Synchronization For Layout Parallelism");
-        parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setToolTipText("Use Atomic Synchronization For Layout Parallelism. Used for both N-CP & OpenCL GPU Computing options.");
-        parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.addActionListener(this);
-        parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setActionCommand(CHANGE_ACTION_COMMAND);
-
-        ButtonGroup layoutParallelismGroup = new ButtonGroup();
-        layoutParallelismGroup.add(parallelismUseLayoutNCoreParallelism);
-        layoutParallelismGroup.add(parallelismUseLayoutOpenCLGPUComputing);
-
-        parallelismUseMCLNCoreParallelism = new JCheckBox("Use MCL Parallelism");
-        parallelismUseMCLNCoreParallelism.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseMCLNCoreParallelism.addActionListener(this);
-        parallelismUseMCLNCoreParallelism.setToolTipText("Use MCL Parallelism");
-
-        parallelismUseSPNNCoreParallelism = new JCheckBox("Use SPN CPU N-Core Parallelism");
-        parallelismUseSPNNCoreParallelism.setActionCommand(CHANGE_ACTION_COMMAND);
-        parallelismUseSPNNCoreParallelism.addActionListener(this);
-        parallelismUseSPNNCoreParallelism.setToolTipText("Use SPN CPU N-Core Parallelism");
-
-        JPanel generalSmallPanelExpressionCorrelationCalculation = new JPanel(true);
-        generalSmallPanelExpressionCorrelationCalculation.setLayout( new BoxLayout(generalSmallPanelExpressionCorrelationCalculation, BoxLayout.Y_AXIS) );
-        JPanel generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing = new JPanel(true);
-        generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing.setLayout( new BoxLayout(generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing, BoxLayout.X_AXIS) );
-        JPanel generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing = new JPanel(true);
-        generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing.setLayout( new BoxLayout(generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing, BoxLayout.X_AXIS) );
-        JPanel generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods = new JPanel(true);
-        generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods.setLayout( new BoxLayout(generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods, BoxLayout.X_AXIS) );
-
-        parallelismPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Expression Correlation Calculation Parallelism");
-        generalSmallPanelExpressionCorrelationCalculation.add( addLegentToRightOfComponent(parallelismUseExpressionCorrelationCalculationNCoreParallelism, "      (e.g. ON)") );
-        generalSmallPanelExpressionCorrelationCalculation.add( Box.createRigidArea( new Dimension(5, 1) ) );
-        generalSmallPanelExpressionCorrelationCalculation.add( addLegentToRightOfComponent(parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing, "    (e.g. OFF)") );
-        generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing.add( Box.createRigidArea( new Dimension(320, 0) ) );
-        generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing.add(parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSizeLabel);
-        generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing.add( Box.createRigidArea( new Dimension(5, 0) ) );
-        generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing.add(parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize);
-        generalSmallPanelExpressionCorrelationCalculation.add(generalSmallPanelExpressionCorrelationCalculationOpenCLGPUComputing);
-        generalSmallPanelExpressionCorrelationCalculation.add( Box.createRigidArea( new Dimension(5, 1) ) );
-        generalSmallPanelExpressionCorrelationCalculation.add( addLegentToRightOfComponent(parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing, "     (e.g. OFF)") );
-        generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing.add( Box.createRigidArea( new Dimension(25, 0) ) );
-        generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing.add(parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSizeAndTypeLabel);
-        generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing.add( Box.createRigidArea( new Dimension(5, 0) ) );
-        generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing.add(parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize);
-        generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing.add(parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType);
-        generalSmallPanelExpressionCorrelationCalculation.add(generalSmallPanelExpressionCorrelationCalculationGLSLGPGPUComputing);
-        generalSmallPanelExpressionCorrelationCalculation.add( Box.createRigidArea( new Dimension(5, 1) ) );
-        generalSmallPanelExpressionCorrelationCalculation.add( addLegentToRightOfComponent(parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU, "         (e.g. OFF)")  );
-        generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods.add( Box.createRigidArea( new Dimension(320, 0) ) );
-        generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods.add(parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel);
-        generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods.add( Box.createRigidArea( new Dimension(5, 0) ) );
-        generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods.add(parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods);
-        generalSmallPanelExpressionCorrelationCalculation.add(generalSmallPanelExpressionCorrelationCalculationCPUComparisonMethods);
-        addTitledButtonBorder(parallelismPropertiesPanelBorder, generalSmallPanelExpressionCorrelationCalculation, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, parallelismPanel);
-
-        JPanel generalSmallPanelLayout = new JPanel(true);
-        generalSmallPanelLayout.setLayout( new BoxLayout(generalSmallPanelLayout, BoxLayout.Y_AXIS) );
-        JPanel generalSmallPanelLayoutOpenCLGPUComputing = new JPanel(true);
-        generalSmallPanelLayoutOpenCLGPUComputing.setLayout( new BoxLayout(generalSmallPanelLayoutOpenCLGPUComputing, BoxLayout.X_AXIS) );
-        JPanel generalSmallPanelLayoutCPUComparisonMethods = new JPanel(true);
-        generalSmallPanelLayoutCPUComparisonMethods.setLayout( new BoxLayout(generalSmallPanelLayoutCPUComparisonMethods, BoxLayout.X_AXIS) );
-
-        parallelismPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Layout Parallelism");
-        generalSmallPanelLayout.add( addLegentToRightOfComponent(parallelismUseLayoutNCoreParallelism, "      (e.g. ON)") );
-        generalSmallPanelLayout.add( Box.createRigidArea( new Dimension(5, 1) ) );
-        generalSmallPanelLayout.add( addLegentToRightOfComponent(parallelismUseLayoutOpenCLGPUComputing, "    (e.g. OFF)") );
-        generalSmallPanelLayoutOpenCLGPUComputing.add( Box.createRigidArea( new Dimension(80, 0) ) );
-        generalSmallPanelLayoutOpenCLGPUComputing.add(parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing);
-        generalSmallPanelLayoutOpenCLGPUComputing.add( Box.createRigidArea( new Dimension(50, 0) ) );
-        generalSmallPanelLayoutOpenCLGPUComputing.add(parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel);
-        generalSmallPanelLayoutOpenCLGPUComputing.add( Box.createRigidArea( new Dimension(5, 0) ) );
-        generalSmallPanelLayoutOpenCLGPUComputing.add(parallelismUseLayoutOpenCLGPUComputingIterationSize);
-        generalSmallPanelLayout.add(generalSmallPanelLayoutOpenCLGPUComputing);
-        generalSmallPanelLayout.add( Box.createRigidArea( new Dimension(5, 1) ) );
-        generalSmallPanelLayout.add( addLegentToRightOfComponent(parallelismUseGPUComputingLayoutCompareGPUWithCPU, "         (e.g. OFF)")  );
-        generalSmallPanelLayoutCPUComparisonMethods.add( Box.createRigidArea( new Dimension(320, 0) ) );
-        generalSmallPanelLayoutCPUComparisonMethods.add(parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethodsLabel);
-        generalSmallPanelLayoutCPUComparisonMethods.add( Box.createRigidArea( new Dimension(5, 0) ) );
-        generalSmallPanelLayoutCPUComparisonMethods.add(parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods);
-        generalSmallPanelLayout.add(generalSmallPanelLayoutCPUComparisonMethods);
-        generalSmallPanelLayout.add( Box.createRigidArea( new Dimension(5, 1) ) );
-        generalSmallPanelLayout.add( addLegentToRightOfComponent(parallelismUseAtomicSynchronizationForLayoutNCoreParallelism, "(e.g. ON)") );
-        addTitledButtonBorder(parallelismPropertiesPanelBorder, generalSmallPanelLayout, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, parallelismPanel);
-
-        parallelismPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "MCL Parallelism");
-        addTitledButtonBorder(parallelismPropertiesPanelBorder, parallelismUseMCLNCoreParallelism, "                   (e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, parallelismPanel);
-
-        parallelismPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "SPN Parallelism");
-        addTitledButtonBorder(parallelismPropertiesPanelBorder, parallelismUseSPNNCoreParallelism, "        (e.g. ON)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, parallelismPanel);
-
-        parallelismPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "CPU N-Core & GPU Computing Parallelism Options");
-        addTitledButtonBorderLarge(parallelismPropertiesPanelBorder, parallelismPanel, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
-
-        addCommandButtonsToTab(panel, tabNumber);
-        tabbedPane.addTab("Parallelism", null, panel, "Parallelism Properties");
-    }
-
     private void createSearchPropertiesTab(JPanel panel, JTabbedPane tabbedPane, int tabNumber)
     {
         TitledBorder searchPropertiesPanelBorder = null;
@@ -2019,20 +1621,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeNameTextField.addCaretListener(this);
         nodeNameTextField.setToolTipText("Node Identifier");
 
-        graphmlViewNodeDepthPositioningTextField = new FloatNumberField(0, 10);
-        graphmlViewNodeDepthPositioningTextField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT, true) );
-        graphmlViewNodeDepthPositioningTextField.setAutoscrolls(true);
-        graphmlViewNodeDepthPositioningTextField.setColumns(15);
-        graphmlViewNodeDepthPositioningTextField.addCaretListener(this);
-        graphmlViewNodeDepthPositioningTextField.setText("0.0");
-        graphmlViewNodeDepthPositioningTextField.setEnabled(false);
-        graphmlViewNodeDepthPositioningTextField.setToolTipText("Graphml View Node Depth Positioning");
-        graphmlViewNodeDepthZPositioningLabel = new JLabel("Graphml View Node Depth Positioning");
-        graphmlAllViewNodeDepthResetPositioningsButton = new JButton("Reset All Graphml View Node Depth Positionings");
-        graphmlAllViewNodeDepthResetPositioningsButton.setActionCommand(CHANGE_ACTION_COMMAND_ALL);
-        graphmlAllViewNodeDepthResetPositioningsButton.addActionListener(this);
-        graphmlAllViewNodeDepthResetPositioningsButton.setToolTipText("Reset All Graphml View Node Depth Positionings");
-
         nodeRevertOverride = new JButton("Revert");
         nodeRevertOverride.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
         nodeRevertOverride.addActionListener(this);
@@ -2090,14 +1678,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeColorButton.addActionListener(this);
         nodeColorButton.setToolTipText("Color");
 
-        nodeSizeComboBox = new JComboBox<Integer>();
-        nodeSizeComboBox.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
-        nodeSizeComboBox.addActionListener(this);
-        nodeSizeComboBox.setToolTipText("Node Size");
-
-        for (int i = MIN_NODE_SIZE; i <= MAX_NODE_SIZE; i++)
-            nodeSizeComboBox.addItem(i);
-
         JButton lathe3DViewer = new JButton("Lathe3D Shape Editor");
         lathe3DViewer.setAction( modelShapeEditorParentUIDialog.getModelShapeLathe3DAction() );
         lathe3DViewer.setToolTipText("Lathe3D Interactive Shape Editor");
@@ -2144,23 +1724,11 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeSettingsPanel.add( Box.createRigidArea( new Dimension(10, 30) ) );
         nodeSettingsPanel.add(nodeSettingsSubPanel2);
 
-        JPanel nodeSizePanel = new JPanel(true);
-        nodeSizePanel.add(nodeSizeComboBox);
-        nodeSizePanel.add( new JLabel("Node Size") );
-        nodeSizePanel.add( Box.createRigidArea( new Dimension(50, 10) ) );
-        nodeSizePanel.add(graphmlViewNodeDepthPositioningTextField);
-        nodeSizePanel.add(graphmlViewNodeDepthZPositioningLabel);
-        nodeSizePanel.add( Box.createRigidArea( new Dimension(25, 10) ) );
-        nodeSizePanel.add(graphmlAllViewNodeDepthResetPositioningsButton);
-
         nodePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Node Identifier");
         addTitledButtonBorder(nodePropertiesPanelBorder, nodeNameTextField, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
         nodePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "2D & 3D Node Shape, Transparency & Color (Overrides Class Colors)");
         addTitledButtonBorder(nodePropertiesPanelBorder, nodeSettingsPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
-
-        nodePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Node Size & Graphml View Node Depth (Z Coordinate) Positioning");
-        addTitledButtonBorder(nodePropertiesPanelBorder, nodeSizePanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
 
         nodePropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Node Class");
         addTitledButtonBorder(nodePropertiesPanelBorder, nodeClassComboBox, "Containing Class", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, panel);
@@ -2317,12 +1885,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     @Override
     public void caretUpdate(CaretEvent ce)
     {
-        if( ce.getSource().equals(graphmlViewNodeDepthPositioningTextField) )
-        {
-            _3DRebuildEdges = true;
-            _3DRebuildNodes = true;
-        }
-
         generalChange = true;
         setEnabledAllApplyButtons(true);
     }
@@ -2409,11 +1971,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 }
             }
 
-            if ( e.getSource().equals(nodeSizeComboBox) )
-            {
-                nodeSizeChange = true;
-            }
-            else if ( e.getSource().equals(nodeColorButton) )
+            if ( e.getSource().equals(nodeColorButton) )
             {
                 nodeColorChange = true;
             }
@@ -2435,29 +1993,12 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 node3DShapeChange = true;
                 MANUAL_SHAPE_3D = false;
             }
-            else if ( e.getSource().equals(graphmlAllViewNodeDepthResetPositioningsButton) )
-            {
-                int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to Reset all the Depth Positioning Values ?", "Reset All Depth Positioning Values", JOptionPane.YES_NO_OPTION);
-                if (option == JOptionPane.YES_OPTION)
-                {
-                    graphmlViewNodeDepthPositioningTextField.setText("0.0");
-                    nc.getGraphmlNetworkContainer().resetAllGraphmlNodesMapCoordsDepthZ();
-                }
-            }
             else if ( e.getSource().equals(nodeTransparency) || nodeTransparencyAlphaSlider.checkSourceFromActionEvent(e) )
             {
                 if ( e.getSource().equals(nodeTransparency) )
                     nodeTransparencyAlphaSlider.setEnabled( nodeTransparency.isSelected() ); // disable transparency alpha value if transparency turned off
 
                 node3DTransparencyAlphaChange = true;
-            }
-            else if ( e.getSource().equals(anaglyphStereoscopic3DView) )
-            {
-                boolean flag = anaglyphStereoscopic3DView.isSelected();
-                graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction().setEnabled(flag);
-                anaglyphStereoscopic3DViewOptions.setEnabled(flag);
-
-                if ( nc.getIsGraphml() ) CHANGE_GRAPHML_COMPONENT_CONTAINERS = true; // to re-color the Component Containers to grayscale or back to normal colors
             }
             else if ( e.getSource().equals(materialSpecular) )
             {
@@ -2468,13 +2009,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                     boolean flag = materialSpecular.isSelected();
 
                     setEnabledAllShadingSFXsUIs(flag); // disable all shadings if specular turned off
-                    materialEmbossNodeTexture.setEnabled(flag); // disable all shadings if specular turned off
                     materialAntiAliasShading.setEnabled(flag); // disable all shadings if specular turned off
                     materialAnimatedShading.setEnabled(flag); // disable all shadings if specular turned off
                     materialStateShading.setEnabled(flag); // disable all shadings if specular turned off
-                    materialOldLCDStyleTransparencyShading.setEnabled(flag); // disable all shadings if specular turned off
-                    materialErosionShading.setEnabled(flag); // disable all shadings if specular turned off
-                    materialNormalsSelectionMode.setEnabled(false); // disable all shadings if specular turned off
                 }
             }
         }
@@ -2604,83 +2141,19 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             presetRadioButton.setSelected(true);
             presetURLTextField.setText( ( (SearchURL)searchURLComboBox.getSelectedItem() ).getUrl() );
         }
-        else if ( e.getSource().equals(show3DEnvironmentMapping) )
-        {
-            if ( show3DEnvironmentMapping.isSelected() )
-            {
-                if ( !materialSphericalMapping.isSelected() )
-                {
-                    sphericalMappingWasNotSelected = true;
-                    materialSphericalMapping.setSelected(true);
-                }
-                else
-                    sphericalMappingWasNotSelected = false;
-
-                if ( !nodeSurfaceImageTextureCheckBox.isSelected() )
-                {
-                    texturingWasNotSelected = true;
-                    nodeSurfaceImageTextureCheckBox.setSelected(true);
-                }
-                else
-                    texturingWasNotSelected = false;
-
-                materialSphericalMapping.setEnabled(false);
-                nodeSurfaceImageTextureCheckBox.setEnabled(false);
-            }
-            else
-            {
-                materialSphericalMapping.setSelected(!sphericalMappingWasNotSelected);
-                materialSphericalMapping.setEnabled(true);
-
-                nodeSurfaceImageTextureCheckBox.setSelected(!texturingWasNotSelected);
-                nodeSurfaceImageTextureCheckBox.setEnabled(true);
-
-                // make sure the spectrum texture is updated when the spherical mapping state is disabled
-                ANIMATION_CHANGE_SPECTRUM_TEXTURE_ENABLED = true;
-            }
-
-            CHANGE_SPHERICAL_MAPPING_ENABLED = true;
-        }
         else if ( e.getSource().equals(useMotionBlurForScene) )
         {
             motionBlurSize.setEnabled( useMotionBlurForScene.isSelected() );
         }
-        else if ( e.getSource().equals(wireframeSelectionMode) )
-        {
-            materialNormalsSelectionMode.setEnabled(false);
-        }
         else if ( e.getSource().equals(materialSphericalMapping) )
         {
             CHANGE_SPHERICAL_MAPPING_ENABLED = true;
-        }
-        else if ( e.getSource().equals(materialNormalsSelectionMode) )
-        {
-            if ( materialNormalsSelectionMode.isSelected() )
-            {
-                if ( !wireframeSelectionMode.isSelected() )
-                {
-                    wireframeSelectionModeWasNotSelected = true;
-                    wireframeSelectionMode.setSelected(true);
-                }
-                else
-                    wireframeSelectionModeWasNotSelected = false;
-
-                wireframeSelectionMode.setEnabled(false);
-            }
-            else
-            {
-                wireframeSelectionMode.setSelected(!wireframeSelectionModeWasNotSelected);
-                wireframeSelectionMode.setEnabled(true);
-            }
         }
         else if ( e.getSource().equals(nodeSurfaceImageTextureCheckBox) )
         {
             if ( nodeSurfaceImageTextureCheckBox.isSelected() )
             {
                 CHANGE_TEXTURE_ENABLED = true;
-
-                if ( show3DEnvironmentMapping.isSelected() )
-                    show3DEnvironmentMapping.setSelected(false);
 
                 nodeSurfaceImageTextureComboBox.setEnabled( nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
                 nodeSurfaceImageTextureFileTextField.setEnabled( !nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
@@ -2719,108 +2192,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
             allShadings[index].setSelected(value);
             materialGouraudLighting.setEnabled(!value);
-            materialEmbossNodeTexture.setEnabled(value);
             materialAntiAliasShading.setEnabled(value);
             materialAnimatedShading.setEnabled(value);
             materialStateShading.setEnabled(value);
-            materialOldLCDStyleTransparencyShading.setEnabled(value);
-            materialErosionShading.setEnabled(value);
-            materialNormalsSelectionMode.setEnabled(false);
-        }
-        else if ( e.getSource().equals(parallelismUseExpressionCorrelationCalculationNCoreParallelism) )
-        {
-            parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSizeLabel.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSizeAndTypeLabel.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.setEnabled(false);
-            parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.setEnabled(false);
-            parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setEnabled(false);
-            parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel.setEnabled(false);
-        }
-        else if ( e.getSource().equals(parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing) )
-        {
-            parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSizeLabel.setEnabled(true);
-            parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setEnabled(true);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSizeAndTypeLabel.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.setEnabled(false);
-            parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.setEnabled(true);
-            if ( parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.isSelected() )
-            {
-                parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setEnabled(true);
-                parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel.setEnabled(true);
-            }
-        }
-        else if ( e.getSource().equals(parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing) )
-        {
-            parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSizeLabel.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setEnabled(false);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSizeAndTypeLabel.setEnabled(true);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setEnabled(true);
-            parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.setEnabled(true);
-            parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.setEnabled(true);
-            if ( parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.isSelected() )
-            {
-                parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setEnabled(true);
-                parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel.setEnabled(true);
-            }
-        }
-        else if ( e.getSource().equals(parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU) )
-        {
-            boolean flag = parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.isSelected();
-            parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setEnabled(flag);
-            parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel.setEnabled(flag);
-
-        }
-        else if ( e.getSource().equals(parallelismUseLayoutNCoreParallelism) )
-        {
-            parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setEnabled(false);
-            parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel.setEnabled(false);
-            parallelismUseLayoutOpenCLGPUComputingIterationSize.setEnabled(false);
-            parallelismUseGPUComputingLayoutCompareGPUWithCPU.setEnabled(false);
-            parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.setEnabled(false);
-            parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethodsLabel.setEnabled(false);
-            parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setEnabled( parallelismUseLayoutNCoreParallelism.isSelected() );
-        }
-        else if ( e.getSource().equals(parallelismUseLayoutOpenCLGPUComputing) )
-        {
-            parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setEnabled(true);
-            if ( parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.isSelected() )
-            {
-                parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel.setEnabled(true);
-                parallelismUseLayoutOpenCLGPUComputingIterationSize.setEnabled(true);
-            }
-            parallelismUseGPUComputingLayoutCompareGPUWithCPU.setEnabled(true);
-            parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setEnabled( parallelismUseLayoutOpenCLGPUComputing.isSelected() );
-            if ( parallelismUseGPUComputingLayoutCompareGPUWithCPU.isSelected() )
-            {
-                parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.setEnabled(true);
-                parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethodsLabel.setEnabled(true);
-            }
-        }
-        else if ( e.getSource().equals(parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing) )
-        {
-            boolean flag = parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.isSelected();
-            parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel.setEnabled(flag);
-            parallelismUseLayoutOpenCLGPUComputingIterationSize.setEnabled(flag);
-        }
-        else if ( e.getSource().equals(parallelismUseGPUComputingLayoutCompareGPUWithCPU) )
-        {
-            boolean flag = parallelismUseGPUComputingLayoutCompareGPUWithCPU.isSelected();
-            parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.setEnabled(flag);
-            parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethodsLabel.setEnabled(flag);
-
-        }
-        else if ( e.getSource().equals(parallelismUseAtomicSynchronizationForLayoutNCoreParallelism) )
-        {
-            final String[] SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS = (!USE_MULTICORE_PROCESS)
-                                                                                  ? ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0] } )
-                                                                                  : ( new String[]{ GPU_COMPUTING_CPU_COMPARISON_METHODS[0], GPU_COMPUTING_CPU_COMPARISON_METHODS[2] } );
-
-            parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.removeAllItems();
-            for (int i = 0;i < SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS.length; i++)
-                parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.addItem(SELECTED_LAYOUT_GPU_COMPUTING_CPU_COMPARISON_METHODS[i]);
         }
         else if ( e.getSource().equals(saveSPNResultsAtFolderButton) )
         {
@@ -2986,27 +2360,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         if ( generalyEdStyleRenderingForGraphmlFiles.isEnabled() )
             setEnabledGraphmlRenderingAndDepthRelatedOptions( generalyEdStyleRenderingForGraphmlFiles.isSelected() );
 
-        if ( HIGH_QUALITY_ANTIALIASING.get() )
-        {
-            generalHighQualityAntiAlias.setSelected(true);
-            generalNormalQualityAntiAlias.setSelected(false);
-            generalNoAntiAlias.setSelected(false);
-        }
-        else if ( NORMAL_QUALITY_ANTIALIASING.get() )
-        {
-            generalHighQualityAntiAlias.setSelected(false);
-            generalNormalQualityAntiAlias.setSelected(true);
-            generalNoAntiAlias.setSelected(false);
-        }
-        else
-        {
-            generalHighQualityAntiAlias.setSelected(false);
-            generalNormalQualityAntiAlias.setSelected(false);
-            generalNoAntiAlias.setSelected(true);
-        }
-
-        useVSynch.setSelected( USE_VSYNCH.get() );
-
         generalDisableNodesRendering.setSelected( DISABLE_NODES_RENDERING.get() );
         generalDisableEdgesRendering.setSelected( DISABLE_EDGES_RENDERING.get() );
         generalUseInstallDirForScreenshots.setSelected( USE_INSTALL_DIR_FOR_SCREENSHOTS.get() );
@@ -3019,42 +2372,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalShowPopupOverlayPlot.setSelected( SHOW_POPUP_OVERLAY_PLOT.get() );
         generalCollapseNodesByVolume.setSelected( COLLAPSE_NODES_BY_VOLUME.get() );
         generalConfirmPreferencesSave.setSelected( CONFIRM_PREFERENCES_SAVE.get() );
-        parallelismUseExpressionCorrelationCalculationNCoreParallelism.setSelected( USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() );
-        parallelismUseExpressionCorrelationCalculationNCoreParallelism.setEnabled(USE_MULTICORE_PROCESS);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.setSelected( USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() );
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.setEnabled(OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSizeLabel.setEnabled(USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setSelectedItem( OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_ITERATION_SIZE.get() );
-        parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.setEnabled(USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing.setSelected( USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() );
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing.setEnabled(USE_SHADERS_PROCESS);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSizeAndTypeLabel.setEnabled(USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && USE_SHADERS_PROCESS);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setSelectedItem( GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_SIZE.get() );
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.setEnabled(USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && USE_SHADERS_PROCESS);
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.setSelectedItem( getGLSLTextureType( GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_TYPE.get() ) );
-        parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.setEnabled(USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && USE_SHADERS_PROCESS);
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.setSelected( COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU.get() );
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.setEnabled( (USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED) || (USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && USE_SHADERS_PROCESS) );
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethodsLabel.setEnabled( parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.isEnabled() && COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU.get() );
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setSelectedItem( COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD.get() );
-        parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.setEnabled( parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.isEnabled() && COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU.get() );
-
-        parallelismUseLayoutNCoreParallelism.setSelected( USE_LAYOUT_N_CORE_PARALLELISM.get() );
-        parallelismUseLayoutNCoreParallelism.setEnabled(USE_MULTICORE_PROCESS);
-        parallelismUseLayoutOpenCLGPUComputing.setSelected( USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() );
-        parallelismUseLayoutOpenCLGPUComputing.setEnabled(OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setSelected( USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() );
-        parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.setEnabled(USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseLayoutOpenCLGPUComputingIterationSizeLabel.setEnabled(USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseLayoutOpenCLGPUComputingIterationSize.setSelectedItem( OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION_ITERATION_SIZE.get() );
-        parallelismUseLayoutOpenCLGPUComputingIterationSize.setEnabled(USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseGPUComputingLayoutCompareGPUWithCPU.setSelected( COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU.get() );
-        parallelismUseGPUComputingLayoutCompareGPUWithCPU.setEnabled(USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED);
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethodsLabel.setEnabled( parallelismUseGPUComputingLayoutCompareGPUWithCPU.isEnabled() && COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU.get() );
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.setSelectedItem( COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD.get() );
-        parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.setEnabled( parallelismUseGPUComputingLayoutCompareGPUWithCPU.isEnabled() && COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU.get() );
-        parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setSelected( USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() );
-        parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.setEnabled(USE_MULTICORE_PROCESS);
 
         GraphLayoutAlgorithm gla = GRAPH_LAYOUT_ALGORITHM.get();
         frRadioButton.setSelected(gla == GraphLayoutAlgorithm.FRUCHTERMAN_RHEINGOLD);
@@ -3082,8 +2399,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         MCL_schemeField.setText( Integer.toString( MCL_SCHEME.get() ) );
         MCL_SchemeSlider.setValue( MCL_SCHEME.get() );
         MCL_assignRandomClusterColorsCheckBox.setSelected( MCL_ASSIGN_RANDOM_CLUSTER_COLOURS.get() );
-        parallelismUseMCLNCoreParallelism.setSelected( USE_MCL_N_CORE_PARALLELISM.get() );
-        parallelismUseMCLNCoreParallelism.setEnabled(USE_MULTICORE_PROCESS);
         MCL_advancedOptionsTextField.setText( MCL_ADVANCED_OPTIONS.get() );
         MCL_smallestClusterAllowedField.setText( Integer.toString( MCL_SMALLEST_CLUSTER.get() ) );
         optionsMCLChanged = false;
@@ -3106,22 +2421,15 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         saveSPNResultsTextField.setText( SAVE_SPN_RESULTS_FILE_NAME.get() );
         automaticallySaveSPNResultsToPreChosenFolderCheckBox.setSelected( AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER.get() );
         useSPNAnimatedTransitionsShadingCheckBox.setSelected( USE_SHADERS_PROCESS && USE_SPN_ANIMATED_TRANSITIONS_SHADING.get() );
-        parallelismUseSPNNCoreParallelism.setSelected( USE_SPN_N_CORE_PARALLELISM.get() );
-        parallelismUseSPNNCoreParallelism.setEnabled(USE_MULTICORE_PROCESS);
 
         materialSpecular.setSelected( MATERIAL_SPECULAR.get() );
         materialShininess.setValue( MATERIAL_SPECULAR_SHINE.get() );
         materialShininess.setEnabled( MATERIAL_SPECULAR.get() ); // disable shininess value if specular turned off
         materialGouraudLighting.setSelected( MATERIAL_SMOOTH_SHADING.get() );
         materialSphericalMapping.setSelected( MATERIAL_SPHERICAL_MAPPING.get() );
-        materialEmbossNodeTexture.setSelected( MATERIAL_EMBOSS_NODE_TEXTURE.get() );
         materialAntiAliasShading.setSelected( MATERIAL_ANTIALIAS_SHADING.get() );
         materialAnimatedShading.setSelected( MATERIAL_ANIMATED_SHADING.get() );
         materialStateShading.setSelected( MATERIAL_STATE_SHADING.get() );
-        materialOldLCDStyleTransparencyShading.setSelected( MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
-        materialErosionShading.setSelected( MATERIAL_EROSION_SHADING.get() );
-        materialNormalsSelectionMode.setSelected( MATERIAL_NORMALS_SELECTION_MODE.get() );
-        materialNormalsSelectionMode.setEnabled(false);
         lightingPositionXSlider.setValue( LIGHT_POSITION[0].get() );
         lightingPositionYSlider.setValue( LIGHT_POSITION[1].get() );
         lightingPositionZSlider.setValue( LIGHT_POSITION[2].get() );
@@ -3132,17 +2440,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         motionBlurSize.setEnabled(USE_MOTION_BLUR_FOR_SCENE.get() && !GL_IS_AMD_ATI);
         _3DNodeTesselationSlider.setValue( NODE_TESSELATION.get() );
         showNodes.setSelected( SHOW_NODES.get() );
-        show3DFrustum.setSelected( SHOW_3D_FRUSTUM.get() );
-        show3DShadows.setSelected( SHOW_3D_SHADOWS.get() );
-        show3DEnvironmentMapping.setSelected( USE_GL_EXT_FRAMEBUFFER_OBJECT && SHOW_3D_ENVIRONMENT_MAPPING.get() );
         highResImageRenderScaleSlider.setValue( TILE_SCREEN_FACTOR.get() );
-        fastSelectionMode.setSelected( FAST_SELECTION_MODE.get() );
-        wireframeSelectionMode.setSelected( WIREFRAME_SELECTION_MODE.get() );
-        materialNormalsSelectionMode.setEnabled(false);
         advancedKeyboardRenderingControl.setSelected( ADVANCED_KEYBOARD_RENDERING_CONTROL.get() );
-        anaglyphStereoscopic3DView.setSelected( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() );
-        graphAnaglyphGlasses3DOptionsDialog.getGraphAnaglyphGlasses3DOptionsOpenDialogAction().setEnabled( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() );
-        anaglyphStereoscopic3DViewOptions.setEnabled( ANAGLYPH_STEREOSCOPIC_3D_VIEW.get() ); // disable 3D options if anaglyphStereoscopic3DViewOptions turned off
 
         if (USE_SHADERS_PROCESS)
         {
@@ -3151,27 +2450,17 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
             boolean value = isAllShadingSFXSValueEnabled();
             materialGouraudLighting.setEnabled(!value);
-            materialEmbossNodeTexture.setEnabled(value);
             materialAntiAliasShading.setEnabled(value);
             materialAnimatedShading.setEnabled(value);
             materialStateShading.setEnabled(value);
-            materialOldLCDStyleTransparencyShading.setEnabled(value);
-            materialErosionShading.setEnabled(value);
-            materialNormalsSelectionMode.setEnabled(false);
         }
         else
         {
             setEnabledAllShadingSFXsUIs(false);
-            materialEmbossNodeTexture.setEnabled(false);
             materialAntiAliasShading.setEnabled(false);
             materialAnimatedShading.setEnabled(false);
             materialStateShading.setEnabled(false);
-            materialOldLCDStyleTransparencyShading.setEnabled(false);
-            materialErosionShading.setEnabled(false);
-            materialNormalsSelectionMode.setEnabled(false);
         }
-
-        show3DEnvironmentMapping.setEnabled(USE_GL_EXT_FRAMEBUFFER_OBJECT);
 
         nodeTransparency.setSelected( TRANSPARENT.get() );
         nodeTransparencyAlphaSlider.setValue( TRANSPARENT_ALPHA.get() );
@@ -3293,9 +2582,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 }
             }
 
-            if (nodeSizeChange)
-                graphNode.setNodeSize(nodeSizeComboBox.getSelectedIndex() + 1);
-
             if (node2DShapeChange)
             {
                 if (node2DShape.getSelectedIndex() != NUMBER_OF_2D_SHAPES)
@@ -3320,12 +2606,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             if ( nodeNameTextField.isEnabled() )
             {
                 nc.setNodeName( graphNode, nodeNameTextField.getText().replace("\"", " ").trim() );
-            }
-
-            if ( nc.getIsGraphml() && graphmlViewNodeDepthPositioningTextField.isEnabled() )
-            {
-                // inverse value to give the user the impression that a positive depth (Z) value is nearer to the viewer
-                nc.getGraphmlNetworkContainer().getAllGraphmlNodesMap().get( graphNode.getNodeName() ).first[4] = -graphmlViewNodeDepthPositioningTextField.getValue();
             }
 
             if (nodeClassChange)
@@ -3406,14 +2686,12 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         MCL_PRE_INFLATION_VALUE.set( MCL_preInflationField.getValue() );
         MCL_SCHEME.set(MCL_schemeField);
         MCL_ASSIGN_RANDOM_CLUSTER_COLOURS.set( MCL_assignRandomClusterColorsCheckBox.isSelected() );
-        USE_MCL_N_CORE_PARALLELISM.set( parallelismUseMCLNCoreParallelism.isSelected() );
         MCL_ADVANCED_OPTIONS.set( MCL_advancedOptionsTextField.getText() );
         MCL_SMALLEST_CLUSTER.set(MCL_smallestClusterAllowedField);
 
         SAVE_SPN_RESULTS.set( saveSPNResultsCheckBox.isSelected() );
         AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER.set( automaticallySaveSPNResultsToPreChosenFolderCheckBox.isSelected() );
         USE_SPN_ANIMATED_TRANSITIONS_SHADING.set( useSPNAnimatedTransitionsShadingCheckBox.isSelected() );
-        USE_SPN_N_CORE_PARALLELISM.set( parallelismUseSPNNCoreParallelism.isSelected() );
 
         COLOR_EDGES_BY_COLOR.set( edgesColorByColor.isSelected() );
         COLOR_EDGES_BY_WEIGHT.set( edgesColorByWeight.isSelected() );
@@ -3438,23 +2716,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             if ( generalyEdStyleRenderingForGraphmlFiles.isEnabled() )
                 setEnabledGraphmlRenderingAndDepthRelatedOptions( generalyEdStyleRenderingForGraphmlFiles.isSelected() );
 
-            if ( generalHighQualityAntiAlias.isSelected() )
-            {
-                HIGH_QUALITY_ANTIALIASING.set(true);
-                NORMAL_QUALITY_ANTIALIASING.set(true);
-            }
-            else if ( generalNormalQualityAntiAlias.isSelected() )
-            {
-                HIGH_QUALITY_ANTIALIASING.set(false);
-                NORMAL_QUALITY_ANTIALIASING.set(true);
-            }
-            else
-            {
-                HIGH_QUALITY_ANTIALIASING.set(false);
-                NORMAL_QUALITY_ANTIALIASING.set(false);
-            }
-
-            USE_VSYNCH.set( useVSynch.isSelected() );
             layoutFrame.getGraph().setGraphRendererThreadUpdaterTargetFPS();
 
             DISABLE_NODES_RENDERING.set( generalDisableNodesRendering.isSelected() );
@@ -3474,37 +2735,16 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             SHOW_POPUP_OVERLAY_PLOT.set( generalShowPopupOverlayPlot.isSelected() );
             COLLAPSE_NODES_BY_VOLUME.set( generalCollapseNodesByVolume.isSelected() );
             CONFIRM_PREFERENCES_SAVE.set( generalConfirmPreferencesSave.isSelected() );
-            USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.set( parallelismUseExpressionCorrelationCalculationNCoreParallelism.isSelected() );
-            USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.set( parallelismUseExpressionCorrelationCalculationOpenCLGPUComputing.isSelected() );
-            USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.set( parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputing.isSelected() );
-            OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_ITERATION_SIZE.set( (Integer)parallelismUseExpressionCorrelationCalculationOpenCLGPUComputingIterationSize.getSelectedItem() );
-            GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_SIZE.set( (Integer)parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureSize.getSelectedItem() );
-            GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_TYPE.set( parallelismUseExpressionCorrelationCalculationGLSLGPGPUComputingTextureType.getSelectedItem().toString() );
-            COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU.set( parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPU.isSelected() );
-            COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD.set( (String)parallelismUseGPUComputingExpressionCorrelationCalculationCompareGPUWithCPUComparisonMethods.getSelectedItem() );
-            USE_LAYOUT_N_CORE_PARALLELISM.set( parallelismUseLayoutNCoreParallelism.isSelected() );
-            USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.set( parallelismUseLayoutOpenCLGPUComputing.isSelected() );
-            USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.set( parallelismUseIndices1DKernelWithIterationsForLayoutOpenCLGPUComputing.isSelected() );
-            OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION_ITERATION_SIZE.set( (Integer)parallelismUseLayoutOpenCLGPUComputingIterationSize.getSelectedItem() );
-            COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU.set( parallelismUseGPUComputingLayoutCompareGPUWithCPU.isSelected() );
-            COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD.set( (String)parallelismUseGPUComputingLayoutCompareGPUWithCPUComparisonMethods.getSelectedItem() );
-            USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.set( parallelismUseAtomicSynchronizationForLayoutNCoreParallelism.isSelected() );
 
             LIGHT_POSITION[0].set( (float)lightingPositionXSlider.getValue() );
             LIGHT_POSITION[1].set( (float)lightingPositionYSlider.getValue() );
             LIGHT_POSITION[2].set( (float)lightingPositionZSlider.getValue() );
 
             SHOW_NODES.set( showNodes.isSelected() );
-            SHOW_3D_FRUSTUM.set( show3DFrustum.isSelected() );
-            SHOW_3D_SHADOWS.set( show3DShadows.isSelected() );
-            SHOW_3D_ENVIRONMENT_MAPPING.set( show3DEnvironmentMapping.isSelected() );
             CHANGE_NODE_TESSELATION  = ( NODE_TESSELATION.get() != (int)_3DNodeTesselationSlider.getValue() );
             NODE_TESSELATION.set( (int)_3DNodeTesselationSlider.getValue() );
             TILE_SCREEN_FACTOR.set( (int)highResImageRenderScaleSlider.getValue() );
-            FAST_SELECTION_MODE.set( fastSelectionMode.isSelected() );
-            WIREFRAME_SELECTION_MODE.set( wireframeSelectionMode.isSelected() );
             ADVANCED_KEYBOARD_RENDERING_CONTROL.set( advancedKeyboardRenderingControl.isSelected() );
-            ANAGLYPH_STEREOSCOPIC_3D_VIEW.set( anaglyphStereoscopic3DView.isSelected() );
             DEPTH_FOG.set( depthFog.isSelected() );
             USE_MOTION_BLUR_FOR_SCENE.set( useMotionBlurForScene.isSelected() );
             MOTION_BLUR_SIZE.set( (float)motionBlurSize.getValue() / 100.0f );
@@ -3512,13 +2752,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             MATERIAL_SPECULAR_SHINE.set( (float)materialShininess.getValue() );
             MATERIAL_SMOOTH_SHADING.set( materialGouraudLighting.isSelected() );
             MATERIAL_SPHERICAL_MAPPING.set( materialSphericalMapping.isSelected() );
-            MATERIAL_EMBOSS_NODE_TEXTURE.set( materialEmbossNodeTexture.isSelected() );
             MATERIAL_ANTIALIAS_SHADING.set( materialAntiAliasShading.isSelected() );
             MATERIAL_ANIMATED_SHADING.set( materialAnimatedShading.isSelected() );
             MATERIAL_STATE_SHADING.set( materialStateShading.isSelected() );
-            MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.set( materialOldLCDStyleTransparencyShading.isSelected() );
-            MATERIAL_EROSION_SHADING.set( materialErosionShading.isSelected() );
-            MATERIAL_NORMALS_SELECTION_MODE.set( materialNormalsSelectionMode.isSelected() );
 
             if (USE_SHADERS_PROCESS)
             {
@@ -3527,13 +2763,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
                 boolean value = isAllShadingSFXSValueEnabled();
                 materialGouraudLighting.setEnabled(!value);
-                materialEmbossNodeTexture.setEnabled(value);
                 materialAntiAliasShading.setEnabled(value);
                 materialAnimatedShading.setEnabled(value);
                 materialStateShading.setEnabled(value);
-                materialOldLCDStyleTransparencyShading.setEnabled(value);
-                materialErosionShading.setEnabled(value);
-                materialNormalsSelectionMode.setEnabled(false);
             }
 
             TRANSPARENT.set( nodeTransparency.isSelected() );
@@ -3597,11 +2829,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         classesChooser.setSelectedIndex( layoutClassSetsManager.getCurrentClassSetID() );
     }
 
-    public void setEmbossNodeTexture(boolean selected)
-    {
-        materialEmbossNodeTexture.setSelected(selected);
-    }
-
     public void setMaterialAntiAliasShading(boolean selected)
     {
         materialAntiAliasShading.setSelected(selected);
@@ -3615,61 +2842,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     public void setMaterialStateShading(boolean selected)
     {
         materialStateShading.setSelected(selected);
-    }
-
-    public void setMaterialOldLCDStyleTransparencyShading(boolean selected)
-    {
-        materialOldLCDStyleTransparencyShading.setSelected(selected);
-    }
-
-    public void setShow3DFrustum(boolean selected)
-    {
-        show3DFrustum.setSelected(selected);
-    }
-
-    public void setShow3DShadows(boolean selected)
-    {
-        show3DShadows.setSelected(selected);
-    }
-
-    public void setShow3DEnvironmentMapping(boolean selected)
-    {
-        show3DEnvironmentMapping.setSelected(selected);
-
-        if ( show3DEnvironmentMapping.isSelected() )
-        {
-            if ( !materialSphericalMapping.isSelected() )
-            {
-                sphericalMappingWasNotSelected = true;
-                materialSphericalMapping.setSelected(true);
-            }
-            else
-                sphericalMappingWasNotSelected = false;
-
-            if ( !nodeSurfaceImageTextureCheckBox.isSelected() )
-            {
-                texturingWasNotSelected = true;
-                nodeSurfaceImageTextureCheckBox.setSelected(true);
-            }
-            else
-                texturingWasNotSelected = false;
-
-            materialSphericalMapping.setEnabled(false);
-            nodeSurfaceImageTextureCheckBox.setEnabled(false);
-        }
-        else
-        {
-            materialSphericalMapping.setSelected(!sphericalMappingWasNotSelected);
-            materialSphericalMapping.setEnabled(true);
-
-            nodeSurfaceImageTextureCheckBox.setSelected(!texturingWasNotSelected);
-            nodeSurfaceImageTextureCheckBox.setEnabled(true);
-        }
-    }
-
-    public void setWireframeSelectionMode(boolean selected)
-    {
-        wireframeSelectionMode.setSelected(selected);
     }
 
     public void setDepthFog(boolean selected)
@@ -3688,9 +2860,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         if ( nodeSurfaceImageTextureCheckBox.isSelected() )
         {
-            if ( show3DEnvironmentMapping.isSelected() )
-                show3DEnvironmentMapping.setSelected(false);
-
             nodeSurfaceImageTextureComboBox.setEnabled( nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
             nodeSurfaceImageTextureFileTextField.setEnabled( !nodeSurfaceImageTextureFileTextField.getText().isEmpty() );
             nodeSurfaceImageTextureFileLoadButton.setEnabled(true);
@@ -3708,7 +2877,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         {
             if ( SHOW_3D_ENVIRONMENT_MAPPING.get() )
             {
-                show3DEnvironmentMapping.setSelected(false);
                 SHOW_3D_ENVIRONMENT_MAPPING.set(false);
             }
         }
@@ -3717,11 +2885,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     public void setTrippyBackground(boolean selected)
     {
         generalTrippyBackground.setSelected(selected);
-    }
-
-    public void setUseVSynch(boolean selected)
-    {
-        useVSynch.setSelected(selected);
     }
 
     public boolean getHasNewPreferencesBeenApplied()
@@ -3793,12 +2956,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
             value = isAllShadingSFXSValueEnabled();
             materialGouraudLighting.setEnabled(!value);
-            materialEmbossNodeTexture.setEnabled(value);
             materialAntiAliasShading.setEnabled(value);
             materialAnimatedShading.setEnabled(value);
-            materialOldLCDStyleTransparencyShading.setEnabled(value);
-            materialErosionShading.setEnabled(value);
-            materialNormalsSelectionMode.setEnabled(false);
         }
     }
 
@@ -3816,9 +2975,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private void setEnabledGraphmlRenderingAndDepthRelatedOptions(boolean enabled)
     {
         generalyEdStyleComponentContainersRenderingForGraphmlFiles.setEnabled(enabled);
-        graphmlViewNodeDepthPositioningTextField.setEnabled(enabled);
-        graphmlViewNodeDepthZPositioningLabel.setEnabled(enabled);
-        graphmlAllViewNodeDepthResetPositioningsButton.setEnabled(enabled);
     }
 
     public void setEnabledNodeNameTextFieldAndSelectNodesTab(boolean enabled, GraphNode node, int howManyNodesSelected)
@@ -3871,11 +3027,6 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     public AbstractAction getSimulationPropertiesAction()
     {
         return simulationPropertiesAction;
-    }
-
-    public AbstractAction getParallelismPropertiesAction()
-    {
-        return parallelismPropertiesAction ;
     }
 
     public AbstractAction getSearchPropertiesAction()

@@ -138,9 +138,6 @@ public final class GlobalEnvironment
     public static final Cursor BIOLAYOUT_MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
     public static final Cursor BIOLAYOUT_WAIT_CURSOR = new Cursor(Cursor.WAIT_CURSOR);
 
-    public static boolean BIOLAYOUT_USE_STATIC_COLOR = !LoadNativeLibrary.isLinux();
-    public static final Color BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR = new Color(196, 217, 249); // new Color(192, 192, 192);
-
     // splash screen loading timings
     public static final int MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING = 100;
     public static final int MAX_FILE_HISTORY = 10;
@@ -189,7 +186,7 @@ public final class GlobalEnvironment
     public static final PrefBool SHOW_EDGES_WHEN_DRAGGING_NODES = new PrefBool(false, "show_edges_when_dragging_nodes", true);
     public static final PrefBool YED_STYLE_RENDERING_FOR_GPAPHML_FILES = new PrefBool(true, "yed_style_rendering_for_graphml_files", true);
     public static final PrefBool YED_STYLE_COMPONENT_CONTAINERS_RENDERING_FOR_GPAPHML_FILES = new PrefBool(true, "yed_style_component_containers_rendering_for_graphml_files", true);
-    public static final PrefBool HIGH_QUALITY_ANTIALIASING = new PrefBool(false, "high_quality_antialiasing", true);
+    public static final PrefBool HIGH_QUALITY_ANTIALIASING = new PrefBool(true, "high_quality_antialiasing", true);
     public static final PrefBool NORMAL_QUALITY_ANTIALIASING = new PrefBool(false, "normal_quality_antialiasing", true);
     public static final PrefBool USE_VSYNCH = new PrefBool(true, "use_vsynch", true);
     public static final PrefBool DISABLE_NODES_RENDERING = new PrefBool(false, "disable_nodes_rendering", true);
@@ -408,16 +405,10 @@ public final class GlobalEnvironment
     public static final PrefBool USE_MCL_N_CORE_PARALLELISM = new PrefBool(true, "use_mcl_n_core_parallelism", true);
     public static final PrefBool USE_SPN_N_CORE_PARALLELISM = new PrefBool(true, "use_spn_n_core_parallelism", true);
 
-    private static final SearchURL GOOGLE_URL = new SearchURL("http://www.google.com/search?hl=en&ie=ISO-8859-1&q=", "google", "search for words at Google");
-    private static final SearchURL SWISS_PROT_URL = new SearchURL("http://www.expasy.org/cgi-bin/niceprot.pl?", "swissprot", "search for proteins at SWISSPROT");
-    private static final SearchURL NCBI_URL = new SearchURL("http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=search&db=protein&doptcmdl=GenPept&term=", "NCBI", "Seach proteins at NCBI");
-    private static final SearchURL ECOCYC_PROT_URL = new SearchURL("http://BioCyc.org/ECOLI/substring-search?type=ENZYME&object=", "Protein Ecocyc", "Search for Enzyme at Ecocyc");
-    private static final SearchURL ECOCYC_GENE_URL = new SearchURL("http://BioCyc.org/ECOLI/substring-search?type=GENE&object=", "Gene Ecocyc", "Search for genes at Ecocyc");
-    private static final SearchURL ECOCYC_MOL_URL = new SearchURL("http://BioCyc.org/ECOLI/substring-search?type=COMPOUND&object=", "Compound in Ecocyc", "Search for compounds at Ecocyc");
-    private static final SearchURL GO_URL = new SearchURL("http://www.ebi.ac.uk/ego/DisplayGoTerm?id=", "Go in Quick GO", "Search for Go Terms at QuickGO");
-    private static final SearchURL ENSEMBL_GENE_EURL = new SearchURL("http://www.ensembl.org/Homo_sapiens/geneview?gene=", "ENSEMBL genes", "Search for genes in ENSEMBL");
-    private static final SearchURL ENSEMBL_PROTEIN_URL = new SearchURL("http://www.ensembl.org/Homo_sapiens/protview?db=core;peptide=", "ENSEMBL proteins", "Search for proteins in ENSEMBL");
-    public static final SearchURL[] PRESET_SEARCH_URL = { GOOGLE_URL, SWISS_PROT_URL, NCBI_URL, ECOCYC_PROT_URL, ECOCYC_GENE_URL, ECOCYC_MOL_URL, GO_URL, ENSEMBL_GENE_EURL, ENSEMBL_PROTEIN_URL };
+    private static final SearchURL GOOGLE_URL = new SearchURL("https://www.google.com/search?q=", "Google", "Search using Google");
+    private static final SearchURL BING_URL = new SearchURL("https://www.bing.com/search?q=", "Bing", "Search using Bing");
+    private static final SearchURL WIKIPEDIA_URL = new SearchURL("https://wikipedia.org/wiki/", "Wikipedia", "Searcg using Wikipedia");
+    public static final SearchURL[] PRESET_SEARCH_URL = { GOOGLE_URL, BING_URL, WIKIPEDIA_URL };
     public static SearchURL SEARCH_URL = GOOGLE_URL;
     public static boolean CUSTOM_SEARCH = false;
 

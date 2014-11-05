@@ -28,7 +28,6 @@ public final class GraphActions
     private AbstractAction rotateRightAction = null;
     private AbstractAction zoomInAction = null;
     private AbstractAction zoomOutAction = null;
-    private AbstractAction printGraphAction = null;
     private AbstractAction burstLayoutIterationsAction = null;
 
     /**
@@ -194,21 +193,6 @@ public final class GraphActions
         };
         zoomOutAction.setEnabled(false);
 
-        printGraphAction = new AbstractAction("Print Graph")
-        {
-            /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
-            public static final long serialVersionUID = 111222333444555723L;
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                graph.printGraph();
-            }
-        };
-        printGraphAction.setEnabled(false);
-
         burstLayoutIterationsAction = new AbstractAction("Burst Layout Iterations")
         {
             /**
@@ -303,14 +287,6 @@ public final class GraphActions
     public AbstractAction getZoomOutAction()
     {
         return zoomOutAction;
-    }
-
-    /**
-    *  Gets the print graph action.
-    */
-    public AbstractAction getPrintGraphAction()
-    {
-        return printGraphAction;
     }
 
     /**

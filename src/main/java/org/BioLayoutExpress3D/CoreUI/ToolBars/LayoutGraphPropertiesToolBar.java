@@ -77,13 +77,6 @@ public final class LayoutGraphPropertiesToolBar extends LayoutAbstractToolBar
         addEmptySpaceAndSeparator();
     }
 
-    public void setParallelismAction(AbstractAction action)
-    {
-        String actionName = capitalizeFirstCharacter(PARALLELISM);
-        setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, PARALLELISM.ordinal() );
-        addEmptySpaceAndSeparator();
-    }
-
     public void setSearchAction(AbstractAction action)
     {
         String actionName = capitalizeFirstCharacter(SEARCH);

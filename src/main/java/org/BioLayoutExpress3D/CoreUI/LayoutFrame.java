@@ -266,13 +266,10 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         nodeLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0) );
         propertiesPanel.setLayout( new BorderLayout(50, 10) );
-        if (BIOLAYOUT_USE_STATIC_COLOR) propertiesPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
 
         statusLabel.setBorder( BorderFactory.createEtchedBorder(EtchedBorder.LOWERED) );
         statusLabelPanel.add(statusLabel, BorderLayout.EAST);
-        if (BIOLAYOUT_USE_STATIC_COLOR) statusLabelPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
         labelPanel.add(nodeLabel, BorderLayout.WEST);
-        if (BIOLAYOUT_USE_STATIC_COLOR) labelPanel.setBackground(BIOLAYOUT_MENUBAR_AND_TOOLBAR_COLOR);
 
         this.setJMenuBar(layoutMenuBar);
         propertiesPanel.add(statusLabelPanel, BorderLayout.EAST);
@@ -659,7 +656,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setFileMenuExportAction( exportSbgn.getExportSbgnAction() );
         layoutMenuBar.setFileMenuExportAction( exportD3.getExportD3Action() );
         layoutMenuBar.setFileMenuPrintPageSetupAction( layoutPrintServices.getPrintGraphPageSetupDialogAction() );
-        layoutMenuBar.setFileMenuPrintGraphAction( graph.getGraphActions().getPrintGraphAction() );
         layoutMenuBar.setFileMenuExitAction(fileMenuExitAction);
 
         layoutMenuBar.setEditMenuUndoNodeDraggingOnSelectionAction( graph.getGraphRendererActions().getUndoNodeDraggingAction() );
@@ -766,7 +762,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutGraphPropertiesToolBar.setRenderingAction( layoutGraphPropertiesDialog.getRenderingPropertiesAction() );
         layoutGraphPropertiesToolBar.setMCLAction( layoutGraphPropertiesDialog.getMCLPropertiesAction() );
         layoutGraphPropertiesToolBar.setSimulationAction( layoutGraphPropertiesDialog.getSimulationPropertiesAction() );
-        layoutGraphPropertiesToolBar.setParallelismAction( layoutGraphPropertiesDialog.getParallelismPropertiesAction() );
         layoutGraphPropertiesToolBar.setSearchAction( layoutGraphPropertiesDialog.getSearchPropertiesAction() );
         layoutGraphPropertiesToolBar.setNodesAction( layoutGraphPropertiesDialog.getNodesPropertiesAction() );
         layoutGraphPropertiesToolBar.setEdgesAction( layoutGraphPropertiesDialog.getEdgesPropertiesAction() );
@@ -783,7 +778,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutGeneralToolBar.setGraphOpenAction(fileMenuOpenAction);
         layoutGeneralToolBar.setGraphLastOpenAction(fileOpenHistory.getActionsList(this), this);
         layoutGeneralToolBar.setGraphSaveAction( saver.getSaveAction() );
-        layoutGeneralToolBar.setGraphPrintAction( graph.getGraphActions().getPrintGraphAction() );
         layoutGeneralToolBar.setSnapshotAction( graph.getGraphRendererActions().getRenderImageToFileAction() );
         layoutGeneralToolBar.setGraphInformationAction( layoutGraphStatisticsDialog.getGraphStatisticsDialogAction() );
         layoutGeneralToolBar.setGraphFindAction( findNameDialog.getFindNameDialogAction() );
@@ -1588,9 +1582,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
             layoutGraphStatisticsDialog.getGraphStatisticsDialogAction().setEnabled(true);
 
 
-        if ( !graph.getGraphActions().getPrintGraphAction().isEnabled() )
-            graph.getGraphActions().getPrintGraphAction().setEnabled(true);
-
         if ( !graph.getGraphActions().getTranslateUpAction().isEnabled() )
             graph.getGraphActions().getTranslateUpAction().setEnabled(true);
 
@@ -1738,9 +1729,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if ( layoutAnimationControlDialog.getAnimationControlDialogAction().isEnabled() )
             layoutAnimationControlDialog.getAnimationControlDialogAction().setEnabled(false);
 
-
-        if ( graph.getGraphActions().getPrintGraphAction().isEnabled() )
-            graph.getGraphActions().getPrintGraphAction().setEnabled(false);
 
         if ( graph.getGraphActions().getTranslateUpAction().isEnabled() )
             graph.getGraphActions().getTranslateUpAction().setEnabled(false);
@@ -1941,31 +1929,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutGraphPropertiesDialog.setMaterialStateShading(selected);
     }
 
-    public void setMaterialOldLCDStyleTransparencyShading(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setMaterialOldLCDStyleTransparencyShading(selected);
-    }
-
-    public void setShow3DFrustum(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setShow3DFrustum(selected);
-    }
-
-    public void setShow3DShadows(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setShow3DShadows(selected);
-    }
-
-    public void setShow3DEnvironmentMapping(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setShow3DEnvironmentMapping(selected);
-    }
-
-    public void setWireframeSelectionMode(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setWireframeSelectionMode(selected);
-    }
-
     public void setDepthFog(boolean selected)
     {
         layoutGraphPropertiesDialog.setDepthFog(selected);
@@ -1976,11 +1939,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutGraphPropertiesDialog.setSphericalMapping(selected);
     }
 
-    public void setEmbossNodeTexture(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setEmbossNodeTexture(selected);
-    }
-
     public void setNodeSurfaceImageTexture(boolean selected)
     {
         layoutGraphPropertiesDialog.setNodeSurfaceImageTexture(selected);
@@ -1989,11 +1947,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     public void setTrippyBackground(boolean selected)
     {
         layoutGraphPropertiesDialog.setTrippyBackground(selected);
-    }
-
-    public void setUseVSynch(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setUseVSynch(selected);
     }
 
     public boolean isAllShadingSFXSValueEnabled()
