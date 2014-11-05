@@ -5,16 +5,15 @@
 
 !addplugindir "."
 
-!define LONG_NAME "BioLayout Express 3D"
+!define LONG_NAME "Kajeka"
 !define VERSION "_VERSION_"
-!define BASE_NAME "BLE3D"
+!define BASE_NAME "Kajeka"
 !define BASE_DIR ".."
 
 !define INSTALLER_NAME "${BASE_NAME}-_VERSION_-installer.exe"
 !define 32BIT_EXE_NAME "${BASE_NAME}-_VERSION_-32bit.exe"
 !define 64BIT_EXE_NAME "${BASE_NAME}-_VERSION_-64bit.exe"
 !define OUTPUT_EXE_NAME "${BASE_NAME}.exe"
-!define OLD_EXE_NAME "BioLayoutExpress3D.exe"
 
 ; General
 Name "${LONG_NAME}"
@@ -27,7 +26,7 @@ VIProductVersion "1.0.0.0"
 
 VIAddVersionKey ProductName "${LONG_NAME}"
 VIAddVersionKey Comments "${LONG_NAME}"
-VIAddVersionKey LegalCopyright "� The University of Edinburgh, European Molecular Biology Laoratory, Wellcome Trust Sanger Institue, Genome Research Ltd. 2006-2014"
+VIAddVersionKey LegalCopyright "� Kajeka 2014"
 VIAddVersionKey FileDescription "${LONG_NAME}"
 VIAddVersionKey FileVersion "1.0.0.0"
 VIAddVersionKey ProductVersion "1.0.0.0"
@@ -131,7 +130,6 @@ Section "-${LONG_NAME}"
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LONG_NAME}" "NoRepair" 1
 
     WriteUninstaller "$INSTDIR\Uninstall.exe"
-    Delete "$INSTDIR\${OLD_EXE_NAME}"
 
     !insertmacro MUI_STARTMENU_WRITE_BEGIN ${BASE_NAME}
 
@@ -146,23 +144,23 @@ SectionEnd
 
 ; File Associations
 SectionGroup "File associations"
-    Section "BioLayout layout file (.layout)"
-        !insertmacro APP_ASSOCIATE "layout" "BLE3D.layout" "BioLayout Express 3D Layout File" \
+    Section "Kajeka layout file (.layout)"
+        !insertmacro APP_ASSOCIATE "layout" "Kajeka.layout" "Kajeka Layout File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
     Section "Simple interaction file (.sif)"
-        !insertmacro APP_ASSOCIATE "sif" "BLE3D.sif" "BioLayout Express 3D Sif File" \
+        !insertmacro APP_ASSOCIATE "sif" "Kajeka.sif" "Kajeka Sif File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
     Section "Gene expression file (.expression)"
-        !insertmacro APP_ASSOCIATE "expression" "BLE3D.expression" "BioLayout Express 3D Expression File" \
+        !insertmacro APP_ASSOCIATE "expression" "Kajeka.expression" "Kajeka Expression File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
     Section "Matrix file (.matrix)"
-        !insertmacro APP_ASSOCIATE "matrix" "BLE3D.matrix" "BioLayout Express 3D Matrix File" \
+        !insertmacro APP_ASSOCIATE "matrix" "Kajeka.matrix" "Kajeka Matrix File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 SectionGroupEnd
@@ -196,10 +194,10 @@ Section "Uninstall"
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LONG_NAME}"
     DeleteRegKey HKLM "SOFTWARE\${LONG_NAME}"
 
-    !insertmacro APP_UNASSOCIATE "layout"     "BLE3D.layout"
-    !insertmacro APP_UNASSOCIATE "sif"        "BLE3D.sif"
-    !insertmacro APP_UNASSOCIATE "expression" "BLE3D.expression"
-    !insertmacro APP_UNASSOCIATE "matrix"     "BLE3D.matrix"
+    !insertmacro APP_UNASSOCIATE "layout"     "Kajeka.layout"
+    !insertmacro APP_UNASSOCIATE "sif"        "Kajeka.sif"
+    !insertmacro APP_UNASSOCIATE "expression" "Kajeka.expression"
+    !insertmacro APP_UNASSOCIATE "matrix"     "Kajeka.matrix"
     !insertmacro UPDATEFILEASSOC
 
 SectionEnd

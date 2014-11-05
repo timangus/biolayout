@@ -32,7 +32,7 @@ package ogdf.energybased;
  */
 import java.util.*;
 import ogdf.basic.*;
-import org.BioLayoutExpress3D.Utils.Complex;
+import org.Kajeka.Utils.Complex;
 
 public class QuadTreeNodeNM
 {

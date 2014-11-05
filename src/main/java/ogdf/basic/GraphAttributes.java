@@ -1,7 +1,7 @@
 package ogdf.basic;
 
 import java.util.*;
-import org.BioLayoutExpress3D.Network.*;
+import org.Kajeka.Network.*;
 
 public class GraphAttributes
 {

@@ -5,8 +5,8 @@ SCRIPT_DIR=`dirname ${SCRIPT_NAME}`
 SRC_DIR=`readlink -f ${SCRIPT_DIR}/..`
 HTML_TEMPLATE="${SCRIPT_DIR}/index.html.template"
 WEBSTART_TEMPLATE="${SCRIPT_DIR}/WebStart.jnlp.template"
-BASE_URL="http://biolayout.org/internal"
-BASE_NAME="BLE3D"
+BASE_URL="http://kajeka.com/internal"
+BASE_NAME="Kajeka"
 
 echo SCRIPT_NAME=${SCRIPT_NAME}
 echo SCRIPT_DIR=${SCRIPT_DIR}
@@ -39,7 +39,7 @@ cp ${SRC_DIR}/nsis-installer/${BASE_NAME}-${VERSION}-installer.exe ${BUILD_DIR}
 
 # OS X
 cd ${SRC_DIR}/target
-genisoimage -D -V BioLayoutExpress3D -no-pad -uid 0 -gid 0 -dir-mode 755 -file-mode 644 \
+genisoimage -D -V Kajeka -no-pad -uid 0 -gid 0 -dir-mode 755 -file-mode 644 \
     -apple -o ${BUILD_DIR}/${BASE_NAME}-${VERSION}.dmg dmg/
 
 # Everything else
@@ -55,9 +55,11 @@ cat ${HTML_TEMPLATE} | sed \
     -e "s/_GIT_REV_/${GIT_REV}/g" \
     > ${BUILD_DIR}/index.html
 cat ${WEBSTART_TEMPLATE} | sed -e "s%_BUILD_URL_%${BUILD_URL}%g" \
-    -e "s/_VERSION_/${VERSION}/g" -e "s/_HEAP_SIZE_/920m/g" > ${BUILD_DIR}/WebStart32.jnlp
+    -e "s/_BASE_NAME_/${BASE_NAME}/g" -e "s/_VERSION_/${VERSION}/g" \
+    -e "s/_HEAP_SIZE_/920m/g" > ${BUILD_DIR}/WebStart32.jnlp
 cat ${WEBSTART_TEMPLATE} | sed -e "s%_BUILD_URL_%${BUILD_URL}%g" \
-    -e "s/_VERSION_/${VERSION}/g" -e "s/_HEAP_SIZE_/32000m/g" > ${BUILD_DIR}/WebStart64.jnlp
+    -e "s/_BASE_NAME_/${BASE_NAME}/g" -e "s/_VERSION_/${VERSION}/g" \
+    -e "s/_HEAP_SIZE_/32000m/g" > ${BUILD_DIR}/WebStart64.jnlp
 cp ${SRC_DIR}/src/main/resources/Resources/Images/BioLayoutExpress3DLogo.png ${BUILD_DIR}
 cp ${SRC_DIR}/src/main/resources/Resources/Images/BioLayoutExpress3DIcon.png ${BUILD_DIR}
 

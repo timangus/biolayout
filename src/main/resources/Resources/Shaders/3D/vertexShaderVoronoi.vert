@@ -1,11 +1,11 @@
 /*
 
- BioLayoutExpress3D - A tool for visualisation
+ A tool for visualisation
  and analysis of biological networks
 
  Copyright (c) 2006-2012 Genome Research Ltd.
  Authors: Thanos Theo, Anton Enright, Leon Goldovsky, Ildefonso Cases, Markus Brosch, Stijn van Dongen, Benjamin Boyer and Tom Freeman
- Contact: support@biolayout.org
+
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License

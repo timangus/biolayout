@@ -2,21 +2,21 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.BioLayoutExpress3D</groupId>
+    <groupId>org.Kajeka</groupId>
     <artifactId>Layout</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>BioLayout Express 3D</name>
-    <url>http://biolayout.org</url>
+    <name>Kajeka</name>
+    <url>http://kajeka.com</url>
 
     <properties>
         <versionNumber>development</versionNumber>
-        <jarName>BLE3D</jarName>
+        <jarName>Kajeka</jarName>
         <outFilename>${jarName}-${versionNumber}</outFilename>
-        <mainClass>org.BioLayoutExpress3D.Layout</mainClass>
+        <mainClass>org.Kajeka.Layout</mainClass>
         <manifestVersion>1.0.0.0</manifestVersion>
-        <copyright>© The University of Edinburgh, European Molecular Biology Laoratory, Wellcome Trust Sanger Institue, Genome Research Ltd. 2006-2014</copyright>
+        <copyright>© Kajeka 2014</copyright>
         <icon>src/main/resources/Resources/Images/BioLayoutExpress3DIcon.ico</icon>
 
         <minJavaVersion>1.6</minJavaVersion>
@@ -28,8 +28,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <generated.sources.dir>${project.build.directory}/generated-sources/java</generated.sources.dir>
-        <buildconfig.template.file>src/main/java/org/BioLayoutExpress3D/BuildConfig.template</buildconfig.template.file>
-        <buildconfig.file>${generated.sources.dir}/org/BioLayoutExpress3D/BuildConfig.java</buildconfig.file>
+        <buildconfig.template.file>src/main/java/org/Kajeka/BuildConfig.template</buildconfig.template.file>
+        <buildconfig.file>${generated.sources.dir}/org/Kajeka/BuildConfig.java</buildconfig.file>
 
         <osx.app.dir>${project.build.directory}/dmg/${project.name}.app</osx.app.dir>
 
@@ -209,11 +209,11 @@
                     <archive>
                         <manifest>
                             <mainClass>${mainClass}</mainClass>
-                            <packageName>org.BioLayoutExpress3D</packageName>
+                            <packageName>org.Kajeka</packageName>
                         </manifest>
                         <manifestEntries>
                             <url>${project.url}</url>
-                            <Application-Name>BioLayout Express3D</Application-Name>
+                            <Application-Name>Kajeka</Application-Name>
                             <Permissions>all-permissions</Permissions>
                             <Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
                             <Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>

@@ -34,8 +34,8 @@ package ogdf.energybased;
 import java.util.*;
 import java.util.concurrent.*;
 import ogdf.basic.*;
-import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
-import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import static org.Kajeka.Environment.GlobalEnvironment.*;
+import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 class FruchtermanReingold
 {

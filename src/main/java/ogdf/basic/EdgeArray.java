@@ -32,8 +32,8 @@ package ogdf.basic;
  */
 import java.util.*;
 import java.lang.reflect.*;
-import static org.BioLayoutExpress3D.Environment.GlobalEnvironment.*;
-import static org.BioLayoutExpress3D.DebugConsole.ConsoleOutput.*;
+import static org.Kajeka.Environment.GlobalEnvironment.*;
+import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 //! Dynamic arrays indexed with edges.
 /**
