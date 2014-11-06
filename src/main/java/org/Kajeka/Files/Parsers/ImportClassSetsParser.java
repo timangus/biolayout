@@ -29,7 +29,7 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
 {
     private AbstractAction importClassSetsAction = null;
 
-    private KajekaFileFilter fileFilter = null;
+    private CustomFileFilter fileFilter = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
     private ImportClassSetsDialog importClassSetsDialog = null;
     private boolean cancelParse = false;
@@ -54,7 +54,7 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
     */
     private void initComponents()
     {
-        fileFilter = new KajekaFileFilter( SupportedImportExportFileTypes.values() );
+        fileFilter = new CustomFileFilter( SupportedImportExportFileTypes.values() );
 
         importClassSetsDialog = new ImportClassSetsDialog(layoutFrame);
         importClassSetsDialog.setListener(this);

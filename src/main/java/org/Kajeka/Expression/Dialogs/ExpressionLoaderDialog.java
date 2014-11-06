@@ -358,7 +358,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         try
         {
             creatingDialogElements = true;
-            setCursor(KAJEKA_WAIT_CURSOR);
+            setCursor(STATIC_WAIT_CURSOR);
 
             if (transpose)
             {
@@ -511,7 +511,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
                 this.pack();
             }
 
-            setCursor(KAJEKA_NORMAL_CURSOR);
+            setCursor(STATIC_NORMAL_CURSOR);
             creatingDialogElements = false;
         }
     }

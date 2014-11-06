@@ -88,7 +88,7 @@ public final class LayoutLicensesDialog extends JDialog implements ActionListene
 
     private void setGeneralLicense(JTextArea textArea)
     {
-        textArea.append(" - " + VERSION + "\n" + readLicenseFile(LICENSES_FILES_NAMES[LicensesFiles.LICENSE_BLE3D.ordinal()], false));
+        textArea.append(" - " + VERSION + "\n" + readLicenseFile(LICENSES_FILES_NAMES[LicensesFiles.LICENSE_KAJEKA.ordinal()], false));
     }
 
     private void setDetailedLicenses(JTextArea textArea)

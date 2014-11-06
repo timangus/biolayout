@@ -253,7 +253,7 @@ public class Graph extends GLCanvas implements GraphInterface
 
     private boolean isEventNotAllowed()
     {
-        return !( layoutFrame.getCursor().equals(KAJEKA_NORMAL_CURSOR) || layoutFrame.getCursor().equals(KAJEKA_MOVE_CURSOR) );
+        return !( layoutFrame.getCursor().equals(STATIC_NORMAL_CURSOR) || layoutFrame.getCursor().equals(STATIC_MOVE_CURSOR) );
     }
 
     /**

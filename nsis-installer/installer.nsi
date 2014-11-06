@@ -32,8 +32,8 @@ VIAddVersionKey FileVersion "1.0.0.0"
 VIAddVersionKey ProductVersion "1.0.0.0"
 
 ; Installer Icons
-!insertmacro MUI_DEFAULT MUI_ICON "${BASE_DIR}/src/main/resources/Resources/Images/BioLayoutExpress3DIcon.ico"
-!insertmacro MUI_DEFAULT MUI_UNICON "${BASE_DIR}/src/main/resources/Resources/Images/BioLayoutExpress3DIcon.ico"
+!insertmacro MUI_DEFAULT MUI_ICON "${BASE_DIR}/src/main/resources/Resources/Images/Icon.ico"
+!insertmacro MUI_DEFAULT MUI_UNICON "${BASE_DIR}/src/main/resources/Resources/Images/Icon.ico"
 
 Icon "${MUI_ICON}"
 UninstallIcon "${MUI_UNICON}"

@@ -76,7 +76,7 @@ public final class GraphPopupComponent implements Runnable
     {
         initPopupMenu();
         popupMenuItem = popupMenu.add(popupMenuItemName);
-        popupMenuItem.setIcon(KAJEKA_MENU_ITEM_ICON);
+        popupMenuItem.setIcon(MENU_ITEM_ICON);
         popupMenuItem.setForeground(Color.BLACK);
     }
 

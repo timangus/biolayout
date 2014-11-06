@@ -34,10 +34,10 @@ public final class GlobalEnvironment
     public static final String VERSION = TITLE + (TITLE_VERSION_NUMBER.equals("development") ?
             " internal development version" :
             TITLE_VERSION + TITLE_VERSION_NUMBER);
-    public static final String KAJEKA_DOMAIN_URL = BuildConfig.URL;
+    public static final String DOMAIN_URL = BuildConfig.URL;
     public static final String SERVER_DATASETS_DIRECTORY = "/datasets/";
     public static final String DATASETS_CONTROL_FILE = "ListOfDataSets.ctr";
-    public static final String APPLICATION_USAGE_URL = KAJEKA_DOMAIN_URL + "/logger/";
+    public static final String APPLICATION_USAGE_URL = DOMAIN_URL + "/logger/";
 
     public static final Runtime RUNTIME = Runtime.getRuntime();
     public static final boolean IS_WIN = LoadNativeLibrary.isWin();
@@ -135,9 +135,9 @@ public final class GlobalEnvironment
     public static String[][][] CL_ALL_PLATFORM_DEVICES_EXTENSIONS = null;
 
     // mouse cursor variables
-    public static final Cursor KAJEKA_NORMAL_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
-    public static final Cursor KAJEKA_MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
-    public static final Cursor KAJEKA_WAIT_CURSOR = new Cursor(Cursor.WAIT_CURSOR);
+    public static final Cursor STATIC_NORMAL_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
+    public static final Cursor STATIC_MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
+    public static final Cursor STATIC_WAIT_CURSOR = new Cursor(Cursor.WAIT_CURSOR);
 
     // splash screen loading timings
     public static final int MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING = 100;
@@ -148,10 +148,10 @@ public final class GlobalEnvironment
     public static enum SupportedOutputFileTypes { LAYOUT, TGF }
     public static enum SupportedImportExportFileTypes { CLASSSETS, TXT }
     public static enum SupportedSimulationFileTypes { SPN, TXT }
-    public static enum LicensesFiles { LICENSE_BLE3D, LICENSE_GPLV3, LICENSE_JOGL, LICENSE_JOCL }
+    public static enum LicensesFiles { LICENSE_KAJEKA, LICENSE_GPLV3, LICENSE_JOGL, LICENSE_JOCL }
     public static final String LICENSES_FILES_PATH = "/Resources/Licenses/";
     public static final String LICENSES_SEPARATOR = "\n\n\n\n\n";
-    public static final String[] LICENSES_FILES_NAMES = { "LICENSE-BLE3D.txt",
+    public static final String[] LICENSES_FILES_NAMES = { "LICENSE-KAJEKA.txt",
                                                           "LICENSE-GPLv3.txt",
                                                           "LICENSE-JOGL.txt",
                                                           "LICENSE-JOCL.txt"
@@ -171,8 +171,8 @@ public final class GlobalEnvironment
     public static boolean IS_RENDERER_MODE_FIRST_SWITCH = true;
     public static final Dimension SCREEN_DIMENSION = new Dimension( Toolkit.getDefaultToolkit().getScreenSize() );
     public static final Dimension APPLICATION_SCREEN_DIMENSION = new Dimension( (int)( 0.9 * SCREEN_DIMENSION.width ), (int)( 0.9 * SCREEN_DIMENSION.height ) );
-    public static final BufferedImage KAJEKA_ICON_IMAGE = loadImageFromURL( GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "BioLayoutExpress3DIcon.png") );
-    public static final ImageIcon KAJEKA_MENU_ITEM_ICON = new ImageIcon( resizeImageByGivenRatio(KAJEKA_ICON_IMAGE, 0.125f, true) );
+    public static final BufferedImage ICON_IMAGE = loadImageFromURL( GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon.png") );
+    public static final ImageIcon MENU_ITEM_ICON = new ImageIcon( resizeImageByGivenRatio(ICON_IMAGE, 0.125f, true) );
     public static final float MENUBAR_IMAGE_ICON_RESIZE_RATIO = 0.4f;
     public static final boolean USE_NEW_DESKTOP_PRINTING_FEATURE = LoadNativeLibrary.isWinVista() || LoadNativeLibrary.isWin7();
     public static final PrefInt PRINT_COPIES = new PrefInt(0, "print_copies", false);
@@ -237,7 +237,7 @@ public final class GlobalEnvironment
 
     public static final String DEFAULT_SURFACE_IMAGE_FILES_PATH = IMAGE_FILES_PATH + "SurfaceImages/";
     private static final String DEFAULT_SURFACE_IMAGE_FILE_NAME = "SurfaceImagesData.txt";
-    public static final String[] DEFAULT_SURFACE_IMAGE_FILES = { "BioLayoutExpress3DLogo",
+    public static final String[] DEFAULT_SURFACE_IMAGE_FILES = { "Splash",
                                                                  "JupiterSurfaceImage1",
                                                                  "JupiterSurfaceImage2",
                                                                  "JupiterSurfaceImage3",

@@ -26,7 +26,7 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 public class SignalingPetriNetLoadSimulation extends CoreParser
 {
 
-    private KajekaFileFilter fileFilter = null;
+    private CustomFileFilter fileFilter = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
     private boolean cancelParse = false;
     private AbstractAction signalingPetriNetLoadSimulationAction = null;
@@ -73,7 +73,7 @@ public class SignalingPetriNetLoadSimulation extends CoreParser
     */
     private void initComponents()
     {
-        fileFilter = new KajekaFileFilter( SupportedSimulationFileTypes.values() );
+        fileFilter = new CustomFileFilter( SupportedSimulationFileTypes.values() );
     }
 
     /**

@@ -5,14 +5,14 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 
 /**
 *
-* KajekaFileFilter is the file filter class used to filter which files to show in the Open File dialog.
+* CustomFileFilter is the file filter class used to filter which files to show in the Open File dialog.
 *
 * @see org.Kajeka.CoreUI.LayoutFrame
 * @author Thanos Theo, 2008-2009
 * @version 3.0.0.0
 */
 
-public class KajekaFileFilter extends javax.swing.filechooser.FileFilter implements java.io.FileFilter
+public class CustomFileFilter extends javax.swing.filechooser.FileFilter implements java.io.FileFilter
 {
 
     /**
@@ -26,33 +26,33 @@ public class KajekaFileFilter extends javax.swing.filechooser.FileFilter impleme
     private String[] supportedExtensions = null;
 
     /**
-    *  First constructor of the KajekaFileFilter class.
+    *  First constructor of the CustomFileFilter class.
     */
-    public KajekaFileFilter()
+    public CustomFileFilter()
     {
         this(SupportedInputFileTypes.values(), false);
     }
 
     /**
-    *  Second constructor of the KajekaFileFilter class.
+    *  Second constructor of the CustomFileFilter class.
     */
-    public KajekaFileFilter(boolean directoriesNotAccepted)
+    public CustomFileFilter(boolean directoriesNotAccepted)
     {
         this(SupportedInputFileTypes.values(), directoriesNotAccepted);
     }
 
     /**
-    *  Third constructor of the KajekaFileFilter class.
+    *  Third constructor of the CustomFileFilter class.
     */
-    public KajekaFileFilter(Object[] supportedExtensions)
+    public CustomFileFilter(Object[] supportedExtensions)
     {
         this(supportedExtensions, false);
     }
 
     /**
-    *  Fourth constructor of the KajekaFileFilter class.
+    *  Fourth constructor of the CustomFileFilter class.
     */
-    public KajekaFileFilter(Object[] supportedExtensions, boolean directoriesNotAccepted)
+    public CustomFileFilter(Object[] supportedExtensions, boolean directoriesNotAccepted)
     {
         this.directoriesNotAccepted = directoriesNotAccepted;
         this.supportedExtensions = new String[supportedExtensions.length];

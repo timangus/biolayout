@@ -90,6 +90,6 @@ clean:
 	rm -f $(GENERATED_SRC) $(TARGET)
 
 install: all
-	$(CONVERT) -resize 750x393 $(TARGET) ../../src/main/resources/Resources/Images/BioLayoutExpress3DLogo.png
+	$(CONVERT) -resize 750x393 $(TARGET) ../../src/main/resources/Resources/Images/Splash.png
 
 .PHONY: clean all

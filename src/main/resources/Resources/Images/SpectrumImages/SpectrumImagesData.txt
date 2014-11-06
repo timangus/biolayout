@@ -1,8 +1,8 @@
 # SpectrumImagesData.txt used for loading image files in various formats (png, jpg, gif)
 
 # All spectrum images
-BioLayoutExpress3DSpectrumImage1.png
-BioLayoutExpress3DSpectrumImage2.png
-BioLayoutExpress3DSpectrumImage3.png
+SpectrumImage1.png
+SpectrumImage2.png
+SpectrumImage3.png
 ColourBrewerSpectrumPurple.png
 ColourBrewerSpectrumYellowRed.png

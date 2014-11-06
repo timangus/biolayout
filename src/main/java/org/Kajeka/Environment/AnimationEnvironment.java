@@ -127,9 +127,9 @@ public class AnimationEnvironment
     /**
     *  Constant value needed for the animation.
     */
-    public static final String[] ANIMATION_DEFAULT_SPECTRUM_IMAGE_FILES = { "BioLayoutExpress3DSpectrumImage1",
-                                                                            "BioLayoutExpress3DSpectrumImage2",
-                                                                            "BioLayoutExpress3DSpectrumImage3",
+    public static final String[] ANIMATION_DEFAULT_SPECTRUM_IMAGE_FILES = { "SpectrumImage1",
+                                                                            "SpectrumImage2",
+                                                                            "SpectrumImage3",
                                                                             "ColourBrewerSpectrumYellowRed",
                                                                             "ColourBrewerSpectrumPurple"
                                                                            };

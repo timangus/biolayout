@@ -17,7 +17,7 @@
         <mainClass>org.Kajeka.Layout</mainClass>
         <manifestVersion>1.0.0.0</manifestVersion>
         <copyright>© Kajeka 2014</copyright>
-        <icon>src/main/resources/Resources/Images/BioLayoutExpress3DIcon.ico</icon>
+        <icon>src/main/resources/Resources/Images/Icon.ico</icon>
 
         <minJavaVersion>1.6</minJavaVersion>
         <!-- The -01 is because apparently the 2.1.5 release was screwed up and is missing all its class files -->
@@ -213,7 +213,7 @@
                         </manifest>
                         <manifestEntries>
                             <url>${project.url}</url>
-                            <Application-Name>Kajeka</Application-Name>
+                            <Application-Name>${project.name}</Application-Name>
                             <Permissions>all-permissions</Permissions>
                             <Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
                             <Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>

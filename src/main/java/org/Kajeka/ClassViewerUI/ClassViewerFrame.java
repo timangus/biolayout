@@ -145,7 +145,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     private void initFrame(final ClassViewerFrame classViewerFrame)
     {
-        this.setIconImage(KAJEKA_ICON_IMAGE);
+        this.setIconImage(ICON_IMAGE);
         this.addWindowListener( new WindowAdapter()
         {
             @Override

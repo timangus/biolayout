@@ -2225,7 +2225,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
             updateNodesDisplayList = true;
             updateEdgesDisplayList = true;
 
-            layoutFrame.setCursor(KAJEKA_MOVE_CURSOR);
+            layoutFrame.setCursor(STATIC_MOVE_CURSOR);
 
             refreshDisplay();
         }
@@ -2247,7 +2247,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
             visibleEdges = tempVisibleEdges;
             updateEdgesDisplayList = true;
 
-            layoutFrame.setCursor(KAJEKA_NORMAL_CURSOR);
+            layoutFrame.setCursor(STATIC_NORMAL_CURSOR);
         }
     }
 

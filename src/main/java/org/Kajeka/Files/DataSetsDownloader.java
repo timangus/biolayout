@@ -120,7 +120,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
     {
         try
         {
-            String controlFileUrl = (repository.isEmpty() ? (KAJEKA_DOMAIN_URL + SERVER_DATASETS_DIRECTORY) : repository) + DATASETS_CONTROL_FILE;
+            String controlFileUrl = (repository.isEmpty() ? (DOMAIN_URL + SERVER_DATASETS_DIRECTORY) : repository) + DATASETS_CONTROL_FILE;
             dataSetsControlFileData = retrieveTextDataFromHttpConnection(controlFileUrl, true);
 
             if ( getManagedToConnect() )
@@ -149,7 +149,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
 
         if (dataSetNames.length == 1)
         {
-            dataSetUrl = (repository.isEmpty() ? (KAJEKA_DOMAIN_URL + SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[0] + dataSetNames[0];
+            dataSetUrl = (repository.isEmpty() ? (DOMAIN_URL + SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[0] + dataSetNames[0];
             dataSetFileName = Path.combine(DataFolder.get(), dataSetNames[0]);
 
             if ( !new File( IOUtils.getPrefix(dataSetFileName) ).exists() )
@@ -177,7 +177,7 @@ public class DataSetsDownloader extends HttpConnection implements IOUtils.IOUtil
             boolean[] hasSucceededAllFiles = new boolean[dataSetNames.length];
             for (int i = 0; i < dataSetNames.length; i++)
             {
-                dataSetUrl = (repository.isEmpty() ? (KAJEKA_DOMAIN_URL + SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[i] + dataSetNames[i];
+                dataSetUrl = (repository.isEmpty() ? (DOMAIN_URL + SERVER_DATASETS_DIRECTORY) : repository) + dataSetDirectories[i] + dataSetNames[i];
                 dataSetFileName = Path.combine(DataFolder.get(), dataSetNames[i]);
 
                 if ( !new File( IOUtils.getPrefix(dataSetFileName) ).exists() )

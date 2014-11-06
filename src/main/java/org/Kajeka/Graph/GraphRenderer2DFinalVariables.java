@@ -88,7 +88,7 @@ final class GraphRenderer2DFinalVariables // package access
     /**
     *  OpenGL specific animation variable.
     */
-    static final String PARTICLE_IMAGE_NAME = IMAGE_FILES_PATH + "BioLayoutExpress3DStar.png";
+    static final String PARTICLE_IMAGE_NAME = IMAGE_FILES_PATH + "Star.png";
 
     /**
     *  OpenGL specific animation variable.

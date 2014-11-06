@@ -5,11 +5,11 @@
   <information>
     <title>_BASE_NAME_ _VERSION_</title>
     <vendor>Kajeka</vendor>
-    <homepage href="http://www.kajeka.com"/>
+    <homepage href="http://kajeka.com"/>
     <description>_BASE_NAME_ _VERSION_</description>
     <description kind="short">_BASE_NAME_ _VERSION_: A tool for the visualization and analysis of network graphs</description>
-    <icon href="BioLayoutExpress3DIcon.png"/>
-    <icon kind="splash" href="BioLayoutExpress3DLogo.png"/>
+    <icon href="Icon.png"/>
+    <icon kind="splash" href="Splash.png"/>
     <offline-allowed/>
   </information> 
   <security>

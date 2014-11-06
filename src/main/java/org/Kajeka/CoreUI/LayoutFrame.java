@@ -46,7 +46,7 @@ import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
 
 /**
 *
-* This is the main Kajeka window frame. The two renderers are outputting their graphics
+* This is the main window frame. The two renderers are outputting their graphics
 * here and all actions/GUI windows are to be initiated from this central application frame.
 *
 * @author Full refactoring by Thanos Theo, 2008-2009
@@ -112,7 +112,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private AbstractAction helpMenuCheckForUpdatesAction = null;
 
     private FileDragNDrop fileDragNDrop = null;
-    private KajekaFileFilter kajekaFileFilter = null;
+    private CustomFileFilter fileFilter = null;
     private boolean loadingFile = false;
     private String fileNameAbsolutePath = "";
     private String fileNameLoaded = "";
@@ -159,7 +159,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         Insets insets = this.getInsets();
         this.setSize( new Dimension(APPLICATION_SCREEN_DIMENSION.width + insets.left + insets.right - 2, APPLICATION_SCREEN_DIMENSION.height + insets.top + insets.bottom - 2) );
         this.setMinimumSize(new Dimension(320, 240));
-        this.setIconImage(KAJEKA_ICON_IMAGE);
+        this.setIconImage(ICON_IMAGE);
 
         long prevTimeInMSecs = System.nanoTime() / 1000000;
         LayoutAboutDialog splashScreen = new LayoutAboutDialog(this, true);
@@ -316,7 +316,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         splashScreen.setText(" Done Loading All Components. Building Main View UI...");
         layoutAboutDialog = new LayoutAboutDialog(this, false);
-        kajekaFileFilter = new KajekaFileFilter();
+        fileFilter = new CustomFileFilter();
 
         initActions(this);
 
@@ -564,7 +564,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                InitDesktop.browse(KAJEKA_DOMAIN_URL);
+                InitDesktop.browse(DOMAIN_URL);
             }
         };
 
@@ -601,7 +601,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 layoutMenuBar.setEnabled(!IS_BLOCKED);
 
                 layoutNavigationWizardDialog.setAlwaysOnTop(IS_BLOCKED);
-                setCursor(IS_BLOCKED ? KAJEKA_WAIT_CURSOR : KAJEKA_NORMAL_CURSOR);
+                setCursor(IS_BLOCKED ? STATIC_WAIT_CURSOR : STATIC_NORMAL_CURSOR);
             }
         };
 
@@ -836,7 +836,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     }
                     catch (Exception exc)
                     {
-                        if (DEBUG_BUILD) println("Kajeka frame initialization error: " + exc.getMessage());
+                        if (DEBUG_BUILD) println(PRODUCT_NAME + " frame initialization error: " + exc.getMessage());
 
                         dispose();
                         System.exit(1);
@@ -871,7 +871,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
 
 
-        }, kajekaFileFilter);
+        }, fileFilter);
     }
 
     private void setRenderModeSwitchUISettings()
@@ -912,7 +912,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         JFileChooser fileChooser = new JFileChooser(loadFilePath);
         fileChooser.setDialogTitle("Open Graph File");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        fileChooser.setFileFilter(kajekaFileFilter);
+        fileChooser.setFileFilter(fileFilter);
 
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         {
@@ -943,13 +943,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
             else
             {
-                if ( kajekaFileFilter.accept(file) )
+                if ( fileFilter.accept(file) )
                 {
                     runParseProcess(this, Thread.NORM_PRIORITY, file);
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(this, "Not supported " + PRODUCT_NAME + " file type!\n" + kajekaFileFilter.getDescription(),
+                    JOptionPane.showMessageDialog(this, "Not supported " + PRODUCT_NAME + " file type!\n" + fileFilter.getDescription(),
                                                         "Error: Not supported " + PRODUCT_NAME + " file type", JOptionPane.ERROR_MESSAGE);
                 }
             }

@@ -94,7 +94,7 @@ public final class LayoutOnlineServices extends HttpConnection
 
                 try
                 {
-                    ArrayList<String> currentServerVersionFileData = retrieveTextDataFromHttpConnection(KAJEKA_DOMAIN_URL + SERVER_DOWNLOADS_DIRECTORY + CURRENT_SERVER_VERSION_CONTROL_FILE, true);
+                    ArrayList<String> currentServerVersionFileData = retrieveTextDataFromHttpConnection(DOMAIN_URL + SERVER_DOWNLOADS_DIRECTORY + CURRENT_SERVER_VERSION_CONTROL_FILE, true);
 
                     if ( getManagedToConnect() )
                     {
@@ -119,7 +119,7 @@ public final class LayoutOnlineServices extends HttpConnection
                                     "Newer Version of " + PRODUCT_NAME + " found!", JOptionPane.YES_NO_OPTION);
                             if (option == JOptionPane.YES_OPTION)
                             {
-                                InitDesktop.browse(KAJEKA_DOMAIN_URL + SERVER_DOWNLOADS_DIRECTORY);
+                                InitDesktop.browse(DOMAIN_URL + SERVER_DOWNLOADS_DIRECTORY);
                             }
                         }
                     }

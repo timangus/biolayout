@@ -1,0 +1,16 @@
+ A tool for the visualisation and analysis of networks
+
+ Copyright (©):	Kajeka 2014
+ Website: http://kajeka.com/
+
+ Distributed under Version 3 of the GNU General Public License (GNU GPLv3) or any later version. See below for details.
+
+ NOTICE:
+ This distribution includes the JOGL libraries and classes for OpenGL integration,
+ please see below for the SUN JOGL BSD License details.
+
+ This distribution also includes the JOCL libraries and classes for OpenCL integration,
+ please see below for the MIT/X11 License details.
+
+ This product comes with ABSOLUTELY NO WARRANTY; for details please see below.
+ This is free software, and you are welcome to redistribute it under certain conditions; please see below for details.

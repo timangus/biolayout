@@ -19,7 +19,7 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 public final class MatrixParser extends CoreParser
 {
-    private static final ImageIcon ICON_IMAGE_SMALL = new ImageIcon( ImageProducer.resizeImageByGivenRatio(KAJEKA_ICON_IMAGE, 0.35f, true) );
+    private static final ImageIcon ICON_IMAGE_SMALL = new ImageIcon( ImageProducer.resizeImageByGivenRatio(ICON_IMAGE, 0.35f, true) );
 
     private double correlationCutOffValue = 0.5;
     private String[] namesArray = null;
