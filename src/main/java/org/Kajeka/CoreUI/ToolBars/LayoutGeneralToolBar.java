@@ -31,7 +31,7 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
     {
         super(GENERAL_TOOLBAR_TITLE, orientation);
 
-        texturesLoaderIcons = new TexturesLoader(GENERAL_DIR_NAME, GENERAL_FILE_NAME, false, false, true, TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
+        texturesLoaderIcons = new TexturesLoader(GENERAL_DIR_NAME, GENERAL_FILE_NAME, false, false, true, false);
         allToolBarButtons = new JButton[NUMBER_OF_GENERAL_TOOLBAR_BUTTONS];
         ImageIcon imageIcon = new ImageIcon( texturesLoaderIcons.getImage( getFirstButtonName() ) );
         imageIconWidth = imageIcon.getIconWidth();
@@ -102,7 +102,7 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(SNAPSHOT), capitalizeFirstCharacter(SNAPSHOT), SNAPSHOT.ordinal() );
 
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setGraphInformationAction(AbstractAction action)
@@ -140,18 +140,19 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(GeneralToolBarButtons.BURST_LAYOUT_ITERATIONS), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(GeneralToolBarButtons.BURST_LAYOUT_ITERATIONS), GeneralToolBarButtons.BURST_LAYOUT_ITERATIONS.ordinal() );
     }
 
+    public String _2D3DActionName()
+    {
+        String[] actionNames = _2D_3D.toString().substring(1).split(ENUM_REGEX + "+");
+        return actionNames[RENDERER_MODE_3D ? 0 : 1];
+    }
+
     public void set2D3DSwitchAction(AbstractAction action)
     {
         allToolBarButtons[_2D_3D.ordinal()] = this.add(action);
-        allToolBarButtons[_2D_3D.ordinal()].setText("");
-        allToolBarButtons[_2D_3D.ordinal()].setToolTipText("2D / 3D Switch");
-        allToolBarButtons[_2D_3D.ordinal()].setBorderPainted(false);
-        allToolBarButtons[_2D_3D.ordinal()].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
+        setToolBarButtonAction(allToolBarButtons[_2D_3D.ordinal()], _2D3DActionName(), "2D / 3D Switch");
         set2D3DButton();
-        allToolBarButtons[_2D_3D.ordinal()].setContentAreaFilled(false);
-        allToolBarButtons[_2D_3D.ordinal()].setFocusPainted(false);
 
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setHomeAction(AbstractAction action)
@@ -161,8 +162,7 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
 
     public void set2D3DButton()
     {
-        String[] actionNames = _2D_3D.toString().substring(1).split(ENUM_REGEX + "+");
-        setToolBarButtonImages(allToolBarButtons[_2D_3D.ordinal()], actionNames[RENDERER_MODE_3D ? 0 : 1]);
+        setToolBarButtonImages(allToolBarButtons[_2D_3D.ordinal()], _2D3DActionName());
     }
 
     public void runSPNButtonResetRolloverState()

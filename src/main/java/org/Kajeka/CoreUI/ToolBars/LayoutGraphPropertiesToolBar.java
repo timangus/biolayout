@@ -20,19 +20,14 @@ public final class LayoutGraphPropertiesToolBar extends LayoutAbstractToolBar
 
     public LayoutGraphPropertiesToolBar()
     {
-        this(JToolBar.VERTICAL);
+        this(JToolBar.HORIZONTAL);
     }
 
     public LayoutGraphPropertiesToolBar(int orientation)
     {
         super(GRAPH_PROPERTIES_TOOLBAR_TITLE, orientation);
 
-        texturesLoaderIcons = new TexturesLoader(GRAPH_PROPERTIES_DIR_NAME, GRAPH_PROPERTIES_FILE_NAME, false, false, true, TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
         allToolBarButtons = new JButton[NUMBER_OF_GRAPH_PROPERTIES_TOOLBAR_BUTTONS];
-        ImageIcon imageIcon = new ImageIcon( texturesLoaderIcons.getImage( getFirstButtonName() ) );
-        imageIconWidth = imageIcon.getIconWidth();
-        imageIconHeight = imageIcon.getIconHeight();
-        imageDivisor = ( IS_MAC || UIManager.getLookAndFeel().getName().equals("Nimbus") ) ? 9.0f : 6.5f;
     }
 
     @Override
@@ -43,59 +38,58 @@ public final class LayoutGraphPropertiesToolBar extends LayoutAbstractToolBar
 
     public void setGeneralAction(AbstractAction action)
     {
-        addPaddingSpace();
         String actionName = capitalizeFirstCharacter(GENERAL);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, GENERAL.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setLayoutAction(AbstractAction action)
     {
         String actionName = capitalizeFirstCharacter(LAYOUT);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, LAYOUT.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setRenderingAction(AbstractAction action)
     {
         String actionName = capitalizeFirstCharacter(RENDERING);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, RENDERING.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setMCLAction(AbstractAction action)
     {
         String actionName = MCL.toString();
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, MCL.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setSimulationAction(AbstractAction action)
     {
         String actionName = capitalizeFirstCharacter(SIMULATION);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, SIMULATION.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setSearchAction(AbstractAction action)
     {
         String actionName = capitalizeFirstCharacter(SEARCH);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, SEARCH.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setNodesAction(AbstractAction action)
     {
         String actionName = capitalizeFirstCharacter(NODES);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, NODES.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setEdgesAction(AbstractAction action)
     {
         String actionName = capitalizeFirstCharacter(EDGES);
         setToolBarButtonAction( action, actionName, actionName + BUTTON_PROPERTIES, EDGES.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setClassesAction(AbstractAction action)

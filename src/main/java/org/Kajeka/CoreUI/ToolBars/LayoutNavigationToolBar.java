@@ -20,14 +20,14 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
 
     public LayoutNavigationToolBar()
     {
-        this(JToolBar.VERTICAL);
+        this(JToolBar.HORIZONTAL);
     }
 
     public LayoutNavigationToolBar(int orientation)
     {
         super(NAVIGATION_TOOLBAR_TITLE, orientation);
 
-        texturesLoaderIcons = new TexturesLoader(NAVIGATION_DIR_NAME, NAVIGATION_FILE_NAME, false, false, true, TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
+        texturesLoaderIcons = new TexturesLoader(NAVIGATION_DIR_NAME, NAVIGATION_FILE_NAME, false, false, true, false);
         allToolBarButtons = new JButton[NUMBER_OF_NAVIGATION_TOOLBAR_BUTTONS];
         ImageIcon imageIcon = new ImageIcon( texturesLoaderIcons.getImage( getFirstButtonName() ) );
         imageIconWidth = imageIcon.getIconWidth();
@@ -64,7 +64,7 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
     public void setRightAction(AbstractAction action)
     {
         setToolBarButtonAction(action, capitalizeFirstCharacter(NavigationToolBarButtons.RIGHT), NavigationToolBarButtons.RIGHT.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setRotateUpAction(AbstractAction action)
@@ -85,7 +85,7 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
     public void setRotateRightAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(ROTATE_RIGHT), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(ROTATE_RIGHT), ROTATE_RIGHT.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setZoomInAction(AbstractAction action)
@@ -96,7 +96,7 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
     public void setZoomOutAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(ZOOM_OUT), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(ZOOM_OUT), ZOOM_OUT.ordinal() );
-        addEmptySpaceAndSeparator();
+        addSeparator();
     }
 
     public void setResetViewAction(AbstractAction action)
@@ -107,7 +107,7 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
     public void setResetViewAction(AbstractAction action, boolean useSeparator)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(RESET_VIEW), splitCapitalizeFirstCharactersAndAddWhiteSpaceBetweenNames(RESET_VIEW), RESET_VIEW.ordinal() );
-        if (useSeparator) addEmptySpaceAndSeparator();
+        if (useSeparator) addSeparator();
     }
 
     public void setNavigationWizardAction(AbstractAction action)

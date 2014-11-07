@@ -29,16 +29,11 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     protected static final int NUMBER_OF_GENERAL_TOOLBAR_BUTTONS = GeneralToolBarButtons.values().length;
     protected static final int NUMBER_OF_NAVIGATION_TOOLBAR_BUTTONS = NavigationToolBarButtons.values().length;
 
-    // based on height so as to avoid problems with extended Linux desktops on X axis
-    protected static final float TOOLBAR_IMAGE_ICON_RESIZE_RATIO = SCREEN_DIMENSION.height / 1200.0f;
-
     protected static final String BUTTON_PROPERTIES = " Properties";
     protected static final String BUTTON_HOVER = "Hover";
     protected static final String BUTTON_PRESSED = "Pressed";
 
     protected static final String GRAPH_PROPERTIES_TOOLBAR_TITLE = "Graph Properties Tool Bar";
-    protected static final String GRAPH_PROPERTIES_DIR_NAME = IMAGE_FILES_PATH + "GraphPropertiesToolBar/";
-    protected static final String GRAPH_PROPERTIES_FILE_NAME = "GraphPropertiesToolBarData.txt";
 
     protected static final String GENERAL_TOOLBAR_TITLE = "General Tool Bar";
     protected static final String GENERAL_DIR_NAME = IMAGE_FILES_PATH + "GeneralToolBar/";
@@ -68,36 +63,10 @@ public abstract class LayoutAbstractToolBar extends JToolBar
 
     protected abstract String getFirstButtonName();
 
-    // When tearing toolbars off we occasionally see JDK bug 8013550
-    // It appears to be triggered by the size of components, so we attempt
-    // to work around it here by enforcing a minimum size
-    final int JAVA_BUG_8013550_MIN_COMPONENT_SIZE = 10;
-
-    protected void addPaddingSpace()
-    {
-        int width = Math.max(JAVA_BUG_8013550_MIN_COMPONENT_SIZE, imageIconWidth);
-        int height = Math.max(JAVA_BUG_8013550_MIN_COMPONENT_SIZE, imageIconHeight / 2);
-
-        this.add(Box.createRigidArea(new Dimension(width, height)));
-    }
-
-    protected void addEmptySpaceAndSeparator()
-    {
-        int width = Math.max(JAVA_BUG_8013550_MIN_COMPONENT_SIZE, (int) (imageIconWidth / imageDivisor));
-        int height = Math.max(JAVA_BUG_8013550_MIN_COMPONENT_SIZE, (int) (imageIconHeight / imageDivisor));
-        Dimension dimension = new Dimension(width, height);
-
-        this.add(Box.createRigidArea(dimension));
-        this.addSeparator();
-        this.add(Box.createRigidArea(dimension));
-    }
-
     protected void setToolBarButtonImages(JButton button, String actionName)
     {
         button.setIcon( new ImageIcon( texturesLoaderIcons.getImage(actionName) ) );
-        button.setRolloverIcon( new ImageIcon( texturesLoaderIcons.getImage(actionName + BUTTON_HOVER) ) );
-        button.setPressedIcon( new ImageIcon( texturesLoaderIcons.getImage(actionName + BUTTON_PRESSED) ) );
-        button.setDisabledIcon( new ImageIcon( texturesLoaderIcons.getImage(actionName) ) );
+        button.setDisabledIcon( new ImageIcon( texturesLoaderIcons.getDesaturatedImage(actionName) ) );
     }
 
     protected void setToolBarButtonAction(AbstractAction action, String actionName, int index)
@@ -108,13 +77,7 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     protected void setToolBarButtonAction(AbstractAction action, String actionName, String actionToolTip, int index)
     {
         allToolBarButtons[index] = this.add(action);
-        allToolBarButtons[index].setText("");
-        allToolBarButtons[index].setToolTipText(actionToolTip);
-        allToolBarButtons[index].setBorderPainted(false);
-        allToolBarButtons[index].setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
-        setToolBarButtonImages(allToolBarButtons[index], actionName);
-        allToolBarButtons[index].setContentAreaFilled(false);
-        allToolBarButtons[index].setFocusPainted(false);
+        setToolBarButtonAction(allToolBarButtons[index], actionName, actionToolTip);
     }
 
     protected void setToolBarButtonAction(JButton button, String actionName)
@@ -124,14 +87,19 @@ public abstract class LayoutAbstractToolBar extends JToolBar
 
     protected void setToolBarButtonAction(JButton button, String actionName, String actionToolTip)
     {
-        button.setText("");
-        button.setToolTipText(actionToolTip);
-        button.setBorderPainted(false);
-        button.setMaximumSize( new Dimension(imageIconWidth, imageIconHeight) );
-        setToolBarButtonImages(button, actionName);
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
+        boolean textualButton = (texturesLoaderIcons == null) || !texturesLoaderIcons.isLoaded(actionName);
+
+        if (!textualButton)
+        {
+            button.setText("");
+            button.setToolTipText(actionToolTip);
+            button.setMaximumSize(new Dimension(imageIconWidth, imageIconHeight));
+            setToolBarButtonImages(button, actionName);
+        }
+        else
+        {
+            button.setText(actionName);
+            button.setToolTipText(actionToolTip);
+        }
     }
-
-
 }

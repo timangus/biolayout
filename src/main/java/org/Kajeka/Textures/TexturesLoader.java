@@ -5,9 +5,10 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import javax.media.opengl.GL2;
-import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.awt.ImageUtil;
+import static cpath.service.CmdArgs.source;
+import java.awt.color.ColorSpace;
 import org.Kajeka.CPUParallelism.Executors.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.StaticLibraries.ImageProducer.*;
@@ -44,6 +45,7 @@ public class TexturesLoader
     *  The key is the filename prefix, the object (value) is a Texture.
     */
     private AbstractMap<String, BufferedImage> imagesMap = null;
+    private AbstractMap<String, BufferedImage> desaturatedImagesMap = null;
 
     /**
     *  Variable needed for storing the textures directory name.
@@ -157,7 +159,10 @@ public class TexturesLoader
         if (!storeBufferedImageInstead)
             texturesMap = (USE_MULTICORE_PROCESS && storeBufferedImageInstead) ? new ConcurrentHashMap<String, Texture>() : new HashMap<String, Texture>();
         else
+        {
             imagesMap = (USE_MULTICORE_PROCESS && storeBufferedImageInstead) ? new ConcurrentHashMap<String, BufferedImage>() : new HashMap<String, BufferedImage>();
+            desaturatedImagesMap = (USE_MULTICORE_PROCESS && storeBufferedImageInstead) ? new ConcurrentHashMap<String, BufferedImage>() : new HashMap<String, BufferedImage>();
+        }
     }
 
     /**
@@ -347,6 +352,7 @@ public class TexturesLoader
         if (image != null)
         {
             imagesMap.put(name, image);
+            desaturatedImagesMap.put(name, desaturatedImage(image));
             if (DEBUG_BUILD) println("Line: Stored " + name + "/" + filename);
 
             return true;
@@ -369,6 +375,12 @@ public class TexturesLoader
             ImageUtil.flipImageVertically(image);
 
         return image;
+    }
+
+    private BufferedImage desaturatedImage(BufferedImage image)
+    {
+        ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+        return colorConvert.filter(image, null);
     }
 
     //*****ACCESS METHODS FOR ALL THE ABOVE INTERNAL DATA STRUCTURES*****
@@ -395,6 +407,22 @@ public class TexturesLoader
     public BufferedImage getImage(String name)
     {
         BufferedImage image = imagesMap.get(name);
+        if (image == null)
+        {
+            if (DEBUG_BUILD) println("No image(s) stored under " + name);
+
+            return createNullPointerBufferedImage();
+        }
+
+        return image;
+    }
+
+    /**
+    *  Gets the desaturated image associated with <name>.
+    */
+    public BufferedImage getDesaturatedImage(String name)
+    {
+        BufferedImage image = desaturatedImagesMap.get(name);
         if (image == null)
         {
             if (DEBUG_BUILD) println("No image(s) stored under " + name);
@@ -453,6 +481,7 @@ public class TexturesLoader
         else
         {
             BufferedImage image = null;
+            BufferedImage desaturatedImage = null;
             Set<String> allStringKeys = imagesMap.keySet();
             for (String stringKey : allStringKeys)
             {
@@ -460,10 +489,17 @@ public class TexturesLoader
                 image.flush();
                 image = null;
 
+                desaturatedImage = desaturatedImagesMap.get(stringKey);
+                desaturatedImage.flush();
+                desaturatedImage = null;
+
                 if (DEBUG_BUILD) println("Texture " + stringKey + " disposed");
             }
             imagesMap.clear();
             imagesMap = null;
+
+            desaturatedImagesMap.clear();
+            desaturatedImagesMap = null;
         }
     }
 
