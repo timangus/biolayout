@@ -43,6 +43,7 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.Expression.ExpressionEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
+import org.Kajeka.Utils.ToolbarLayout;
 
 /**
 *
@@ -216,8 +217,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         splashScreen.setText(" Creating Toolbars...");
         layoutGraphPropertiesToolBar = new LayoutGraphPropertiesToolBar(JToolBar.HORIZONTAL);
-        layoutGeneralToolBar = new LayoutGeneralToolBar(JToolBar.VERTICAL);
-        layoutNavigationToolBar = new LayoutNavigationToolBar(JToolBar.VERTICAL);
+        layoutGeneralToolBar = new LayoutGeneralToolBar(JToolBar.HORIZONTAL);
+        layoutNavigationToolBar = new LayoutNavigationToolBar(JToolBar.HORIZONTAL);
 
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
@@ -275,11 +276,20 @@ public final class LayoutFrame extends JFrame implements GraphListener
         propertiesPanel.add(statusLabelPanel, BorderLayout.EAST);
         propertiesPanel.add(labelPanel, BorderLayout.WEST);
 
-        if ( SHOW_GRAPH_PROPERTIES_TOOLBAR.get() )
-            globalPanel.add(layoutGraphPropertiesToolBar, BorderLayout.NORTH);
-        if ( SHOW_NAVIGATION_TOOLBAR.get() )
-            globalPanel.add(layoutNavigationToolBar, BorderLayout.EAST);
-        globalPanel.add(layoutGeneralToolBar, BorderLayout.WEST);
+        JPanel toolbarPanel = new JPanel(new ToolbarLayout());
+        globalPanel.add(toolbarPanel, BorderLayout.NORTH);
+
+        toolbarPanel.add(layoutGeneralToolBar);
+
+        if (SHOW_NAVIGATION_TOOLBAR.get())
+        {
+            toolbarPanel.add(layoutNavigationToolBar);
+        }
+        if (SHOW_GRAPH_PROPERTIES_TOOLBAR.get())
+        {
+            toolbarPanel.add(layoutGraphPropertiesToolBar);
+        }
+
         // wrapping the Graph GLCanvas reference in a JPanel so the JFrame can contain other (lightweight) UI
         JPanel graphPanel = new JPanel(new BorderLayout(), true);
         graphPanel.add(graph, BorderLayout.CENTER);

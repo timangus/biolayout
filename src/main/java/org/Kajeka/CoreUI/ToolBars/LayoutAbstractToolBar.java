@@ -57,6 +57,7 @@ public abstract class LayoutAbstractToolBar extends JToolBar
         // set tool tip to be heavyweight so as to be visible on top of the main OpenGL heavyweight canvas
         ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
         this.setOrientation(orientation);
+        this.setFloatable(false);
 
         constructorInitializationFinished = true;
     }
