@@ -2695,13 +2695,6 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
                     MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.set( !MATERIAL_OLD_LCD_STYLE_TRANSPARENCY_SHADING.get() );
                     refreshDisplay();
                 }
-                else if (e.getKeyChar() == 'j' || e.getKeyChar() == 'J')
-                {
-                    TRIPPY_BACKGROUND.set( !TRIPPY_BACKGROUND.get() );
-                    layoutFrame.setTrippyBackground( TRIPPY_BACKGROUND.get() );
-                    graph.prepareBackgroundColor();
-                    refreshDisplay();
-                }
                 else if (e.getKeyChar() == ' ')
                 {
                     currentLogoEffect = LogoEffects.values()[ (currentLogoEffect.ordinal() + 1) % LogoEffects.values().length ];

@@ -3995,13 +3995,6 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                         updateNodesAndSelectedNodesDisplayList();
                     }
                 }
-                else if (e.getKeyChar() == 'j' || e.getKeyChar() == 'J')
-                {
-                    TRIPPY_BACKGROUND.set( !TRIPPY_BACKGROUND.get() );
-                    layoutFrame.setTrippyBackground( TRIPPY_BACKGROUND.get() );
-                    graph.prepareBackgroundColor();
-                    refreshDisplay();
-                }
                 else if (e.getKeyChar() == 'h' || e.getKeyChar() == 'H')
                 {
                     if ( !animationRender && !SHOW_3D_ENVIRONMENT_MAPPING.get() )

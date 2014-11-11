@@ -408,7 +408,7 @@ public final class GlobalEnvironment
 
     private static final SearchURL GOOGLE_URL = new SearchURL("https://www.google.com/search?q=", "Google", "Search using Google");
     private static final SearchURL BING_URL = new SearchURL("https://www.bing.com/search?q=", "Bing", "Search using Bing");
-    private static final SearchURL WIKIPEDIA_URL = new SearchURL("https://wikipedia.org/wiki/", "Wikipedia", "Searcg using Wikipedia");
+    private static final SearchURL WIKIPEDIA_URL = new SearchURL("https://wikipedia.org/wiki/", "Wikipedia", "Search using Wikipedia");
     public static final SearchURL[] PRESET_SEARCH_URL = { GOOGLE_URL, BING_URL, WIKIPEDIA_URL };
     public static SearchURL SEARCH_URL = GOOGLE_URL;
     public static boolean CUSTOM_SEARCH = false;

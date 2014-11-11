@@ -1954,11 +1954,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutGraphPropertiesDialog.setNodeSurfaceImageTexture(selected);
     }
 
-    public void setTrippyBackground(boolean selected)
-    {
-        layoutGraphPropertiesDialog.setTrippyBackground(selected);
-    }
-
     public boolean isAllShadingSFXSValueEnabled()
     {
         return layoutGraphPropertiesDialog.isAllShadingSFXSValueEnabled();

@@ -65,7 +65,7 @@ public final class LayoutClassesTable extends JPanel
         table.sortTableByColumn(CLASS_DESCRIPTION_COLUMN.ordinal() + 1, sorter);
 
         this.setLayout( new BorderLayout() );
-        table.setPreferredScrollableViewportSize( new Dimension(845, 495) );
+        table.setPreferredScrollableViewportSize( new Dimension(500, 300) );
         this.setLayout( new FlowLayout() );
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
