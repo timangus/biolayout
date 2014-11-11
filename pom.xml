@@ -23,7 +23,6 @@
         <!-- The -01 is because apparently the 2.1.5 release was screwed up and is missing all its class files -->
         <jogampVersion>2.1.5-01</jogampVersion>
         <joclVersion>0.1.7</joclVersion>
-        <sbgnVersion>milestone2</sbgnVersion>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -34,7 +33,7 @@
         <osx.app.dir>${project.build.directory}/dmg/${project.name}.app</osx.app.dir>
 
         <debug.build>true</debug.build>
-        
+
         <jarsigner.keystore>selfsign.jks</jarsigner.keystore>
         <jarsigner.alias>selfsigned</jarsigner.alias>
         <jarsigner.storepass>password</jarsigner.storepass>
@@ -80,12 +79,6 @@
             <groupId>org.jocl</groupId>
             <artifactId>jocl</artifactId>
             <version>${joclVersion}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.sbgn</groupId>
-            <artifactId>sbgn</artifactId>
-            <version>${sbgnVersion}</version>
         </dependency>
 
         <dependency>
@@ -178,7 +171,7 @@
                 </snapshots>
         </repository>
 
-        <!-- This allows us to treat local jars (e.g. libsbgn) as
+        <!-- This allows us to treat local jars as
              normal dependencies -->
         <repository>
             <id>jars</id>
@@ -637,10 +630,10 @@
                         <argument>SHA1withRSA</argument>
                         <argument>-digestalg</argument>
                         <argument>SHA1</argument>
-                    </arguments>                
+                    </arguments>
                 </configuration>
             </plugin>
- 
+
             <plugin>
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
