@@ -13,7 +13,7 @@ import org.Kajeka.Files.Dialogs.*;
 import org.Kajeka.Network.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
@@ -283,13 +283,13 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
         String vertex = "";
         String field1 = "", field2 = "", field3 = "";
 
-        if ( property.equals("//EXPRESSION_DATA") )
+        if ( property.equals("//CORRELATION_DATA") )
         {
             field1 = getNext();
 
-            if ( !EXPRESSION_FILE.equals(field1) )
+            if ( !CORRELATION_FILE.equals(field1) )
             {
-                cancelParse = !showConfirmationDialogForDifferentExpressionFile();
+                cancelParse = !showConfirmationDialogForDifferentCorrelationFile();
                 importClassSetsDialog.doClickDelimiter1RadioButton();
             }
             else
@@ -353,9 +353,9 @@ public final class ImportClassSetsParser extends CoreParser implements ImportCla
     }
 
     /**
-    *  Show the confirmation dialog for a different expression file.
+    *  Show the confirmation dialog for a different file.
     */
-    private boolean showConfirmationDialogForDifferentExpressionFile()
+    private boolean showConfirmationDialogForDifferentCorrelationFile()
     {
         int dialogReturnValue = JOptionPane.showConfirmDialog(layoutFrame, "Please be aware that this Class Sets import file is derived from a different file than the currently loaded one.\nContinue with the Class Sets import process?", "Do you want to continue?", JOptionPane.YES_NO_OPTION);
         return (dialogReturnValue == JOptionPane.YES_OPTION);

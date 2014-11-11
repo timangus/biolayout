@@ -1,16 +1,16 @@
 package org.Kajeka.Files;
 
+import org.Kajeka.Correlation.CorrelationData;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.CoreUI.Dialogs.*;
-import org.Kajeka.Expression.*;
 import org.Kajeka.StaticLibraries.*;
 import static java.lang.Math.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
@@ -25,7 +25,7 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 public final class ExportCorrelationNodesEdgesTable
 {
     private LayoutFrame layoutFrame = null;
-    private ExpressionData expressionData = null;
+    private CorrelationData correlationData = null;
 
     private int[] allNodes = null;
     private int[] allEdges = null;
@@ -37,10 +37,10 @@ public final class ExportCorrelationNodesEdgesTable
 
     private FileNameExtensionFilter fileNameExtensionFilterCorrelationNodesEdgesTable = null;
 
-    public ExportCorrelationNodesEdgesTable(LayoutFrame layoutFrame, ExpressionData expressionData)
+    public ExportCorrelationNodesEdgesTable(LayoutFrame layoutFrame, CorrelationData correlationData)
     {
         this.layoutFrame = layoutFrame;
-        this.expressionData = expressionData;
+        this.correlationData = correlationData;
 
         allNodes = new int[101];
         allEdges = new int[101];
@@ -77,8 +77,8 @@ public final class ExportCorrelationNodesEdgesTable
 
     private void performPrecalculations()
     {
-        int[][] counts = expressionData.getCounts();
-        int totalRows = expressionData.getTotalRows();
+        int[][] counts = correlationData.getCounts();
+        int totalRows = correlationData.getTotalRows();
         minThreshold = (int)floor(100.0f * STORED_CORRELATION_THRESHOLD);
         rangeThreshold = 100 - minThreshold;
         for (int i = minThreshold; i <= 100; i++)
@@ -178,7 +178,7 @@ public final class ExportCorrelationNodesEdgesTable
 
             fileWriter = new FileWriter(saveFile);
             fileWriter.write("//" + VERSION + " " + " Correlation Nodes Edges Table File\n");
-            fileWriter.write("//EXPRESSION_DATA\t\"" + EXPRESSION_FILE + "\"\n");
+            fileWriter.write("//CORRELATION_DATA\t\"" + CORRELATION_FILE + "\"\n");
 
             saveCorrelationNodesEdgesTableData(layoutProgressBarDialog, fileWriter);
 

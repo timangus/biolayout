@@ -144,7 +144,7 @@ public final class GlobalEnvironment
     public static final int MAX_FILE_HISTORY = 10;
 
     // file input/output variables
-    public static enum SupportedInputFileTypes { BLAST, OWL, EXPRESSION, GRAPHML, MEPN, LAYOUT, SIF, TGF, TXT, MATRIX, XML, GML }
+    public static enum SupportedInputFileTypes { BLAST, OWL, CSV, GRAPHML, MEPN, LAYOUT, SIF, TGF, TXT, MATRIX, XML, GML }
     public static enum SupportedOutputFileTypes { LAYOUT, TGF }
     public static enum SupportedImportExportFileTypes { CLASSSETS, TXT }
     public static enum SupportedSimulationFileTypes { SPN, TXT }
@@ -164,7 +164,7 @@ public final class GlobalEnvironment
     public static final PrefInt MAX_HTML_TIPS = new PrefInt(5, "max_html_tips", false);
     public static final PrefString FILE_CHOOSER_PATH = new PrefString("", "file_chooser_path", true);
 
-    public static enum DataTypes { BLAST, OWL, EXPRESSION, GRAPHML, LAYOUT, MATRIX, ONDEX, GML, NONE };
+    public static enum DataTypes { BLAST, OWL, CORRELATION, GRAPHML, LAYOUT, MATRIX, ONDEX, GML, NONE };
     public static DataTypes DATA_TYPE = DataTypes.NONE;
     public static final PrefBool RENDERER_MODE_START_3D = new PrefBool(true, "renderer_mode_start_3d", true);
     public static boolean RENDERER_MODE_3D = false;
@@ -369,7 +369,7 @@ public final class GlobalEnvironment
     public static final PrefBool USE_SPN_ANIMATED_TRANSITIONS_SHADING = new PrefBool(false, "use_spn_animated_transitions_shading", true);
 
     public static final int[] OPENCL_GPU_COMPUTING_ITERATION_SIZES = { 1 << 20, 1 << 21, 1 << 22, 1 << 23, 1 << 24, 1 << 25, 1 << 26, 1 << 27 };
-    public static final int OPENCL_DEFAULT_EXPRESSION_CORRELATION_ITERATION_SIZE = OPENCL_GPU_COMPUTING_ITERATION_SIZES[2];
+    public static final int OPENCL_DEFAULT_CORRELATION_ITERATION_SIZE = OPENCL_GPU_COMPUTING_ITERATION_SIZES[2];
     public static final int OPENCL_DEFAULT_LAYOUT_ITERATION_SIZE = OPENCL_GPU_COMPUTING_ITERATION_SIZES[0];
     public static final int GLSL_MAX_TEXTURE_SIZE = 4096;
     public static final int GLSL_TEXTURE_STEP = 512;
@@ -385,17 +385,17 @@ public final class GlobalEnvironment
                                                                           N_CP_STRING + "-" + JAVA_STRING,
                                                                           N_CP_STRING + "-" + ANSI_C_STRING };
     public static final String GPU_COMPUTING_DEFAULT_CPU_COMPARISON_METHOD = GPU_COMPUTING_CPU_COMPARISON_METHODS[0];
-    public static final double EXPRESSION_DATA_GPU_COMPUTING_MAX_ERROR_THRESHOLD = 0.0001; // 1e-4f precision up to 3 decimals
+    public static final double CORRELATION_DATA_GPU_COMPUTING_MAX_ERROR_THRESHOLD = 0.0001; // 1e-4f precision up to 3 decimals
     public static final double LAYOUT_GPU_COMPUTING_MAX_ERROR_THRESHOLD = 1.0; // 1e-0f precision up to 1.0 (1 integer pixel)
 
-    public static final PrefBool USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM = new PrefBool(true, "use_expression_correlation_calculation_n_core_parallelism", true);
-    public static final PrefBool USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION = new PrefBool(false, "use_opencl_gpu_computing_expression_correlation_calculation", true);
-    public static final PrefInt OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_ITERATION_SIZE = new PrefInt(OPENCL_DEFAULT_EXPRESSION_CORRELATION_ITERATION_SIZE, "opencl_gpu_computing_expression_correlation_iteration_size", true);
-    public static final PrefBool USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION = new PrefBool(false, "use_glsl_gpgpu_computing_expression_correlation_calculation", true);
-    public static final PrefInt GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_SIZE = new PrefInt(GLSL_DEFAULT_TEXTURE_SIZE, "glsl_gpgpu_computing_expression_correlation_calculation_texture_size", true);
-    public static final PrefString GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_TYPE = new PrefString(GLSL_DEFAULT_TEXTURE_TYPE.toString(), "glsl_gpgpu_computing_expression_correlation_calculation_texture_type", true);
-    public static final PrefBool COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU = new PrefBool(false, "compare_gpu_computing_expression_correlation_calculation_with_cpu", true);
-    public static final PrefString COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD = new PrefString(GPU_COMPUTING_DEFAULT_CPU_COMPARISON_METHOD, "compare_gpu_computing_expression_correlation_calculation_with_cpu_default_comparison_method", true);
+    public static final PrefBool USE_CORRELATION_CALCULATION_N_CORE_PARALLELISM = new PrefBool(true, "use_correlation_calculation_n_core_parallelism", true);
+    public static final PrefBool USE_OPENCL_GPU_COMPUTING_CORRELATION_CALCULATION = new PrefBool(false, "use_opencl_gpu_computing_correlation_calculation", true);
+    public static final PrefInt OPENCL_GPU_COMPUTING_CORRELATION_CALCULATION_ITERATION_SIZE = new PrefInt(OPENCL_DEFAULT_CORRELATION_ITERATION_SIZE, "opencl_gpu_computing_correlation_iteration_size", true);
+    public static final PrefBool USE_GLSL_GPGPU_COMPUTING_CORRELATION_CALCULATION = new PrefBool(false, "use_glsl_gpgpu_computing_correlation_calculation", true);
+    public static final PrefInt GLSL_GPGPU_COMPUTING_CORRELATION_CALCULATION_TEXTURE_SIZE = new PrefInt(GLSL_DEFAULT_TEXTURE_SIZE, "glsl_gpgpu_computing_correlation_calculation_texture_size", true);
+    public static final PrefString GLSL_GPGPU_COMPUTING_CORRELATION_CALCULATION_TEXTURE_TYPE = new PrefString(GLSL_DEFAULT_TEXTURE_TYPE.toString(), "glsl_gpgpu_computing_correlation_calculation_texture_type", true);
+    public static final PrefBool COMPARE_GPU_COMPUTING_CORRELATION_CALCULATION_WITH_CPU = new PrefBool(false, "compare_gpu_computing_correlation_calculation_with_cpu", true);
+    public static final PrefString COMPARE_GPU_COMPUTING_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD = new PrefString(GPU_COMPUTING_DEFAULT_CPU_COMPARISON_METHOD, "compare_gpu_computing_correlation_calculation_with_cpu_default_comparison_method", true);
     public static final PrefBool USE_LAYOUT_N_CORE_PARALLELISM = new PrefBool(true, "use_layout_n_core_parallelism", true);
     public static final PrefBool USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION = new PrefBool(false, "use_opencl_gpu_computing_layout_calculation", true);
     public static final PrefBool USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION = new PrefBool(false, "use_indices_1d_kernel_with_iterations_for_opencl_gpu_computing_layout_calculation", true);

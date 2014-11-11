@@ -1,4 +1,4 @@
-package org.Kajeka.Expression;
+package org.Kajeka.Correlation;
 
 import java.io.*;
 import java.nio.*;
@@ -17,19 +17,19 @@ import org.Kajeka.GPUComputing.OpenGLContext.*;
 import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
 *
-* The ExpressionData conveys the core of the correlation data calculations.
+* The CorrelationData conveys the core of the correlation data calculations.
 *
 * @author Anton Enright, code updates/heavy optimizations/modifications/N-Core parallelization support/GPU Computing Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
 *
 */
 
-public final class ExpressionData
+public final class CorrelationData
 {
     public class ColumnAnnotation
     {
@@ -154,10 +154,10 @@ public final class ExpressionData
     private float[] sumX_sumX2_cacheArray = null;
     private FloatBuffer sumColumns_X2_cacheBuffer = null;
     private float[] sumColumns_X2_cacheArray = null;
-    private FloatBuffer expressionDataBuffer = null;
-    private float[] expressionDataArray = null;
-    private FloatBuffer expressionRanksBuffer = null;
-    private float[] expressionRanksArray = null;
+    private FloatBuffer correlationDataBuffer = null;
+    private float[] correlationDataArray = null;
+    private FloatBuffer correlationRanksBuffer = null;
+    private float[] correlationRanksArray = null;
     private HashMap<String, Integer> identityMap = null;
     private HashMap<String, Integer> columnNameMap = null;
     private int[][] countsArray = null;
@@ -182,9 +182,9 @@ public final class ExpressionData
     private final CyclicBarrier threadBarrier = (USE_MULTICORE_PROCESS) ? new CyclicBarrier(NUMBER_OF_AVAILABLE_PROCESSORS + 1, cyclicBarrierTimer) : null;
 
     /**
-    *  The constructor of the ExpressionData class.
+    *  The constructor of the CorrelationData class.
     */
-    public ExpressionData(LayoutFrame layoutFrame)
+    public CorrelationData(LayoutFrame layoutFrame)
     {
         this.layoutFrame = layoutFrame;
 
@@ -211,8 +211,8 @@ public final class ExpressionData
         sumX_sumX2_cacheArray = sumX_sumX2_cacheBuffer.array();
         sumColumns_X2_cacheBuffer = FloatBuffer.allocate(totalRows);
         sumColumns_X2_cacheArray = sumColumns_X2_cacheBuffer.array();
-        expressionDataBuffer = FloatBuffer.allocate(totalRows * totalColumns);
-        expressionDataArray = expressionDataBuffer.array();
+        correlationDataBuffer = FloatBuffer.allocate(totalRows * totalColumns);
+        correlationDataArray = correlationDataBuffer.array();
 
         identityMap.clear();
         columnNameMap.clear();
@@ -272,8 +272,8 @@ public final class ExpressionData
     */
     private void convertToSpearmanRankOrder()
     {
-        expressionRanksBuffer = FloatBuffer.allocate(totalRows * totalColumns);
-        expressionRanksArray = expressionRanksBuffer.array();
+        correlationRanksBuffer = FloatBuffer.allocate(totalRows * totalColumns);
+        correlationRanksArray = correlationRanksBuffer.array();
 
         for (int i = 0; i < totalRows; i++)
         {
@@ -291,7 +291,7 @@ public final class ExpressionData
 
             for (int j = 0; j < totalColumns; j++)
             {
-                value = expressionDataArray[i * totalColumns + j];
+                value = correlationDataArray[i * totalColumns + j];
                 rowValues[j] = value;
                 originalValues[j] = value;
             }
@@ -314,7 +314,7 @@ public final class ExpressionData
             }
 
             for (int j = 0; j < totalColumns; j++)
-               expressionRanksArray[i * totalColumns + j] = ranksMap.get(originalValues[j]);
+               correlationRanksArray[i * totalColumns + j] = ranksMap.get(originalValues[j]);
         }
 
         // rebuild caches for rank order values, not raw values
@@ -322,7 +322,7 @@ public final class ExpressionData
         {
             for (int j = 0; j < totalColumns; j++)
             {
-                value = expressionRanksArray[i * totalColumns + j];
+                value = correlationRanksArray[i * totalColumns + j];
                 sumX_cacheArray[i] += value;
                 sumX2_cacheArray[i] += (value * value);
             }
@@ -381,22 +381,10 @@ public final class ExpressionData
 
             outOstream.writeInt(FILE_MAGIC_NUMBER);
 
-            if (USE_EXRESSION_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() && USE_MULTICORE_PROCESS)
+            if (USE_CORRELATION_CALCULATION_N_CORE_PARALLELISM.get() && USE_MULTICORE_PROCESS)
             {
                 calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
                         outOstream, outPrintWriter, writeCorrelationTextFile);
-            }
-            else if (USE_OPENCL_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && OPENCL_GPU_COMPUTING_ENABLED)
-            {
-                FloatBuffer expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataBuffer : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksBuffer : expressionDataBuffer );
-                performOpenCLGPUComputingCorrelationCalculation(expressionData, threshold, outOstream,
-                        outPrintWriter, writeCorrelationTextFile);
-            }
-            else if (USE_GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION.get() && USE_SHADERS_PROCESS)
-            {
-                FloatBuffer expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataBuffer : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksBuffer : expressionDataBuffer );
-                performGLSLGPUComputingCorrelationCalculation(expressionData, threshold, outOstream,
-                        outPrintWriter, writeCorrelationTextFile);
             }
             else
             {
@@ -418,7 +406,7 @@ public final class ExpressionData
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in ExpressionData.buildCorrelationNetwork()\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("IOException in buildCorrelationNetwork()\n" + ioe.getMessage());
             JOptionPane.showMessageDialog(layoutFrame, "IOException in building the Correlation network\n" + ioe.getMessage(), "Error: IOException in building the Correlation network", JOptionPane.ERROR_MESSAGE);
         }
         finally
@@ -429,7 +417,7 @@ public final class ExpressionData
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException in ExpressionData.buildCorrelationNetwork() closing the outOstream stream\n" + ioe.getMessage());
+                if (DEBUG_BUILD) println("IOException in buildCorrelationNetwork() closing the outOstream stream\n" + ioe.getMessage());
                 JOptionPane.showMessageDialog(layoutFrame, "IOException in closing the Correlation network outOstream stream\n" + ioe.getMessage(), "Error: IOException in closing the Correlation network outOstream stream", JOptionPane.ERROR_MESSAGE);
             }
 
@@ -470,7 +458,7 @@ public final class ExpressionData
     private void performSingleCoreCorrelationCalculationAndWriteToFile(float threshold, ObjectOutputStream outOstream,
             PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
-        float[] expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksArray : expressionDataArray );
+        float[] correlationData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? correlationDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? correlationRanksArray : correlationDataArray );
         float correlation = 0.0f;
         for (int i = 0; i < totalRows - 1; i++) // last row does not perform any calculations, thus skipped
         {
@@ -480,7 +468,7 @@ public final class ExpressionData
 
             for (int j = (i + 1); j < totalRows; j++)
             {
-                correlation = calculateCorrelation(i, j, expressionData);
+                correlation = calculateCorrelation(i, j, correlationData);
                 if (correlation >= threshold)
                 {
                     outOstream.writeInt(j);
@@ -573,7 +561,7 @@ public final class ExpressionData
     {
         LoggerThreadPoolExecutor executor = new LoggerThreadPoolExecutor(NUMBER_OF_AVAILABLE_PROCESSORS, NUMBER_OF_AVAILABLE_PROCESSORS, 0L, TimeUnit.MILLISECONDS,
                                                                          new LinkedBlockingQueue<Runnable>(NUMBER_OF_AVAILABLE_PROCESSORS),
-                                                                         new LoggerThreadFactory("ExpressionData"),
+                                                                         new LoggerThreadFactory("correlationData"),
                                                                          new ThreadPoolExecutor.CallerRunsPolicy() );
 
         cyclicBarrierTimer.clear();
@@ -597,7 +585,7 @@ public final class ExpressionData
             if (DEBUG_BUILD) println("Problem with pausing the main correlation calculation thread in performMultiCoreCorrelationCalculation()!:\n" + ex.getMessage());
         }
 
-        if (DEBUG_BUILD) println("\nTotal ExpressionData N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
+        if (DEBUG_BUILD) println("\nTotal Correlation Data N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
     }
 
     /**
@@ -605,7 +593,7 @@ public final class ExpressionData
     */
     private void allCorrelationCalculations(int threadId, boolean isPowerOfTwo, int startRow, int endRow, float[] stepResults, int[] cachedRowsResultsIndicesToSkip)
     {
-        float[] expressionData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? expressionDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? expressionRanksArray : expressionDataArray );
+        float[] correlationData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? correlationDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? correlationRanksArray : correlationDataArray );
         int rowResultIndex = 0;
         if (isPowerOfTwo)
         {
@@ -616,7 +604,7 @@ public final class ExpressionData
                     updateMultiCoreGUI();
 
                     for (int j = (i + 1); j < totalRows; j++)
-                        stepResults[rowResultIndex++] = calculateCorrelation(i, j, expressionData);
+                        stepResults[rowResultIndex++] = calculateCorrelation(i, j, correlationData);
                 }
                 else
                 {
@@ -638,7 +626,7 @@ public final class ExpressionData
                     updateMultiCoreGUI();
 
                     for (int j = (i + 1); j < totalRows; j++)
-                        stepResults[rowResultIndex++] = calculateCorrelation(i, j, expressionData);
+                        stepResults[rowResultIndex++] = calculateCorrelation(i, j, correlationData);
                 }
                 else
                 {
@@ -775,101 +763,6 @@ public final class ExpressionData
     }
 
     /**
-    *  Main method of the OpenCL GPU correlation calculation data parallel execution code.
-    */
-    private void performOpenCLGPUComputingCorrelationCalculation(FloatBuffer expressionBuffer, float threshold,
-            ObjectOutputStream outOstream, PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
-    {
-        org.Kajeka.GPUComputing.OpenCLContext.ExpressionData.ExpressionDataComputing expressionDataComputingContext = new org.Kajeka.GPUComputing.OpenCLContext.ExpressionData.ExpressionDataComputing( layoutFrame, true, COMPARE_GPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_WITH_CPU.get() );
-        expressionDataComputingContext.initializeExpressionDataComputingVariables(this, layoutProgressBarDialog, nf1, nf2, nf3, totalRows, totalColumns, rowIDsArray, sumX_cacheBuffer, sumX_sumX2_cacheBuffer, sumColumns_X2_cacheBuffer, expressionBuffer, threshold, outOstream, outPrintWriter, EXPRESSION_DATA_GPU_COMPUTING_MAX_ERROR_THRESHOLD);
-        expressionDataComputingContext.startGPUComputingProcessing();
-
-        // CPU fail-safe mechanism if OpenCL GPU Computing fails for some reason
-        if ( expressionDataComputingContext.getErrorOccured() )
-        {
-            if (USE_MULTICORE_PROCESS)
-            {
-                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
-                        outOstream, outPrintWriter, writeCorrelationTextFile);
-            }
-            else
-            {
-                performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream,
-                        outPrintWriter, writeCorrelationTextFile);
-            }
-        }
-
-        expressionDataComputingContext = null;
-    }
-
-    /**
-    *  Main method of the GLSL GPU correlation calculation data parallel execution code.
-    */
-    private void performGLSLGPUComputingCorrelationCalculation(FloatBuffer expressionBuffer, float threshold,
-            ObjectOutputStream outOstream, PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
-    {
-        // MAX_ALLOWED_TEXTURE_SIZE = 3584
-        // TEXTURE_2D_ARB_R_32, MAX_ALLOWED_TEXTURE_SIZE, 14182, 52
-        // TEXTURE_2D_ARB_R_32, MAX_ALLOWED_TEXTURE_SIZE, 26182, 92
-        // TEXTURE_2D_ARB_R_32, MAX_ALLOWED_TEXTURE_SIZE, 36182, 122
-        //
-        // MAX_ALLOWED_TEXTURE_SIZE = 1536
-        // TEXTURE_2D_ARB_RGBA_32, MAX_ALLOWED_TEXTURE_SIZE, 14182, 52
-        // TEXTURE_2D_ARB_RGBA_32, MAX_ALLOWED_TEXTURE_SIZE, 26182, 92
-        // TEXTURE_2D_ARB_RGBA_32, MAX_ALLOWED_TEXTURE_SIZE, 36182, 122
-        //
-        //
-        // MAX_ALLOWED_TEXTURE_SIZE = 3584
-        // TEXTURE_RECTANGLE_ARB_R_32, MAX_ALLOWED_TEXTURE_SIZE, 14182, 52
-        // TEXTURE_RECTANGLE_ARB_R_32, MAX_ALLOWED_TEXTURE_SIZE, 26182, 92
-        // TEXTURE_RECTANGLE_ARB_R_32, MAX_ALLOWED_TEXTURE_SIZE, 36182, 122
-        //
-        // MAX_ALLOWED_TEXTURE_SIZE = 1536
-        // TEXTURE_RECTANGLE_ARB_RGBA_32, MAX_ALLOWED_TEXTURE_SIZE, 14182, 52
-        // TEXTURE_RECTANGLE_ARB_RGBA_32, MAX_ALLOWED_TEXTURE_SIZE, 26182, 92
-        // TEXTURE_RECTANGLE_ARB_RGBA_32, MAX_ALLOWED_TEXTURE_SIZE, 36182, 122
-
-        int textureSize = GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_SIZE.get();
-        AllTextureParameters.TextureParameters textureParameters = AllTextureParameters.TEXTURE_RECTANGLE_ARB_R_32;
-        String textureTypeString = GLSL_GPGPU_COMPUTING_EXRESSION_CORRELATION_CALCULATION_TEXTURE_TYPE.get();
-        if ( textureTypeString.equals( GLSLTextureTypes.TEXTURE_RECTANGLE_ARB_R_32.toString() ) )
-            textureParameters = AllTextureParameters.TEXTURE_RECTANGLE_ARB_R_32;
-        else if ( textureTypeString.equals( GLSLTextureTypes.TEXTURE_2D_ARB_R_32.toString() ) )
-            textureParameters = AllTextureParameters.TEXTURE_2D_ARB_R_32;
-        else if ( textureTypeString.equals( GLSLTextureTypes.TEXTURE_RECTANGLE_ARB_RGBA_32.toString() ) )
-        {
-            textureParameters = AllTextureParameters.TEXTURE_RECTANGLE_ARB_RGBA_32;
-            textureSize /= 2;
-        }
-        else if ( textureTypeString.equals( GLSLTextureTypes.TEXTURE_2D_ARB_RGBA_32.toString() ) )
-        {
-            textureParameters = AllTextureParameters.TEXTURE_2D_ARB_RGBA_32;
-            textureSize /= 2;
-        }
-
-        org.Kajeka.GPUComputing.OpenGLContext.ExpressionData.ExpressionDataComputing expressionDataComputingContext = new org.Kajeka.GPUComputing.OpenGLContext.ExpressionData.ExpressionDataComputing(textureParameters, textureSize, totalRows, totalColumns, true);
-        expressionDataComputingContext.initializeExpressionDataComputingVariables(this, layoutProgressBarDialog, nf1, nf2, nf3, rowIDsArray, sumX_cacheBuffer, sumX_sumX2_cacheBuffer, sumColumns_X2_cacheBuffer, expressionBuffer, threshold, outOstream, outPrintWriter, EXPRESSION_DATA_GPU_COMPUTING_MAX_ERROR_THRESHOLD);
-        expressionDataComputingContext.doGPUComputingProcessing();
-
-        // CPU fail-safe mechanism if GLSL GPU Computing fails for some reason
-        if ( expressionDataComputingContext.getErrorOccured() )
-        {
-            if (USE_MULTICORE_PROCESS)
-            {
-                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
-                        outOstream, outPrintWriter, writeCorrelationTextFile);
-            }
-            else
-            {
-                performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream,
-                        outPrintWriter, writeCorrelationTextFile);
-            }
-        }
-
-        expressionDataComputingContext = null;
-    }
-
-    /**
     *  Calculates the correlation value.
     */
     public float calculateCorrelation(int firstRow, int secondRow, float[] matrix)
@@ -905,11 +798,11 @@ public final class ExpressionData
         sumColumns_X2_cacheBuffer.clear();
         sumColumns_X2_cacheBuffer = null;
         sumColumns_X2_cacheArray = null;
-        if (expressionRanksBuffer != null)
+        if (correlationRanksBuffer != null)
         {
-            expressionRanksBuffer.clear();
-            expressionRanksBuffer = null;
-            expressionRanksArray = null;
+            correlationRanksBuffer.clear();
+            correlationRanksBuffer = null;
+            correlationRanksArray = null;
         }
 
         nf1 = null;
@@ -928,7 +821,7 @@ public final class ExpressionData
 
             for (int column = 0; column < totalColumns; column++)
             {
-                float value = getExpressionDataValue(row, column);
+                float value = getDataValue(row, column);
 
                 sumX_cacheArray[row] += value;
                 sumX2_cacheArray[row] += (value * value);
@@ -954,38 +847,38 @@ public final class ExpressionData
     }
 
     /**
-    *  Gets a value from the expression data structure.
+    *  Gets a value from the data structure.
     */
-    public float getExpressionDataValue(int i, int j)
+    public float getDataValue(int i, int j)
     {
-        return expressionDataArray[i * totalColumns + j];
+        return correlationDataArray[i * totalColumns + j];
     }
 
     /**
-    *  Sets a value to the expression data structure.
+    *  Sets a value to the data structure.
     */
-    public void setExpressionDataValue(int i, int j, float value)
+    public void setDataValue(int i, int j, float value)
     {
-        expressionDataArray[i * totalColumns + j] = value;
+        correlationDataArray[i * totalColumns + j] = value;
     }
 
     /**
-    *  Finds the max value from the expression data array.
+    *  Finds the max value from the data array.
     */
-    public float findGlobalMaxValueFromExpressionDataArray()
+    public float findGlobalMaxValueFromCorrelationDataArray()
     {
         float maxValue = Float.MIN_VALUE;
-        for (int i = 0; i < expressionDataArray.length; i++)
-            if (maxValue < expressionDataArray[i])
-                maxValue = expressionDataArray[i];
+        for (int i = 0; i < correlationDataArray.length; i++)
+            if (maxValue < correlationDataArray[i])
+                maxValue = correlationDataArray[i];
 
         return maxValue;
     }
 
     /**
-    *  Finds the local (per-node) max values from the expression data array.
+    *  Finds the local (per-node) max values from the data array.
     */
-    public float[] findLocalMaxValuesFromExpressionDataArray(Collection<GraphNode> allGraphNodes)
+    public float[] findLocalMaxValuesFromCorrelationDataArray(Collection<GraphNode> allGraphNodes)
     {
         float[] localMaxValues = new float[allGraphNodes.size()];
         float localMaxValue = 0.0f;
@@ -997,7 +890,7 @@ public final class ExpressionData
             index = getIdentityMap( node.getNodeName() );
             for (int currentTick = 0; currentTick < getTotalColumns(); currentTick++)
             {
-                tempValue = getExpressionDataValue(index, currentTick);
+                tempValue = getDataValue(index, currentTick);
                 if (localMaxValue < tempValue)
                     localMaxValue = tempValue;
             }
@@ -1109,7 +1002,7 @@ public final class ExpressionData
         float value = Float.MIN_VALUE;
         for (int column = 0; column < totalColumns; column++)
         {
-            value = java.lang.Math.max(value, getExpressionDataValue(row, column));
+            value = java.lang.Math.max(value, getDataValue(row, column));
         }
 
         return value;
@@ -1153,7 +1046,7 @@ public final class ExpressionData
         float value = Float.MAX_VALUE;
         for (int column = 0; column < totalColumns; column++)
         {
-            value = java.lang.Math.min(value, getExpressionDataValue(row, column));
+            value = java.lang.Math.min(value, getDataValue(row, column));
         }
 
         return value;
@@ -1211,7 +1104,7 @@ public final class ExpressionData
         float[] values = new float[totalColumns];
         for (int column = 0; column < totalColumns; column++)
         {
-            values[column] = getExpressionDataValue(row, column);
+            values[column] = getDataValue(row, column);
         }
 
         Arrays.sort(values);
@@ -1234,7 +1127,7 @@ public final class ExpressionData
 
         for (int column = 0; column < totalColumns; column++)
         {
-            rowSum += getExpressionDataValue(row, column);
+            rowSum += getDataValue(row, column);
         }
 
         return rowSum / totalColumns;
@@ -1262,7 +1155,7 @@ public final class ExpressionData
         float variance = 0.0f;
         for (int column = 0; column < totalColumns; column++)
         {
-            float x = getExpressionDataValue(row, column);
+            float x = getDataValue(row, column);
             variance += ((x - mean) * (x - mean));
         }
 
@@ -1356,11 +1249,11 @@ public final class ExpressionData
 
             if (sortedColumnMap != null)
             {
-                value = getExpressionDataValue(row, sortedColumnMap[column]);
+                value = getDataValue(row, sortedColumnMap[column]);
             }
             else
             {
-                value = getExpressionDataValue(row, column);
+                value = getDataValue(row, column);
             }
 
             switch (transformType)
@@ -1495,7 +1388,7 @@ public final class ExpressionData
         {
             for (int column = 0; column < totalColumns; column++)
             {
-                float value = getExpressionDataValue(row, column);
+                float value = getDataValue(row, column);
                 value = d.f(value);
 
                 if (value == Float.POSITIVE_INFINITY)
@@ -1511,7 +1404,7 @@ public final class ExpressionData
                     value = 0.0f;
                 }
 
-                setExpressionDataValue(row, column, value);
+                setDataValue(row, column, value);
             }
 
             int percent = (100 * row) / totalRows;

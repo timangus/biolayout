@@ -142,7 +142,7 @@ public abstract class ClassViewerPlotPanel extends JPanel
         {
             if (DEBUG_BUILD)
             {
-                println("Exception in ExpressionGraphPlotPanel.savePlotToImageFile():\n" + exc.getMessage());
+                println("Exception in savePlotToImageFile():\n" + exc.getMessage());
             }
 
             return false;

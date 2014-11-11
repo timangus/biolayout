@@ -1,4 +1,4 @@
-package org.Kajeka.Expression.Dialogs;
+package org.Kajeka.Correlation.Dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.Stack;
 import org.Kajeka.Utils.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.StaticLibraries.Utils;
 
@@ -18,10 +18,10 @@ import org.Kajeka.StaticLibraries.Utils;
 *
 */
 
-public final class ExpressionLoaderDialog extends JDialog implements ActionListener
+public final class CorrelationLoaderDialog extends JDialog implements ActionListener
 {
     /**
-    *  Serial version UID variable for the ExpressionLoaderDialog class.
+    *  Serial version UID variable for the CorrelationLoaderDialog class.
     */
     public static final long serialVersionUID = 111222333444555706L;
 
@@ -33,7 +33,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     private JComboBox<String> scaleTransformComboBox = null;
     private JEditorPane textArea = null;
     private JCheckBox saveCorrelationTextFileCheckBox = null;
-    private File expressionFile = null;
+    private File correlationFile = null;
 
     private boolean proceed = false;
     private boolean failed = false;
@@ -58,11 +58,11 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
     }
     private DataRect dataRect;
 
-    public ExpressionLoaderDialog(JFrame frame, File expressionFile)
+    public CorrelationLoaderDialog(JFrame frame, File correlationFile)
     {
-        super(frame, "Load Expression Data", true);
+        super(frame, "Load Correlation Data", true);
 
-        this.expressionFile = expressionFile;
+        this.correlationFile = correlationFile;
         this.dataRect = new DataRect();
 
         initActions(frame);
@@ -167,7 +167,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
         centrePanel.setLayout(new BorderLayout());
         textArea = new JEditorPane("text/html", "");
-        textArea.setToolTipText("Expression Data");
+        textArea.setToolTipText("Correlation Data");
 
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -362,11 +362,11 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
 
             if (transpose)
             {
-                tdm = new TextDelimitedMatrix(expressionFile, "\t",
+                tdm = new TextDelimitedMatrix(correlationFile,
                         NUM_PREVIEW_ROWS, NUM_PREVIEW_COLUMNS);
             } else
             {
-                tdm = new TextDelimitedMatrix(expressionFile, "\t",
+                tdm = new TextDelimitedMatrix(correlationFile,
                         NUM_PREVIEW_COLUMNS, NUM_PREVIEW_ROWS);
             }
 
@@ -501,7 +501,7 @@ public final class ExpressionLoaderDialog extends JDialog implements ActionListe
         {
            if (DEBUG_BUILD)
            {
-               println("IOException when parsing expression file:\n" + ioe.getMessage());
+               println("IOException when parsing correlation file:\n" + ioe.getMessage());
            }
         }
         finally

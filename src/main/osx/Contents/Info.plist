@@ -60,12 +60,12 @@
       <dict>
         <key>CFBundleTypeExtensions</key>
         <array>
-          <string>expression</string>
+          <string>layout</string>
         </array>
         <key>CFBundleTypeIconFile</key>
         <string>Icon.icns</string>
         <key>CFBundleTypeName</key>
-        <string>@name@ Expression File</string>
+        <string>@name@ Layout File</string>
         <key>CFBundleTypeOSTypes</key>
         <array>
           <string>expr</string>

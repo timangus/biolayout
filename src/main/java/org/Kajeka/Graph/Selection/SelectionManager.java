@@ -842,14 +842,14 @@ public final class SelectionManager
         layoutFrame.setEnabledNodeNameTextFieldAndSelectNodesTab(false, null, 0);
     }
 
-    public void addNodeToSelectedUpdateExpressionGraphViewOnly(GraphNode node, boolean includeHidden, boolean notUpdateTitleBar)
+    public void addNodeToSelectedupdateCorrelationGraphViewOnly(GraphNode node, boolean includeHidden, boolean notUpdateTitleBar)
     {
         HashSet<GraphNode> nodeSet = new HashSet<GraphNode>();
         nodeSet.add(node);
         addNodesToSelected(nodeSet, includeHidden, true, true, false, true, notUpdateTitleBar);
     }
 
-    public void addNodeToSelectedUpdateExpressionGraphViewOnly(Collection<GraphNode> nodes, boolean includeHidden, boolean notUpdateTitleBar)
+    public void addNodeToSelectedupdateCorrelationGraphViewOnly(Collection<GraphNode> nodes, boolean includeHidden, boolean notUpdateTitleBar)
     {
         addNodesToSelected(nodes, includeHidden, true, true, false, true, notUpdateTitleBar);
     }
@@ -869,7 +869,7 @@ public final class SelectionManager
         return addNodesToSelected(nodes, includeHidden, true, addEdges, true, false, false);
     }
 
-    public boolean addNodesToSelected(Collection<GraphNode> nodes, boolean includeHidden, boolean addSelectedNodes, boolean addEdges, boolean updateViewers, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
+    public boolean addNodesToSelected(Collection<GraphNode> nodes, boolean includeHidden, boolean addSelectedNodes, boolean addEdges, boolean updateViewers, boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar)
     {
         if (DEBUG_BUILD) println("Add nodes to Selected: " + nodes.size());
 
@@ -901,8 +901,8 @@ public final class SelectionManager
             setActionsEnable( !selectedNodes.isEmpty() );
         }
 
-        if (updateViewers || updateExpressionGraphViewOnly)
-            updateViewers(updateExpressionGraphViewOnly, notUpdateTitleBar);
+        if (updateViewers || updateCorrelationGraphViewOnly)
+            updateViewers(updateCorrelationGraphViewOnly, notUpdateTitleBar);
         updateGraphStatistics();
         updateFrameStatusLabel();
 
@@ -1457,7 +1457,7 @@ public final class SelectionManager
         removeNodeFromSelected(node, true, false, false);
     }
 
-    public void removeNodeFromSelected(GraphNode node, boolean updateViewers, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
+    public void removeNodeFromSelected(GraphNode node, boolean updateViewers, boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar)
     {
         selectedNodes.remove(node);
 
@@ -1466,13 +1466,13 @@ public final class SelectionManager
                 selectedEdges.remove(graphEdge);
 
         setActionsEnable( !selectedNodes.isEmpty() );
-        if (updateViewers || updateExpressionGraphViewOnly)
-            updateViewers(updateExpressionGraphViewOnly, notUpdateTitleBar);
+        if (updateViewers || updateCorrelationGraphViewOnly)
+            updateViewers(updateCorrelationGraphViewOnly, notUpdateTitleBar);
         updateGraphStatistics();
         updateFrameStatusLabel();
     }
 
-    public void removeNodeFromSelected(Collection<GraphNode> nodes, boolean updateViewers, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
+    public void removeNodeFromSelected(Collection<GraphNode> nodes, boolean updateViewers, boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar)
     {
         selectedNodes.removeAll(nodes);
 
@@ -1482,8 +1482,8 @@ public final class SelectionManager
                     selectedEdges.remove(graphEdge);
 
         setActionsEnable( !selectedNodes.isEmpty() );
-        if (updateViewers || updateExpressionGraphViewOnly)
-            updateViewers(updateExpressionGraphViewOnly, notUpdateTitleBar);
+        if (updateViewers || updateCorrelationGraphViewOnly)
+            updateViewers(updateCorrelationGraphViewOnly, notUpdateTitleBar);
         updateGraphStatistics();
         updateFrameStatusLabel();
     }
@@ -1493,10 +1493,10 @@ public final class SelectionManager
         updateViewers(false, false);
     }
 
-    private void updateViewers(boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
+    private void updateViewers(boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar)
     {
         if ( layoutFrame.getClassViewerFrame().isVisible() )
-            layoutFrame.getClassViewerFrame().populateClassViewer(updateExpressionGraphViewOnly, notUpdateTitleBar);
+            layoutFrame.getClassViewerFrame().populateClassViewer(updateCorrelationGraphViewOnly, notUpdateTitleBar);
     }
 
     private void updateGraphStatistics()

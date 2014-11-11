@@ -1,13 +1,13 @@
 package org.Kajeka.Files.Parsers;
 
+import org.Kajeka.Correlation.CorrelationData;
 import java.io.*;
 import java.util.HashSet;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.CoreUI.Dialogs.*;
-import org.Kajeka.Expression.*;
 import org.Kajeka.Network.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
@@ -17,19 +17,19 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public class ExpressionParser extends CoreParser
+public class CorrelationParser extends CoreParser
 {
     private ObjectInputStream iistream = null;
     File file = null;
-    private ExpressionData expressionData = null;
+    private CorrelationData correlationData = null;
     private int[][] counts = null;
 
-    public ExpressionParser(NetworkContainer nc, LayoutFrame layoutFrame, ExpressionData expressionData)
+    public CorrelationParser(NetworkContainer nc, LayoutFrame layoutFrame, CorrelationData correlationData)
     {
         super(nc, layoutFrame);
 
-        this.expressionData = expressionData;
-        this.counts = expressionData.getCounts();
+        this.correlationData = correlationData;
+        this.counts = correlationData.getCounts();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ExpressionParser extends CoreParser
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException while closing streamers in ExpressionParser.init():\n" + ioe.getMessage());
+                if (DEBUG_BUILD) println("IOException while closing streamers in init():\n" + ioe.getMessage());
             }
             finally
             {
@@ -86,11 +86,11 @@ public class ExpressionParser extends CoreParser
             while (iistream.available() != 0)
             {
                 nodeId = iistream.readInt();
-                percent = (int)( 100.0f * ( (float)counter / (float)expressionData.getTotalRows() ) );
+                percent = (int)( 100.0f * ( (float)counter / (float)correlationData.getTotalRows() ) );
 
                 layoutProgressBarDialog.incrementProgress(percent);
 
-                nodeOne = expressionData.getRowID(nodeId);
+                nodeOne = correlationData.getRowID(nodeId);
                 for (;;) // while (true)
                 {
                     otherId = iistream.readInt();
@@ -108,7 +108,7 @@ public class ExpressionParser extends CoreParser
 
                             if (!filterOne && !filterTwo)
                             {
-                                nodeTwo = expressionData.getRowID(otherId);
+                                nodeTwo = correlationData.getRowID(otherId);
                                 nc.addNetworkConnection(nodeOne, nodeTwo, weight);
                             }
                         }
@@ -124,7 +124,7 @@ public class ExpressionParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in ExpressionParser.parse():\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("IOException in parse():\n" + ioe.getMessage());
         }
         finally
         {
@@ -134,7 +134,7 @@ public class ExpressionParser extends CoreParser
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException while closing streams in ExpressionParser.parse():\n" + ioe.getMessage());
+                if (DEBUG_BUILD) println("IOException while closing streams in parse():\n" + ioe.getMessage());
             }
             finally
             {
@@ -153,7 +153,7 @@ public class ExpressionParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException while closing streams in ExpressionParser.close():\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("IOException while closing streams in close():\n" + ioe.getMessage());
         }
     }
 
@@ -197,7 +197,7 @@ public class ExpressionParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in ExpressionParser.scan():\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("IOException in scan():\n" + ioe.getMessage());
         }
     }
 
@@ -205,7 +205,7 @@ public class ExpressionParser extends CoreParser
     {
         try
         {
-            counts = expressionData.clearCounts();
+            counts = correlationData.clearCounts();
             iistream = new ObjectInputStream( new BufferedInputStream( new FileInputStream(file) ) );
             scan();
         }
@@ -213,7 +213,7 @@ public class ExpressionParser extends CoreParser
         {
             if (DEBUG_BUILD)
             {
-                println("IOException in ExpressionParser.rescan():\n" + ioe.getMessage());
+                println("IOException in rescan():\n" + ioe.getMessage());
             }
         }
     }
@@ -228,12 +228,12 @@ public class ExpressionParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in ExpressionParser.check_file():\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("IOException in check_file():\n" + ioe.getMessage());
 
             return false;
         }
 
-        if ( magicNumber == ExpressionData.FILE_MAGIC_NUMBER)
+        if ( magicNumber == CorrelationData.FILE_MAGIC_NUMBER)
         {
             return true;
         }

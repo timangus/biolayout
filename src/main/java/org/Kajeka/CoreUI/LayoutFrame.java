@@ -1,5 +1,9 @@
 package org.Kajeka.CoreUI;
 
+import org.Kajeka.Correlation.Dialogs.CorrelationLoaderDialog;
+import org.Kajeka.Correlation.Dialogs.CorrelationLoaderSummaryDialog;
+import org.Kajeka.Correlation.CorrelationData;
+import org.Kajeka.Correlation.CorrelationLoader;
 import org.Kajeka.Files.webservice.ImportWebService;
 import java.awt.*;
 import java.awt.event.*;
@@ -18,8 +22,6 @@ import org.Kajeka.CoreUI.Tables.TableModels.*;
 import org.Kajeka.CoreUI.ToolBars.*;
 import org.Kajeka.Environment.*;
 import org.Kajeka.Environment.Preferences.*;
-import org.Kajeka.Expression.*;
-import org.Kajeka.Expression.Dialogs.*;
 import org.Kajeka.Files.*;
 import org.Kajeka.Files.Parsers.*;
 import org.Kajeka.GPUComputing.OpenCLContext.Dummy.*;
@@ -40,7 +42,7 @@ import static org.Kajeka.StaticLibraries.EnumUtils.*;
 import static org.Kajeka.StaticLibraries.Random.*;
 import static org.Kajeka.Environment.AnimationEnvironment.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
 import org.Kajeka.Utils.ToolbarLayout;
@@ -88,7 +90,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private SignalingPetriNetLoadSimulation signalingPetriNetLoadSimulation = null;
     private LayoutGraphPropertiesDialog layoutGraphPropertiesDialog = null;
     private LayoutGraphStatisticsDialog layoutGraphStatisticsDialog = null;
-    private ExpressionData expressionData = null;
+    private CorrelationData correlationData = null;
     private ClassViewerFrame classViewerFrame = null;
     private LayoutAnimationControlDialog layoutAnimationControlDialog = null;
     private LayoutClusterMCL layoutClusterMCL = null;
@@ -225,7 +227,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         splashScreen.setText(" Creating Menus & All UIs...");
         layoutClusterMCL = new LayoutClusterMCL(this, graph);
         layoutGraphStatisticsDialog = new LayoutGraphStatisticsDialog(this, graph);
-        expressionData = new ExpressionData(this);
+        correlationData = new CorrelationData(this);
         classViewerFrame = new ClassViewerFrame(this);
         SPNSimulationDialog = new SignalingPetriNetSimulationDialog(nc, this);
         layoutAnimationControlDialog = new LayoutAnimationControlDialog(this);
@@ -314,7 +316,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         importWebService = new ImportWebService(this);
 
         exportClassSets = new ExportClassSets(this);
-        exportCorrelationNodesEdgesTable = new ExportCorrelationNodesEdgesTable(this, expressionData);
+        exportCorrelationNodesEdgesTable = new ExportCorrelationNodesEdgesTable(this, correlationData);
         exportD3 = new ExportD3(this);
 
         layoutPrintServices = new LayoutPrintServices();
@@ -1072,7 +1074,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     {
         classViewerFrame.closeClassViewerWindow();
         layoutAnimationControlDialog.closeDialogWindow();
-        ANIMATION_EXPRESSION_DATA = null;
+        ANIMATION_CORRELATION_DATA = null;
         ANIMATION_SIMULATION_RESULTS = null;
         TEMPORARILY_DISABLE_ALL_GRAPH_RENDERING = true;
         graph.resetAllValues();
@@ -1086,14 +1088,14 @@ public final class LayoutFrame extends JFrame implements GraphListener
         String fileName = file.getAbsolutePath();
         String fileExtension = fileName.substring( fileName.lastIndexOf(".") + 1, fileName.length() ).toUpperCase(); // tolerance to upper/lowercase mix-ups
         DataTypes prevDataType = DATA_TYPE;
-        String prevExpressionFile = EXPRESSION_FILE;
-        String prevExpressionFilePath = EXPRESSION_FILE_PATH;
+        String prevCorrelationFile = CORRELATION_FILE;
+        String prevCorrelationFilePath = CORRELATION_FILE_PATH;
         DATA_TYPE = DataTypes.NONE;
-        EXPRESSION_FILE = "";
-        EXPRESSION_FILE_PATH = "";
+        CORRELATION_FILE = "";
+        CORRELATION_FILE_PATH = "";
         WEIGHTED_EDGES = false;
-        ExpressionLoader expressionLoader = null;
-        String reasonForExpressionLoadFailure = null;
+        CorrelationLoader correlationLoader = null;
+        String reasonForLoadFailure = null;
         double correlationCutOffValue = 0.0;
 
         // Blast data
@@ -1108,50 +1110,50 @@ public final class LayoutFrame extends JFrame implements GraphListener
             parser = new BioPaxParser(nc, this);
             DATA_TYPE = DataTypes.OWL;
         }
-        // Expression data (non-layed out)
-        else if ( fileExtension.equals( SupportedInputFileTypes.EXPRESSION.toString() ) )
+        // Correlation data (non-layed out)
+        else if ( fileExtension.equals( SupportedInputFileTypes.CSV.toString() ) )
         {
-            ExpressionLoaderDialog expressionLoaderDialog = new ExpressionLoaderDialog(this, file);
+            CorrelationLoaderDialog correlationLoaderDialog = new CorrelationLoaderDialog(this, file);
 
-            if (!expressionLoaderDialog.failed())
+            if (!correlationLoaderDialog.failed())
             {
                 // Only show if we haven't already failed
-                expressionLoaderDialog.setVisible(true);
+                correlationLoaderDialog.setVisible(true);
             }
 
-            if ( isNotSkipped = expressionLoaderDialog.proceed() )
+            if ( isNotSkipped = correlationLoaderDialog.proceed() )
             {
-                // call to clearNetwork() has to be here or the expression data parser will fail
+                // call to clearNetwork() has to be here or the data parser will fail
                 clearNetworkAndGraph();
 
-                expressionLoader = new ExpressionLoader(layoutClassSetsManager);
-                expressionLoader.init(file, expressionData,
-                        expressionLoaderDialog.getFirstDataColumn(),
-                        expressionLoaderDialog.getFirstDataRow(),
-                        expressionLoaderDialog.transpose() );
-                isSuccessful = expressionLoader.parse(this);
-                reasonForExpressionLoadFailure = expressionLoader.reasonForFailure; // "" if no failure
+                correlationLoader = new CorrelationLoader(layoutClassSetsManager);
+                correlationLoader.init(file, correlationData,
+                        correlationLoaderDialog.getFirstDataColumn(),
+                        correlationLoaderDialog.getFirstDataRow(),
+                        correlationLoaderDialog.transpose() );
+                isSuccessful = correlationLoader.parse(this);
+                reasonForLoadFailure = correlationLoader.reasonForFailure; // "" if no failure
 
                 if (isSuccessful)
                 {
-                    EXPRESSION_FILE = file.getName();
-                    EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-                    EXPRESSION_DATA_FIRST_COLUMN = expressionLoaderDialog.getFirstDataColumn();
-                    EXPRESSION_DATA_FIRST_ROW = expressionLoaderDialog.getFirstDataRow();
-                    EXPRESSION_DATA_TRANSPOSE = expressionLoaderDialog.transpose();
-                    DATA_TYPE = DataTypes.EXPRESSION;
+                    CORRELATION_FILE = file.getName();
+                    CORRELATION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
+                    CORRELATION_DATA_FIRST_COLUMN = correlationLoaderDialog.getFirstDataColumn();
+                    CORRELATION_DATA_FIRST_ROW = correlationLoaderDialog.getFirstDataRow();
+                    CORRELATION_DATA_TRANSPOSE = correlationLoaderDialog.transpose();
+                    DATA_TYPE = DataTypes.CORRELATION;
 
-                    boolean generateTextFile = expressionLoaderDialog.saveCorrelationTextFile();
+                    boolean generateTextFile = correlationLoaderDialog.saveCorrelationTextFile();
 
-                    expressionData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM);
+                    correlationData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM);
 
-                    if (DEBUG_BUILD) println("Expression File is: " + EXPRESSION_FILE_PATH + EXPRESSION_FILE);
+                    if (DEBUG_BUILD) println("Correlation File is: " + CORRELATION_FILE_PATH + CORRELATION_FILE);
                     String metricName = CURRENT_METRIC.toString().toLowerCase();
 
                     String correlationFilename = IOUtils.getPrefix(file.getAbsolutePath());
                     correlationFilename += "_r-" + STORED_CORRELATION_THRESHOLD;
 
-                    if (EXPRESSION_DATA_TRANSPOSE)
+                    if (CORRELATION_DATA_TRANSPOSE)
                     {
                         correlationFilename += "_transpose";
                     }
@@ -1167,7 +1169,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     File correlationFile = new File(correlationFilename);
                     if (!correlationFile.exists())
                     {
-                        expressionData.buildCorrelationNetwork(layoutProgressBarDialog,
+                        correlationData.buildCorrelationNetwork(layoutProgressBarDialog,
                                 correlationFile, metricName, STORED_CORRELATION_THRESHOLD,
                                 generateTextFile);
 
@@ -1185,8 +1187,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         File correlationTextFile = new File(correlationFilename + ".txt");
                         boolean forceGeneration = generateTextFile && !correlationTextFile.exists();
 
-                        // there seems to be saved expression correlations here, let's check they are good for our requirements
-                        ExpressionParser checker = new ExpressionParser(nc, this, expressionData);
+                        // there seems to be saved correlations here, let's check they are good for our requirements
+                        CorrelationParser checker = new CorrelationParser(nc, this, correlationData);
                         checker.init(correlationFile, fileExtension);
 
                         if (!forceGeneration && checker.checkFile())
@@ -1201,7 +1203,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                             // The file is not good, close file before deletion, delete it & rebuild it
                             checker.close();
                             correlationFile.delete();
-                            expressionData.buildCorrelationNetwork(layoutProgressBarDialog,
+                            correlationData.buildCorrelationNetwork(layoutProgressBarDialog,
                                     correlationFile, metricName, STORED_CORRELATION_THRESHOLD,
                                     generateTextFile);
                             file = correlationFile;
@@ -1210,17 +1212,17 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
                     if (isNotSkipped)
                     {
-                        ExpressionParser scanner = new ExpressionParser(nc, this, expressionData);
+                        CorrelationParser scanner = new CorrelationParser(nc, this, correlationData);
                         scanner.init(file, fileExtension);
                         scanner.scan();
 
-                        ExpressionLoaderSummaryDialog expressionLoaderSummaryDialog =
-                                new ExpressionLoaderSummaryDialog(this, expressionData, scanner);
-                        expressionLoaderSummaryDialog.setVisible(true);
+                        CorrelationLoaderSummaryDialog correlationLoaderSummaryDialog =
+                                new CorrelationLoaderSummaryDialog(this, correlationData, scanner);
+                        correlationLoaderSummaryDialog.setVisible(true);
 
-                        if (isNotSkipped = expressionLoaderSummaryDialog.proceed())
+                        if (isNotSkipped = correlationLoaderSummaryDialog.proceed())
                         {
-                            parser = new ExpressionParser(nc, this, expressionData);
+                            parser = new CorrelationParser(nc, this, correlationData);
 
                             if (!exportCorrelationNodesEdgesTable.getExportCorrelationNodesEdgesTableAction().isEnabled())
                             {
@@ -1232,13 +1234,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
                 if (!isSuccessful || !isNotSkipped)
                 {
-                    // make sure previous network is deleted from the renderers if expression parsing is skipped,
+                    // make sure previous network is deleted from the renderers if parsing is skipped,
                     // as the calls to clear() has cleaned it from network component memory
                     graph.rebuildGraph();
 
                     DATA_TYPE = DataTypes.NONE;
-                    EXPRESSION_FILE = "";
-                    EXPRESSION_FILE_PATH = "";
+                    CORRELATION_FILE = "";
+                    CORRELATION_FILE_PATH = "";
                     fileNameLoaded = "";
                     fileNameAbsolutePath = "";
                     setTitle(VERSION);
@@ -1246,15 +1248,15 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
                     disableAllActions();
 
-                    reasonForExpressionLoadFailure = expressionLoader.reasonForFailure;
+                    reasonForLoadFailure = correlationLoader.reasonForFailure;
                 }
             }
             else
             {
-                    // expression file parsing was canceled, restoring original datatypes/names
+                    // file parsing was canceled, restoring original datatypes/names
                     DATA_TYPE = prevDataType;
-                    EXPRESSION_FILE = prevExpressionFile;
-                    EXPRESSION_FILE_PATH = prevExpressionFilePath;
+                    CORRELATION_FILE = prevCorrelationFile;
+                    CORRELATION_FILE_PATH = prevCorrelationFilePath;
             }
         }
         // Graphml Data
@@ -1328,7 +1330,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 if (DEBUG_BUILD) println("Parsing: " + file.getName() );
 
                 // rest of file types perform network clearing here
-                if ( !DATA_TYPE.equals(DataTypes.EXPRESSION) )
+                if ( !DATA_TYPE.equals(DataTypes.CORRELATION) )
                     clearNetworkAndGraph();
 
                 // load in a correlation or raw network
@@ -1350,43 +1352,45 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     }
                 }
 
-                // just loaded a correlation file here from raw expression data
+                // just loaded a correlation file here from raw data
                 // loading annotations now
-                if ( DATA_TYPE.equals(DataTypes.EXPRESSION) )
+                if ( DATA_TYPE.equals(DataTypes.CORRELATION) )
                 {
-                    isSuccessful = isSuccessful && expressionLoader.parseAnnotations(this, nc);
+                    isSuccessful = isSuccessful && correlationLoader.parseAnnotations(this, nc);
                 }
-                // else loading presaved data that points to expression data
-                // load expression data and annotations from original file
-                else if ( !EXPRESSION_FILE.isEmpty() )
+                // else loading presaved data that points to data
+                // load data and annotations from original file
+                else if ( !CORRELATION_FILE.isEmpty() )
                 {
-                    String pathName = ( !EXPRESSION_FILE_PATH.isEmpty() ) ? EXPRESSION_FILE_PATH : file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-                    File expressionFile = new File(pathName + EXPRESSION_FILE);
+                    String pathName = ( !CORRELATION_FILE_PATH.isEmpty() ) ? CORRELATION_FILE_PATH : file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
+                    File correlationFile = new File(pathName + CORRELATION_FILE);
 
-                    if (DEBUG_BUILD) println("Loading Expression Data from: " + expressionFile.toString() );
+                    if (DEBUG_BUILD) println("Loading Correlation Data from: " + correlationFile.toString() );
 
-                    if ( expressionFile.exists() )
+                    if ( correlationFile.exists() )
                     {
-                        if (DEBUG_BUILD) println("Loading Expression Data");
+                        if (DEBUG_BUILD) println("Loading Correlation Data");
 
-                        expressionLoader = new ExpressionLoader(layoutClassSetsManager);
-                        expressionLoader.init(expressionFile, expressionData,
-                                EXPRESSION_DATA_FIRST_COLUMN,
-                                EXPRESSION_DATA_FIRST_ROW,
-                                EXPRESSION_DATA_TRANSPOSE);
-                        isSuccessful = expressionLoader.parse(this);
-                        reasonForExpressionLoadFailure = expressionLoader.reasonForFailure; // "" if no failure
+                        correlationLoader = new CorrelationLoader(layoutClassSetsManager);
+                        correlationLoader.init(correlationFile, correlationData,
+                                CORRELATION_DATA_FIRST_COLUMN,
+                                CORRELATION_DATA_FIRST_ROW,
+                                CORRELATION_DATA_TRANSPOSE);
+                        isSuccessful = correlationLoader.parse(this);
+                        reasonForLoadFailure = correlationLoader.reasonForFailure; // "" if no failure
 
-                        expressionData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM);
+                        correlationData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM);
 
-                        isSuccessful = isSuccessful && expressionLoader.parseAnnotations(this, nc);
-                        DATA_TYPE = DataTypes.EXPRESSION;
-                        EXPRESSION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
+                        isSuccessful = isSuccessful && correlationLoader.parseAnnotations(this, nc);
+                        DATA_TYPE = DataTypes.CORRELATION;
+                        CORRELATION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
                     }
                     else
                     {
-                        String expressionFilePathMessage = ( !EXPRESSION_FILE_PATH.isEmpty() ) ? "'" + pathName + "'" : "currently loading layout file drive/folder '" + pathName + "'";
-                        JOptionPane.showMessageDialog(this, "The expression data file from where this layout file was derived from was not found.\nExpected drive/folder: " + expressionFilePathMessage + "\nThe layout file will now be loaded with no underlying expression data profile information.", "Loading expression data profile information warning", JOptionPane.WARNING_MESSAGE);
+                        String correlationFilePathMessage = ( !CORRELATION_FILE_PATH.isEmpty() ) ? "'" + pathName + "'" : "currently loading layout file drive/folder '" + pathName + "'";
+                        JOptionPane.showMessageDialog(this, "The correlation data file from where this layout file was derived from was not found.\nExpected drive/folder: " +
+                                correlationFilePathMessage + "\nThe layout file will now be loaded with no underlying correlation data profile information.",
+                                "Loading correlation data profile information warning", JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1398,9 +1402,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
             if ( ( DATA_TYPE.equals(DataTypes.GRAPHML) || DATA_TYPE.equals(DataTypes.LAYOUT) ) && nc.getIsPetriNet() )
                 WEIGHTED_EDGES = true;
 
-            // directional edges off by default for expression/matrix files, since directionality there has no meaning
+            // directional edges off by default, since directionality there has no meaning
             // for the rest of the data files, directionality can be on by default
-            boolean disableDirectionalEdges = DATA_TYPE.equals(DataTypes.EXPRESSION) || DATA_TYPE.equals(DataTypes.MATRIX);
+            boolean disableDirectionalEdges = DATA_TYPE.equals(DataTypes.CORRELATION) || DATA_TYPE.equals(DataTypes.MATRIX);
             DIRECTIONAL_EDGES.set(!disableDirectionalEdges);
             layoutGraphPropertiesDialog.setHasNewPreferencesBeenApplied(true);
             graph.getSelectionManager().getGroupManager().resetState();
@@ -1446,12 +1450,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
         {
             fileNameLoaded = file.getName();
             fileNameAbsolutePath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-            String correlationValueString = ( DATA_TYPE.equals(DataTypes.EXPRESSION) ) ? " at " + CURRENT_CORRELATION_THRESHOLD : ( DATA_TYPE.equals(DataTypes.MATRIX) ? " at " + correlationCutOffValue : "" );
+            String correlationValueString = ( DATA_TYPE.equals(DataTypes.CORRELATION) ) ? " at " + CURRENT_CORRELATION_THRESHOLD : ( DATA_TYPE.equals(DataTypes.MATRIX) ? " at " + correlationCutOffValue : "" );
             this.setTitle(VERSION + "  [ " + file.getAbsolutePath() + correlationValueString + " ] " + ( (WEIGHTED_EDGES) ? "(" : "(non-" ) + "weighted graph)");
             INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = !USE_INSTALL_DIR_FOR_SCREENSHOTS.get();
 
             classViewerFrame.getClassViewerAction().setEnabled(true);
-            classViewerFrame.populateClassViewer( null, false, DATA_TYPE.equals(DataTypes.EXPRESSION) && !expressionData.isTransposed(), true);
+            classViewerFrame.populateClassViewer( null, false, DATA_TYPE.equals(DataTypes.CORRELATION) && !correlationData.isTransposed(), true);
             classViewerFrame.refreshCurrentClassSetSelection();
 
             filterNodesByEdgesDialog.getFilterNodesByEdgesAction().setEnabled(true);
@@ -1467,8 +1471,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
             if (reachedRebuildNetwork)
             {
                 DATA_TYPE = DataTypes.NONE;
-                EXPRESSION_FILE = "";
-                EXPRESSION_FILE_PATH = "";
+                CORRELATION_FILE = "";
+                CORRELATION_FILE_PATH = "";
                 fileNameLoaded = "";
                 fileNameAbsolutePath = "";
                 setTitle(VERSION);
@@ -1505,9 +1509,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         {
             String errorMessage = "Parse error loading file " + file.getName() + ".\n";
 
-            if (reasonForExpressionLoadFailure != null && !reasonForExpressionLoadFailure.isEmpty())
+            if (reasonForLoadFailure != null && !reasonForLoadFailure.isEmpty())
             {
-                errorMessage += reasonForExpressionLoadFailure;
+                errorMessage += reasonForLoadFailure;
             }
             else
             {
@@ -1531,8 +1535,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private void resetAllRelevantLoadingValues()
     {
         DATA_TYPE = DataTypes.NONE;
-        EXPRESSION_FILE = "";
-        EXPRESSION_FILE_PATH = "";
+        CORRELATION_FILE = "";
+        CORRELATION_FILE_PATH = "";
         fileNameLoaded = "";
         fileNameAbsolutePath = "";
         setTitle(VERSION);
@@ -1675,8 +1679,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
         signalingPetriNetLoadSimulation.getSignalingPetriNetLoadSimulationAction().setEnabled( nc.getIsPetriNet() );
         exportD3.getExportD3Action().setEnabled(true);
 
-        layoutAnimationControlDialog.setIsExpressionProfileAnimationMode( DATA_TYPE.equals(DataTypes.EXPRESSION) );
-        layoutAnimationControlDialog.getAnimationControlDialogAction().setEnabled( DATA_TYPE.equals(DataTypes.EXPRESSION) );
+        layoutAnimationControlDialog.setIsCorrelationProfileAnimationMode( DATA_TYPE.equals(DataTypes.CORRELATION) );
+        layoutAnimationControlDialog.getAnimationControlDialogAction().setEnabled( DATA_TYPE.equals(DataTypes.CORRELATION) );
     }
 
     private void disableAllActions()
@@ -1977,9 +1981,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         return layoutProgressBarDialog;
     }
 
-    public ExpressionData getExpressionData()
+    public CorrelationData getCorrelationData()
     {
-        return expressionData;
+        return correlationData;
     }
 
     public ClassViewerFrame getClassViewerFrame()

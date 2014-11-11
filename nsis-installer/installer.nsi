@@ -154,11 +154,6 @@ SectionGroup "File associations"
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
-    Section "Gene expression file (.expression)"
-        !insertmacro APP_ASSOCIATE "expression" "Kajeka.expression" "Kajeka Expression File" \
-            "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
-    SectionEnd
-
     Section "Matrix file (.matrix)"
         !insertmacro APP_ASSOCIATE "matrix" "Kajeka.matrix" "Kajeka Matrix File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
@@ -196,7 +191,6 @@ Section "Uninstall"
 
     !insertmacro APP_UNASSOCIATE "layout"     "Kajeka.layout"
     !insertmacro APP_UNASSOCIATE "sif"        "Kajeka.sif"
-    !insertmacro APP_UNASSOCIATE "expression" "Kajeka.expression"
     !insertmacro APP_UNASSOCIATE "matrix"     "Kajeka.matrix"
     !insertmacro UPDATEFILEASSOC
 

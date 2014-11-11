@@ -1,8 +1,8 @@
 package org.Kajeka.Environment;
 
+import org.Kajeka.Correlation.CorrelationData;
 import java.awt.*;
 import org.Kajeka.Environment.Preferences.*;
-import org.Kajeka.Expression.*;
 import org.Kajeka.Textures.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import org.Kajeka.Simulation.SignalingPetriNetSimulation;
@@ -47,12 +47,12 @@ public class AnimationEnvironment
     /**
     *  Constant value needed for the animation.
     */
-    public static ExpressionData ANIMATION_EXPRESSION_DATA = null;
+    public static CorrelationData ANIMATION_CORRELATION_DATA = null;
 
     /**
     *  Constant value needed for the animation.
     */
-    public static float[] ANIMATION_EXPRESSION_DATA_LOCAL_MAX_VALUES = null;
+    public static float[] ANIMATION_CORRELATION_DATA_LOCAL_MAX_VALUES = null;
 
     /**
     *  Constant value needed for the animation.

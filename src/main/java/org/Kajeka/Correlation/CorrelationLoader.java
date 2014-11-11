@@ -1,4 +1,4 @@
-package org.Kajeka.Expression;
+package org.Kajeka.Correlation;
 
 import java.io.*;
 import static java.lang.Math.*;
@@ -17,10 +17,10 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 *
 */
 
-public final class ExpressionLoader
+public final class CorrelationLoader
 {
     private File file = null;
-    private ExpressionData expressionData = null;
+    private CorrelationData correlationData = null;
     private LayoutClassSetsManager layoutClassSetsManager = null;
     private String[] rowAnnotationLabels = null;
     private int firstDataColumn = 0;
@@ -29,19 +29,19 @@ public final class ExpressionLoader
     boolean isSuccessful = false;
     public String reasonForFailure = "";
 
-    public ExpressionLoader(LayoutClassSetsManager layoutClassSetsManager)
+    public CorrelationLoader(LayoutClassSetsManager layoutClassSetsManager)
     {
         this.layoutClassSetsManager = layoutClassSetsManager;
     }
 
-    public boolean init(File file, ExpressionData expressionData,
+    public boolean init(File file, CorrelationData correlationData,
             int firstDataColumn, int firstDataRow, boolean transpose)
     {
         this.firstDataColumn = firstDataColumn;
         this.firstDataRow = firstDataRow;
         this.transpose = transpose;
         this.file = file;
-        this.expressionData = expressionData;
+        this.correlationData = correlationData;
 
         return true;
     }
@@ -76,7 +76,7 @@ public final class ExpressionLoader
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
-        layoutProgressBarDialog.prepareProgressBar(100, "Reading Expression Data: ");
+        layoutProgressBarDialog.prepareProgressBar(100, "Reading Correlation Data: ");
         layoutProgressBarDialog.startProgressBar();
 
         ParseProgressIndicator ppi = new ParseProgressIndicator(layoutProgressBarDialog);
@@ -89,7 +89,7 @@ public final class ExpressionLoader
         {
             reasonForFailure = "";
 
-            tdm = new TextDelimitedMatrix(file, "\t", ppi);
+            tdm = new TextDelimitedMatrix(file, ppi);
 
             layoutProgressBarDialog.setText("Parsing " + tdm.numLines() + " lines");
 
@@ -106,7 +106,7 @@ public final class ExpressionLoader
             // - 1 because the first column is always the row ID
             rowAnnotationLabels = new String[firstDataColumn - 1];
 
-            expressionData.initialize(
+            correlationData.initialize(
                     numRows - firstDataRow,
                     numColumns - firstDataColumn,
                     transpose);
@@ -129,7 +129,7 @@ public final class ExpressionLoader
                         if (column >= firstDataColumn)
                         {
                             // Data column names
-                            expressionData.setColumnName(dataColumn, value);
+                            correlationData.setColumnName(dataColumn, value);
                         }
                         else if (column >= 1) // First column is always the row ID
                         {
@@ -145,13 +145,13 @@ public final class ExpressionLoader
                         {
                             // Column annotation name
                             String annotation = cleanString(value);
-                            expressionData.addColumnAnnotation(row - 1, annotation);
+                            correlationData.addColumnAnnotation(row - 1, annotation);
                         }
                         else if (column >= firstDataColumn)
                         {
                             // Column annotation
-                            ExpressionData.ColumnAnnotation columnAnnotation =
-                                    expressionData.getColumnAnnotationByIndex(row - 1);
+                            CorrelationData.ColumnAnnotation columnAnnotation =
+                                    correlationData.getColumnAnnotationByIndex(row - 1);
 
                             columnAnnotation.setValue(dataColumn, value);
 
@@ -162,25 +162,25 @@ public final class ExpressionLoader
                         if (column == 0)
                         {
                             // Row names
-                            expressionData.setRowID(dataRow, value);
+                            correlationData.setRowID(dataRow, value);
                         }
                         else if (column >= firstDataColumn)
                         {
                             // The data itself
                             float currentValue = Float.parseFloat(value.replace(',', '.'));
-                            expressionData.setExpressionDataValue(dataRow, dataColumn, currentValue);
+                            correlationData.setDataValue(dataRow, dataColumn, currentValue);
                         }
                     }
                 }
             }
 
-            expressionData.sumRows();
+            correlationData.sumRows();
         }
         catch (NumberFormatException nfe)
         {
             if (DEBUG_BUILD)
             {
-                println("NumberFormatException in ExpressionLoader.parse():\n" + nfe.getMessage());
+                println("NumberFormatException in parse():\n" + nfe.getMessage());
             }
 
             setReasonForFailure(row, column, nfe.toString());
@@ -190,7 +190,7 @@ public final class ExpressionLoader
         {
             if (DEBUG_BUILD)
             {
-                println("IOException in ExpressionLoader.parse():\n" + ioe.getMessage());
+                println("IOException in parse():\n" + ioe.getMessage());
             }
 
             setReasonForFailure(row, column, ioe.toString());
@@ -208,7 +208,7 @@ public final class ExpressionLoader
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
-        layoutProgressBarDialog.prepareProgressBar(100, "Reading Expression Data: ");
+        layoutProgressBarDialog.prepareProgressBar(100, "Reading Correlation Data: ");
         layoutProgressBarDialog.startProgressBar();
 
         ParseProgressIndicator ppi = new ParseProgressIndicator(layoutProgressBarDialog);
@@ -219,7 +219,7 @@ public final class ExpressionLoader
 
         try
         {
-            tdm = new TextDelimitedMatrix(file, "\t", ppi);
+            tdm = new TextDelimitedMatrix(file, ppi);
 
             layoutProgressBarDialog.setText("Parsing " + tdm.numLines() + " lines");
 
@@ -250,7 +250,7 @@ public final class ExpressionLoader
 
                     if (column == 0)
                     {
-                        vertex = nc.getVerticesMap().get(expressionData.getRowID(dataRow));
+                        vertex = nc.getVerticesMap().get(correlationData.getRowID(dataRow));
                     }
                     else if (vertex != null)
                     {
@@ -279,7 +279,7 @@ public final class ExpressionLoader
         {
             if (DEBUG_BUILD)
             {
-                println("IOException in ExpressionLoader.parseAnnotations():\n" + ioe.getMessage());
+                println("IOException in parseAnnotations():\n" + ioe.getMessage());
             }
 
             return false;

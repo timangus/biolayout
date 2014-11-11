@@ -43,13 +43,23 @@ public class TextDelimitedMatrix
         reasonForFailure += reason;
     }
 
-    public TextDelimitedMatrix(File file, String delimiterRegex, ProgressIndicator progressIndicator) throws IOException
+    public TextDelimitedMatrix(File file, ProgressIndicator progressIndicator) throws IOException
     {
-        this(file, delimiterRegex, 0, 0);
+        this(file, progressIndicator, "");
+    }
+
+    public TextDelimitedMatrix(File file, ProgressIndicator progressIndicator, String delimiterRegex) throws IOException
+    {
+        this(file, 0, 0, delimiterRegex);
         this.progressIndicator = progressIndicator;
     }
 
-    public TextDelimitedMatrix(File file, String delimiterRegex, int maxColumns, int maxRows) throws IOException
+    public TextDelimitedMatrix(File file, int maxColumns, int maxRows) throws IOException
+    {
+        this(file, maxColumns, maxRows, "");
+    }
+
+    public TextDelimitedMatrix(File file, int maxColumns, int maxRows, String delimiterRegex) throws IOException
     {
         this.file = file;
         this.delimiterRegex = delimiterRegex;
@@ -65,6 +75,34 @@ public class TextDelimitedMatrix
         numRows = 0;
         transpose = false;
         progressIndicator = null;
+    }
+
+    private String[] parseCSV(String input)
+    {
+        List<String> result = new ArrayList<String>();
+        int start = 0;
+        boolean inQuotes = false;
+
+        for (int current = 0; current < input.length(); current++)
+        {
+            if (input.charAt(current) == '\"')
+            {
+                inQuotes = !inQuotes; // toggle state
+            }
+
+            boolean atLastChar = (current == input.length() - 1);
+            if (atLastChar)
+            {
+                result.add(input.substring(start));
+            }
+            else if (input.charAt(current) == ',' && !inQuotes)
+            {
+                result.add(input.substring(start, current));
+                start = current + 1;
+            }
+        }
+
+        return result.toArray(new String[result.size()]);
     }
 
     public boolean parse()
@@ -88,7 +126,16 @@ public class TextDelimitedMatrix
                     progressIndicator.notify(linesRead * 100 / numLines);
                 }
 
-                String[] split = line.split(delimiterRegex);
+                String[] split;
+                if (delimiterRegex.isEmpty())
+                {
+                    // Assume CSV if the delimiter is unspecified
+                    split = parseCSV(line);
+                }
+                else
+                {
+                    split = line.split(delimiterRegex);
+                }
 
                 if (columnCount >= 0 && split.length != columnCount)
                 {

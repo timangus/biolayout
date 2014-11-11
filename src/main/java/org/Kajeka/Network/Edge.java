@@ -13,7 +13,7 @@ package org.Kajeka.Network;
 
 public final class Edge
 {
-    private String edgeName = null; // initialize the string edgeName to null so as to not use any RAM for expression analysis that uses many non-named edges
+    private String edgeName = null; // initialize the string edgeName to null so as to not use any RAM for analysis that uses many non-named edges
     private Vertex firstVertex = null;
     private Vertex secondVertex = null;
 

@@ -1,4 +1,4 @@
-package org.Kajeka.Expression;
+package org.Kajeka.Correlation;
 
 import java.util.HashSet;
 
@@ -9,7 +9,7 @@ import java.util.HashSet;
 *
 */
 
-public final class ExpressionEnvironment
+public final class CorrelationEnvironment
 {
 
     /**
@@ -42,10 +42,10 @@ public final class ExpressionEnvironment
     public static float       CURRENT_CORRELATION_THRESHOLD = DEFAULT_CORRELATION_THRESHOLD;
     public static HashSet<Integer> CURRENT_FILTER_SET = new HashSet<Integer>();
     public static float       STORED_CORRELATION_THRESHOLD = DEFAULT_STORED_CORRELATION_THRESHOLD;
-    public static String      EXPRESSION_FILE = "";
-    public static String      EXPRESSION_FILE_PATH = "";
-    public static int         EXPRESSION_DATA_FIRST_COLUMN = 0;
-    public static int         EXPRESSION_DATA_FIRST_ROW = 0;
-    public static boolean     EXPRESSION_DATA_TRANSPOSE = false;
+    public static String      CORRELATION_FILE = "";
+    public static String      CORRELATION_FILE_PATH = "";
+    public static int         CORRELATION_DATA_FIRST_COLUMN = 0;
+    public static int         CORRELATION_DATA_FIRST_ROW = 0;
+    public static boolean     CORRELATION_DATA_TRANSPOSE = false;
 
 }

@@ -1,11 +1,11 @@
-package org.Kajeka.Expression.Dialogs;
+package org.Kajeka.Correlation.Dialogs;
 
+import org.Kajeka.Correlation.Panels.CorrelationGraphPanel;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.Kajeka.CoreUI.*;
-import org.Kajeka.Expression.Panels.*;
 import org.Kajeka.Utils.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 
@@ -17,7 +17,7 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 * @version 3.0.0.0
 */
 
-public final class ExpressionChooseClassesToRenderPlotImagesFromDialog extends JDialog implements ActionListener
+public final class CorrelationChooseClassesToRenderPlotImagesFromDialog extends JDialog implements ActionListener
 {
     /**
     *  Serial version UID variable for the LayoutJavaPlatformCapsDialog class.
@@ -28,27 +28,27 @@ public final class ExpressionChooseClassesToRenderPlotImagesFromDialog extends J
     private JButton cancelButton = null;
 
     private LayoutFrame layoutFrame = null;
-    private ExpressionGraphPanel expressionGraphPanel = null;
+    private CorrelationGraphPanel correlationGraphPanel = null;
 
     private ClassComboBox startingClassIndexComboBox = null;
     private ClassComboBox endingClassIndexComboBox = null;
     private int startingClassIndex = 0;
     private int endingClassIndex = 0;
 
-    public ExpressionChooseClassesToRenderPlotImagesFromDialog(JFrame jframe, LayoutFrame layoutFrame, ExpressionGraphPanel expressionGraphPanel)
+    public CorrelationChooseClassesToRenderPlotImagesFromDialog(JFrame jframe, LayoutFrame layoutFrame, CorrelationGraphPanel correlationGraphPanel)
     {
         super(jframe, "Choose Classes To Render Plot Images From", true);
 
         this.layoutFrame = layoutFrame;
-        this.expressionGraphPanel = expressionGraphPanel;
+        this.correlationGraphPanel = correlationGraphPanel;
 
         initComponents();
     }
 
     private void initComponents()
     {
-        JPanel expressionChooseClassesToRenderToPlotImagesDialogPanel = new JPanel(true);
-        expressionChooseClassesToRenderToPlotImagesDialogPanel.setLayout( new BoxLayout(expressionChooseClassesToRenderToPlotImagesDialogPanel, BoxLayout.Y_AXIS) );
+        JPanel correlationChooseClassesToRenderToPlotImagesDialogPanel = new JPanel(true);
+        correlationChooseClassesToRenderToPlotImagesDialogPanel.setLayout( new BoxLayout(correlationChooseClassesToRenderToPlotImagesDialogPanel, BoxLayout.Y_AXIS) );
         TitledBorder chooseStartingEndingClasses = BorderFactory.createTitledBorder("Please Choose Starting & Ending Classes");
 
         JPanel startingClassIndexPanel = new JPanel(true);
@@ -93,13 +93,13 @@ public final class ExpressionChooseClassesToRenderPlotImagesFromDialog extends J
         okCancelButtonsPanel.add(okButton);
         okCancelButtonsPanel.add(cancelButton);
 
-        expressionChooseClassesToRenderToPlotImagesDialogPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
-        addTitledButtonBorder(chooseStartingEndingClasses, chooseStartingEndingClassesPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_JUSTIFICATION, expressionChooseClassesToRenderToPlotImagesDialogPanel);
-        expressionChooseClassesToRenderToPlotImagesDialogPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
-        expressionChooseClassesToRenderToPlotImagesDialogPanel.add(okCancelButtonsPanel);
-        expressionChooseClassesToRenderToPlotImagesDialogPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
+        correlationChooseClassesToRenderToPlotImagesDialogPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
+        addTitledButtonBorder(chooseStartingEndingClasses, chooseStartingEndingClassesPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_JUSTIFICATION, correlationChooseClassesToRenderToPlotImagesDialogPanel);
+        correlationChooseClassesToRenderToPlotImagesDialogPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
+        correlationChooseClassesToRenderToPlotImagesDialogPanel.add(okCancelButtonsPanel);
+        correlationChooseClassesToRenderToPlotImagesDialogPanel.add( Box.createRigidArea( new Dimension(5, 5) ) );
 
-        this.getContentPane().add(expressionChooseClassesToRenderToPlotImagesDialogPanel);
+        this.getContentPane().add(correlationChooseClassesToRenderToPlotImagesDialogPanel);
         this.setResizable(false);
         this.pack();
         this.setLocationRelativeTo(null);
@@ -163,7 +163,7 @@ public final class ExpressionChooseClassesToRenderPlotImagesFromDialog extends J
             else
             {
                 setVisible(false);
-                expressionGraphPanel.initiateTakeMultipleClassesScreenShotsProcess();
+                correlationGraphPanel.initiateTakeMultipleClassesScreenShotsProcess();
             }
         }
         else if ( e.getActionCommand().equals("Cancel") )

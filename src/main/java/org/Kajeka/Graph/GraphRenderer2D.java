@@ -1645,9 +1645,9 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
                 {
                     if ( !node.ismEPNTransition() )
                     {
-                        if ( ( !DATA_TYPE.equals(DataTypes.EXPRESSION) && ANIMATION_MEPN_COMPONENTS_ANIMATION_ONLY.get() ) ? node.ismEPNComponent() : true)
+                        if ( ( !DATA_TYPE.equals(DataTypes.CORRELATION) && ANIMATION_MEPN_COMPONENTS_ANIMATION_ONLY.get() ) ? node.ismEPNComponent() : true)
                         {
-                            tuple6 = AnimationVisualization.performAnimationVisualization(false, node.getNodeID(), node.getNodeName(), layoutFrame.isAllShadingSFXSValueEnabled(), nodeColor, currentTick, animationFrameCount, animationSpectrumImage, DATA_TYPE.equals(DataTypes.EXPRESSION));
+                            tuple6 = AnimationVisualization.performAnimationVisualization(false, node.getNodeID(), node.getNodeName(), layoutFrame.isAllShadingSFXSValueEnabled(), nodeColor, currentTick, animationFrameCount, animationSpectrumImage, DATA_TYPE.equals(DataTypes.CORRELATION));
                             nodeScaleValue = tuple6.first;
                             nodeColor = tuple6.second;
                             useShaderAnimationGPUComputing = tuple6.third;
@@ -1794,7 +1794,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
                     {
                         if ( !nodeName.isEmpty() )
                             nodeName += ": ";
-                        nodeName += NUMBER_FORMAT.format( AnimationVisualization.getAnimationVisualizationNodeValue(node.getNodeID(), node.getNodeName(), currentTick, animationFrameCount, DATA_TYPE.equals(DataTypes.EXPRESSION)) );
+                        nodeName += NUMBER_FORMAT.format( AnimationVisualization.getAnimationVisualizationNodeValue(node.getNodeID(), node.getNodeName(), currentTick, animationFrameCount, DATA_TYPE.equals(DataTypes.CORRELATION)) );
                         if (CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE.get() != 0)
                             graph.drawNodeNameBackgroundLegend(gl, node, nodeName);
                         GLUT.glutBitmapString(NODE_NAMES_OPENGL_FONT_TYPE.ordinal() + 2, nodeName); // + 2 for GLUT public static variables ordering for excluding STROKE_ROMAN/STROKE_MONO_ROMAN

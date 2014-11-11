@@ -31,7 +31,7 @@ public final class AnimationVisualization
     /**
     *  Calculates all the necessary values for the animation visualization.
     */
-    public static Tuple6<Float, Color, Boolean, Float, Boolean, Float> performAnimationVisualization(boolean is3DMode, int nodeID, String nodeName, boolean isAllShadingSFXSValueEnabled, Color nodeColor, int currentTick, int animationFrameCount, BufferedImage animationSpectrumImage, boolean isExpressionProfileAnimationMode)
+    public static Tuple6<Float, Color, Boolean, Float, Boolean, Float> performAnimationVisualization(boolean is3DMode, int nodeID, String nodeName, boolean isAllShadingSFXSValueEnabled, Color nodeColor, int currentTick, int animationFrameCount, BufferedImage animationSpectrumImage, boolean isCorrelationProfileAnimationMode)
     {
         float nodeScaleValue = 0.0f;
         float nodeValue = 0.0f;
@@ -47,13 +47,13 @@ public final class AnimationVisualization
         int horizontalValue = 0;
         boolean useShaderAnimationGPUComputing = false;
 
-        if ( isExpressionProfileAnimationMode && ANIMATION_PER_NODE_MAX_VALUE.get() )
-            ANIMATION_RESULTS_REAL_MAX_VALUE = ANIMATION_RESULTS_MAX_VALUE = ANIMATION_EXPRESSION_DATA_LOCAL_MAX_VALUES[nodeID];
-        int index = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getIdentityMap(nodeName) : 0;
-        nodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick);
+        if ( isCorrelationProfileAnimationMode && ANIMATION_PER_NODE_MAX_VALUE.get() )
+            ANIMATION_RESULTS_REAL_MAX_VALUE = ANIMATION_RESULTS_MAX_VALUE = ANIMATION_CORRELATION_DATA_LOCAL_MAX_VALUES[nodeID];
+        int index = (isCorrelationProfileAnimationMode) ? ANIMATION_CORRELATION_DATA.getIdentityMap(nodeName) : 0;
+        nodeValue = (isCorrelationProfileAnimationMode) ? ANIMATION_CORRELATION_DATA.getDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick);
         processNextNodeValue = ( ANIMATION_FLUID_LINEAR_TRANSITION && ( (currentTick + 1) < TOTAL_NUMBER_OF_ANIMATION_TICKS ) );
         if (processNextNodeValue)
-            nextNodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick + 1);
+            nextNodeValue = (isCorrelationProfileAnimationMode) ? ANIMATION_CORRELATION_DATA.getDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick + 1);
         nodeScaleValue = (is3DMode)
                          ? (1.0f)
                          : (1.0f / NODE_SIZE_DIVIDE_RATIO);
@@ -134,7 +134,7 @@ public final class AnimationVisualization
     /**
     *  Calculates all the necessary values for the node animation value.
     */
-    public static float getAnimationVisualizationNodeValue(int nodeID, String nodeName, int currentTick, int animationFrameCount, boolean isExpressionProfileAnimationMode)
+    public static float getAnimationVisualizationNodeValue(int nodeID, String nodeName, int currentTick, int animationFrameCount, boolean isCorrelationProfileAnimationMode)
     {
         float nodeValue = 0.0f;
         float nextNodeValue = 0.0f;
@@ -142,11 +142,11 @@ public final class AnimationVisualization
         float percentageBetweenTicks = 0.0f;
         boolean processNextNodeValue = false;
 
-        int index = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getIdentityMap(nodeName) : 0;
-        nodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick);
+        int index = (isCorrelationProfileAnimationMode) ? ANIMATION_CORRELATION_DATA.getIdentityMap(nodeName) : 0;
+        nodeValue = (isCorrelationProfileAnimationMode) ? ANIMATION_CORRELATION_DATA.getDataValue(index, currentTick) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick);
         processNextNodeValue = ( ANIMATION_FLUID_LINEAR_TRANSITION && ( (currentTick + 1) < TOTAL_NUMBER_OF_ANIMATION_TICKS ) );
         if (processNextNodeValue)
-            nextNodeValue = (isExpressionProfileAnimationMode) ? ANIMATION_EXPRESSION_DATA.getExpressionDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick + 1);
+            nextNodeValue = (isCorrelationProfileAnimationMode) ? ANIMATION_CORRELATION_DATA.getDataValue(index, currentTick + 1) : ANIMATION_SIMULATION_RESULTS.getValue(nodeID, currentTick + 1);
 
         if (processNextNodeValue)
         {

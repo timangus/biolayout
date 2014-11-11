@@ -1,5 +1,8 @@
-package org.Kajeka.Expression.Panels;
+package org.Kajeka.Correlation.Panels;
 
+import org.Kajeka.Correlation.Dialogs.CorrelationChooseClassesToRenderPlotImagesFromDialog;
+import org.Kajeka.Correlation.CorrelationEnvironment;
+import org.Kajeka.Correlation.CorrelationData;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.*;
@@ -18,8 +21,6 @@ import java.text.NumberFormat;
 import org.Kajeka.ClassViewerUI.ClassViewerPlotPanel;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.DataStructures.*;
-import org.Kajeka.Expression.*;
-import org.Kajeka.Expression.Dialogs.*;
 import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.Network.*;
 import org.Kajeka.StaticLibraries.*;
@@ -59,17 +60,17 @@ import org.jfree.data.category.CategoryDataset;
 
 /**
 *
-* The Expression Graph Panel class.
+* The Correlation Graph Panel class.
 *
 * @author Full refactoring and all updates by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
 *
 */
 
-public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements ActionListener, ChangeListener
+public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements ActionListener, ChangeListener
 {
     /**
-    *  Serial version UID variable for the ExpressionGraph class.
+    *  Serial version UID variable for the CorrelationGraphPanel class.
     */
     public static final long serialVersionUID = 111222333444555705L;
 
@@ -82,8 +83,8 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
     public static final BasicStroke THIN_BASIC_STROKE = new BasicStroke(0.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     public static final BasicStroke THICK_BASIC_STROKE = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-    public static final String EXPRESSION_X_AXIS_LABEL = "Sample";
-    public static final String EXPRESSION_Y_AXIS_LABEL = "Intensity";
+    public static final String X_AXIS_LABEL = "Sample";
+    public static final String Y_AXIS_LABEL = "Intensity";
     public static final int VALUES_FONT_SIZE = 6;
     public static final int AXIS_FONT_SIZE = 14;
     public static final int AXIS_FONT_STYLE = Font.ITALIC | Font.BOLD;
@@ -93,8 +94,8 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
     private JFrame jframe = null;
     private LayoutFrame layoutFrame = null;
-    private ExpressionData expressionData = null;
-    private JPanel expressionGraphCheckBoxesPanel = null;
+    private CorrelationData correlationData = null;
+    private JPanel graphCheckBoxesPanel = null;
 
     private JCheckBox gridLinesCheckBox = null;
     private JComboBox<String> classStatComboBox = null;
@@ -105,40 +106,40 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
     private JComboBox<String> sortColumnAnnotationComboBox = null;
     private JCheckBoxMenuItem sampleNameCheckBox = null;
     private JComboBox<String> transformComboBox = null;
-    private JButton exportPlotExpressionProfileAsButton = null;
+    private JButton exportPlotCorrelationProfileAsButton = null;
 
     private JScrollBar zoomScrollBar = null;
     private JSpinner maximumVisibleSamplesSpinner = null;
 
     private AbstractAction renderPlotImageToFileAction = null;
     private AbstractAction renderAllCurrentClassSetPlotImagesToFilesAction = null;
-    private AbstractAction exportPlotExpressionProfileAsAction = null;
+    private AbstractAction exportPlotCorrelationProfileAsAction = null;
 
-    private JFileChooser exportPlotExpressionProfileToFileChooser = null;
+    private JFileChooser exportPlotCorrelationProfileToFileChooser = null;
     private FileNameExtensionFilter fileNameExtensionFilterText = null;
 
-    private ChartPanel expressionGraphPlotPanel = null;
-    private ExpressionChooseClassesToRenderPlotImagesFromDialog expressionChooseClassesToRenderPlotImagesFromDialog = null;
+    private ChartPanel correlationGraphPlotPanel = null;
+    private CorrelationChooseClassesToRenderPlotImagesFromDialog correlationChooseClassesToRenderPlotImagesFromDialog = null;
 
-    public ExpressionGraphPanel(JFrame jframe, LayoutFrame layoutFrame, ExpressionData expressionData)
+    public CorrelationGraphPanel(JFrame jframe, LayoutFrame layoutFrame, CorrelationData correlationData)
     {
         super();
 
         this.jframe = jframe;
         this.layoutFrame = layoutFrame;
-        this.expressionData = expressionData;
+        this.correlationData = correlationData;
 
         initActions();
         initComponents();
-        initExportPlotExpressionProfileToFileChooser();
+        initExportPlotProfileToFileChooser();
     }
 
     /**
-    *  This method is called from within the constructor to initialize the expression graph panel actions.
+    *  This method is called from within the constructor to initialize the graph panel actions.
     */
     private void initActions()
     {
-        exportPlotExpressionProfileAsAction = new AbstractAction("Export Plot Expression Profile As...")
+        exportPlotCorrelationProfileAsAction = new AbstractAction("Export Plot Correlation Profile As...")
         {
             /**
             *  Serial version UID variable for the AbstractAction class.
@@ -151,7 +152,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
                 save();
             }
         };
-        exportPlotExpressionProfileAsAction.setEnabled(false);
+        exportPlotCorrelationProfileAsAction.setEnabled(false);
 
         renderPlotImageToFileAction = new AbstractAction("Render Plot To File...")
         {
@@ -178,7 +179,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                expressionChooseClassesToRenderPlotImagesFromDialog.setVisible(true);
+                correlationChooseClassesToRenderPlotImagesFromDialog.setVisible(true);
             }
         };
         renderAllCurrentClassSetPlotImagesToFilesAction.setEnabled(false);
@@ -199,7 +200,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
     }
 
     /**
-    *  This method is called from within the constructor to initialize the expression graph panel components.
+    *  This method is called from within the constructor to initialize the graph panel components.
     */
     private void initComponents()
     {
@@ -207,8 +208,8 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         gridLinesCheckBox.setToolTipText("Grid Lines");
         axesLegendCheckBox = new JCheckBox("Axes Legend");
         axesLegendCheckBox.setToolTipText("Axes Legend");
-        exportPlotExpressionProfileAsButton = new JButton(exportPlotExpressionProfileAsAction);
-        exportPlotExpressionProfileAsButton.setToolTipText("Export Plot Expression Profile As...");
+        exportPlotCorrelationProfileAsButton = new JButton(exportPlotCorrelationProfileAsAction);
+        exportPlotCorrelationProfileAsButton.setToolTipText("Export Plot Correlation Profile As...");
         gridLinesCheckBox.addActionListener(this);
         axesLegendCheckBox.addActionListener(this);
         gridLinesCheckBox.setSelected(PLOT_GRID_LINES.get());
@@ -237,7 +238,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         selectionStatComboBox.addActionListener(this);
 
         transformComboBox = new JComboBox<String>();
-        for (ExpressionEnvironment.TransformType type : ExpressionEnvironment.TransformType.values())
+        for (CorrelationEnvironment.TransformType type : CorrelationEnvironment.TransformType.values())
         {
             String s = Utils.titleCaseOf(type.toString());
             transformComboBox.addItem(s);
@@ -259,7 +260,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
         sortColumnAnnotationComboBox = new JComboBox<String>();
         sortColumnAnnotationComboBox.addItem("No Column Sort");
-        for (ExpressionData.ColumnAnnotation columnAnnotation : expressionData.getColumnAnnotations())
+        for (CorrelationData.ColumnAnnotation columnAnnotation : correlationData.getColumnAnnotations())
         {
             sortColumnAnnotationComboBox.addItem(columnAnnotation.getName());
         }
@@ -269,9 +270,9 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         sampleNameCheckBox = new JCheckBoxMenuItem("Sample names");
         sampleNameCheckBox.addActionListener(this);
 
-        JPanel expressionGraphUpperPartPanel = new JPanel(true);
+        JPanel graphUpperPartPanel = new JPanel(true);
 
-        expressionGraphCheckBoxesPanel = new JPanel(true);
+        graphCheckBoxesPanel = new JPanel(true);
         JPanel plotOptionsLine1 = new JPanel();
         JPanel plotOptionsLine2 = new JPanel();
         plotOptionsLine1.add(new JLabel("Scaling:"));
@@ -286,15 +287,15 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         plotOptionsLine2.add(classStatComboBox);
         plotOptionsLine2.add(new JLabel("Selection Plot:"));
         plotOptionsLine2.add(selectionStatComboBox);
-        expressionGraphCheckBoxesPanel.setLayout(new BoxLayout(expressionGraphCheckBoxesPanel, BoxLayout.PAGE_AXIS));
-        expressionGraphCheckBoxesPanel.add(plotOptionsLine1);
-        expressionGraphCheckBoxesPanel.add(plotOptionsLine2);
+        graphCheckBoxesPanel.setLayout(new BoxLayout(graphCheckBoxesPanel, BoxLayout.PAGE_AXIS));
+        graphCheckBoxesPanel.add(plotOptionsLine1);
+        graphCheckBoxesPanel.add(plotOptionsLine2);
 
-        expressionGraphPlotPanel = createChartPanel();
-        expressionChooseClassesToRenderPlotImagesFromDialog = new ExpressionChooseClassesToRenderPlotImagesFromDialog(jframe, layoutFrame, this);
+        correlationGraphPlotPanel = createChartPanel();
+        correlationChooseClassesToRenderPlotImagesFromDialog = new CorrelationChooseClassesToRenderPlotImagesFromDialog(jframe, layoutFrame, this);
 
-        JPanel expressionGraphButtonPanel = new JPanel(true);
-        expressionGraphButtonPanel.add(exportPlotExpressionProfileAsButton);
+        JPanel graphButtonPanel = new JPanel(true);
+        graphButtonPanel.add(exportPlotCorrelationProfileAsButton);
 
         JPanel scrollerPanel = new JPanel(new BorderLayout());
         zoomScrollBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 0, 0, 1);
@@ -302,24 +303,24 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         scrollerPanel.add(zoomScrollBar, BorderLayout.CENTER);
         scrollerPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
-        expressionGraphUpperPartPanel.setLayout( new BorderLayout() );
-        expressionGraphUpperPartPanel.add(expressionGraphCheckBoxesPanel, BorderLayout.NORTH);
-        expressionGraphUpperPartPanel.add(expressionGraphPlotPanel, BorderLayout.CENTER);
-        expressionGraphUpperPartPanel.add(scrollerPanel, BorderLayout.SOUTH);
+        graphUpperPartPanel.setLayout( new BorderLayout() );
+        graphUpperPartPanel.add(graphCheckBoxesPanel, BorderLayout.NORTH);
+        graphUpperPartPanel.add(correlationGraphPlotPanel, BorderLayout.CENTER);
+        graphUpperPartPanel.add(scrollerPanel, BorderLayout.SOUTH);
 
         this.setLayout( new BoxLayout(this, BoxLayout.Y_AXIS) );
-        this.add(expressionGraphUpperPartPanel);
-        this.add(expressionGraphButtonPanel);
+        this.add(graphUpperPartPanel);
+        this.add(graphButtonPanel);
         this.add( Box.createRigidArea( new Dimension(10, 10) ) );
     }
 
-    private void initExportPlotExpressionProfileToFileChooser()
+    private void initExportPlotProfileToFileChooser()
     {
         String saveFilePath = FILE_CHOOSER_PATH.get().substring(0, FILE_CHOOSER_PATH.get().lastIndexOf( System.getProperty("file.separator") ) + 1);
-        exportPlotExpressionProfileToFileChooser = new JFileChooser(saveFilePath);
+        exportPlotCorrelationProfileToFileChooser = new JFileChooser(saveFilePath);
         fileNameExtensionFilterText = new FileNameExtensionFilter("Save as a Text File", "txt");
-        exportPlotExpressionProfileToFileChooser.setFileFilter(fileNameExtensionFilterText);
-        exportPlotExpressionProfileToFileChooser.setDialogTitle("Export Plot Expression Profile As");
+        exportPlotCorrelationProfileToFileChooser.setFileFilter(fileNameExtensionFilterText);
+        exportPlotCorrelationProfileToFileChooser.setDialogTitle("Export Plot Correlation Profile As");
     }
 
     private CategoryPlot mainPlot = null;
@@ -505,11 +506,11 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
             HashSet<String> orderedLegendLabels = new LinkedHashSet<String>();
 
-            for (ExpressionData.ColumnAnnotation annotation : expressionData.getColumnAnnotations())
+            for (CorrelationData.ColumnAnnotation annotation : correlationData.getColumnAnnotations())
             {
                 String annotationName = annotation.getName();
 
-                for (int column = 0; column < expressionData.getTotalColumns(); column++)
+                for (int column = 0; column < correlationData.getTotalColumns(); column++)
                 {
                     String annotationValue = annotation.getFullyQualifiedValue(column);
                     orderedLegendLabels.add(annotationValue);
@@ -537,7 +538,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
     private void addStatisticalPlot(int datasetIndex, int seriesIndex, ArrayList<Integer> rows, Color color, String className,
             StatisticType type)
     {
-        int numColumns = expressionData.getTotalColumns();
+        int numColumns = correlationData.getTotalColumns();
         float[] mean;
         float[] stddev;
         float[] stderr;
@@ -549,7 +550,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
             case Mean_Line:
             {
-                mean = expressionData.getMeanForRows(rows);
+                mean = correlationData.getMeanForRows(rows);
 
                 SlidingCategoryDataset slidingDataset = (SlidingCategoryDataset)mainPlot.getDataset(datasetIndex);
                 DefaultCategoryDataset dataset;
@@ -568,7 +569,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
                 for (int column = 0; column < numColumns; column++)
                 {
-                    String columnName = expressionData.getColumnName(column);
+                    String columnName = correlationData.getColumnName(column);
                     dataset.addValue(mean[column], "Mean of " + className, columnName);
                 }
 
@@ -592,7 +593,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
             case Mean_Histogram:
             {
-                mean = expressionData.getMeanForRows(rows);
+                mean = correlationData.getMeanForRows(rows);
 
                 SlidingCategoryDataset slidingDataset = (SlidingCategoryDataset)mainPlot.getDataset(datasetIndex);
                 DefaultCategoryDataset dataset;
@@ -611,7 +612,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
                 for (int column = 0; column < mean.length; column++)
                 {
-                    String columnName = expressionData.getColumnName(column);
+                    String columnName = correlationData.getColumnName(column);
                     dataset.addValue(mean[column], "Mean of " + className, columnName);
                 }
 
@@ -680,23 +681,23 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
                 for (int column = 0; column < numColumns; column++)
                 {
-                    String columnName = expressionData.getColumnName(column);
+                    String columnName = correlationData.getColumnName(column);
 
                     switch (type)
                     {
                         case Mean_With_Std_Dev:
                         case Mean_Line_With_Std_Dev:
                         case Mean_Histogram_With_Std_Dev:
-                            mean = expressionData.getMeanForRows(rows);
-                            stddev = expressionData.getStddevForRows(rows);
+                            mean = correlationData.getMeanForRows(rows);
+                            stddev = correlationData.getStddevForRows(rows);
                             dataset.add(mean[column], stddev[column], className, columnName);
                             break;
 
                         case Mean_With_Std_Err:
                         case Mean_Line_With_Std_Err:
                         case Mean_Histogram_With_Std_Err:
-                            mean = expressionData.getMeanForRows(rows);
-                            stderr = expressionData.getStderrForRows(rows);
+                            mean = correlationData.getMeanForRows(rows);
+                            stderr = correlationData.getStderrForRows(rows);
                             dataset.add(mean[column], stderr[column], className, columnName);
                             break;
                     }
@@ -732,7 +733,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
                 ArrayList<float[]> data = new ArrayList<float[]>();
                 for (int rowIndex : rows)
                 {
-                    data.add(expressionData.getTransformedRow(rowIndex));
+                    data.add(correlationData.getTransformedRow(rowIndex));
                 }
 
                 for (int column = 0; column < numColumns; column++)
@@ -743,7 +744,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
                         values.add((double) row[column]);
                     }
 
-                    String columnName = expressionData.getColumnName(column);
+                    String columnName = correlationData.getColumnName(column);
                     dataset.add(values, className, columnName);
                 }
 
@@ -771,7 +772,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
                 layoutFrame.getGraph().getSelectionManager().getExpandedSelectedNodes();
         int numSelectedNodes = expandedSelectedNodes.size();
 
-        int totalColumns = expressionData.getTotalColumns();
+        int totalColumns = correlationData.getTotalColumns();
         int datasetIndex = 0;
 
         mainPlot.getRangeAxis().setAutoRange(false);
@@ -785,17 +786,17 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
         if (numSelectedNodes > 0 && totalColumns > 0)
         {
-            ExpressionEnvironment.TransformType transformType =
-                    ExpressionEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
-            expressionData.setTransformType(transformType);
+            CorrelationEnvironment.TransformType transformType =
+                    CorrelationEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
+            correlationData.setTransformType(transformType);
 
             if (sortColumnAnnotationComboBox.getSelectedIndex() > 0)
             {
-                expressionData.setSortColumnAnnotation((String) sortColumnAnnotationComboBox.getSelectedItem());
+                correlationData.setSortColumnAnnotation((String) sortColumnAnnotationComboBox.getSelectedItem());
             }
             else
             {
-                expressionData.setSortColumnAnnotation(null);
+                correlationData.setSortColumnAnnotation(null);
             }
 
             // Mean of selection
@@ -809,13 +810,13 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
             for (GraphNode graphNode : expandedSelectedNodes)
             {
-                Integer index = expressionData.getIdentityMap(graphNode.getNodeName());
+                Integer index = correlationData.getIdentityMap(graphNode.getNodeName());
                 if (index == null)
                 {
                     continue;
                 }
 
-                float[] transformedData = expressionData.getTransformedRow(index);
+                float[] transformedData = correlationData.getTransformedRow(index);
 
                 Color nodeColor = graphNode.getColor();
                 VertexClass nodeClass = graphNode.getVertexClass();
@@ -846,7 +847,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
                     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
                     for (int column = 0; column < totalColumns; column++)
                     {
-                        String columnName = expressionData.getColumnName(column);
+                        String columnName = correlationData.getColumnName(column);
                         dataset.addValue(transformedData[column], nodeName, columnName);
                     }
 
@@ -911,8 +912,8 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
         if (drawAxesLegend)
         {
-            mainPlot.getDomainAxis().setLabel(EXPRESSION_X_AXIS_LABEL);
-            mainPlot.getRangeAxis().setLabel(EXPRESSION_Y_AXIS_LABEL);
+            mainPlot.getDomainAxis().setLabel(X_AXIS_LABEL);
+            mainPlot.getRangeAxis().setLabel(Y_AXIS_LABEL);
         }
         else
         {
@@ -982,7 +983,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
             combinedDomainCategoryPlot.setDrawingSupplier(new DefaultDrawingSupplier());
         }
 
-        exportPlotExpressionProfileAsAction.setEnabled(!expandedSelectedNodes.isEmpty());
+        exportPlotCorrelationProfileAsAction.setEnabled(!expandedSelectedNodes.isEmpty());
     }
 
     private ArrayList<String> selectedAnnotations()
@@ -1003,8 +1004,8 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
     private CategoryDataset createColumnAnnotationDataset()
     {
-        ExpressionData.ColumnAnnotation sortColumnAnnotation =
-                expressionData.getColumnAnnotationByName((String)sortColumnAnnotationComboBox.getSelectedItem());
+        CorrelationData.ColumnAnnotation sortColumnAnnotation =
+                correlationData.getColumnAnnotationByName((String)sortColumnAnnotationComboBox.getSelectedItem());
         int[] sortedColumnMap = null;
 
         if (sortColumnAnnotation != null)
@@ -1014,13 +1015,13 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        int totalColumns = expressionData.getTotalColumns();
+        int totalColumns = correlationData.getTotalColumns();
 
-        ArrayList<ExpressionData.ColumnAnnotation> annotations =
-                new ArrayList<ExpressionData.ColumnAnnotation>(expressionData.getColumnAnnotations());
+        ArrayList<CorrelationData.ColumnAnnotation> annotations =
+                new ArrayList<CorrelationData.ColumnAnnotation>(correlationData.getColumnAnnotations());
         Collections.reverse(annotations); // So the rows appear in the same order as the source file
 
-        for (ExpressionData.ColumnAnnotation annotation : annotations)
+        for (CorrelationData.ColumnAnnotation annotation : annotations)
         {
             String annotationName = annotation.getName();
 
@@ -1038,7 +1039,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
                 }
 
                 String annotationValue = annotation.getFullyQualifiedValue(mappedColumn);
-                String columnName = expressionData.getColumnName(mappedColumn);
+                String columnName = correlationData.getColumnName(mappedColumn);
                 dataset.addValue(1.0, annotationValue, columnName);
             }
         }
@@ -1066,8 +1067,8 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         combinedDomainCategoryPlot.setGap(0.0);
         combinedDomainCategoryPlot.setDomainGridlinesVisible(false);
 
-        JFreeChart expressionGraphJFreeChart = new JFreeChart(null, JFreeChart.DEFAULT_TITLE_FONT, combinedDomainCategoryPlot, true);
-        ChartPanel chartPanel = new ChartPanel(expressionGraphJFreeChart);
+        JFreeChart graphJFreeChart = new JFreeChart(null, JFreeChart.DEFAULT_TITLE_FONT, combinedDomainCategoryPlot, true);
+        ChartPanel chartPanel = new ChartPanel(graphJFreeChart);
         chartPanel.setMaximumDrawWidth(4096);
         chartPanel.setMaximumDrawHeight(4096);
 
@@ -1079,7 +1080,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         File saveScreenshotFile = layoutFrame.getGraph().saveImageToFile(jframe, "Render Plot Image To File As", "plot");
         if (saveScreenshotFile != null)
         {
-            if (!savePlotToImageFile(expressionGraphPlotPanel, saveScreenshotFile, true, ""))
+            if (!savePlotToImageFile(correlationGraphPlotPanel, saveScreenshotFile, true, ""))
             {
                 JOptionPane.showMessageDialog(jframe, "Something went wrong while saving the plot image to file:\n" +
                         "Please try again with a different file name/path/drive.",
@@ -1092,9 +1093,9 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
     public void initiateTakeMultipleClassesScreenShotsProcess()
     {
         int initialClassIndex = layoutFrame.getClassViewerFrame().getClassIndex();
-        int startingClassIndex = expressionChooseClassesToRenderPlotImagesFromDialog.getStartingClassIndex();
+        int startingClassIndex = correlationChooseClassesToRenderPlotImagesFromDialog.getStartingClassIndex();
         int currentClassIndex = startingClassIndex;
-        int endingClassIndex = expressionChooseClassesToRenderPlotImagesFromDialog.getEndingClassIndex() + 1;
+        int endingClassIndex = correlationChooseClassesToRenderPlotImagesFromDialog.getEndingClassIndex() + 1;
 
         int option = 0;
         if (endingClassIndex - startingClassIndex < WARNING_MESSAGE_FOR_RENDERING_NUMBER_OF_PLOTS)
@@ -1120,7 +1121,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
                     currentVertexClassName = currentVertexClass.getName();
                     numberOfSelectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes().size();
                     tuple2 = addCurrentClassNameToSaveScreenshotFile(initialSaveScreenshotFile, currentVertexClassName, numberOfSelectedNodes);
-                    savedOk = savePlotToImageFile(expressionGraphPlotPanel, tuple2.first, false,
+                    savedOk = savePlotToImageFile(correlationGraphPlotPanel, tuple2.first, false,
                             (numberOfSelectedNodes > 0) ? currentVertexClassName +
                             " (" + numberOfSelectedNodes + " nodes)" : currentVertexClassName);
 
@@ -1164,7 +1165,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
         return Tuples.tuple(new File(saveScreenshotFileName + " for Class " + ( (numberOfSelectedNodes > 0) ? currentVertexClassName + " (" + numberOfSelectedNodes + " nodes)" : currentVertexClassName ) + "." + format), currentVertexClassName);
     }
-    
+
     private BufferedImage createCenteredTextImage(String text, Font font, Color fontColor, boolean isAntiAliased, boolean usesFractionalMetrics, Color backGroundColor, int imageWidth)
     {
         FontRenderContext frc = new FontRenderContext(null, isAntiAliased, usesFractionalMetrics);
@@ -1200,12 +1201,12 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         boolean doSaveFile = false;
         File saveFile = null;
 
-        exportPlotExpressionProfileToFileChooser.setSelectedFile( new File( IOUtils.getPrefix( layoutFrame.getFileNameLoaded() ) + "_Expression_Profile" ) );
+        exportPlotCorrelationProfileToFileChooser.setSelectedFile( new File( IOUtils.getPrefix( layoutFrame.getFileNameLoaded() ) + "_Correlation_Profile" ) );
 
-        if (exportPlotExpressionProfileToFileChooser.showSaveDialog(jframe) == JFileChooser.APPROVE_OPTION)
+        if (exportPlotCorrelationProfileToFileChooser.showSaveDialog(jframe) == JFileChooser.APPROVE_OPTION)
         {
             String extension = fileNameExtensionFilterText.getExtensions()[0];
-            String fileName = exportPlotExpressionProfileToFileChooser.getSelectedFile().getAbsolutePath();
+            String fileName = exportPlotCorrelationProfileToFileChooser.getSelectedFile().getAbsolutePath();
             if ( fileName.endsWith(extension) ) fileName = IOUtils.getPrefix(fileName);
 
             saveFile = new File(fileName + "." + extension);
@@ -1225,32 +1226,32 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
         if (doSaveFile)
         {
-            saveExportPlotExpressionProfileFile(saveFile);
+            saveExportPlotCorrelationProfileFile(saveFile);
             FILE_CHOOSER_PATH.set( saveFile.getAbsolutePath() );
         }
     }
 
-    private void saveExportPlotExpressionProfileFile(File file)
+    private void saveExportPlotCorrelationProfileFile(File file)
     {
         try
         {
-            int totalColumns = expressionData.getTotalColumns();
+            int totalColumns = correlationData.getTotalColumns();
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write("Name\t");
             for (int j = 0; j < totalColumns; j++)
-                fileWriter.write(expressionData.getColumnName(j) + "\t");
+                fileWriter.write(correlationData.getColumnName(j) + "\t");
             fileWriter.write("\n");
 
             Integer index = null;
             HashSet<GraphNode> expandedSelectedNodes = layoutFrame.getGraph().getSelectionManager().getExpandedSelectedNodes();
             for (GraphNode graphNode : expandedSelectedNodes)
             {
-                index = expressionData.getIdentityMap( graphNode.getNodeName() );
+                index = correlationData.getIdentityMap( graphNode.getNodeName() );
                 if (index == null) continue;
 
                 fileWriter.write(graphNode.getNodeName() + "\t");
                 for (int j = 0; j < totalColumns; j++)
-                    fileWriter.write(expressionData.getExpressionDataValue(index, j) + "\t");
+                    fileWriter.write(correlationData.getDataValue(index, j) + "\t");
                 fileWriter.write("\n");
             }
 
@@ -1261,7 +1262,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("Exception in saveExportPlotExpressionProfileFile()\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("Exception in saveExportPlotCorrelationProfileFile()\n" + ioe.getMessage());
 
             JOptionPane.showMessageDialog(jframe, "Something went wrong while saving the file:\n" + ioe.getMessage() + "\nPlease try again with a different file name/path/drive.", "Error with saving the file!", JOptionPane.ERROR_MESSAGE);
             save();
@@ -1320,7 +1321,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
 
     private void refreshZoomScrollbar()
     {
-        int totalColumns = expressionData.getTotalColumns();
+        int totalColumns = correlationData.getTotalColumns();
 
         if (totalColumns > maximumVisibleSamples())
         {
@@ -1384,12 +1385,12 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
     public void onFirstShown()
     {
         SpinnerNumberModel snm = (SpinnerNumberModel) maximumVisibleSamplesSpinner.getModel();
-        snm.setValue(expressionData.getTotalColumns());
+        snm.setValue(correlationData.getTotalColumns());
 
         columnInfoPopupMenu.removeAll();
         columnInfoPopupMenu.add(sampleNameCheckBox);
         sampleNameCheckBox.setSelected(true);
-        for (ExpressionData.ColumnAnnotation annotation : expressionData.getColumnAnnotations())
+        for (CorrelationData.ColumnAnnotation annotation : correlationData.getColumnAnnotations())
         {
             String annotationName = annotation.getName();
             JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem(annotationName);
@@ -1397,7 +1398,7 @@ public final class ExpressionGraphPanel extends ClassViewerPlotPanel implements 
             columnInfoPopupMenu.add(checkBox);
         }
 
-        sortColumnAnnotationComboBox.setVisible(expressionData.getColumnAnnotations().size() > 0);
+        sortColumnAnnotationComboBox.setVisible(correlationData.getColumnAnnotations().size() > 0);
 
         refreshPlot();
     }

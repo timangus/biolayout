@@ -1,18 +1,18 @@
-package org.Kajeka.Expression.Dialogs;
+package org.Kajeka.Correlation.Dialogs;
 
+import org.Kajeka.Correlation.Panels.CorrelationDegreePlotsPanel;
 import java.util.HashSet;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import org.Kajeka.Expression.Panels.*;
-import org.Kajeka.Expression.ExpressionData;
+import org.Kajeka.Correlation.CorrelationData;
 import org.Kajeka.StaticLibraries.*;
 import org.Kajeka.Utils.*;
 import static java.lang.Math.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
-import org.Kajeka.Files.Parsers.ExpressionParser;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
+import org.Kajeka.Files.Parsers.CorrelationParser;
 
 /**
 *
@@ -21,10 +21,10 @@ import org.Kajeka.Files.Parsers.ExpressionParser;
 *
 */
 
-public final class ExpressionLoaderSummaryDialog extends JDialog implements ChangeListener, CaretListener
+public final class CorrelationLoaderSummaryDialog extends JDialog implements ChangeListener, CaretListener
 {
     /**
-    *  Serial version UID variable for the ExpressionLoaderSummaryDialog class.
+    *  Serial version UID variable for the CorrelationLoaderSummaryDialog class.
     */
     public static final long serialVersionUID = 111222333444555709L;
 
@@ -39,7 +39,7 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
     private AbstractAction cancelAction = null;
     private JSlider thresholdSlider = null;
     private FloatNumberField thresholdValueTextField = null;
-    private ExpressionDegreePlotsPanel expressionDegreePlotsPanel = null;
+    private CorrelationDegreePlotsPanel correlationDegreePlotsPanel = null;
 
     private JCheckBox filterValueCheckBox = null;
     private FloatNumberField filterValueField = null;
@@ -48,15 +48,15 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
     private HashSet<Integer> filteredValueRows = null;
     private HashSet<Integer> filteredCoefVarRows = null;
 
-    private ExpressionData expressionData;
-    private ExpressionParser scanner;
+    private CorrelationData correlationData;
+    private CorrelationParser scanner;
 
-    public ExpressionLoaderSummaryDialog(JFrame jframe, ExpressionData expressionData, ExpressionParser scanner)
+    public CorrelationLoaderSummaryDialog(JFrame jframe, CorrelationData correlationData, CorrelationParser scanner)
     {
-        super(jframe, "Expression Graph Settings", true);
+        super(jframe, "Correlation Graph Settings", true);
 
         this.jframe = jframe;
-        this.expressionData = expressionData;
+        this.correlationData = correlationData;
         this.scanner = scanner;
 
         initActions();
@@ -74,13 +74,13 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
         currentThresholdFloat = CURRENT_CORRELATION_THRESHOLD;
 
         JPanel topPanel = new JPanel(true);
-        expressionDegreePlotsPanel = new ExpressionDegreePlotsPanel(
-                expressionData.getCounts(), expressionData.getTotalRows(),
+        correlationDegreePlotsPanel = new CorrelationDegreePlotsPanel(
+                correlationData.getCounts(), correlationData.getTotalRows(),
                 minThreshold, currentThreshold, createCorrelationTextValue(currentThreshold) );
         JPanel downPanel = new JPanel(true);
         downPanel.setLayout(new BoxLayout(downPanel, BoxLayout.PAGE_AXIS));
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, expressionDegreePlotsPanel, null);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, correlationDegreePlotsPanel, null);
         splitPane.setEnabled(false); // disable the split pane as we use it here just for its look & feel with the DegreePlots JPanel
 
         thresholdSlider = new JSlider(minThreshold, 100);
@@ -121,7 +121,7 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
                 String text = createCorrelationTextValue(currentThreshold);
                 thresholdValueTextField.setText(text);
                 thresholdSlider.setValue(currentThreshold);
-                expressionDegreePlotsPanel.updatePlots(currentThreshold, text);
+                correlationDegreePlotsPanel.updatePlots(currentThreshold, text);
             }
         });
 
@@ -262,7 +262,7 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
         {
             currentThreshold = thresholdSlider.getValue();
             currentThresholdFloat = thresholdValueTextField.getValue();
-            expressionDegreePlotsPanel.updatePlots(currentThreshold,
+            correlationDegreePlotsPanel.updatePlots(currentThreshold,
                     createCorrelationTextValue(currentThreshold));
             thresholdValueTextField.setText(createCorrelationTextValue(currentThreshold));
 
@@ -294,20 +294,20 @@ public final class ExpressionLoaderSummaryDialog extends JDialog implements Chan
         if (filterValueCheckBox.isSelected())
         {
             float valueThreshold = filterValueField.getValue();
-            filteredValueRows = expressionData.filterMinValue(valueThreshold);
+            filteredValueRows = correlationData.filterMinValue(valueThreshold);
             CURRENT_FILTER_SET.addAll(filteredValueRows);
         }
 
         if (filterCoefVarCheckBox.isSelected())
         {
             float coefVarThreshold = filterCoefVarField.getValue();
-            filteredCoefVarRows = expressionData.filterMinCoefficientOfVariation(coefVarThreshold);
+            filteredCoefVarRows = correlationData.filterMinCoefficientOfVariation(coefVarThreshold);
             CURRENT_FILTER_SET.addAll(filteredCoefVarRows);
         }
 
         scanner.rescan();
-        expressionDegreePlotsPanel.updateCounts(expressionData.getCounts());
-        expressionDegreePlotsPanel.updatePlots(currentThreshold,
+        correlationDegreePlotsPanel.updateCounts(correlationData.getCounts());
+        correlationDegreePlotsPanel.updatePlots(currentThreshold,
                 createCorrelationTextValue(currentThreshold));
     }
 

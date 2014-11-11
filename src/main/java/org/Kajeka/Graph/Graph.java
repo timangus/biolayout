@@ -448,7 +448,7 @@ public class Graph extends GLCanvas implements GraphInterface
     {
         if (DEBUG_BUILD) println("Graph drawAnimationCurrentTick()");
 
-        String legend = "Current " + ( DATA_TYPE.equals(DataTypes.EXPRESSION) ? "Entity : " : "TimeBlock: ") + tick + " / " + TOTAL_NUMBER_OF_ANIMATION_TICKS + ( DATA_TYPE.equals(DataTypes.EXPRESSION) ? " (" + layoutFrame.getExpressionData().getColumnName( (int)tick - 1 ) + ")" : "" );
+        String legend = "Current " + ( DATA_TYPE.equals(DataTypes.CORRELATION) ? "Entity : " : "TimeBlock: ") + tick + " / " + TOTAL_NUMBER_OF_ANIMATION_TICKS + ( DATA_TYPE.equals(DataTypes.CORRELATION) ? " (" + layoutFrame.getCorrelationData().getColumnName( (int)tick - 1 ) + ")" : "" );
         Color legendStringColor = null;
         gl.glLoadIdentity(); // profile mode should always be in the same place in OpenGL canvas, no need to do any transformations with it, so loading the identity matrix
 

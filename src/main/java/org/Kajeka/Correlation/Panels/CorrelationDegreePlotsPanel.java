@@ -1,4 +1,4 @@
-package org.Kajeka.Expression.Panels;
+package org.Kajeka.Correlation.Panels;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -33,7 +33,7 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 *
 */
 
-public final class ExpressionDegreePlotsPanel extends JPanel
+public final class CorrelationDegreePlotsPanel extends JPanel
 {
     private int totalRows = 0;
     private int minThreshold = 0;
@@ -53,7 +53,7 @@ public final class ExpressionDegreePlotsPanel extends JPanel
     private XYSeriesCollection edgesNodesDataset;
     private ValueMarker thresholdMarker;
 
-    public ExpressionDegreePlotsPanel(int[][] counts, int totalRows,
+    public CorrelationDegreePlotsPanel(int[][] counts, int totalRows,
             int minThreshold, int threshold, String thresholdString)
     {
         super(true);

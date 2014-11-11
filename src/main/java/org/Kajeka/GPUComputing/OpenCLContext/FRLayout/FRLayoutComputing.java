@@ -255,15 +255,15 @@ public class FRLayoutComputing extends OpenCLContext
         // clear data vectors
         indexXY = (IntBuffer)indexXY.clear();
 
-        transformExpressionDataCalculationsFromUpperDiagonalMatrixToSquareMatrixInSteps();
+        transformCorrelationDataCalculationsFromUpperDiagonalMatrixToSquareMatrixInSteps();
 
         indexXY.rewind();
     }
 
     /**
-    *  Transforms the expression data calculations from an upper diagonal matrix to a square matrix in steps.
+    *  Transforms the data calculations from an upper diagonal matrix to a square matrix in steps.
     */
-    private void transformExpressionDataCalculationsFromUpperDiagonalMatrixToSquareMatrixInSteps()
+    private void transformCorrelationDataCalculationsFromUpperDiagonalMatrixToSquareMatrixInSteps()
     {
         int index = 0;
         boolean exitLoops = false;
@@ -328,7 +328,7 @@ public class FRLayoutComputing extends OpenCLContext
     }
 
     /**
-    *  Initializes the Expression data OpenCL kernel and set its arguments.
+    *  Initializes the data OpenCL kernel and set its arguments.
     */
     private void initializeKernelAndArguments()
     {
@@ -794,13 +794,13 @@ public class FRLayoutComputing extends OpenCLContext
         }
         catch (BrokenBarrierException ex)
         {
-            if (DEBUG_BUILD) println("Problem with a broken barrier with the main FRLayout thread in calculateNCPExpressionData()!:\n" + ex.getMessage());
+            if (DEBUG_BUILD) println("Problem with a broken barrier with the main FRLayout thread in calculateNCPFRLayout()!:\n" + ex.getMessage());
         }
         catch (InterruptedException ex)
         {
             // restore the interuption status after catching InterruptedException
             Thread.currentThread().interrupt();
-            if (DEBUG_BUILD) println("Problem with pausing the main FRLayout thread in calculateNCPExpressionData()!:\n" + ex.getMessage());
+            if (DEBUG_BUILD) println("Problem with pausing the main FRLayout thread in calculateNCPFRLayout()!:\n" + ex.getMessage());
         }
     }
 

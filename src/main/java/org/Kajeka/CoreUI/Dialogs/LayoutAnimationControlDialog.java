@@ -68,7 +68,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     private JButton stopAnimationButton = null;
     private JButton closeButton = null;
 
-    private boolean isExpressionProfileAnimationMode = true;
+    private boolean isCorrelationProfileAnimationMode = true;
     private boolean setFixedMaxValueCheckBoxState = false;
     private String maxValueFoundString = "";
     private boolean pauseResumeButtonState = false;
@@ -132,12 +132,12 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     private void initComponents()
     {
         JPanel nodeAnimationPanel = new JPanel(true);
-        perNodeMaxValueOrmEPNComponentsCheckbox = (isExpressionProfileAnimationMode) ? new JCheckBox("   Per Node Max Value") : new JCheckBox("   mEPN Components Animation Only");
-        if (isExpressionProfileAnimationMode)
+        perNodeMaxValueOrmEPNComponentsCheckbox = (isCorrelationProfileAnimationMode) ? new JCheckBox("   Per Node Max Value") : new JCheckBox("   mEPN Components Animation Only");
+        if (isCorrelationProfileAnimationMode)
             perNodeMaxValueOrmEPNComponentsCheckbox.setToolTipText("Per Node Max Value");
         else
             perNodeMaxValueOrmEPNComponentsCheckbox.setToolTipText("mEPN Components Animation Only");
-        perNodeMaxValueOrmEPNComponentsCheckbox.setSelected( isExpressionProfileAnimationMode ? ANIMATION_PER_NODE_MAX_VALUE.get() : ANIMATION_MEPN_COMPONENTS_ANIMATION_ONLY.get() );
+        perNodeMaxValueOrmEPNComponentsCheckbox.setSelected(isCorrelationProfileAnimationMode ? ANIMATION_PER_NODE_MAX_VALUE.get() : ANIMATION_MEPN_COMPONENTS_ANIMATION_ONLY.get() );
         perNodeMaxValueOrmEPNComponentsCheckbox.addActionListener(this);
         selectedNodesCheckbox = new JCheckBox("   Selected Nodes Animation Only");
         selectedNodesCheckbox.setToolTipText("Selected Nodes Animation Only");
@@ -170,25 +170,25 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         else if(ANIMATION_FLUID_TRANSITION_TYPE.get() == 3)
             fluidTransitionPolynomialRadioButton.setSelected(true);
         JPanel timingPanel = new JPanel(true);
-        entitiesOrTimeBlocksPerSecondLabel = (isExpressionProfileAnimationMode) ? new JLabel("Entities Per Second:") : new JLabel("Time Blocks Per Second:");
-        if (isExpressionProfileAnimationMode)
+        entitiesOrTimeBlocksPerSecondLabel = (isCorrelationProfileAnimationMode) ? new JLabel("Entities Per Second:") : new JLabel("Time Blocks Per Second:");
+        if (isCorrelationProfileAnimationMode)
             entitiesOrTimeBlocksPerSecondLabel.setToolTipText("Entities Per Second");
         else
             entitiesOrTimeBlocksPerSecondLabel.setToolTipText("Time Blocks Per Second");
         entitiesOrTimeBlocksPerSecondComboBox = new JComboBox<String>();
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
             entitiesOrTimeBlocksPerSecondComboBox.setToolTipText("Entity/Sec");
         else
             entitiesOrTimeBlocksPerSecondComboBox.setToolTipText("TB/Sec");
-        startFromEntityOrTimeBlockLabel = (isExpressionProfileAnimationMode) ? new JLabel("Start From Entity:") : new JLabel("Start From TimeBlock:");
-        if (isExpressionProfileAnimationMode)
+        startFromEntityOrTimeBlockLabel = (isCorrelationProfileAnimationMode) ? new JLabel("Start From Entity:") : new JLabel("Start From TimeBlock:");
+        if (isCorrelationProfileAnimationMode)
             startFromEntityOrTimeBlockLabel.setToolTipText("Start From Entity");
         else
             startFromEntityOrTimeBlockLabel.setToolTipText("Start From TimeBlock");
         startFromEntityOrTimeBlockTextField = new JTextField();
         startFromEntityOrTimeBlockTextField.setDocument( new TextFieldFilter(TextFieldFilter.NUMERIC) );
         startFromEntityOrTimeBlockTextField.setText("1");
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
             startFromEntityOrTimeBlockTextField.setToolTipText("Entity");
         else
             startFromEntityOrTimeBlockTextField.setToolTipText("TimeBlock");
@@ -197,7 +197,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         setMaxNodeSizeLabel.setToolTipText("Set Max Node Size");
         setMaxNodeSizeComboBox = new JComboBox<String>();
         setMaxNodeSizeComboBox.setToolTipText("Max Node Size");
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
         {
             setMaxValueLabel = new JLabel("          Set Max Value:");
             setMaxValueLabel.setToolTipText("Set Max Node Size");
@@ -211,12 +211,12 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
             setFixedMaxValueCheckBox.addActionListener(this);
 
             setFixedMaxValueCheckBoxState = false;
-            if (isExpressionProfileAnimationMode)
+            if (isCorrelationProfileAnimationMode)
                 setFixedMaxValueCheckBox.setEnabled( !ANIMATION_PER_NODE_MAX_VALUE.get() );
         }
         maxValueFoundTextField = new FloatNumberField(0, 5);
         maxValueFoundTextField.setDocument( new TextFieldFilter(TextFieldFilter.FLOAT) );
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
             maxValueFoundTextField.setEnabled( !ANIMATION_PER_NODE_MAX_VALUE.get() );
         else
         {
@@ -232,7 +232,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         useRealMaxValueForColorTransitionCheckBox = new JCheckBox("   Use Real Max Value For Color Transition");
         useRealMaxValueForColorTransitionCheckBox.setToolTipText("Use Real Max Value For Color Transition");
         useRealMaxValueForColorTransitionCheckBox.addActionListener(this);
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
             useRealMaxValueForColorTransitionCheckBox.setEnabled( !ANIMATION_PER_NODE_MAX_VALUE.get() );
         minValueColorLabel = new JLabel("Min Spectrum Color:");
         minValueColorLabel.setToolTipText("Min Spectrum Color");
@@ -331,7 +331,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
 
         timingPanel.setBorder( BorderFactory.createTitledBorder( "Timing" + ( (USE_MULTICORE_PROCESS) ? "  (MultiCore" : "  (SingleCore" ) + " Animation & Rendering)" ) );
 
-        int index = (isExpressionProfileAnimationMode) ? 0 : 1;
+        int index = (isCorrelationProfileAnimationMode) ? 0 : 1;
         for (int i = 1; i < 10; i++)
             entitiesOrTimeBlocksPerSecondComboBox.addItem( TICKS_PER_SEC_STRING[index] + Utils.numberFormatting(i / 10.0, 2) );
         for (int i = 1; i <= MAX_RATE_PER_SEC; i++)
@@ -377,21 +377,19 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
 
         GroupLayout transitionPanelLayout = new GroupLayout(transitionPanel);
         transitionPanel.setLayout(transitionPanelLayout);
-        transitionPanelLayout.setHorizontalGroup(
-            transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        transitionPanelLayout.setHorizontalGroup(transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(transitionPanelLayout.createSequentialGroup()
                 .addGap(8, 8, 8)
                 .addGroup(transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(setMaxNodeSizeLabel)
-                    .addComponent(isExpressionProfileAnimationMode ? setMaxValueLabel : setFixedMaxValueCheckBox))
+                    .addComponent(isCorrelationProfileAnimationMode ? setMaxValueLabel : setFixedMaxValueCheckBox))
                 .addGap(8, 8, 8)
                 .addGroup(transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(setMaxNodeSizeComboBox)
                     .addComponent(maxValueFoundTextField))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
-        transitionPanelLayout.setVerticalGroup(
-            transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        transitionPanelLayout.setVerticalGroup(transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(transitionPanelLayout.createSequentialGroup()
                 // .addContainerGap()
                 .addGroup(transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -400,7 +398,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
                   .addGap(8, 8, 8)
                 .addGroup(transitionPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(maxValueFoundTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(isExpressionProfileAnimationMode ? setMaxValueLabel : setFixedMaxValueCheckBox)))
+                    .addComponent(isCorrelationProfileAnimationMode ? setMaxValueLabel : setFixedMaxValueCheckBox)))
                 // .addContainerGap(20, Short.MAX_VALUE))
         );
 
@@ -645,7 +643,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     */
     public void setMaxValueInTextField(float value)
     {
-        if ( isExpressionProfileAnimationMode || !setFixedMaxValueCheckBox.isSelected() )
+        if ( isCorrelationProfileAnimationMode || !setFixedMaxValueCheckBox.isSelected() )
         {
             String textValue = new BigDecimal(value).toPlainString();
             int index = textValue.indexOf(".");
@@ -665,19 +663,19 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     }
 
     /**
-    *  Sets the isExpressionProfileAnimationMode state.
+    *  Sets the isCorrelationProfileAnimationMode state.
     */
-    public void setIsExpressionProfileAnimationMode(boolean isExpressionProfileAnimationMode)
+    public void setIsCorrelationProfileAnimationMode(boolean isCorrelationProfileAnimationMode)
     {
-        this.isExpressionProfileAnimationMode = isExpressionProfileAnimationMode;
+        this.isCorrelationProfileAnimationMode = isCorrelationProfileAnimationMode;
 
         clearComponents();
         initComponents();
 
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
         {
-            setMaxValueInTextField( layoutFrame.getExpressionData().findGlobalMaxValueFromExpressionDataArray() );
-            ANIMATION_EXPRESSION_DATA_LOCAL_MAX_VALUES = layoutFrame.getExpressionData().findLocalMaxValuesFromExpressionDataArray( layoutFrame.getGraph().getGraphNodes() );
+            setMaxValueInTextField( layoutFrame.getCorrelationData().findGlobalMaxValueFromCorrelationDataArray() );
+            ANIMATION_CORRELATION_DATA_LOCAL_MAX_VALUES = layoutFrame.getCorrelationData().findLocalMaxValuesFromCorrelationDataArray( layoutFrame.getGraph().getGraphNodes() );
         }
     }
 
@@ -687,10 +685,10 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     private int readAllGUIParameters()
     {
         int entityOrTimeBlockToStartFrom = 1;
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
         {
-            TOTAL_NUMBER_OF_ANIMATION_TICKS = layoutFrame.getExpressionData().getTotalColumns();
-            ANIMATION_EXPRESSION_DATA = layoutFrame.getExpressionData();
+            TOTAL_NUMBER_OF_ANIMATION_TICKS = layoutFrame.getCorrelationData().getTotalColumns();
+            ANIMATION_CORRELATION_DATA = layoutFrame.getCorrelationData();
         }
         else
         {
@@ -698,7 +696,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
             ANIMATION_SIMULATION_RESULTS = layoutFrame.getSignalingPetriNetSimulationDialog().getSPNSimulationResults();
         }
         String entitiesOrTimeBlocksPerSecondString = (String)entitiesOrTimeBlocksPerSecondComboBox.getSelectedItem();
-        int index = (isExpressionProfileAnimationMode) ? 0 : 1;
+        int index = (isCorrelationProfileAnimationMode) ? 0 : 1;
         ANIMATION_TICKS_PER_SECOND = Float.parseFloat( entitiesOrTimeBlocksPerSecondString.substring( TICKS_PER_SEC_STRING[index].length(), entitiesOrTimeBlocksPerSecondString.length() ) );
         if (ANIMATION_USE_COLOR_PALETTE_SPECTRUM_TRANSITION)
         {
@@ -709,7 +707,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         String startFromEntityOrTimeBlockTextFieldString = startFromEntityOrTimeBlockTextField.getText();
         if ( startFromEntityOrTimeBlockTextFieldString.isEmpty() )
         {
-            String entityOrTimeBlock = (isExpressionProfileAnimationMode) ? "Entity" : "TimeBlock";
+            String entityOrTimeBlock = (isCorrelationProfileAnimationMode) ? "Entity" : "TimeBlock";
             JOptionPane.showMessageDialog(this, "No value inserted in the \"Start From " + entityOrTimeBlock + "\" textbox.\nNow using the default value of 1 (First " + entityOrTimeBlock + ").", "Animation Control", JOptionPane.INFORMATION_MESSAGE);
             startFromEntityOrTimeBlockTextField.setText("1");
             entityOrTimeBlockToStartFrom = 1;
@@ -719,15 +717,15 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
 
         if (entityOrTimeBlockToStartFrom < 1)
         {
-            String entityOrTimeBlock = (isExpressionProfileAnimationMode) ? "Entity" : "TimeBlock";
+            String entityOrTimeBlock = (isCorrelationProfileAnimationMode) ? "Entity" : "TimeBlock";
             JOptionPane.showMessageDialog(this, "The value inserted in the \"Start From " + entityOrTimeBlock + "\" textbox must be above 0.\nNow using the default value of 1 (First " + entityOrTimeBlock + ").", "Animation Control", JOptionPane.INFORMATION_MESSAGE);
             startFromEntityOrTimeBlockTextField.setText("1");
             entityOrTimeBlockToStartFrom = 1;
         }
         else if (entityOrTimeBlockToStartFrom > TOTAL_NUMBER_OF_ANIMATION_TICKS)
         {
-            String entityOrTimeBlock = (isExpressionProfileAnimationMode) ? "Entity" : "TimeBlock";
-            String entitiesOrTimeBlocks = (isExpressionProfileAnimationMode) ? "Entities" : "TimeBlocks";
+            String entityOrTimeBlock = (isCorrelationProfileAnimationMode) ? "Entity" : "TimeBlock";
+            String entitiesOrTimeBlocks = (isCorrelationProfileAnimationMode) ? "Entities" : "TimeBlocks";
             JOptionPane.showMessageDialog(this, "The value inserted in the \"Start From " + entityOrTimeBlock + "\" textbox exceeds the total number of " + entitiesOrTimeBlocks + ".\nNow using the default value of 1 (First " + entityOrTimeBlock + ").", "Animation Control", JOptionPane.INFORMATION_MESSAGE);
             startFromEntityOrTimeBlockTextField.setText("1");
             entityOrTimeBlockToStartFrom = 1;
@@ -739,10 +737,10 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         float maxValueFound = 0.0f;
         if ( maxValueFoundTextField.isEmpty() )
         {
-            if (!isExpressionProfileAnimationMode)
+            if (!isCorrelationProfileAnimationMode)
                 setFixedMaxValueCheckBox.setSelected(false);
             JOptionPane.showMessageDialog(this, "No value inserted in the \"Set Max Value\" textbox.\nNow using the default max value.", "Animation Control", JOptionPane.INFORMATION_MESSAGE);
-            ANIMATION_RESULTS_REAL_MAX_VALUE = ANIMATION_RESULTS_MAX_VALUE = (isExpressionProfileAnimationMode) ? layoutFrame.getExpressionData().findGlobalMaxValueFromExpressionDataArray()
+            ANIMATION_RESULTS_REAL_MAX_VALUE = ANIMATION_RESULTS_MAX_VALUE = (isCorrelationProfileAnimationMode) ? layoutFrame.getCorrelationData().findGlobalMaxValueFromCorrelationDataArray()
                                                                                                                 : layoutFrame.getSignalingPetriNetSimulationDialog().findMaxValueFromResultsArray();
             setMaxValueInTextField(ANIMATION_RESULTS_MAX_VALUE);
             maxValueFound = ANIMATION_RESULTS_MAX_VALUE;
@@ -753,17 +751,17 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
 
         if (maxValueFound == 0.0f)
         {
-            if (!isExpressionProfileAnimationMode)
+            if (!isCorrelationProfileAnimationMode)
                 setFixedMaxValueCheckBox.setSelected(false);
             JOptionPane.showMessageDialog(this, "The value inserted in the \"Set Max Value\" textbox must be above 0.\nNow using the default max value.", "Animation Control", JOptionPane.INFORMATION_MESSAGE);
-            ANIMATION_RESULTS_REAL_MAX_VALUE = ANIMATION_RESULTS_MAX_VALUE = (isExpressionProfileAnimationMode) ? layoutFrame.getExpressionData().findGlobalMaxValueFromExpressionDataArray()
+            ANIMATION_RESULTS_REAL_MAX_VALUE = ANIMATION_RESULTS_MAX_VALUE = (isCorrelationProfileAnimationMode) ? layoutFrame.getCorrelationData().findGlobalMaxValueFromCorrelationDataArray()
                                                                                                                 : layoutFrame.getSignalingPetriNetSimulationDialog().findMaxValueFromResultsArray();
             setMaxValueInTextField(ANIMATION_RESULTS_MAX_VALUE);
             ANIMATION_USE_REAL_MAX_VALUE_FOR_COLOR_TRANSITION = !useRealMaxValueForColorTransitionCheckBox.isSelected();
         }
         else
         {
-            ANIMATION_RESULTS_REAL_MAX_VALUE = (isExpressionProfileAnimationMode) ? layoutFrame.getExpressionData().findGlobalMaxValueFromExpressionDataArray()
+            ANIMATION_RESULTS_REAL_MAX_VALUE = (isCorrelationProfileAnimationMode) ? layoutFrame.getCorrelationData().findGlobalMaxValueFromCorrelationDataArray()
                                                                                   : layoutFrame.getSignalingPetriNetSimulationDialog().findMaxValueFromResultsArray();
             ANIMATION_RESULTS_MAX_VALUE = maxValueFound;
             ANIMATION_USE_REAL_MAX_VALUE_FOR_COLOR_TRANSITION = (ANIMATION_RESULTS_MAX_VALUE != ANIMATION_RESULTS_REAL_MAX_VALUE) && useRealMaxValueForColorTransitionCheckBox.isSelected();
@@ -855,7 +853,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     {
         int entityOrTimeBlockToStartFrom = readAllGUIParameters();
 
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
             perNodeMaxValueOrmEPNComponentsCheckbox.setEnabled(false);
         entitiesOrTimeBlocksPerSecondLabel.setEnabled(false);
         entitiesOrTimeBlocksPerSecondComboBox.setEnabled(false);
@@ -864,7 +862,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
 
         setMaxNodeSizeLabel.setEnabled(false);
         setMaxNodeSizeComboBox.setEnabled(false);
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
             setMaxValueLabel.setEnabled(false);
         else
             setFixedMaxValueCheckBox.setEnabled(false);
@@ -934,7 +932,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
         pauseResumeButtonState = false;
         pauseAnimationButton.setText("Pause Animation");
 
-        if (isExpressionProfileAnimationMode)
+        if (isCorrelationProfileAnimationMode)
             perNodeMaxValueOrmEPNComponentsCheckbox.setEnabled(true);
         entitiesOrTimeBlocksPerSecondLabel.setEnabled(true);
         entitiesOrTimeBlocksPerSecondComboBox.setEnabled(true);
@@ -943,16 +941,16 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
 
         setMaxNodeSizeLabel.setEnabled(true);
         setMaxNodeSizeComboBox.setEnabled(true);
-        if (isExpressionProfileAnimationMode)
-            setMaxValueLabel.setEnabled( !isExpressionProfileAnimationMode || !ANIMATION_PER_NODE_MAX_VALUE.get() );
+        if (isCorrelationProfileAnimationMode)
+            setMaxValueLabel.setEnabled(!isCorrelationProfileAnimationMode || !ANIMATION_PER_NODE_MAX_VALUE.get() );
         else
             setFixedMaxValueCheckBox.setEnabled(true);
-        maxValueFoundTextField.setEnabled( !isExpressionProfileAnimationMode || !ANIMATION_PER_NODE_MAX_VALUE.get() );
+        maxValueFoundTextField.setEnabled(!isCorrelationProfileAnimationMode || !ANIMATION_PER_NODE_MAX_VALUE.get() );
 
         useColorPaletteSpectrumTransitionCheckBox.setEnabled(true);
         if (ANIMATION_USE_COLOR_PALETTE_SPECTRUM_TRANSITION)
         {
-            useRealMaxValueForColorTransitionCheckBox.setEnabled( !isExpressionProfileAnimationMode || !ANIMATION_PER_NODE_MAX_VALUE.get() );
+            useRealMaxValueForColorTransitionCheckBox.setEnabled(!isCorrelationProfileAnimationMode || !ANIMATION_PER_NODE_MAX_VALUE.get() );
             minValueColorLabel.setEnabled(!ANIMATION_USE_IMAGE_AS_SPECTRUM);
             maxValueColorLabel.setEnabled(!ANIMATION_USE_IMAGE_AS_SPECTRUM);
             minSpectrumColorButton.setEnabled(!ANIMATION_USE_IMAGE_AS_SPECTRUM);
@@ -988,7 +986,7 @@ public class LayoutAnimationControlDialog extends JDialog implements ActionListe
     {
         if ( e.getSource().equals(perNodeMaxValueOrmEPNComponentsCheckbox) )
         {
-            if (isExpressionProfileAnimationMode)
+            if (isCorrelationProfileAnimationMode)
             {
                 ANIMATION_PER_NODE_MAX_VALUE.set( perNodeMaxValueOrmEPNComponentsCheckbox.isSelected() );
                 setMaxValueLabel.setEnabled( !ANIMATION_PER_NODE_MAX_VALUE.get() );

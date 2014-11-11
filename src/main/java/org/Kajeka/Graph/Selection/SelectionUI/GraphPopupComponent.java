@@ -1,11 +1,12 @@
 package org.Kajeka.Graph.Selection.SelectionUI;
 
+import org.Kajeka.Correlation.CorrelationEnvironment;
+import org.Kajeka.Correlation.CorrelationData;
 import java.awt.*;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import org.Kajeka.CoreUI.*;
-import org.Kajeka.Expression.*;
 import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.Network.*;
 import static org.Kajeka.Environment.AnimationEnvironment.*;
@@ -34,7 +35,7 @@ public final class GraphPopupComponent implements Runnable
     private static final String ANIMATION_X_AXIS_LABEL = "X Axis: Time Block";
     private static final String ANIMATION_Y_AXIS_LABEL = "Y Axis: Intensity";
     private static final int TIME_BLOCKS_COLUMNS_GRANULARITY = 10;
-    private static final int EXPRESSION_PLOT_X_AXIS_NAMES_LENGTH_THRESHOLD = 15;
+    private static final int PLOT_X_AXIS_NAMES_LENGTH_THRESHOLD = 15;
     private static final String NAME_TAIL = "...";
 
     private Component component = null;
@@ -45,10 +46,10 @@ public final class GraphPopupComponent implements Runnable
     private boolean isPetriNet = false;
     private LayoutFrame layoutFrame = null;
 
-    private ExpressionData expressionData = null;
+    private CorrelationData correlationData = null;
     private boolean drawGridLines = false;
     private boolean drawAxesLegend = false;
-    private ExpressionEnvironment.TransformType transformType = ExpressionEnvironment.TransformType.RAW;
+    private CorrelationEnvironment.TransformType transformType = CorrelationEnvironment.TransformType.RAW;
 
     private JPopupMenu popupMenu = null;
     private JMenuItem popupMenuItem = null;
@@ -137,31 +138,31 @@ public final class GraphPopupComponent implements Runnable
             popupNodeName = popupNodeName.substring(2);
         }
 
-        expressionData = layoutFrame.getExpressionData();
+        correlationData = layoutFrame.getCorrelationData();
         drawGridLines = PLOT_GRID_LINES.get();
         drawAxesLegend = PLOT_AXES_LEGEND.get();
-        transformType = ExpressionEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
+        transformType = CorrelationEnvironment.TransformType.values()[PLOT_TRANSFORM.get()];
     }
 
-    private JPanel createExpressionPlot()
+    private JPanel createCorrelationPlot()
     {
-        int totalColumns = expressionData.getTotalColumns();
+        int totalColumns = correlationData.getTotalColumns();
         if (totalColumns == 0)
         {
             return null;
         }
 
-        JFreeChart expressionGraphJFreeChart = ChartFactory.createLineChart(
+        JFreeChart correlationGraphJFreeChart = ChartFactory.createLineChart(
                 null, null, null, null,
                 PlotOrientation.VERTICAL, false, false, false);
-        CategoryPlot plot = (CategoryPlot) expressionGraphJFreeChart.getPlot();
+        CategoryPlot plot = (CategoryPlot) correlationGraphJFreeChart.getPlot();
         int datasetIndex = 0;
 
-        expressionData.setTransformType(transformType);
+        correlationData.setTransformType(transformType);
 
         for (GraphNode graphNode : this.graphNodes)
         {
-            Integer index = expressionData.getIdentityMap(graphNode.getNodeName());
+            Integer index = correlationData.getIdentityMap(graphNode.getNodeName());
 
             if (index == null)
             {
@@ -170,11 +171,11 @@ public final class GraphPopupComponent implements Runnable
 
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-            float[] transformedData = expressionData.getTransformedRow(index);
+            float[] transformedData = correlationData.getTransformedRow(index);
 
             for (int column = 0; column < totalColumns; column++)
             {
-                String columnName = expressionData.getColumnName(column);
+                String columnName = correlationData.getColumnName(column);
                 dataset.addValue(transformedData[column], "Value", columnName);
             }
 
@@ -196,7 +197,7 @@ public final class GraphPopupComponent implements Runnable
         axis.setUpperMargin(0.0);
         axis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_90);
 
-        ChartPanel chartPanel = new ChartPanel(expressionGraphJFreeChart);
+        ChartPanel chartPanel = new ChartPanel(correlationGraphJFreeChart);
 
         return chartPanel;
     }
@@ -221,11 +222,11 @@ public final class GraphPopupComponent implements Runnable
             if ( component.hasFocus() )
             {
                 JPanel plot = null;
-                if ( SHOW_POPUP_OVERLAY_PLOT.get() && DATA_TYPE.equals(DataTypes.EXPRESSION) &&
-                        !expressionData.isTransposed() )
+                if ( SHOW_POPUP_OVERLAY_PLOT.get() && DATA_TYPE.equals(DataTypes.CORRELATION) &&
+                        !correlationData.isTransposed() )
                 {
-                    initPopupMenuItem("Node Name & Expression Profile: " + popupNodeName);
-                    plot = createExpressionPlot();
+                    initPopupMenuItem("Node Name & Profile: " + popupNodeName);
+                    plot = createCorrelationPlot();
                 }
                 else if ( SHOW_POPUP_OVERLAY_PLOT.get() && isPetriNet && notmEPNTransitions && (ANIMATION_SIMULATION_RESULTS != null) )
                 {

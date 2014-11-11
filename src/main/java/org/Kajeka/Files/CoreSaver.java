@@ -14,7 +14,7 @@ import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.Network.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
@@ -244,9 +244,9 @@ public final class CoreSaver
             }
 
             String saveFilePath = saveFile.getAbsolutePath().substring(0, saveFile.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-            if ( DATA_TYPE.equals(DataTypes.EXPRESSION) && !saveFilePath.equals(EXPRESSION_FILE_PATH) )
+            if ( DATA_TYPE.equals(DataTypes.CORRELATION) && !saveFilePath.equals(CORRELATION_FILE_PATH) )
             {
-                dialogReturnValue = JOptionPane.showConfirmDialog(layoutFrame, "You have chosen to save your expression data derived layout file to a different drive/folder than its parent expression file.\nIt is advised to save the layout file in the same drive/folder as its parent expression file. Please press ok to continue.", "Layout folder/drive saving advice", JOptionPane.YES_NO_OPTION);
+                dialogReturnValue = JOptionPane.showConfirmDialog(layoutFrame, "You have chosen to save your correlation data derived layout file to a different drive/folder than its parent correlation file.\nIt is advised to save the layout file in the same drive/folder as its parent correlation file. Please press ok to continue.", "Layout folder/drive saving advice", JOptionPane.YES_NO_OPTION);
                 doSaveFile = (dialogReturnValue == JOptionPane.YES_OPTION);
             }
         }
@@ -286,15 +286,15 @@ public final class CoreSaver
 
             fileWriter = new FileWriter(saveFile);
             fileWriter.write("//" + VERSION + " " + " Layout File\n");
-            if ( DATA_TYPE.equals(DataTypes.EXPRESSION) )
+            if ( DATA_TYPE.equals(DataTypes.CORRELATION) )
             {
                 String saveFilePath = saveFile.getAbsolutePath().substring(0, saveFile.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
-                fileWriter.write("//EXPRESSION_DATA_V3\t\"" +
-                        ( !saveFilePath.equals(EXPRESSION_FILE_PATH) ? EXPRESSION_FILE_PATH : "" ) +
-                        EXPRESSION_FILE + "\"\t" +
-                        EXPRESSION_DATA_FIRST_COLUMN + "\t" +
-                        EXPRESSION_DATA_FIRST_ROW + "\t" +
-                        EXPRESSION_DATA_TRANSPOSE + "\t" +
+                fileWriter.write("//CORRELATION_DATA_V1\t\"" +
+                        ( !saveFilePath.equals(CORRELATION_FILE_PATH) ? CORRELATION_FILE_PATH : "" ) +
+                        CORRELATION_FILE + "\"\t" +
+                        CORRELATION_DATA_FIRST_COLUMN + "\t" +
+                        CORRELATION_DATA_FIRST_ROW + "\t" +
+                        CORRELATION_DATA_TRANSPOSE + "\t" +
                         Float.toString(CURRENT_CORRELATION_THRESHOLD) + "\t" +
                         CURRENT_SCALE_TRANSFORM.toString() + "\n");
             }

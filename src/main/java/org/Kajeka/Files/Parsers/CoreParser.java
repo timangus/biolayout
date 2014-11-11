@@ -13,7 +13,7 @@ import org.Kajeka.DataStructures.*;
 import org.Kajeka.Network.*;
 import org.Kajeka.Utils.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
@@ -36,7 +36,7 @@ public class CoreParser
     protected ArrayList<String> tokens = null;
     protected int numberOfTokens = 0;
     protected int currentTokenIndex = 0;
-    protected boolean isExpressionData = false;
+    protected boolean iscorrelationData = false;
     protected boolean isSif = false;
     protected boolean isSuccessful = false;
 
@@ -179,7 +179,7 @@ public class CoreParser
             if ( nc.getIsGraphml() )
                 gnc.initAllGraphmlNodesMap(allGraphmlNodesMap, allGraphmlEdgesMap, alGraphmllPathwayComponentContainersFor3D);
 
-            if (!isExpressionData)
+            if (!iscorrelationData)
             {
                 AnnotationTypeManagerBG.getInstanceSingleton().setChipGeneCount( nc.getVerticesMap().size() );
 
@@ -218,7 +218,7 @@ public class CoreParser
         String vertex = "";
         String field1 = "", field2 = "", field3 = "", field4 = "", field5 = "", field6 = "", field7 = "";
 
-        if (property.startsWith("//EXPRESSION_DATA"))
+        if (property.startsWith("//CORRELATION_DATA"))
         {
             field1 = getNext();
             field2 = getNext();
@@ -226,50 +226,32 @@ public class CoreParser
 
             if (DEBUG_BUILD)
             {
-                println("Expression data file used was:" + field1);
+                println("Correlation data file used was:" + field1);
             }
 
-            String expressionFileName = field1.substring(field1.lastIndexOf(System.getProperty("file.separator")) + 1, field1.length());
-            String expressionFilePath = field1.substring(0, field1.lastIndexOf(System.getProperty("file.separator")) + 1);
+            String correlationFileName = field1.substring(field1.lastIndexOf(System.getProperty("file.separator")) + 1, field1.length());
+            String correlationFilePath = field1.substring(0, field1.lastIndexOf(System.getProperty("file.separator")) + 1);
 
-            EXPRESSION_FILE = expressionFileName;
-            EXPRESSION_FILE_PATH = expressionFilePath;
-            EXPRESSION_DATA_FIRST_COLUMN = Integer.parseInt(field2);
+            CORRELATION_FILE = correlationFileName;
+            CORRELATION_FILE_PATH = correlationFilePath;
+            CORRELATION_DATA_FIRST_COLUMN = Integer.parseInt(field2);
 
-            isExpressionData = true;
+            iscorrelationData = true;
 
-            if (property.equals("//EXPRESSION_DATA"))
-            {
-                // Older files don't have this data, so fill with likely values
-                EXPRESSION_DATA_FIRST_ROW = 1;
-                EXPRESSION_DATA_TRANSPOSE = false;
-                CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field3);
-                CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
-            }
-            else if (property.equals("//EXPRESSION_DATA_V2")) // 3.0 through 3.2
-            {
-                field4 = getNext();
-                field5 = getNext();
-
-                EXPRESSION_DATA_FIRST_ROW = Integer.parseInt(field3);
-                EXPRESSION_DATA_TRANSPOSE = Boolean.parseBoolean(field4);
-                CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field5);
-                CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
-            }
-            else if (property.equals("//EXPRESSION_DATA_V3")) // 3.3
+            if (property.equals("//CORRELATION_DATA_V1")) // 1.0
             {
                 field4 = getNext();
                 field5 = getNext();
                 field6 = getNext();
 
-                EXPRESSION_DATA_FIRST_ROW = Integer.parseInt(field3);
-                EXPRESSION_DATA_TRANSPOSE = Boolean.parseBoolean(field4);
+                CORRELATION_DATA_FIRST_ROW = Integer.parseInt(field3);
+                CORRELATION_DATA_TRANSPOSE = Boolean.parseBoolean(field4);
                 CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field5);
                 CURRENT_SCALE_TRANSFORM = Enum.valueOf(ScaleTransformType.class, field6);
             }
             else
             {
-                isExpressionData = false;
+                iscorrelationData = false;
             }
         }
         else if ( property.equals("//NODECOORD") )
@@ -309,7 +291,7 @@ public class CoreParser
                 VertexClass vc = lc.createClass(field1);
                 lc.setClass(nc.getVerticesMap().get(vertex), vc);
 
-                if (!isExpressionData)
+                if (!iscorrelationData)
                     AnnotationTypeManagerBG.getInstanceSingleton().add( vertex, lc.getClassSetName(), vc.getName() );
             }
         }

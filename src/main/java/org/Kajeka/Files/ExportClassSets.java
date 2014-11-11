@@ -11,7 +11,7 @@ import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.Network.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.Expression.ExpressionEnvironment.*;
+import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
@@ -194,8 +194,8 @@ public final class ExportClassSets
 
             fileWriter = new FileWriter(saveFile);
             fileWriter.write("//" + VERSION + " " + " Class Sets File\n");
-            if ( DATA_TYPE.equals(DataTypes.EXPRESSION) )
-                fileWriter.write("//EXPRESSION_DATA\t\"" + EXPRESSION_FILE + "\"\n");
+            if ( DATA_TYPE.equals(DataTypes.CORRELATION) )
+                fileWriter.write("//CORRELATION_DATA\t\"" + CORRELATION_FILE + "\"\n");
 
            saveClassSetsData(layoutProgressBarDialog, layoutClassSetsManager, fileWriter);
 

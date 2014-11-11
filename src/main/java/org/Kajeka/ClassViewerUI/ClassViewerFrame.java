@@ -21,7 +21,7 @@ import org.Kajeka.Utils.*;
 import static org.Kajeka.ClassViewerUI.ClassViewerFrame.ClassViewerTabTypes.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
-import org.Kajeka.Expression.Panels.ExpressionGraphPanel;
+import org.Kajeka.Correlation.Panels.CorrelationGraphPanel;
 import org.Kajeka.Simulation.Panels.SimulationResultsPanel;
 
 /**
@@ -212,7 +212,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             else
                 classViewerHideColumnsDialog.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2 - classViewerHideColumnsDialog.getWidth(), ( SCREEN_DIMENSION.height - classViewerHideColumnsDialog.getHeight() ) / 2 );
 
-            // only if expression data is loaded, otherwise the divider location will have been already set to 0
+            // only if data is loaded, otherwise the divider location will have been already set to 0
             if (splitPane != null)
             {
                 splitPane.setDividerLocation(this.getWidth() / 2);
@@ -453,10 +453,10 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     private void initializeCommonComponents()
     {
-        if (DATA_TYPE.equals(DataTypes.EXPRESSION) && !layoutFrame.getExpressionData().isTransposed())
+        if (DATA_TYPE.equals(DataTypes.CORRELATION) && !layoutFrame.getCorrelationData().isTransposed())
         {
-            // Expression data
-            plotPanel = new ExpressionGraphPanel(this, layoutFrame, layoutFrame.getExpressionData());
+            // Correlation data
+            plotPanel = new CorrelationGraphPanel(this, layoutFrame, layoutFrame.getCorrelationData());
         }
         else if (DATA_TYPE.equals(DataTypes.GRAPHML) && layoutFrame.getNetworkRootContainer().getIsPetriNet())
         {
@@ -652,7 +652,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         // button panel, south
         JPanel generalButtonPanel = new JPanel(true);
 
-        // expression graph GUI component
+        // graph GUI component
         findNameDialog = new FindNameDialog(layoutFrame, this);
         findClassDialog = new FindClassDialog(layoutFrame, this);
         findMultipleClassesDialog = new FindMultipleClassesDialog(layoutFrame, this);
@@ -902,17 +902,17 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         populateClassViewer(hideColumnsData, false, false, true);
     }
 
-    public void populateClassViewer(boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar)
+    public void populateClassViewer(boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar)
     {
-        populateClassViewer(null, updateExpressionGraphViewOnly, notUpdateTitleBar, true);
+        populateClassViewer(null, updateCorrelationGraphViewOnly, notUpdateTitleBar, true);
     }
 
-    public void populateClassViewer(Object[][] hideColumnsData, boolean updateExpressionGraphViewOnly, boolean notUpdateTitleBar, boolean refreshPlot)
+    public void populateClassViewer(Object[][] hideColumnsData, boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar, boolean refreshPlot)
     {
         NetworkContainer nc = layoutFrame.getNetworkRootContainer();
         if (nc != null)
         {
-            if (!updateExpressionGraphViewOnly)
+            if (!updateCorrelationGraphViewOnly)
             {
                 if (DEBUG_BUILD) println("populateClassViewer(): " + layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName());
 
@@ -958,7 +958,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 checkAndAbortUpdateDetailedEntropyTableRunnable();
 
                 if (hideColumnsData == null && classViewerHideColumnsDialog != null)
-                    classViewerHideColumnsDialog.updateClassViewerHideColumnsTable(this, enableHideColumnsAndExportButtons, updateExpressionGraphViewOnly, notUpdateTitleBar);
+                    classViewerHideColumnsDialog.updateClassViewerHideColumnsTable(this, enableHideColumnsAndExportButtons, updateCorrelationGraphViewOnly, notUpdateTitleBar);
 
                 if (generalTable.getColumnCount() < NAME_COLUMN + 1)
                 {
