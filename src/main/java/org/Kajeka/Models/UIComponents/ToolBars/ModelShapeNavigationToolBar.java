@@ -30,10 +30,6 @@ public final class ModelShapeNavigationToolBar extends LayoutNavigationToolBar
 
         texturesLoaderIcons = new TexturesLoader(NAVIGATION_DIR_NAME, NAVIGATION_FILE_NAME, false, false, true, MODEL_SAHPE_NAVIGATION_TOOLBAR_IMAGE_ICON_RESIZE_RATIO, false);
         allToolBarButtons = new JButton[NUMBER_OF_NAVIGATION_TOOLBAR_BUTTONS - 1]; // the Navigation Wizard button is excluded from the model shape navigation toolbar
-        ImageIcon imageIcon = new ImageIcon( texturesLoaderIcons.getImage( getFirstButtonName() ) );
-        imageIconWidth = imageIcon.getIconWidth();
-        imageIconHeight = imageIcon.getIconHeight();
-        imageDivisor = ( IS_MAC || UIManager.getLookAndFeel().getName().equals("Nimbus") ) ? 6.0f : 3.0f;
     }
 
     @Override

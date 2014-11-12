@@ -45,9 +45,6 @@ public abstract class LayoutAbstractToolBar extends JToolBar
 
     protected TexturesLoader texturesLoaderIcons = null;
     protected JButton[] allToolBarButtons = null;
-    protected int imageIconWidth = 0;
-    protected int imageIconHeight = 0;
-    protected float imageDivisor = 0.0f;
     protected boolean constructorInitializationFinished = false;
 
     public LayoutAbstractToolBar(String name, int orientation)
@@ -94,7 +91,6 @@ public abstract class LayoutAbstractToolBar extends JToolBar
         {
             button.setText("");
             button.setToolTipText(actionToolTip);
-            button.setMaximumSize(new Dimension(imageIconWidth, imageIconHeight));
             setToolBarButtonImages(button, actionName);
         }
         else

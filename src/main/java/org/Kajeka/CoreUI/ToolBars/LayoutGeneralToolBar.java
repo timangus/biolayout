@@ -33,10 +33,6 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
 
         texturesLoaderIcons = new TexturesLoader(GENERAL_DIR_NAME, GENERAL_FILE_NAME, false, false, true, false);
         allToolBarButtons = new JButton[NUMBER_OF_GENERAL_TOOLBAR_BUTTONS];
-        ImageIcon imageIcon = new ImageIcon( texturesLoaderIcons.getImage( getFirstButtonName() ) );
-        imageIconWidth = imageIcon.getIconWidth();
-        imageIconHeight = imageIcon.getIconHeight();
-        imageDivisor = ( IS_MAC || UIManager.getLookAndFeel().getName().equals("Nimbus") ) ? 6.0f : 3.0f;
     }
 
     @Override

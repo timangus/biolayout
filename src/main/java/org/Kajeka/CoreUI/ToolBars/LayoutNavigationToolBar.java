@@ -29,10 +29,6 @@ public class LayoutNavigationToolBar extends LayoutAbstractToolBar
 
         texturesLoaderIcons = new TexturesLoader(NAVIGATION_DIR_NAME, NAVIGATION_FILE_NAME, false, false, true, false);
         allToolBarButtons = new JButton[NUMBER_OF_NAVIGATION_TOOLBAR_BUTTONS];
-        ImageIcon imageIcon = new ImageIcon( texturesLoaderIcons.getImage( getFirstButtonName() ) );
-        imageIconWidth = imageIcon.getIconWidth();
-        imageIconHeight = imageIcon.getIconHeight();
-        imageDivisor = ( IS_MAC || UIManager.getLookAndFeel().getName().equals("Nimbus") ) ? 6.0f : 3.0f;
     }
 
     public LayoutNavigationToolBar(String name, int orientation) // to be used from ModelShapeNavigationToolBar subclass
