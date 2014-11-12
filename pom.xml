@@ -7,7 +7,7 @@
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>Kajeka</name>
+    <name>Graphitto</name>
     <url>http://kajeka.com</url>
 
     <properties>
