@@ -1,10 +1,10 @@
 package org.Kajeka.Environment;
 
 import java.io.File;
+import org.Kajeka.BuildConfig;
 import org.Kajeka.Utils.Path;
 import org.Kajeka.StaticLibraries.LoadNativeLibrary;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
  *
@@ -54,7 +54,7 @@ public class DataFolder
 
         if (!APPDATA.isEmpty())
         {
-            return Path.combine(APPDATA, BASENAME);
+            return Path.combine(APPDATA, BASENAME, MajorVersionNumber());
         }
 
         return null;
@@ -66,7 +66,8 @@ public class DataFolder
 
         if (!userHome.isEmpty())
         {
-            return Path.combine(userHome, "Library", "Application Support", BASENAME);
+            return Path.combine(userHome, "Library", "Application Support",
+                    BASENAME, MajorVersionNumber());
         }
 
         return null;
@@ -78,9 +79,21 @@ public class DataFolder
 
         if (!userHome.isEmpty())
         {
-            return Path.combine(userHome, BASENAME_UNIX);
+            return Path.combine(userHome, BASENAME_UNIX, MajorVersionNumber());
         }
 
         return null;
+    }
+
+    private static String MajorVersionNumber()
+    {
+        if (BuildConfig.VERSION.contains("."))
+        {
+            String[] tokens = BuildConfig.VERSION.split("\\.");
+
+            return tokens[0];
+        }
+
+        return BuildConfig.VERSION;
     }
 }
