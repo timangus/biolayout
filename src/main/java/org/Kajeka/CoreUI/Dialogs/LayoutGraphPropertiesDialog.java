@@ -977,15 +977,15 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         ButtonGroup layoutAlgorithmGroup = new ButtonGroup();
 
-        frRadioButton = new JRadioButton("Fruchterman-Rheingold");
-        frRadioButton.setToolTipText("Fruchterman-Rheingold");
-        layoutAlgorithmGroup.add(frRadioButton);
-        algorithmSubPanel.add(frRadioButton);
-
         fmmmRadioButton = new JRadioButton("FMMM");
         fmmmRadioButton.setToolTipText("FMMM");
         layoutAlgorithmGroup.add(fmmmRadioButton);
         algorithmSubPanel.add(fmmmRadioButton);
+
+        frRadioButton = new JRadioButton("Fruchterman-Rheingold");
+        frRadioButton.setToolTipText("Fruchterman-Rheingold");
+        layoutAlgorithmGroup.add(frRadioButton);
+        algorithmSubPanel.add(frRadioButton);
 
         circleRadioButton = new JRadioButton("Circle");
         circleRadioButton.setToolTipText("Circle");
@@ -1075,9 +1075,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         layoutLargePanel.setLayout( new BoxLayout(layoutLargePanel, BoxLayout.Y_AXIS) );
 
         addPanelToBoxLayout("Algorithm", algorithmPanel, layoutLargePanel);
-        //addPanelToBoxLayout("Minimum Component Size", minimumComponentSizePanel, layoutLargePanel);
-        addPanelToBoxLayout("Fruchterman-Rheingold", fruchtermanRheingoldPanel, layoutLargePanel);
         addPanelToBoxLayout("FMMM", fmmmPanel, layoutLargePanel);
+        addPanelToBoxLayout("Fruchterman-Rheingold", fruchtermanRheingoldPanel, layoutLargePanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Layout Options");
         addTitledButtonBorderLarge(layoutPropertiesPanelBorder, layoutLargePanel,
