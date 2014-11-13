@@ -1,6 +1,7 @@
 # GeneralToolBarData.txt used for loading image files in various formats (png, jpg, gif)
 
 # All general toolbar images
+GraphProperties.png
 GraphOpen.png
 GraphLastOpen.png
 GraphSave.png

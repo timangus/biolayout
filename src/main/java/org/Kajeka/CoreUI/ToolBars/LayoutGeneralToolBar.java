@@ -41,6 +41,13 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         return splitAndCapitalizeFirstCharacters(GRAPH_OPEN);
     }
 
+    public void setGraphPropertiesAction(AbstractAction action)
+    {
+        String actionName = splitAndCapitalizeFirstCharacters(GRAPH_PROPERTIES);
+        setToolBarButtonAction( action, actionName, actionName, GRAPH_PROPERTIES.ordinal() );
+        addSeparator();
+    }
+
     public void setGraphOpenAction(AbstractAction action)
     {
         setToolBarButtonAction(action, splitAndCapitalizeFirstCharacters(GRAPH_OPEN), splitCapitalizeFirstCharactersInvertOrderAndAddWhiteSpaceBetweenNames(GRAPH_OPEN), GRAPH_OPEN.ordinal() );

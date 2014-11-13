@@ -68,7 +68,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private LayoutClassSetsManager layoutClassSetsManager;
     private FileOpenHistory fileOpenHistory = null;
     private Graph graph = null;
-    private LayoutGraphPropertiesToolBar layoutGraphPropertiesToolBar = null;
     private LayoutGeneralToolBar layoutGeneralToolBar = null;
     private LayoutNavigationToolBar layoutNavigationToolBar = null;
     private JLabel nodeLabel = null;
@@ -218,7 +217,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         prevTimeInMSecs = System.nanoTime() / 1000000;
 
         splashScreen.setText(" Creating Toolbars...");
-        layoutGraphPropertiesToolBar = new LayoutGraphPropertiesToolBar(JToolBar.HORIZONTAL);
         layoutGeneralToolBar = new LayoutGeneralToolBar(JToolBar.HORIZONTAL);
         layoutNavigationToolBar = new LayoutNavigationToolBar(JToolBar.HORIZONTAL);
 
@@ -597,7 +595,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
             {
                 IS_BLOCKED = e.getActionCommand().equals(BLOCK_ALL);
 
-                layoutGraphPropertiesToolBar.setEnabled(!IS_BLOCKED);
                 layoutGeneralToolBar.setEnabled(!IS_BLOCKED);
                 layoutNavigationToolBar.setEnabled(!IS_BLOCKED);
                 layoutMenuBar.setEnabled(!IS_BLOCKED);
@@ -619,7 +616,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
             {
                 IS_BLOCKED = e.getActionCommand().equals(BLOCK_ALL);
 
-                layoutGraphPropertiesToolBar.setEnabled(!IS_BLOCKED);
                 layoutGeneralToolBar.setEnabled(! IS_BLOCKED);
                 layoutMenuBar.setEnabled(!IS_BLOCKED);
 
@@ -627,7 +623,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
         };
 
-        initGraphPropertiesToolBarActions();
         initGeneralToolBarActions();
         initNavigationToolBarActions();
         initMenuBarActions();
@@ -753,29 +748,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
     }
 
     /**
-    *  Initializes the graph properties toolbar all actions.
-    */
-    private void initGraphPropertiesToolBarActions()
-    {
-        layoutGraphPropertiesToolBar.removeAll();
-        layoutGraphPropertiesToolBar.setGeneralAction(layoutGraphPropertiesDialog.getGeneralPropertiesAction() );
-        layoutGraphPropertiesToolBar.setLayoutAction( layoutGraphPropertiesDialog.getLayoutPropertiesAction() );
-        layoutGraphPropertiesToolBar.setRenderingAction( layoutGraphPropertiesDialog.getRenderingPropertiesAction() );
-        layoutGraphPropertiesToolBar.setMCLAction( layoutGraphPropertiesDialog.getMCLPropertiesAction() );
-        layoutGraphPropertiesToolBar.setSimulationAction( layoutGraphPropertiesDialog.getSimulationPropertiesAction() );
-        layoutGraphPropertiesToolBar.setSearchAction( layoutGraphPropertiesDialog.getSearchPropertiesAction() );
-        layoutGraphPropertiesToolBar.setNodesAction( layoutGraphPropertiesDialog.getNodesPropertiesAction() );
-        layoutGraphPropertiesToolBar.setEdgesAction( layoutGraphPropertiesDialog.getEdgesPropertiesAction() );
-        layoutGraphPropertiesToolBar.setClassesAction( layoutGraphPropertiesDialog.getClassesPropertiesAction() );
-        layoutGraphPropertiesToolBar.setEnabled(true);
-    }
-
-    /**
     *  Initializes the general toolbar all actions.
     */
     private void initGeneralToolBarActions()
     {
         layoutGeneralToolBar.removeAll();
+        layoutGeneralToolBar.setGraphPropertiesAction(layoutGraphPropertiesDialog.getGeneralPropertiesAction());
         layoutGeneralToolBar.setGraphOpenAction(fileMenuOpenAction);
         layoutGeneralToolBar.setGraphLastOpenAction(fileOpenHistory.getActionsList(this), this);
         layoutGeneralToolBar.setGraphSaveAction( saver.getSaveAction() );
@@ -1543,9 +1521,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if ( !layoutMenuBar.isEnabled() )
             layoutMenuBar.setEnabled(true);
 
-        if ( !layoutGraphPropertiesToolBar.isEnabled() )
-            layoutGraphPropertiesToolBar.setEnabled(true);
-
         if ( !layoutGeneralToolBar.isEnabled() )
             layoutGeneralToolBar.setEnabled(true);
 
@@ -1680,9 +1655,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         // note, save all & print actions are being enabled from inside the LayoutGraphPropertiesToolBar, LayoutGeneralToolBar, LayoutNavigationToolBar & LayoutMenuBar classes
         if ( layoutMenuBar.isEnabled() )
             layoutMenuBar.setEnabled(false);
-
-        if ( layoutGraphPropertiesToolBar.isEnabled() )
-            layoutGraphPropertiesToolBar.setEnabled(false);
 
         if ( layoutGeneralToolBar.isEnabled() )
             layoutGeneralToolBar.setEnabled(false);
@@ -2060,7 +2032,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
     public void setEnabledAllToolBars(boolean enabled)
     {
-        layoutGraphPropertiesToolBar.setEnabled(enabled);
         layoutGeneralToolBar.setEnabled(enabled);
         layoutNavigationToolBar.setEnabled(enabled);
     }
@@ -2083,10 +2054,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if (SHOW_NAVIGATION_TOOLBAR.get())
         {
             toolbarPanel.add(layoutNavigationToolBar);
-        }
-        if (SHOW_GRAPH_PROPERTIES_TOOLBAR.get())
-        {
-            toolbarPanel.add(layoutGraphPropertiesToolBar);
         }
 
         toolbarPanel.repaint();
