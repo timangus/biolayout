@@ -6,7 +6,13 @@ SRC_DIR=`readlink -f ${SCRIPT_DIR}/..`
 HTML_TEMPLATE="${SCRIPT_DIR}/index.html.template"
 WEBSTART_TEMPLATE="${SCRIPT_DIR}/WebStart.jnlp.template"
 BASE_URL="http://kajeka.com/internal"
-BASE_NAME="Kajeka"
+
+echo "PRE ${BASE_NAME}"
+if [ -z "${BASE_NAME}" ];
+then
+  BASE_NAME="Kajeka"
+fi
+echo "POST ${BASE_NAME}"
 
 echo SCRIPT_NAME=${SCRIPT_NAME}
 echo SCRIPT_DIR=${SCRIPT_DIR}
@@ -30,7 +36,8 @@ mkdir -p ${BUILD_DIR}
 
 # Windows
 cd ${SRC_DIR}/nsis-installer
-cat installer.nsi | sed -e "s/_VERSION_/${VERSION}/g" | makensis -
+cat installer.nsi | sed -e "s/_VERSION_/${VERSION}/g" -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+  | makensis -
 if [ "$?" != "0" ];
 then
     exit $?

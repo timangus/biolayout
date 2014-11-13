@@ -7,12 +7,13 @@
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>Graphitto</name>
+    <name>Layout</name>
     <url>http://kajeka.com</url>
 
     <properties>
+        <productName>Layout</productName>
         <versionNumber>development</versionNumber>
-        <jarName>Kajeka</jarName>
+        <jarName>${productName}</jarName>
         <outFilename>${jarName}-${versionNumber}</outFilename>
         <mainClass>org.Kajeka.Layout</mainClass>
         <manifestVersion>1.0.0.0</manifestVersion>
@@ -30,7 +31,7 @@
         <buildconfig.template.file>src/main/java/org/Kajeka/BuildConfig.template</buildconfig.template.file>
         <buildconfig.file>${generated.sources.dir}/org/Kajeka/BuildConfig.java</buildconfig.file>
 
-        <osx.app.dir>${project.build.directory}/dmg/${project.name}.app</osx.app.dir>
+        <osx.app.dir>${project.build.directory}/dmg/${productName}.app</osx.app.dir>
 
         <debug.build>true</debug.build>
 
@@ -206,7 +207,7 @@
                         </manifest>
                         <manifestEntries>
                             <url>${project.url}</url>
-                            <Application-Name>${project.name}</Application-Name>
+                            <Application-Name>${productName}</Application-Name>
                             <Permissions>all-permissions</Permissions>
                             <Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase>
                             <Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
@@ -248,7 +249,7 @@
                             <outfile>${project.build.directory}/${outFilename}-32bit.exe</outfile>
                             <jar>${project.build.directory}/${outFilename}.jar</jar>
                             <icon>${icon}</icon>
-                            <errTitle>${project.name}</errTitle>
+                            <errTitle>${productName}</errTitle>
                             <jre>
                                 <minVersion>${minJavaVersion}.0</minVersion>
                                 <maxHeapSize>920</maxHeapSize>
@@ -256,11 +257,11 @@
                             <versionInfo>
                                 <fileVersion>${manifestVersion}</fileVersion>
                                 <txtFileVersion>${manifestVersion}</txtFileVersion>
-                                <fileDescription>${project.name}</fileDescription>
+                                <fileDescription>${productName}</fileDescription>
                                 <copyright>${copyright}</copyright>
                                 <productVersion>${manifestVersion}</productVersion>
                                 <txtProductVersion>${manifestVersion}</txtProductVersion>
-                                <productName>${project.name}</productName>
+                                <productName>${productName}</productName>
                                 <internalName>${jarName}</internalName>
                                 <originalFilename>${outFilename}.exe</originalFilename>
                             </versionInfo>
@@ -277,7 +278,7 @@
                             <outfile>${project.build.directory}/${outFilename}-64bit.exe</outfile>
                             <jar>${project.build.directory}/${outFilename}.jar</jar>
                             <icon>${icon}</icon>
-                            <errTitle>${project.name}</errTitle>
+                            <errTitle>${productName}</errTitle>
                             <jre>
                                 <minVersion>${minJavaVersion}.0</minVersion>
                                 <maxHeapSize>32000</maxHeapSize>
@@ -285,11 +286,11 @@
                             <versionInfo>
                                 <fileVersion>${manifestVersion}</fileVersion>
                                 <txtFileVersion>${manifestVersion}</txtFileVersion>
-                                <fileDescription>${project.name}</fileDescription>
+                                <fileDescription>${productName}</fileDescription>
                                 <copyright>${copyright}</copyright>
                                 <productVersion>${manifestVersion}</productVersion>
                                 <txtProductVersion>${manifestVersion}</txtProductVersion>
-                                <productName>${project.name}</productName>
+                                <productName>${productName}</productName>
                                 <internalName>${jarName}</internalName>
                                 <originalFilename>${outFilename}.exe</originalFilename>
                             </versionInfo>
@@ -506,7 +507,7 @@
                                 <copy file="${basedir}/src/main/osx/Contents/Info.plist"
                                     tofile="${osx.app.dir}/Contents/Info.plist">
                                     <filterset>
-                                        <filter token="name" value="${project.name}"/>
+                                        <filter token="name" value="${productName}"/>
                                         <filter token="version" value="${versionNumber}"/>
                                         <filter token="mainClass" value="${mainClass}"/>
                                         <filter token="jarFilename" value="${outFilename}.jar"/>
@@ -549,7 +550,7 @@
                                 </replacement>
                                 <replacement>
                                     <token>@name@</token>
-                                    <value>${project.name}</value>
+                                    <value>${productName}</value>
                                 </replacement>
                                 <replacement>
                                     <token>@version@</token>

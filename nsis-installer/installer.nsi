@@ -5,9 +5,9 @@
 
 !addplugindir "."
 
-!define LONG_NAME "Kajeka"
+!define LONG_NAME "_BASE_NAME_"
 !define VERSION "_VERSION_"
-!define BASE_NAME "Kajeka"
+!define BASE_NAME "_BASE_NAME_"
 !define BASE_DIR ".."
 
 !define INSTALLER_NAME "${BASE_NAME}-_VERSION_-installer.exe"
@@ -144,18 +144,18 @@ SectionEnd
 
 ; File Associations
 SectionGroup "File associations"
-    Section "Kajeka layout file (.layout)"
-        !insertmacro APP_ASSOCIATE "layout" "Kajeka.layout" "Kajeka Layout File" \
+    Section "${BASE_NAME} layout file (.layout)"
+        !insertmacro APP_ASSOCIATE "layout" "${BASE_NAME}.layout" "${BASE_NAME} Layout File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
     Section "Simple interaction file (.sif)"
-        !insertmacro APP_ASSOCIATE "sif" "Kajeka.sif" "Kajeka Sif File" \
+        !insertmacro APP_ASSOCIATE "sif" "${BASE_NAME}.sif" "${BASE_NAME} Sif File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
     Section "Matrix file (.matrix)"
-        !insertmacro APP_ASSOCIATE "matrix" "Kajeka.matrix" "Kajeka Matrix File" \
+        !insertmacro APP_ASSOCIATE "matrix" "${BASE_NAME}.matrix" "${BASE_NAME} Matrix File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 SectionGroupEnd
@@ -189,9 +189,8 @@ Section "Uninstall"
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${LONG_NAME}"
     DeleteRegKey HKLM "SOFTWARE\${LONG_NAME}"
 
-    !insertmacro APP_UNASSOCIATE "layout"     "Kajeka.layout"
-    !insertmacro APP_UNASSOCIATE "sif"        "Kajeka.sif"
-    !insertmacro APP_UNASSOCIATE "matrix"     "Kajeka.matrix"
+    !insertmacro APP_UNASSOCIATE "sif"        "${BASE_NAME}.sif"
+    !insertmacro APP_UNASSOCIATE "matrix"     "${BASE_NAME}.matrix"
     !insertmacro UPDATEFILEASSOC
 
 SectionEnd
