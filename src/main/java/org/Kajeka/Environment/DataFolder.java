@@ -14,8 +14,8 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
  */
 public class DataFolder
 {
-    private static final String BASENAME = PRODUCT_NAME;
-    private static final String BASENAME_UNIX = "." + PRODUCT_NAME.toLowerCase();
+    private static final String ROOT_FOLDER_NAME = "Kajeka";
+    private static final String ROOT_FOLDER_NAME_UNIX = "." + ROOT_FOLDER_NAME;
 
     public static String get()
     {
@@ -54,7 +54,8 @@ public class DataFolder
 
         if (!APPDATA.isEmpty())
         {
-            return Path.combine(APPDATA, BASENAME, MajorVersionNumber());
+            return Path.combine(APPDATA, ROOT_FOLDER_NAME,
+                    PRODUCT_NAME, MajorVersionNumber());
         }
 
         return null;
@@ -67,7 +68,7 @@ public class DataFolder
         if (!userHome.isEmpty())
         {
             return Path.combine(userHome, "Library", "Application Support",
-                    BASENAME, MajorVersionNumber());
+                    ROOT_FOLDER_NAME, PRODUCT_NAME, MajorVersionNumber());
         }
 
         return null;
@@ -79,7 +80,8 @@ public class DataFolder
 
         if (!userHome.isEmpty())
         {
-            return Path.combine(userHome, BASENAME_UNIX, MajorVersionNumber());
+            return Path.combine(userHome, ROOT_FOLDER_NAME_UNIX,
+                    PRODUCT_NAME, MajorVersionNumber());
         }
 
         return null;
