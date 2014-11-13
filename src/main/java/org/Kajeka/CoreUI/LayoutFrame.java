@@ -74,6 +74,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private JLabel nodeLabel = null;
     private JLabel statusLabel = null;
     private JPanel globalPanel = null;
+    private JPanel toolbarPanel = null;
     private LayoutAboutDialog layoutAboutDialog = null;
     private LayoutMenuBar layoutMenuBar = null;
     private LayoutProgressBarDialog layoutProgressBarDialog = null;
@@ -277,19 +278,10 @@ public final class LayoutFrame extends JFrame implements GraphListener
         propertiesPanel.add(statusLabelPanel, BorderLayout.EAST);
         propertiesPanel.add(labelPanel, BorderLayout.WEST);
 
-        JPanel toolbarPanel = new JPanel(new ToolbarLayout());
+        toolbarPanel = new JPanel(new ToolbarLayout());
         globalPanel.add(toolbarPanel, BorderLayout.NORTH);
 
-        toolbarPanel.add(layoutGeneralToolBar);
-
-        if (SHOW_NAVIGATION_TOOLBAR.get())
-        {
-            toolbarPanel.add(layoutNavigationToolBar);
-        }
-        if (SHOW_GRAPH_PROPERTIES_TOOLBAR.get())
-        {
-            toolbarPanel.add(layoutGraphPropertiesToolBar);
-        }
+        rebuildToolbars();
 
         // wrapping the Graph GLCanvas reference in a JPanel so the JFrame can contain other (lightweight) UI
         JPanel graphPanel = new JPanel(new BorderLayout(), true);
@@ -2082,24 +2074,23 @@ public final class LayoutFrame extends JFrame implements GraphListener
         }
     }
 
-    public void removeAddGraphPropertiesToolBar(boolean removeAdd)
+    public void rebuildToolbars()
     {
-        if (removeAdd)
-            globalPanel.remove(layoutGraphPropertiesToolBar);
-        else
-            globalPanel.add(layoutGraphPropertiesToolBar, BorderLayout.NORTH);
-        this.repaint();
-        this.pack();
-    }
+        toolbarPanel.removeAll();
 
-    public void removeAddNavigationToolBar(boolean removeAdd)
-    {
-        if (removeAdd)
-            globalPanel.remove(layoutNavigationToolBar);
-        else
-            globalPanel.add(layoutNavigationToolBar, BorderLayout.EAST);
-        this.repaint();
-        this.pack();
+        toolbarPanel.add(layoutGeneralToolBar);
+
+        if (SHOW_NAVIGATION_TOOLBAR.get())
+        {
+            toolbarPanel.add(layoutNavigationToolBar);
+        }
+        if (SHOW_GRAPH_PROPERTIES_TOOLBAR.get())
+        {
+            toolbarPanel.add(layoutGraphPropertiesToolBar);
+        }
+
+        toolbarPanel.repaint();
+        toolbarPanel.revalidate();
     }
 
     public void updateLayoutGraphStatisticsDialog()

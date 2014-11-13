@@ -48,9 +48,12 @@ public class PrefBool extends PrefType
     /**
     *  Sets the Boolean preference value.
     */
-    public void set(boolean value)
+    public boolean set(boolean value)
     {
+        boolean changed = currentValue != value;
         currentValue = value;
+
+        return changed;
     }
 
     /**

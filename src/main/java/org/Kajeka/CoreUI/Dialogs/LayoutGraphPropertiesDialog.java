@@ -2729,12 +2729,18 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             SHOW_NAVIGATION_WIZARD_ON_STARTUP.set( generalShowNavigationWizardOnStartup.isSelected() );
             SHOW_LAYOUT_ITERATIONS.set( generalShowLayoutIterations.isSelected() );
             VALIDATE_XML_FILES.set( generalValidateXMLFiles.isSelected() );
-            if ( generalShowGraphPropertiesToolBar.isSelected() != SHOW_GRAPH_PROPERTIES_TOOLBAR.get() )
-                layoutFrame.removeAddGraphPropertiesToolBar( !generalShowGraphPropertiesToolBar.isSelected() );
-            SHOW_GRAPH_PROPERTIES_TOOLBAR.set( generalShowGraphPropertiesToolBar.isSelected() );
-            if ( generalShowNavigationToolBar.isSelected() != SHOW_NAVIGATION_TOOLBAR.get() )
-                layoutFrame.removeAddNavigationToolBar( !generalShowNavigationToolBar.isSelected() );
-            SHOW_NAVIGATION_TOOLBAR.set( generalShowNavigationToolBar.isSelected() );
+
+            boolean graphPropertiesToolbarChanged =
+                    SHOW_GRAPH_PROPERTIES_TOOLBAR.set(generalShowGraphPropertiesToolBar.isSelected());
+
+            boolean navigationToolbarChanged =
+                SHOW_NAVIGATION_TOOLBAR.set(generalShowNavigationToolBar.isSelected());
+
+            if (graphPropertiesToolbarChanged || navigationToolbarChanged)
+            {
+                layoutFrame.rebuildToolbars();
+            }
+
             SHOW_POPUP_OVERLAY_PLOT.set( generalShowPopupOverlayPlot.isSelected() );
             COLLAPSE_NODES_BY_VOLUME.set( generalCollapseNodesByVolume.isSelected() );
             CONFIRM_PREFERENCES_SAVE.set( generalConfirmPreferencesSave.isSelected() );
