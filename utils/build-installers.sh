@@ -36,7 +36,9 @@ mkdir -p ${BUILD_DIR}
 
 # Windows
 cd ${SRC_DIR}/nsis-installer
-cat installer.nsi | sed -e "s/_VERSION_/${VERSION}/g" -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+cat installer.nsi | sed \
+  -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+  -e "s/_VERSION_/${VERSION}/g" \
   | makensis -
 if [ "$?" != "0" ];
 then
@@ -58,14 +60,17 @@ git archive --format zip -9 --output ${BUILD_DIR}/${BASE_NAME}-${VERSION}-source
 
 cat ${HTML_TEMPLATE} | sed \
     -e "s/_BUILD_NAME_/${BUILD_NAME}/g" \
+    -e "s/_BASE_NAME_/${BASE_NAME}/g" \
     -e "s/_VERSION_/${VERSION}/g" \
     -e "s/_GIT_REV_/${GIT_REV}/g" \
     > ${BUILD_DIR}/index.html
 cat ${WEBSTART_TEMPLATE} | sed -e "s%_BUILD_URL_%${BUILD_URL}%g" \
-    -e "s/_BASE_NAME_/${BASE_NAME}/g" -e "s/_VERSION_/${VERSION}/g" \
+    -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+    -e "s/_VERSION_/${VERSION}/g" \
     -e "s/_HEAP_SIZE_/920m/g" > ${BUILD_DIR}/WebStart32.jnlp
 cat ${WEBSTART_TEMPLATE} | sed -e "s%_BUILD_URL_%${BUILD_URL}%g" \
-    -e "s/_BASE_NAME_/${BASE_NAME}/g" -e "s/_VERSION_/${VERSION}/g" \
+    -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+    -e "s/_VERSION_/${VERSION}/g" \
     -e "s/_HEAP_SIZE_/32000m/g" > ${BUILD_DIR}/WebStart64.jnlp
 cp ${SRC_DIR}/src/main/resources/Resources/Images/Splash.png ${BUILD_DIR}
 cp ${SRC_DIR}/src/main/resources/Resources/Images/Icon.png ${BUILD_DIR}
