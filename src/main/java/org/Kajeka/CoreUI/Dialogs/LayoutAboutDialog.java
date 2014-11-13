@@ -2,9 +2,9 @@ package org.Kajeka.CoreUI.Dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.net.*;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
@@ -47,6 +47,7 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
         {
             okButton = new JButton("OK");
             okButton.setToolTipText("OK");
+            okButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             initComponentsForAboutDialog();
         }
@@ -72,38 +73,36 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
 
     private void initComponentsForAboutDialog()
     {
-        URL url = LayoutAboutDialog.class.getResource("/Resources/Html/About.html");
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10) );
 
-        JEditorPane editorPane = new JEditorPane();
-        editorPane.setEditable(false);
-        editorPane.addHyperlinkListener(this);
+        JLabel icon = new JLabel(new ImageIcon(ICON_IMAGE));
+        icon.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(icon);
+        panel.add(Box.createRigidArea(new Dimension(20,20)));
 
-        try
-        {
-            editorPane.setPage(url);
-        }
-        catch (IOException ioExc)
-        {
-            if (DEBUG_BUILD) println("Attempted to read a bad URL: " + url + "\n" + ioExc.getMessage());
-        }
+        JLabel textLine1 = new JLabel(PRODUCT_NAME + " is a tool for the visualisation and analysis of networks.");
+        textLine1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel textLine2 = new JLabel("© Kajeka 2014");
+        textLine2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(textLine1);
+        panel.add(Box.createRigidArea(new Dimension(20,10)));
+        panel.add(textLine2);
+        panel.add(Box.createRigidArea(new Dimension(20,10)));
 
         okButton.addActionListener(this);
-        this.setLayout( new BorderLayout() );
-        this.add(editorPane, BorderLayout.CENTER);
-        this.add(okButton, BorderLayout.SOUTH);
+        panel.add(okButton);
+
+        getContentPane().add(panel);
 
         this.setResizable(false);
         this.pack();
-        this.setSize(800, 600);
         this.setLocationRelativeTo(null);
 
         aboutAction = new AbstractAction("About")
         {
-            /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
-            public static final long serialVersionUID = 111222333444555671L;
-
             @Override
             public void actionPerformed(ActionEvent e)
             {
