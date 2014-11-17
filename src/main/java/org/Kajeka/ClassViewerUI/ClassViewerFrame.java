@@ -94,10 +94,6 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private AbstractAction chooseColumnsToHideAction = null;
     private AbstractAction exportTableToFileAction = null;
 
-    //search database
-    private JButton searchDatabaseButton = null;
-    //private AbstractAction searchDatabaseAction = null;
-
     // entropy table
     private ClassViewerTable entropyTable = null;
     private ClassViewerTableModelAnalysis entropyTableModel = null;
@@ -681,13 +677,13 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         renderPlotImageToFileButton.setToolTipText("Render Plot To File...");
         generalTopPanel.add(renderPlotImageToFileButton);
 
-        generalButtonPanel.add(findNameButton);
-        generalButtonPanel.add(findClassButton);
-        generalButtonPanel.add(findMultipleClassesButton);
-        generalButtonPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
-        generalButtonPanel.add(previousClassButton);
-        generalButtonPanel.add(nextClassButton);
-        generalButtonPanel.add( Box.createRigidArea( new Dimension(20, 10) ) );
+        JPanel generalButtonPanelLine1 = new JPanel();
+        generalButtonPanelLine1.add(findNameButton);
+        generalButtonPanelLine1.add(findClassButton);
+        generalButtonPanelLine1.add(findMultipleClassesButton);
+        generalButtonPanelLine1.add( Box.createRigidArea( new Dimension(10, 10) ) );
+        generalButtonPanelLine1.add(previousClassButton);
+        generalButtonPanelLine1.add(nextClassButton);
 
         refreshSelectionInTableButton = new JButton(refreshSelectionInTableAction);
         refreshSelectionInTableButton.setEnabled(false);
@@ -701,14 +697,6 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         chooseColumnsToHideButton.setEnabled(false);
         chooseColumnsToHideButton.setToolTipText("Choose Columns To Hide");
 
-        /* want to add the same Action as the Import Network menu but if try
-        to add here causes NullPointerException as LayoutFrame not fully set up yet
-        so add Action later when button is enabled */
-        searchDatabaseButton = new JButton();
-        searchDatabaseButton.setEnabled(false);
-        searchDatabaseButton.setText("Search Database");
-        searchDatabaseButton.setToolTipText("Search Online Database");
-
         // topPanel, north
         generalTopPanel.add( new JLabel("Class Set:") );
         generalTopPanel.add(classSetsBox);
@@ -719,13 +707,16 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         tabGeneralPanel.add(generalTopPanel, BorderLayout.NORTH);
 
         // button panel, south
-        generalButtonPanel.add(chooseColumnsToHideButton);
-        generalButtonPanel.add(exportTableAsButton);
-        generalButtonPanel.add(searchDatabaseButton);
+        JPanel generalButtonPanelLine2 = new JPanel();
+        generalButtonPanelLine2.add(chooseColumnsToHideButton);
+        generalButtonPanelLine2.add(exportTableAsButton);
         JButton okButton = new JButton(okAction);
         okButton.setToolTipText("Close");
-        generalButtonPanel.add(okButton);
+        generalButtonPanelLine2.add(okButton);
 
+        generalButtonPanel.setLayout(new BoxLayout(generalButtonPanel, BoxLayout.Y_AXIS));
+        generalButtonPanel.add(generalButtonPanelLine1);
+        generalButtonPanel.add(generalButtonPanelLine2);
         tabGeneralPanel.add(generalButtonPanel, BorderLayout.SOUTH);
 
         //// ENTROPY PANEL ////
@@ -943,12 +934,6 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 refreshSelectionInTableButton.setEnabled(enableHideColumnsAndExportButtons);
                 exportTableAsButton.setEnabled(enableHideColumnsAndExportButtons);
                 chooseColumnsToHideButton.setEnabled( enableHideColumnsAndExportButtons || classViewerHideColumnsDialog.isVisible() );
-
-                //reuse the Action from the Import Network menu option
-                searchDatabaseButton.setAction(layoutFrame.getImportWebService().getImportWebServiceAction());
-                searchDatabaseButton.setText("Search Database"); //don't want to use same text as Action here
-                searchDatabaseButton.setToolTipText("Search Online Database");
-                searchDatabaseButton.setEnabled(enableHideColumnsAndExportButtons);
 
                 boolean enableDetailsForAllButton = (entropyTable.getRowCount() > 0);
                 detailsForAllButton.setEnabled(enableDetailsForAllButton);
