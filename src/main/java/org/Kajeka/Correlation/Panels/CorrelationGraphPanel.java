@@ -189,6 +189,7 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
     {
         Individual_Lines,
         Mean_Line,
+        Median_Line,
         Mean_Histogram,
         Mean_With_Std_Dev,
         Mean_Line_With_Std_Dev,
@@ -571,6 +572,49 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
                 {
                     String columnName = correlationData.getColumnName(column);
                     dataset.addValue(mean[column], "Mean of " + className, columnName);
+                }
+
+                DefaultCategoryItemRenderer dcir = (DefaultCategoryItemRenderer)r;
+                mainPlot.setDataset(datasetIndex, slidingDataset);
+                dcir.setSeriesPaint(seriesIndex, color);
+                dcir.setSeriesShapesVisible(seriesIndex, false);
+                dcir.setSeriesStroke(seriesIndex, new BasicStroke(3.0f, 1, 1, 1.0f, new float[]
+                        {
+                            9.0f, 4.0f
+                        }, 0.0f));
+                dcir.setSeriesVisibleInLegend(seriesIndex, false);
+
+                // The shapes aren't shown, but this defines the tooltip hover zone
+                dcir.setBaseShape(new Rectangle2D.Double(-10.0, -10.0, 20.0, 20.0));
+                dcir.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
+
+                mainPlot.setRenderer(datasetIndex, dcir);
+            }
+            break;
+
+            case Median_Line:
+            {
+                mean = correlationData.getMedianForRows(rows);
+
+                SlidingCategoryDataset slidingDataset = (SlidingCategoryDataset)mainPlot.getDataset(datasetIndex);
+                DefaultCategoryDataset dataset;
+                AbstractCategoryItemRenderer r = (AbstractCategoryItemRenderer)mainPlot.getRenderer(datasetIndex);
+
+                if (slidingDataset == null)
+                {
+                    dataset = new DefaultCategoryDataset();
+                    slidingDataset = new SlidingCategoryDataset(dataset, 0, maximumVisibleSamples());
+                    r = new DefaultCategoryItemRenderer();
+                }
+                else
+                {
+                    dataset = (DefaultCategoryDataset)slidingDataset.getUnderlyingDataset();
+                }
+
+                for (int column = 0; column < numColumns; column++)
+                {
+                    String columnName = correlationData.getColumnName(column);
+                    dataset.addValue(mean[column], "Median of " + className, columnName);
                 }
 
                 DefaultCategoryItemRenderer dcir = (DefaultCategoryItemRenderer)r;

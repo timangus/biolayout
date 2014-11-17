@@ -174,6 +174,8 @@ public final class CorrelationData
     private float maxStddev = Float.MIN_VALUE;
     private float[] meanCache = null;
     private boolean meanCached = false;
+    private float[] medianCache = null;
+    private boolean medianCached = false;
 
     private HashMap<Integer, ColumnAnnotation> columnAnnotations;
 
@@ -1150,6 +1152,58 @@ public final class CorrelationData
         meanCached = true;
     }
 
+    public float getMedianForRow(int row)
+    {
+        if (medianCached)
+        {
+            return medianCache[row];
+        }
+
+        float[] columnData = new float[totalColumns];
+
+        for (int column = 0; column < totalColumns; column++)
+        {
+            columnData[column] += getDataValue(row, column);
+        }
+
+        Arrays.sort(columnData);
+
+        if(totalColumns == 1)
+        {
+            return columnData[0];
+        }
+        else if((totalColumns % 2) == 0)
+        {
+            int index2 = totalColumns / 2;
+            int index1 = index2 - 1;
+
+            return (columnData[index1] + columnData[index2]) * 0.5f;
+        }
+        else
+        {
+            int index = totalColumns / 2;
+
+            return columnData[index];
+        }
+    }
+
+    public void cacheMedianValues()
+    {
+        if (medianCached)
+        {
+            return;
+        }
+
+        medianCache = new float[totalRows];
+
+        for (int row = 0; row < totalRows; row++)
+        {
+            medianCache[row] = getMedianForRow(row);
+        }
+
+        medianCached = true;
+    }
+
     public float getVarianceForRow(int row, float mean)
     {
         float variance = 0.0f;
@@ -1300,6 +1354,54 @@ public final class CorrelationData
         }
 
         return mean;
+    }
+
+    public float[] getMedianForRows(List<Integer> rows)
+    {
+        float data[][] = new float[rows.size()][totalColumns];
+        float median[] = new float[totalColumns];
+
+        int numRows = rows.size();
+
+        for (int index = 0; index < numRows; index++)
+        {
+            data[index] = getTransformedRow(rows.get(index));
+        }
+
+        for (int column = 0; column < totalColumns; column++)
+        {
+            float[] columnData = new float[numRows];
+
+            for (int index = 0; index < numRows; index++)
+            {
+                columnData[index] = data[index][column];
+            }
+
+            Arrays.sort(columnData);
+
+            if (numRows == 1)
+            {
+                median[column] = columnData[0];
+            }
+            else
+            {
+                if ((numRows % 2) == 0)
+                {
+                    int index2 = numRows / 2;
+                    int index1 = index2 - 1;
+
+                    median[column] = (columnData[index1] + columnData[index2]) * 0.5f;
+                }
+                else
+                {
+                    int index = numRows / 2;
+
+                    median[column] = columnData[index];
+                }
+            }
+        }
+
+        return median;
     }
 
     public float[] getVarianceForRows(List<Integer> rows, float[] mean)
