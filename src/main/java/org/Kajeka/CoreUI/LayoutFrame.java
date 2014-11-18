@@ -70,6 +70,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private Graph graph = null;
     private LayoutGeneralToolBar layoutGeneralToolBar = null;
     private LayoutNavigationToolBar layoutNavigationToolBar = null;
+    private LayoutHomeToolBar layoutHomeToolBar = null;
     private JLabel nodeLabel = null;
     private JLabel statusLabel = null;
     private JPanel globalPanel = null;
@@ -219,6 +220,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         splashScreen.setText(" Creating Toolbars...");
         layoutGeneralToolBar = new LayoutGeneralToolBar(JToolBar.HORIZONTAL);
         layoutNavigationToolBar = new LayoutNavigationToolBar(JToolBar.HORIZONTAL);
+        layoutHomeToolBar = new LayoutHomeToolBar(JToolBar.HORIZONTAL);
 
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
@@ -625,6 +627,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         initGeneralToolBarActions();
         initNavigationToolBarActions();
+        initHomeToolBarActions();
         initMenuBarActions();
         initFileDragNDrop();
     }
@@ -766,7 +769,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutGeneralToolBar.setAnimationControlAction( layoutAnimationControlDialog.getAnimationControlDialogAction() );
         layoutGeneralToolBar.setBurstLayoutIterationsAction( graph.getGraphActions().getBurstLayoutIterationsAction() );
         layoutGeneralToolBar.set2D3DSwitchAction(_2D3DSwitchAction);
-        layoutGeneralToolBar.setHomeAction(homeAction);
         layoutGeneralToolBar.setEnabled(true);
     }
 
@@ -789,6 +791,16 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutNavigationToolBar.setResetViewAction( graph.getGraphRendererActions().getResetViewAction() );
         layoutNavigationToolBar.setNavigationWizardAction( layoutNavigationWizardDialog.getNavigationWizardAction() );
         layoutNavigationToolBar.setEnabled(true);
+    }
+
+    /**
+    *  Initializes the navigation toolbar all actions.
+    */
+    private void initHomeToolBarActions()
+    {
+        layoutHomeToolBar.removeAll();
+        layoutHomeToolBar.setHomeAction(homeAction);
+        layoutHomeToolBar.setEnabled(true);
     }
 
     /**
@@ -1527,6 +1539,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if ( !layoutNavigationToolBar.isEnabled() )
             layoutNavigationToolBar.setEnabled(true);
 
+        if ( !layoutHomeToolBar.isEnabled() )
+            layoutHomeToolBar.setEnabled(true);
+
 
         if ( !saver.getSaveAction().isEnabled() )
             saver.getSaveAction().setEnabled(true);
@@ -1661,6 +1676,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         if ( layoutNavigationToolBar.isEnabled() )
             layoutNavigationToolBar.setEnabled(false);
+
+        if ( layoutHomeToolBar.isEnabled() )
+            layoutHomeToolBar.setEnabled(false);
 
 
         if ( saver.getSaveAction().isEnabled() )
@@ -2034,6 +2052,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     {
         layoutGeneralToolBar.setEnabled(enabled);
         layoutNavigationToolBar.setEnabled(enabled);
+        layoutHomeToolBar.setEnabled(enabled);
     }
 
     public void checkToShowNavigationWizardOnStartup()
@@ -2055,6 +2074,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         {
             toolbarPanel.add(layoutNavigationToolBar);
         }
+
+        toolbarPanel.add(Box.createGlue());
+        toolbarPanel.add(layoutHomeToolBar);
 
         toolbarPanel.repaint();
         toolbarPanel.revalidate();

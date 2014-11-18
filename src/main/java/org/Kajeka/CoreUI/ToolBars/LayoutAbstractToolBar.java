@@ -23,11 +23,13 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     public static final long serialVersionUID = 111222333444555694L;
 
     protected static enum GraphPropertiesToolBarButtons { GENERAL, LAYOUT, RENDERING, MCL, SIMULATION, SEARCH, NODES, EDGES, CLASSES }
-    protected static enum GeneralToolBarButtons { GRAPH_PROPERTIES, GRAPH_OPEN, GRAPH_LAST_OPEN, GRAPH_SAVE, SNAPSHOT, GRAPH_STATISTICS, GRAPH_FIND, RUN_MCL, RUN_SPN, CLASS_VIEWER, ANIMATION_CONTROL, BURST_LAYOUT_ITERATIONS, _2D_3D, HOME }
+    protected static enum GeneralToolBarButtons { GRAPH_PROPERTIES, GRAPH_OPEN, GRAPH_LAST_OPEN, GRAPH_SAVE, SNAPSHOT, GRAPH_STATISTICS, GRAPH_FIND, RUN_MCL, RUN_SPN, CLASS_VIEWER, ANIMATION_CONTROL, BURST_LAYOUT_ITERATIONS, _2D_3D }
     protected static enum NavigationToolBarButtons { UP, DOWN, LEFT, RIGHT, ROTATE_UP, ROTATE_DOWN, ROTATE_LEFT, ROTATE_RIGHT, ZOOM_IN, ZOOM_OUT, RESET_VIEW, NAVIGATION_WIZARD }
+    protected static enum HomeToolBarButtons { HOME }
     protected static final int NUMBER_OF_GRAPH_PROPERTIES_TOOLBAR_BUTTONS = GraphPropertiesToolBarButtons.values().length;
     protected static final int NUMBER_OF_GENERAL_TOOLBAR_BUTTONS = GeneralToolBarButtons.values().length;
     protected static final int NUMBER_OF_NAVIGATION_TOOLBAR_BUTTONS = NavigationToolBarButtons.values().length;
+    protected static final int NUMBER_OF_HOME_TOOLBAR_BUTTONS = HomeToolBarButtons.values().length;
 
     protected static final String BUTTON_PROPERTIES = " Properties";
     protected static final String BUTTON_HOVER = "Hover";
@@ -42,6 +44,10 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     protected static final String NAVIGATION_TOOLBAR_TITLE = "Navigation Tool Bar";
     protected static final String NAVIGATION_DIR_NAME = IMAGE_FILES_PATH + "NavigationToolBar/";
     protected static final String NAVIGATION_FILE_NAME = "NavigationToolBarData.txt";
+
+    protected static final String HOME_TOOLBAR_TITLE = "Home Tool Bar";
+    protected static final String HOME_DIR_NAME = IMAGE_FILES_PATH + "HomeToolBar/";
+    protected static final String HOME_FILE_NAME = "HomeToolBarData.txt";
 
     protected TexturesLoader texturesLoaderIcons = null;
     protected JButton[] allToolBarButtons = null;

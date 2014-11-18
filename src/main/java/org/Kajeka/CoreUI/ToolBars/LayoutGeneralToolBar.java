@@ -158,11 +158,6 @@ public class LayoutGeneralToolBar extends LayoutAbstractToolBar
         addSeparator();
     }
 
-    public void setHomeAction(AbstractAction action)
-    {
-        setToolBarButtonAction( action, capitalizeFirstCharacter(HOME), HOME.ordinal() );
-    }
-
     public void set2D3DButton()
     {
         setToolBarButtonImages(allToolBarButtons[_2D_3D.ordinal()], _2D3DActionName());

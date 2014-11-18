@@ -16,4 +16,3 @@ AnimationControl.png
 BurstLayoutIterations.png
 3D.png
 2D.png
-Home.png
