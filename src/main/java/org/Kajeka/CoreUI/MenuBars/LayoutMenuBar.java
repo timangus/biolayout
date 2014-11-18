@@ -245,11 +245,11 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     public void setFileSubMenuImportNetworkAction(AbstractAction importNetworkAction)
     {
         JMenuItem item = fileImportSubMenu.add(importNetworkAction);
-        item.setIcon(null);        
+        item.setIcon(null);
         item.setMnemonic(KeyEvent.VK_N);
         item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, mask + ActionEvent.SHIFT_MASK));
     }
-    
+
     public void setFileMenuExportAction(AbstractAction exportAction)
     {
         fileExportSubMenu.add(exportAction).setIcon(null);
@@ -670,13 +670,6 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         JMenuItem openGLDriverCaps = helpMenu.add(openGLDriverCapsAction);
         openGLDriverCaps.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.SHIFT_MASK));
         openGLDriverCaps.setMnemonic(KeyEvent.VK_G);
-    }
-
-    public void setHelpMenuOpenCLDriverCapsAction(AbstractAction openCLDriverCapsAction)
-    {
-        JMenuItem openGLDriverCaps = helpMenu.add(openCLDriverCapsAction);
-        openGLDriverCaps.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.SHIFT_MASK));
-        openGLDriverCaps.setMnemonic(KeyEvent.VK_C);
     }
 
     public void setHelpMenuJavaPlatformCapsAction(AbstractAction javaPlatformCapsAction)

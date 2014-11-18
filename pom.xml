@@ -23,7 +23,6 @@
         <minJavaVersion>1.6</minJavaVersion>
         <!-- The -01 is because apparently the 2.1.5 release was screwed up and is missing all its class files -->
         <jogampVersion>2.1.5-01</jogampVersion>
-        <joclVersion>0.1.7</joclVersion>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -74,12 +73,6 @@
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
             <version>${jogampVersion}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jocl</groupId>
-            <artifactId>jocl</artifactId>
-            <version>${joclVersion}</version>
         </dependency>
 
         <dependency>
@@ -449,53 +442,16 @@
                                     <excludes>*newt.*,*_mobile.*</excludes>
                                 </artifactItem>
 
-
-                                <!-- Note that the jocl libs aren't extracted directly into the resource tree as
-                                     they must be renamed by a set of antrun tasks below -->
-                                <artifactItem>
-                                    <groupId>org.jocl</groupId>
-                                    <artifactId>jocl</artifactId>
-                                    <version>${joclVersion}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                    <includes>lib/*</includes>
-                                </artifactItem>
-
                             </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- The native libraries in the jocl jar aren't named suitably for our purposes, so
-                 we have this antrun task list to fix them up. Be aware that the original file names
-                 include the version number so will need adjusted if the version of jocl is changed -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
                 <executions>
-                    <execution>
-                        <id>joclCopy</id>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <target>
-                                <copy file="${project.build.directory}/lib/JOCL_0_1_7-windows-x86.dll"
-                                    tofile="${project.build.directory}/classes/Resources/Libraries/Win32/jocl.dll" />
-                                <copy file="${project.build.directory}/lib/JOCL_0_1_7-windows-x86_64.dll"
-                                    tofile="${project.build.directory}/classes/Resources/Libraries/Win64/jocl.dll" />
-                                <copy file="${project.build.directory}/lib/libJOCL_0_1_7-linux-x86.so"
-                                    tofile="${project.build.directory}/classes/Resources/Libraries/Linux32/libjocl.so" />
-                                <copy file="${project.build.directory}/lib/libJOCL_0_1_7-linux-x86_64.so"
-                                    tofile="${project.build.directory}/classes/Resources/Libraries/Linux64/libjocl.so" />
-                                <copy file="${project.build.directory}/lib/libJOCL_0_1_7-apple-x86_64.jnilib"
-                                    tofile="${project.build.directory}/classes/Resources/Libraries/Mac/libjocl.jnilib" />
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>osxAppCopy</id>
                         <phase>package</phase>

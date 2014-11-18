@@ -24,7 +24,6 @@ import org.Kajeka.Environment.*;
 import org.Kajeka.Environment.Preferences.*;
 import org.Kajeka.Files.*;
 import org.Kajeka.Files.Parsers.*;
-import org.Kajeka.GPUComputing.OpenCLContext.Dummy.*;
 import org.Kajeka.GPUComputing.OpenGLContext.*;
 import org.Kajeka.GPUComputing.OpenGLContext.Dummy.*;
 import org.Kajeka.Graph.*;
@@ -99,7 +98,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private LayoutTipOfTheDayDialog layoutTipOfTheDayDialog = null;
     private LayoutLicensesDialog layoutLicensesDialog = null;
     private LayoutOpenGLDriverCapsDialog layoutOpenGLDriverCapsDialog = null;
-    private LayoutOpenCLDriverCapsDialog layoutOpenCLDriverCapsDialog = null;
     private LayoutJavaPlatformCapsDialog layoutJavaPlatformCapsDialog = null;
     private LayoutOnlineServices layoutOnlineServices = null;
 
@@ -199,10 +197,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
         nodeLabel.setMinimumSize( new Dimension(150, 10) );
 
         layoutOpenGLDriverCapsDialog = new LayoutOpenGLDriverCapsDialog(this);
-        layoutOpenCLDriverCapsDialog = new LayoutOpenCLDriverCapsDialog(this);
         layoutJavaPlatformCapsDialog = new LayoutJavaPlatformCapsDialog(this);
 
-        detectOpenCLSupportAndExtensions();
         detectOpenGLSupportAndExtensions();
 
         RENDERER_MODE_3D = RENDERER_MODE_START_3D.get();
@@ -350,20 +346,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     public ImportWebService getImportWebService()
     {
         return importWebService;
-    }
-
-    /**
-    *  Detects the OpenCL support and extensions.
-    */
-    private void detectOpenCLSupportAndExtensions()
-    {
-        if (OPENCL_GPU_COMPUTING_ENABLED)
-        {
-            // creates a dummy OpenCL context that will populate the OpenCL global variables
-            new DummyOpenCLContext(this, false, false, true).startGPUComputingProcessing();
-            if (CL_ALL_PLATFORM_NAMES.length > 0)
-                layoutOpenCLDriverCapsDialog.getOpenCLDriverCapsAction().setEnabled(true);
-        }
     }
 
     /**
@@ -717,7 +699,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setHelpMenuTipOfTheDayAction( layoutTipOfTheDayDialog.getTipOfTheDayAction() );
         layoutMenuBar.setHelpMenuLicensesAction( layoutLicensesDialog.getLicensesAction() );
         layoutMenuBar.setHelpMenuOpenGLDriverCapsAction( layoutOpenGLDriverCapsDialog.getOpenGLDriverCapsAction() );
-        layoutMenuBar.setHelpMenuOpenCLDriverCapsAction( layoutOpenCLDriverCapsDialog.getOpenCLDriverCapsAction() );
         layoutMenuBar.setHelpMenuJavaPlatformCapsAction( layoutJavaPlatformCapsDialog.getJavaPlatformCapsAction() );
         layoutMenuBar.setHelpMenuCheckForUpdatesAction(helpMenuCheckForUpdatesAction);
         layoutMenuBar.setHelpMenuAboutAction( layoutAboutDialog.getAboutAction() );

@@ -486,7 +486,6 @@ public class SignalingPetriNetSimulation
 
     /**
     *   Return a light-weight runnable using the Adapter technique for the SPN simulation so as to avoid any load latencies.
-    *   The coding style simulates an OpenCL/CUDA kernel.
     */
     private Runnable SPNSimulationProcessKernel(final int threadId, final int totalRuns, final SpnResultRuns processResult)
     {

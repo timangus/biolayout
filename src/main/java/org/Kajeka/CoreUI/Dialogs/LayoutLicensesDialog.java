@@ -96,8 +96,6 @@ public final class LayoutLicensesDialog extends JDialog implements ActionListene
         textArea.append(readLicenseFile(LICENSES_FILES_NAMES[LicensesFiles.LICENSE_GPLV3.ordinal()], true) +
                         LICENSES_SEPARATOR +
                         readLicenseFile(LICENSES_FILES_NAMES[LicensesFiles.LICENSE_JOGL.ordinal()], true) +
-                        LICENSES_SEPARATOR +
-                        readLicenseFile(LICENSES_FILES_NAMES[LicensesFiles.LICENSE_JOCL.ordinal()], true) +
                         "\n");
     }
 

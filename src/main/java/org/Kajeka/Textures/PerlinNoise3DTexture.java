@@ -619,7 +619,6 @@ public final class PerlinNoise3DTexture
 
     /**
     *   Return a light-weight runnable using the Adapter technique for the correlation calculation so as to avoid any load latencies.
-    *   The coding style simulates an OpenCL/CUDA kernel.
     */
     private Runnable makePerlinNoise3DTextureCalculationProcessKernel(final int numberOfNCPThreadProcesses, final CyclicBarrier threadBarrier, final int threadId, final boolean isPowerOfTwo)
     {

@@ -5,7 +5,6 @@ import java.awt.image.*;
 import java.text.*;
 import java.util.*;
 import javax.swing.*;
-import org.jocl.*;
 import org.Kajeka.Environment.Preferences.*;
 import org.Kajeka.Graph.Camera.CameraUI.*;
 import org.Kajeka.Models.Lathe3D.*;
@@ -93,47 +92,6 @@ public final class GlobalEnvironment
     public static int GL_MAX_TEXTURE_SIZE_INTEGER = 0;
     public static int GL_MAX_RENDERBUFFER_SIZE_EXT_INTEGER = 0;
 
-    // OpenCL specific variables
-    public static boolean OPENCL_GPU_COMPUTING_ENABLED = false;
-    public static final boolean LOAD_KERNEL_PROGRAMS_FROM_EXTERNAL_SOURCE = false;
-    public static String[] CL_ALL_PLATFORM_NAMES = null;
-    public static boolean[] CL_IS_PLATFORM_AMD_ATI = null;
-    public static cl_device_id[][] CL_ALL_PLATFORM_DEVICE_IDS = null;
-    public static String[][] CL_ALL_PLATFORM_DEVICES_NAMES = null;
-    public static String[][] CL_ALL_PLATFORM_DEVICES_VENDORS = null;
-    public static String[][] CL_ALL_PLATFORM_DEVICES_DRIVER_VERSIONS = null;
-    public static String[][] CL_ALL_PLATFORM_DEVICES_VERSIONS = null;
-    public static String[][] CL_ALL_PLATFORM_DEVICES_OPENCL_C_VERSIONS = null;
-    public static String[][] CL_ALL_PLATFORM_DEVICES_PROFILES = null;
-    public static String[][][] CL_ALL_PLATFORM_DEVICES_TYPES = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_ENDIAN_LITTLES = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_MAX_COMPUTE_UNITS = null;
-    public static long[][] CL_ALL_PLATFORM_DEVICES_MAX_WORK_ITEM_DIMENSIONS = null;
-    public static int[][][] CL_ALL_PLATFORM_DEVICES_MAX_WORK_ITEM_SIZES = null;
-    public static long[][] CL_ALL_PLATFORM_DEVICES_MAX_WORK_GROUP_SIZES = null;
-    public static long[][] CL_ALL_PLATFORM_DEVICES_MAX_CLOCK_FREQUENCIES = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_ADDRESSES_BITS = null;
-    public static long[][] CL_ALL_PLATFORM_DEVICES_MAX_MEM_ALLOC_SIZES = null;
-    public static long[][] CL_ALL_PLATFORM_DEVICES_GLOBAL_MEM_SIZES = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_ERROR_CORRECTIONS_SUPPORT = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_TYPES = null;
-    public static long[][] CL_ALL_PLATFORM_DEVICES_LOCAL_MEM_SIZES = null;
-    public static long[][] CL_ALL_PLATFORM_DEVICES_MAX_CONSTANT_BUFFER_SIZES = null;
-    public static String[][][] CL_ALL_PLATFORM_DEVICES_QUEUES_PROPERTIES = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGES_SUPPORT = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_CL_DEVICE_MAX_SAMPLERS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_MAX_READ_IMAGES_ARGS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_MAX_WRITE_IMAGES_ARGS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_WIDTHS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_2D_MAX_HEIGHTS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_3D_MAX_WIDTHS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_3D_MAX_HEIGHTS = null;
-    public static int[][] CL_ALL_PLATFORM_DEVICES_IMAGE_3D_MAX_DEPTHS = null;
-    public static int[][][] CL_ALL_PLATFORM_DEVICES_PREFERRED_VECTOR_WIDTHS = null;
-    public static String[][][] CL_ALL_PLATFORM_DEVICES_SINGLE_FP_CONFIGS = null;
-    public static String[][][] CL_ALL_PLATFORM_DEVICES_EXECUTION_CAPABILITIES = null;
-    public static String[][][] CL_ALL_PLATFORM_DEVICES_EXTENSIONS = null;
-
     // mouse cursor variables
     public static final Cursor STATIC_NORMAL_CURSOR = new Cursor(Cursor.DEFAULT_CURSOR);
     public static final Cursor STATIC_MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
@@ -148,13 +106,12 @@ public final class GlobalEnvironment
     public static enum SupportedOutputFileTypes { LAYOUT, TGF }
     public static enum SupportedImportExportFileTypes { CLASSSETS, TXT }
     public static enum SupportedSimulationFileTypes { SPN, TXT }
-    public static enum LicensesFiles { LICENSE_KAJEKA, LICENSE_GPLV3, LICENSE_JOGL, LICENSE_JOCL }
+    public static enum LicensesFiles { LICENSE_KAJEKA, LICENSE_GPLV3, LICENSE_JOGL }
     public static final String LICENSES_FILES_PATH = "/Resources/Licenses/";
     public static final String LICENSES_SEPARATOR = "\n\n\n\n\n";
     public static final String[] LICENSES_FILES_NAMES = { "LICENSE-KAJEKA.txt",
                                                           "LICENSE-GPLv3.txt",
-                                                          "LICENSE-JOGL.txt",
-                                                          "LICENSE-JOCL.txt"
+                                                          "LICENSE-JOGL.txt"
                                                         };
     public static final String IMAGE_FILES_PATH = "/Resources/Images/";
     public static final String MODEL_FILES_PATH = "/Resources/Models/";
@@ -367,9 +324,6 @@ public final class GlobalEnvironment
     public static final PrefBool AUTOMATICALLY_SAVE_SPN_RESULTS_TO_PRECHOSEN_FOLDER = new PrefBool(false, "automatically_save_spn_results_to_prechosen_folder", true);
     public static final PrefBool USE_SPN_ANIMATED_TRANSITIONS_SHADING = new PrefBool(false, "use_spn_animated_transitions_shading", true);
 
-    public static final int[] OPENCL_GPU_COMPUTING_ITERATION_SIZES = { 1 << 20, 1 << 21, 1 << 22, 1 << 23, 1 << 24, 1 << 25, 1 << 26, 1 << 27 };
-    public static final int OPENCL_DEFAULT_CORRELATION_ITERATION_SIZE = OPENCL_GPU_COMPUTING_ITERATION_SIZES[2];
-    public static final int OPENCL_DEFAULT_LAYOUT_ITERATION_SIZE = OPENCL_GPU_COMPUTING_ITERATION_SIZES[0];
     public static final int GLSL_MAX_TEXTURE_SIZE = 4096;
     public static final int GLSL_TEXTURE_STEP = 512;
     public static final int GLSL_DEFAULT_TEXTURE_SIZE = GLSL_MAX_TEXTURE_SIZE - GLSL_TEXTURE_STEP;
@@ -388,17 +342,12 @@ public final class GlobalEnvironment
     public static final double LAYOUT_GPU_COMPUTING_MAX_ERROR_THRESHOLD = 1.0; // 1e-0f precision up to 1.0 (1 integer pixel)
 
     public static final PrefBool USE_CORRELATION_CALCULATION_N_CORE_PARALLELISM = new PrefBool(true, "use_correlation_calculation_n_core_parallelism", true);
-    public static final PrefBool USE_OPENCL_GPU_COMPUTING_CORRELATION_CALCULATION = new PrefBool(false, "use_opencl_gpu_computing_correlation_calculation", true);
-    public static final PrefInt OPENCL_GPU_COMPUTING_CORRELATION_CALCULATION_ITERATION_SIZE = new PrefInt(OPENCL_DEFAULT_CORRELATION_ITERATION_SIZE, "opencl_gpu_computing_correlation_iteration_size", true);
     public static final PrefBool USE_GLSL_GPGPU_COMPUTING_CORRELATION_CALCULATION = new PrefBool(false, "use_glsl_gpgpu_computing_correlation_calculation", true);
     public static final PrefInt GLSL_GPGPU_COMPUTING_CORRELATION_CALCULATION_TEXTURE_SIZE = new PrefInt(GLSL_DEFAULT_TEXTURE_SIZE, "glsl_gpgpu_computing_correlation_calculation_texture_size", true);
     public static final PrefString GLSL_GPGPU_COMPUTING_CORRELATION_CALCULATION_TEXTURE_TYPE = new PrefString(GLSL_DEFAULT_TEXTURE_TYPE.toString(), "glsl_gpgpu_computing_correlation_calculation_texture_type", true);
     public static final PrefBool COMPARE_GPU_COMPUTING_CORRELATION_CALCULATION_WITH_CPU = new PrefBool(false, "compare_gpu_computing_correlation_calculation_with_cpu", true);
     public static final PrefString COMPARE_GPU_COMPUTING_CORRELATION_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD = new PrefString(GPU_COMPUTING_DEFAULT_CPU_COMPARISON_METHOD, "compare_gpu_computing_correlation_calculation_with_cpu_default_comparison_method", true);
     public static final PrefBool USE_LAYOUT_N_CORE_PARALLELISM = new PrefBool(true, "use_layout_n_core_parallelism", true);
-    public static final PrefBool USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION = new PrefBool(false, "use_opencl_gpu_computing_layout_calculation", true);
-    public static final PrefBool USE_INDICES_1D_KERNEL_WITH_ITERATIONS_FOR_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION = new PrefBool(false, "use_indices_1d_kernel_with_iterations_for_opencl_gpu_computing_layout_calculation", true);
-    public static final PrefInt OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION_ITERATION_SIZE = new PrefInt(OPENCL_DEFAULT_LAYOUT_ITERATION_SIZE, "opencl_gpu_computing_layout_calculation_iteration_size", true);
     public static final PrefBool COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU = new PrefBool(false, "compare_gpu_computing_layout_calculation_with_cpu", true);
     public static final PrefString COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU_DEFAULT_COMPARISON_METHOD = new PrefString(GPU_COMPUTING_DEFAULT_CPU_COMPARISON_METHOD, "compare_gpu_computing_layout_calculation_with_cpu_default_comparison_method", true);
     public static final PrefBool USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM = new PrefBool(true, "use_atomic_synchronization_for_layout_n_core_parallelism", true);

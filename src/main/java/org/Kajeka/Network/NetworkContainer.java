@@ -186,8 +186,7 @@ public abstract class NetworkContainer
         int numberOfIterations = 0;
 
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
-        // for now both N-CP & OpenCL methods use N-CP for Burst Iterations,as Burst Iterations for the OpenCL version are not implemented
-        String progressBarParallelismTitle = ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) ) ? " (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
+        String progressBarParallelismTitle = ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) ) ? " (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
 
         if (isRelayout)
         {

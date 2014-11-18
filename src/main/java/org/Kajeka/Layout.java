@@ -340,19 +340,6 @@ public final class Layout
     }
 
     /**
-    *  Static method to initialize the needed JOCL libraries for OpenCL GPU Computing.
-    */
-    private static boolean initJOCLNativeLibraries()
-    {
-        if ( !LoadNativeLibrary.loadNativeLibrary("jocl") )
-            return false;
-
-        LoadNativeLibrary.setJavaLibraryPath();
-
-        return true;
-    }
-
-    /**
     *  The void main entry point.
     */
     public static void main(String[] args)
@@ -481,16 +468,6 @@ public final class Layout
             if (DEBUG_BUILD) println("Error: JOGL Libraries not installed or found!\n");
             JOptionPane.showMessageDialog(null, "Error: JOGL Libraries not installed or found!", "JOGL error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
-        }
-
-        if ( initJOCLNativeLibraries() )
-        {
-            OPENCL_GPU_COMPUTING_ENABLED = true;
-            if (DEBUG_BUILD) println("JOCL Libraries working!\n");
-        }
-        else
-        {
-            if (DEBUG_BUILD) println("Error: JOCL Library not installed or found!\n");
         }
 
         if (DEBUG_BUILD)

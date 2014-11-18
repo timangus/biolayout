@@ -9,7 +9,6 @@ import org.Kajeka.CoreUI.*;
 import org.Kajeka.CoreUI.Dialogs.*;
 import org.Kajeka.CPUParallelism.*;
 import org.Kajeka.CPUParallelism.Executors.*;
-import org.Kajeka.GPUComputing.OpenCLContext.FRLayout.*;
 import org.Kajeka.StaticLibraries.*;
 import static java.lang.Math.*;
 import static org.Kajeka.StaticLibraries.ArraysAutoBoxUtils.*;
@@ -77,9 +76,8 @@ public final class FRLayout
     private NumberFormat nf1 = null;
     private NumberFormat nf2 = null;
 
-    // variables needed for N-CP & OpenCL GPU Computing
+    // variables needed for N-CP
     private static final int MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION = 1000;
-    private static final int MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION = 1000;
     private final CyclicBarrierTimer cyclicBarrierTimer = (USE_MULTICORE_PROCESS) ? new CyclicBarrierTimer() : null;
     private final CyclicBarrier threadBarrier = (USE_MULTICORE_PROCESS) ? new CyclicBarrier(NUMBER_OF_AVAILABLE_PROCESSORS + 1, cyclicBarrierTimer) : null;
     private volatile AtomicIntegerArray displacementValuesAtomic = null;
@@ -145,7 +143,7 @@ public final class FRLayout
         if (!RENDERER_MODE_3D)
         {
             int matricesSize = numberOfVertices << 1;
-            if ( ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) ) && USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() )
+            if ( ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) ) && USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() )
                 displacementValuesAtomic = new AtomicIntegerArray(matricesSize);
             displacementValuesBuffer = IntBuffer.allocate(matricesSize);
             cachedVertexPointCoordsMatrixBuffer = FloatBuffer.allocate(matricesSize);
@@ -164,7 +162,7 @@ public final class FRLayout
         else
         {
             int matricesSize = 3 * numberOfVertices;
-            if ( ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) ) && USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() )
+            if ( ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) ) && USE_ATOMIC_SYNCHRONIZATION_FOR_LAYOUT_N_CORE_PARALLELISM.get() )
                 displacementValuesAtomic = new AtomicIntegerArray(matricesSize);
             displacementValuesBuffer = IntBuffer.allocate(matricesSize);
             cachedVertexPointCoordsMatrixBuffer = FloatBuffer.allocate(matricesSize);
@@ -186,7 +184,7 @@ public final class FRLayout
         int dimensionalityIndex = 0;
         int weightRowIndex = 0;
         ArrayList<Short> cachedVertexNormalizedWeightArrayList = (useEdgeWeights) ? new ArrayList<Short>() : null;
-        cachedVertexNormalizedWeightIndicesToSkipBuffer = ( useEdgeWeights && ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) ) ) ? IntBuffer.allocate(numberOfVertices) : null;
+        cachedVertexNormalizedWeightIndicesToSkipBuffer = ( useEdgeWeights && ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) ) ) ? IntBuffer.allocate(numberOfVertices) : null;
         from = numberOfVertices;
         int to = 0;
         while (--from >= 0)
@@ -204,7 +202,7 @@ public final class FRLayout
                     if (useEdgeWeights)
                     {
                         cachedVertexNormalizedWeightArrayList.add( convertFromFloatToFixedPointShortNumber(vertexArray[from].getEdgeConnectionsMap().get(vertexArray[to]).getNormalisedWeight(), FIXED_POINT_DECIMAL_PART_LENGTH) );
-                        if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) )
+                        if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) )
                             cachedVertexNormalizedWeightIndicesToSkipBuffer.put(from, ++weightRowIndex);
                     }
                 }
@@ -218,10 +216,10 @@ public final class FRLayout
         }
         else
         {
-            // make sure the OpenCL GPU code & the native code does not crash the JVM with a C side null pointer exception!
+            // make sure the native code does not crash the JVM with a C side null pointer exception!
             cachedVertexNormalizedWeightMatrixBuffer = ShortBuffer.allocate(1);
             cachedVertexNormalizedWeightMatrixBuffer.put(new short[1]);
-            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) )
+            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) )
             {
                 cachedVertexNormalizedWeightIndicesToSkipBuffer = IntBuffer.allocate(1);
                 cachedVertexNormalizedWeightIndicesToSkipBuffer.put(new int[1]);
@@ -238,7 +236,7 @@ public final class FRLayout
         if (useEdgeWeights)
         {
             cachedVertexNormalizedWeightMatrixArray = cachedVertexNormalizedWeightMatrixBuffer.array();
-            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) )
+            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) )
                 cachedVertexNormalizedWeightIndicesToSkipArray = cachedVertexNormalizedWeightIndicesToSkipBuffer.array();
         }
         cachedVertexNormalizedWeightMatrixArray = cachedVertexNormalizedWeightMatrixBuffer.array();
@@ -311,7 +309,7 @@ public final class FRLayout
         int dimensionalityIndex = 0;
         int weightRowIndex = 0;
         ArrayList<Short> cachedVertexNormalizedWeightArrayList = (useEdgeWeights) ? new ArrayList<Short>() : null;
-        cachedVertexNormalizedWeightIndicesToSkipBuffer = ( useEdgeWeights && ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) ) ) ? IntBuffer.allocate(numberOfVertices) : null;
+        cachedVertexNormalizedWeightIndicesToSkipBuffer = ( useEdgeWeights && ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) ) ) ? IntBuffer.allocate(numberOfVertices) : null;
         int from = numberOfVertices;
         int to = 0;
         while (--from >= 0)
@@ -326,7 +324,7 @@ public final class FRLayout
                 if ( useEdgeWeights && ( ( cachedVertexConnectionMatrixArray[dimensionalityIndex >> BOOLEAN_PACKED_DATA_POWER_OF_TWO_VALUE] >> (dimensionalityIndex & BOOLEAN_PACKED_DATA_BIT_SIZE) ) & 1 ) != 0 )
                 {
                     cachedVertexNormalizedWeightArrayList.add( convertFromFloatToFixedPointShortNumber(vertexArray[from].getEdgeConnectionsMap().get(vertexArray[to]).getNormalisedWeight(), FIXED_POINT_DECIMAL_PART_LENGTH) );
-                    if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) )
+                    if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) )
                         cachedVertexNormalizedWeightIndicesToSkipBuffer.put(from, ++weightRowIndex);
                 }
             }
@@ -339,10 +337,10 @@ public final class FRLayout
         }
         else
         {
-            // make sure the OpenCL GPU code & the native code does not crash the JVM with a C side null pointer exception!
+            // make sure the native code does not crash the JVM with a C side null pointer exception!
             cachedVertexNormalizedWeightMatrixBuffer = ShortBuffer.allocate(1);
             cachedVertexNormalizedWeightMatrixBuffer.put(new short[1]);
-            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) )
+            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) )
             {
                 cachedVertexNormalizedWeightIndicesToSkipBuffer = IntBuffer.allocate(1);
                 cachedVertexNormalizedWeightIndicesToSkipBuffer.put(new int[1]);
@@ -353,7 +351,7 @@ public final class FRLayout
         if (useEdgeWeights)
         {
             cachedVertexNormalizedWeightMatrixArray = cachedVertexNormalizedWeightMatrixBuffer.array();
-            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) )
+            if ( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) )
                 cachedVertexNormalizedWeightIndicesToSkipArray = cachedVertexNormalizedWeightIndicesToSkipBuffer.array();
         }
     }
@@ -365,39 +363,16 @@ public final class FRLayout
     {
         this.layoutProgressBarDialog = layoutProgressBarDialog;
 
-        boolean performOpenCLGPUFRLayoutCalculationGetErrorOccured = false;
-        if ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && (numberOfVertices > MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION) )
-            performOpenCLGPUFRLayoutCalculationGetErrorOccured = performOpenCLGPUFRLayoutCalcBiDirForce2D(iterations);
-
-        if (performOpenCLGPUFRLayoutCalculationGetErrorOccured || !(OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get()) || (numberOfVertices <= MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION))
-        {
-            allIterationsCalcBiDirForce2DJava(iterations, performOpenCLGPUFRLayoutCalculationGetErrorOccured, componentID);
-        }
-    }
-
-    /**
-    *  Main method of the OpenCL GPU FRLayout in 2D data parallel execution code.
-    */
-    private boolean performOpenCLGPUFRLayoutCalcBiDirForce2D(int iterations)
-    {
-        FRLayoutComputing frLayoutComputingContext = new FRLayoutComputing( layoutFrame, true, COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU.get() );
-        frLayoutComputingContext.initializeFRLayoutComputing2DVariables(this, layoutProgressBarDialog, nf1, nf2,
-                                                                        vertexIndicesMatrixBuffer, cachedVertexPointCoordsMatrixBuffer, cachedVertexConnectionMatrixBuffer, cachedVertexConnectionRowSkipSizeValuesMatrixBuffer,
-                                                                        cachedVertexNormalizedWeightMatrixBuffer, displacementMatrixBuffer, displacementValuesBuffer,
-                                                                        cachedVertexNormalizedWeightIndicesToSkipBuffer, numberOfVertices, iterations, LAYOUT_GPU_COMPUTING_MAX_ERROR_THRESHOLD, useEdgeWeights);
-        frLayoutComputingContext.startGPUComputingProcessing();
-
-        // CPU fail-safe mechanism if OpenCL GPU Computing fails for some reason
-        return frLayoutComputingContext.getErrorOccured();
+        allIterationsCalcBiDirForce2DJava(iterations, componentID);
     }
 
     /**
     *  Performs all iterations of the FRLayout algorithm in 2D (Java method).
     */
-    private void allIterationsCalcBiDirForce2DJava(int iterations, boolean performOpenCLGPUFRLayoutCalculationGetErrorOccured, int componentID)
+    private void allIterationsCalcBiDirForce2DJava(int iterations, int componentID)
     {
         int vertexID = 0;
-        if ( !( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
+        if ( !( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
         {
             int from = numberOfVertices;
             int to = 0;
@@ -430,13 +405,12 @@ public final class FRLayout
         }
         else
         {
-            if ( performOpenCLGPUFRLayoutCalculationGetErrorOccured && (layoutProgressBarDialog != null) )
+            if ( layoutProgressBarDialog != null )
             {
                 String progressBarParallelismTitle = (USE_MULTICORE_PROCESS) ? "(Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
                 layoutProgressBarDialog.prepareProgressBar(numberOfIterations,
                         "Now Processing Layout Iterations " + progressBarParallelismTitle +
-                        ( (componentID != 0) ? " for Graph Component: " + componentID : "" ) +
-                        "   (no utilization of OpenCL GPU Computing)");
+                        ( (componentID != 0) ? " for Graph Component: " + componentID : "" ));
             }
 
             boolean isPowerOfTwo = org.Kajeka.StaticLibraries.Math.isPowerOfTwo(NUMBER_OF_AVAILABLE_PROCESSORS);
@@ -546,7 +520,6 @@ public final class FRLayout
 
     /**
     *   Return a light-weight thread using the Adapter technique for the 2D layout FRLayout algorithm so as to avoid any load latencies.
-    *   The coding style simulates an OpenCL/CUDA kernel.
     */
     private Runnable frLayout2DProcessKernel(final int threadId, final boolean isPowerOfTwo)
     {
@@ -555,7 +528,6 @@ public final class FRLayout
 
     /**
     *   Return a light-weight thread using the Adapter technique for the 2D layout FRLayout algorithm so as to avoid any load latencies.
-    *   The coding style simulates an OpenCL/CUDA kernel.
     *   Overloaded version that supports optional native method processing.
     */
     public Runnable frLayout2DProcessKernel(final int threadId, final boolean isPowerOfTwo, final boolean javaOrNativeComparisonMethod, final CyclicBarrier threadBarrier)
@@ -914,39 +886,16 @@ public final class FRLayout
     {
         this.layoutProgressBarDialog = layoutProgressBarDialog;
 
-        boolean performOpenCLGPUFRLayoutCalculationGetErrorOccured = false;
-        if ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() && (numberOfVertices > MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION) )
-            performOpenCLGPUFRLayoutCalculationGetErrorOccured = performOpenCLGPUFRLayoutCalcBiDirForce3D(iterations);
-
-        if (performOpenCLGPUFRLayoutCalculationGetErrorOccured || !(OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get()) || (numberOfVertices <= MINIMUM_NUMBER_OF_VERTICES_FOR_OPENCL_GPU_COMPUTING_PARALLELIZATION))
-        {
-            allIterationsCalcBiDirForce3DJava(iterations, performOpenCLGPUFRLayoutCalculationGetErrorOccured, componentID);
-        }
-    }
-
-    /**
-    *  Main method of the OpenCL GPU FRLayout in 3D data parallel execution code.
-    */
-    private boolean performOpenCLGPUFRLayoutCalcBiDirForce3D(int iterations)
-    {
-        FRLayoutComputing frLayoutComputingContext = new FRLayoutComputing( layoutFrame, true, COMPARE_GPU_COMPUTING_LAYOUT_CALCULATION_WITH_CPU.get() );
-        frLayoutComputingContext.initializeFRLayoutComputing3DVariables(this, layoutProgressBarDialog, nf1, nf2,
-                                                                        vertexIndicesMatrixBuffer, cachedVertexPointCoordsMatrixBuffer, cachedVertexConnectionMatrixBuffer, cachedVertexConnectionRowSkipSizeValuesMatrixBuffer,
-                                                                        cachedPseudoVertexMatrixBuffer, cachedVertexNormalizedWeightMatrixBuffer, displacementValuesBuffer,
-                                                                        cachedVertexNormalizedWeightIndicesToSkipBuffer, numberOfVertices, iterations, LAYOUT_GPU_COMPUTING_MAX_ERROR_THRESHOLD, useEdgeWeights);
-        frLayoutComputingContext.startGPUComputingProcessing();
-
-        // CPU fail-safe mechanism if OpenCL GPU Computing fails for some reason
-        return frLayoutComputingContext.getErrorOccured();
+        allIterationsCalcBiDirForce3DJava(iterations, componentID);
     }
 
     /**
     *  Performs all iterations of the FRLayout algorithm in 3D (Java method).
     */
-    private void allIterationsCalcBiDirForce3DJava(int iterations, boolean performOpenCLGPUFRLayoutCalculationGetErrorOccured, int componentID)
+    private void allIterationsCalcBiDirForce3DJava(int iterations, int componentID)
     {
         int vertexID = 0;
-        if ( !( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) || ( OPENCL_GPU_COMPUTING_ENABLED && USE_OPENCL_GPU_COMPUTING_LAYOUT_CALCULATION.get() ) ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
+        if ( !( ( USE_MULTICORE_PROCESS && USE_LAYOUT_N_CORE_PARALLELISM.get() ) ) || (numberOfVertices < MINIMUM_NUMBER_OF_VERTICES_FOR_NCP_PARALLELIZATION) )
         {
             int from = numberOfVertices;
             int to = 0;
@@ -979,12 +928,12 @@ public final class FRLayout
         }
         else
         {
-            if ( performOpenCLGPUFRLayoutCalculationGetErrorOccured && (layoutProgressBarDialog != null) )
+            if ( layoutProgressBarDialog != null )
             {
                 String progressBarParallelismTitle = (USE_MULTICORE_PROCESS) ? "(Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)" : "";
                 layoutProgressBarDialog.prepareProgressBar(numberOfIterations, "Now Processing Layout Iterations " +
                         progressBarParallelismTitle + ( (componentID != 0) ? " for Graph Component: " +
-                        componentID : "" ) + "   (no utilization of OpenCL GPU Computing)");
+                        componentID : "" ));
             }
 
             boolean isPowerOfTwo = org.Kajeka.StaticLibraries.Math.isPowerOfTwo(NUMBER_OF_AVAILABLE_PROCESSORS);
@@ -1094,7 +1043,6 @@ public final class FRLayout
 
     /**
     *   Return a light-weight thread using the Adapter technique for the 3D FRLayout algorithm so as to avoid any load latencies.
-    *   The coding style simulates an OpenCL/CUDA kernel.
     */
     private Runnable frLayout3DProcessKernel(final int threadId, final boolean isPowerOfTwo)
     {
@@ -1103,7 +1051,6 @@ public final class FRLayout
 
     /**
     *   Return a light-weight thread using the Adapter technique for the 3D FRLayout algorithm so as to avoid any load latencies.
-    *   The coding style simulates an OpenCL/CUDA kernel.
     *   Overloaded version that supports optional native method processing.
     */
     public Runnable frLayout3DProcessKernel(final int threadId, final boolean isPowerOfTwo, final boolean javaOrNativeComparisonMethod, final CyclicBarrier threadBarrier)
