@@ -45,6 +45,7 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
 import org.Kajeka.Utils.ToolbarLayout;
 import org.Kajeka.Utils.UsageTracker;
+import org.biopax.paxtools.util.IllegalBioPAXArgumentException;
 
 /**
 *
@@ -990,9 +991,19 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     layoutProgressBarDialog.endProgressBar();
                     layoutProgressBarDialog.stopProgressBar();
                     blockAllAction.actionPerformed(unblockEvent);
-                    resetAllRelevantLoadingValues();
+                    resetAllRelevantLoadingValues(true);
 
                     throwableErrorMessageDialogReport(layoutFrame, memErr, "Out of Memory Error", file.getName());
+                }
+                catch(IllegalArgumentException exc) //thrown by PaxTools when OWL file is not valid
+                {
+                    if (DEBUG_BUILD) println("IllegalArgumentException with parsing the file in runLightWeightThread():\n" + exc.getMessage());
+                    layoutProgressBarDialog.endProgressBar();
+                    layoutProgressBarDialog.stopProgressBar();
+
+                    resetAllRelevantLoadingValues(false);
+
+                    throwableErrorMessageDialogReport(layoutFrame, exc, "Parse Error", file.getName());
                 }
                 catch (Exception exc)
                 {
@@ -1001,7 +1012,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     layoutProgressBarDialog.endProgressBar();
                     layoutProgressBarDialog.stopProgressBar();
                     blockAllAction.actionPerformed(unblockEvent);
-                    resetAllRelevantLoadingValues();
+                    resetAllRelevantLoadingValues(true);
 
                     throwableErrorMessageDialogReport(layoutFrame, exc, "File Load Error", file.getName());
                 }
@@ -1010,8 +1021,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     loadingFile = false;
                 }
             }
-
-
         }, "runParseProcess" );
 
         runLightWeightThread.setPriority(threadPriority);
@@ -1058,6 +1067,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         DataTypes prevDataType = DATA_TYPE;
         String prevCorrelationFile = CORRELATION_FILE;
         String prevCorrelationFilePath = CORRELATION_FILE_PATH;
+
         DATA_TYPE = DataTypes.NONE;
         CORRELATION_FILE = "";
         CORRELATION_FILE_PATH = "";
@@ -1218,6 +1228,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
                     disableAllActions();
 
+                    resetAllRelevantLoadingValues(true);
                     reasonForLoadFailure = correlationLoader.reasonForFailure;
                 }
             }
@@ -1505,7 +1516,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
         }
     }
 
-    private void resetAllRelevantLoadingValues()
+    /**
+     * Reset variables that have been populated when loading a file.
+     * @param disableAllActions - disable user interface components
+     */
+    private void resetAllRelevantLoadingValues(boolean disableAllActions)
     {
         DATA_TYPE = DataTypes.NONE;
         CORRELATION_FILE = "";
@@ -1515,7 +1530,10 @@ public final class LayoutFrame extends JFrame implements GraphListener
         setTitle(VERSION);
         INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
-        disableAllActions();
+        if(disableAllActions)
+        {
+            disableAllActions();
+        }
     }
 
     private void enableAllActions()
