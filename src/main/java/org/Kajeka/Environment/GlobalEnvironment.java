@@ -412,31 +412,6 @@ public final class GlobalEnvironment
     public static final PrefString CUSTOMIZE_NODE_NAMES_OPENGL_NAME_FONT_TYPE = new PrefString(OpenGLFontTypes.BITMAP_HELVETICA_12.toString(), "customize_node_names_opengl_name_font_type", SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS);
     public static final PrefInt CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE = new PrefInt(0, "customize_node_names_name_rendering_type", SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS);
 
-    public static final double MESSAGE_APPEARANCE_PROBABILITY = 0.75;
-    public static final Calendar CALENDAR = Calendar.getInstance();
-    public static final String[] ALL_EXIT_MESSAGES = {
-                                                       "Rome wan't built in just one day.",
-                                                       "You have yet to disprove the existence of God.",
-                                                       "You may not have enough for a paper yet.",
-                                                       "Remember to have enough data analyzed for that conference that you intend to go.",
-                                                       "Maybe you need an extra cup of coffee instead before quitting.",
-                                                       "Maybe you need an extra cup of tea instead before quitting.",
-                                                       "You haven't maxed out your graphics card with your data yet.",
-                                                       "You haven't submitted a Network of the Month yet.",
-                                                       "Chances are that you haven't won a Nobel Prize yet.",
-                                                       "Have you seen your graph pulsate today?",
-                                                       "Have you tried your graph with the Gooch Shader?",
-                                                       "Have you tried your graph with the Lava Shader?",
-                                                       "Have you tried your graph with the Marble Shader?",
-                                                       "Have you tried your graph with the Glyphbombing Shader?",
-                                                       "A graph a day keeps the reviewers away.",
-                                                       "A graph a day keeps the supervisors away.",
-                                                       "For full effects please visit the Trippy Â® Experience.",
-                                                       "Fancy some breakfast? Try our torus shape.",
-                                                       "Where are the donuts? Try all of our shapes.",
-                                                       "Cancer research needs your help."
-                                                   };
-
     static
     {
         ShaderLightingSFXs.ShaderTypes[] allShaderTypes = ShaderLightingSFXs.ShaderTypes.values();

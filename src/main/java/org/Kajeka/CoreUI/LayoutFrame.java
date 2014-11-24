@@ -125,7 +125,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private ExportCorrelationNodesEdgesTable exportCorrelationNodesEdgesTable = null;
     private ExportD3 exportD3 = null;
 
-    private ArrayList<Integer> allExitMessageIndices = null;
     private boolean navigationWizardShownOnce = false;
 
     /**
@@ -166,8 +165,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
-
-        allExitMessageIndices = createRandomIndexIntegerArrayList(ALL_EXIT_MESSAGES.length);
 
         fileOpenHistory = new FileOpenHistory(MAX_FILE_HISTORY);
         layoutProgressBarDialog = new LayoutProgressBarDialog(this);
@@ -1834,21 +1831,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         }
         else if (!nc.getVertices().isEmpty())
         {
-            String addedExitMessage = "";
-            if ( (java.lang.Math.random() >= MESSAGE_APPEARANCE_PROBABILITY) &&
-                    (CALENDAR.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) )
-            {
-                if ( allExitMessageIndices.isEmpty() )
-                {
-                    allExitMessageIndices = createRandomIndexIntegerArrayList(ALL_EXIT_MESSAGES.length);
-                }
-
-                int randomIndex = allExitMessageIndices.get(0);
-                allExitMessageIndices.remove(0);
-                addedExitMessage = ALL_EXIT_MESSAGES[randomIndex] + "\n";
-            }
-
-            if (JOptionPane.showConfirmDialog(this, addedExitMessage +
+            if (JOptionPane.showConfirmDialog(this,
                     "Do you really want to exit " + PRODUCT_NAME + "?",
                     "Exit " + PRODUCT_NAME, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
             {
