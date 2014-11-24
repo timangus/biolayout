@@ -111,7 +111,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private ActionEvent unblockEvent = null;
     private AbstractAction toolsMenuSavePreferencesAction = null;
     private AbstractAction toolsMenuRevertToDefaultPreferencesAction = null;
-    private AbstractAction helpMenuCheckForUpdatesAction = null;
 
     private FileDragNDrop fileDragNDrop = null;
     private CustomFileFilter fileFilter = null;
@@ -552,21 +551,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
         };
 
-
-        helpMenuCheckForUpdatesAction = new AbstractAction("Check For Updates")
-        {
-            /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
-            public static final long serialVersionUID = 111222333444555690L;
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                layoutOnlineServices.checkNowForApplicationUpdates(false);
-            }
-        };
-
         blockAllAction = new AbstractAction("Block All")
         {
             /**
@@ -700,7 +684,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setHelpMenuLicensesAction( layoutLicensesDialog.getLicensesAction() );
         layoutMenuBar.setHelpMenuOpenGLDriverCapsAction( layoutOpenGLDriverCapsDialog.getOpenGLDriverCapsAction() );
         layoutMenuBar.setHelpMenuJavaPlatformCapsAction( layoutJavaPlatformCapsDialog.getJavaPlatformCapsAction() );
-        layoutMenuBar.setHelpMenuCheckForUpdatesAction(helpMenuCheckForUpdatesAction);
         layoutMenuBar.setHelpMenuAboutAction( layoutAboutDialog.getAboutAction() );
 
         // Adds the 2D/3D menus in 2D/3D mode
@@ -802,7 +785,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         setVisible(true);
 
                         layoutOnlineServices.checkApplicationUsage();
-                        layoutOnlineServices.checkNowForApplicationUpdates(true);
                         if (!startWithAutomaticFileLoading)
                             checkToShowNavigationWizardOnStartup();
                     }
