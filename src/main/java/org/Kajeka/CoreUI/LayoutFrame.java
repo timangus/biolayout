@@ -38,13 +38,13 @@ import org.Kajeka.Simulation.Dialogs.*;
 import org.Kajeka.StaticLibraries.*;
 import org.Kajeka.Textures.*;
 import static org.Kajeka.StaticLibraries.EnumUtils.*;
-import static org.Kajeka.StaticLibraries.Random.*;
 import static org.Kajeka.Environment.AnimationEnvironment.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
 import org.Kajeka.Utils.ToolbarLayout;
+import org.Kajeka.Utils.UsageTracker;
 
 /**
 *
@@ -100,6 +100,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private LayoutOpenGLDriverCapsDialog layoutOpenGLDriverCapsDialog = null;
     private LayoutJavaPlatformCapsDialog layoutJavaPlatformCapsDialog = null;
     private LayoutOnlineServices layoutOnlineServices = null;
+    private UsageTracker usageTracker;
 
     private AbstractAction fileMenuOpenAction = null;
     private AbstractAction fileMenuExitAction = null;
@@ -171,6 +172,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutNavigationWizardDialog = new LayoutNavigationWizardDialog(this);
         layoutTipOfTheDayDialog = new LayoutTipOfTheDayDialog(this);
         layoutOnlineServices = new LayoutOnlineServices(this);
+        usageTracker = new UsageTracker();
 
         sleepMaxTime(prevTimeInMSecs);
         prevTimeInMSecs = System.nanoTime() / 1000000;
@@ -781,6 +783,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     {
                         setVisible(true);
 
+                        usageTracker.log("open");
                         layoutOnlineServices.checkApplicationUsage();
                         if (!startWithAutomaticFileLoading)
                             checkToShowNavigationWizardOnStartup();
@@ -1027,8 +1030,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         boolean isNotSkipped = true; // so as to avoid parsing files and not updating the GUI
         boolean reachedRebuildNetwork = false;
         CoreParser parser = null;
-        String fileName = file.getAbsolutePath();
-        String fileExtension = fileName.substring( fileName.lastIndexOf(".") + 1, fileName.length() ).toUpperCase(); // tolerance to upper/lowercase mix-ups
+        String absFileName = file.getAbsolutePath();
+        String fileName = file.getName();
+        String fileExtension = absFileName.substring( absFileName.lastIndexOf(".") + 1, absFileName.length() ).toUpperCase(); // tolerance to upper/lowercase mix-ups
         DataTypes prevDataType = DATA_TYPE;
         String prevCorrelationFile = CORRELATION_FILE;
         String prevCorrelationFilePath = CORRELATION_FILE_PATH;
@@ -1466,6 +1470,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if (!nc.getHasStandardPetriNetTransitions() || initCheckToShowNavigationWizardOnStartup)
             checkToShowNavigationWizardOnStartup();
 
+        usageTracker.log(fileName + ",Nodes:," + nc.getNumberOfVertices() +
+                ",Edges:," + nc.getNumberOfEdges() + "," + DATA_TYPE);
+
         //if BioPAX network, display the class viewer
         if(DATA_TYPE == DataTypes.OWL)
         {
@@ -1843,6 +1850,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
         {
             LayoutPreferences.getLayoutPreferencesSingleton().savePreferences();
         }
+
+        usageTracker.log("close");
+        usageTracker.upload();
 
         fileDragNDrop.remove(graph, true);
         this.dispose();

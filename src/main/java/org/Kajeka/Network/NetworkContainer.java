@@ -351,6 +351,11 @@ public abstract class NetworkContainer
         return verticesMap.values();
     }
 
+    public int getNumberOfEdges()
+    {
+        return edges.size();
+    }
+
     public ArrayList<Edge> getEdges()
     {
         return edges;
