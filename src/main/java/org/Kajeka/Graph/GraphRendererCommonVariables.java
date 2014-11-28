@@ -12,6 +12,7 @@ import org.Kajeka.Graph.ActiveRendering.*;
 import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.Graph.Selection.*;
 import org.Kajeka.Network.*;
+import org.biopax.paxtools.model.level3.Entity;
 
 /**
 *
@@ -353,6 +354,4 @@ final class GraphRendererCommonVariables // package access
         visibleNodes = new HashSet<GraphNode>();
         visibleEdges = new HashSet<GraphEdge>();
     }
-
-
 }

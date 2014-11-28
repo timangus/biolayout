@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.*;
 import org.Kajeka.Network.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
+import org.biopax.paxtools.model.level3.Entity;
 
 /**
 *
@@ -201,6 +202,7 @@ public final class LayoutClasses
     }
 
     private static VertexClassColorAssigner vcca = new VertexClassColorAssigner();
+
     public static void resetVertexClassColorAssigner()
     {
         vcca.reset();
@@ -210,4 +212,5 @@ public final class LayoutClasses
     {
         return vcca;
     }
+
 }

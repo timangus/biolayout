@@ -1,6 +1,5 @@
 package org.Kajeka.Network;
 
-import java.awt.*;
 import java.util.*;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.CoreUI.Dialogs.*;
