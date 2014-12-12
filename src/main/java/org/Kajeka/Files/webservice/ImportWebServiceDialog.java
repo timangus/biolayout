@@ -67,7 +67,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -100,6 +99,7 @@ import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 import org.Kajeka.CoreUI.LayoutFrame;
 import org.Kajeka.Environment.DataFolder;
+import static org.Kajeka.Environment.GlobalEnvironment.ICON_IMAGE;
 import org.apache.commons.io.FileUtils;
 import org.biopax.paxtools.io.BioPAXIOHandler;
 import org.biopax.paxtools.io.SimpleIOHandler;
@@ -125,7 +125,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
     public static final String DATASOURCE_HUMANCYC = "humancyc";            //HumanCyc
     public static final String DATASOURCE_HPRD = "hprd";                    //HPRD
     public static final String DATASOURCE_PANTHER = "panther_human";        //PANTHER Pathway
-    
+
     //new datasources for Pathway Commons v5
     public static final String DATASOURCE_DIP = "dip_human";                        //Database of Interacting Proteins
     public static final String DATASOURCE_BIOGRID = "biogrid_human";                //BioGRID
@@ -133,11 +133,11 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
     public static final String DATASOURCE_INTACT_COMPLEX = "intact_complex_human";  //IntAct Complex
     public static final String DATASOURCE_BIND = "bind_human";                      //BIND
     public static final String DATASOURCE_CORUM = "corum_human";                     //CORUM
-    
+
     public static final String COMMAND_TOP_PATHWAYS = "top_pathways";
     public static final String COMMAND_SEARCH = "search";
     public static final String COMMAND_GET = "get";
-    
+
     /**
      * Timeout for web service search operation in seconds
      */
@@ -147,14 +147,14 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
      * Timeout for web service get operation in seconds
      */
     public static final int TIMEOUT_GET = 60;
-    
+
     /**
      * Preferred width in pixels.
      */
     public static final int DIALOG_WIDTH = 888;
-    
+
     public static final String BIOPAX_FILE_EXTENSION = ".owl";
-    
+
     private JButton nextButton, previousButton;
     private final JButton searchButton, cancelButton, stopButton, openButton;
     private final JButton advancedExecuteButton, advancedStopButton, advancedCancelButton, advancedRemoveButton, advancedClearButton;
@@ -166,44 +166,44 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
     private final JCheckBox allDatasourceCheckBox, nameCheckBox;
     private final Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     private final Cursor defaultCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
-    
+
     private final JEditorPane editorPane;
     private JTable table; //search results table
-    private JTable advancedTable;
-    private final DefaultTableModel model; 
-    private DefaultTableModel advancedModel; 
+    private final JTable advancedTable;
+    private final DefaultTableModel model;
+    private DefaultTableModel advancedModel;
     private final JTabbedPane tabbedPane;
-    
+
     private JRadioButton getRadio = new JRadioButton("Get", true); //default option
     private JRadioButton nearestNeighborhoodRadio = new JRadioButton("Nearest Neighborhood");
     private JRadioButton commonStreamRadio = new JRadioButton("Common Stream");
     private JRadioButton pathsBetweenRadio = new JRadioButton("Paths Between");
     private final JRadioButton pathsFromToRadio = new JRadioButton("Paths From To");
-        
+
     private final JRadioButton downstreamRadio  = new JRadioButton("Downstream");
     private final JRadioButton upstreamRadio = new JRadioButton("Upstream");
     private final JRadioButton bothRadio = new JRadioButton("Both");
-  
+
     ButtonGroup queryTypeGroup = new ButtonGroup();
     ButtonGroup directionGroup = new ButtonGroup();
-        
+
     private List<SearchHit> searchHits; //retrieved search hits for current page
     private LinkedHashSet<SearchHit> advancedSearchHits; //search hits added to advanced tab, Set stops adding duplicates
     private List<List<SearchHit>> allPages; //list of lists to cache search pages
-    
+
     private int currentPage;
     private int maxHitsPerPage;
     private int totalHits; //total number of search searchQuery matches
-    private final LinkedHashMap<JCheckBox, String> datasourceDisplayCommands;// organismDisplayCommands;  
+    private final LinkedHashMap<JCheckBox, String> datasourceDisplayCommands;// organismDisplayCommands;
     private final Map <SearchHit, Integer> hitInteractionCountMap; //map of search hitd to the number of interactions
-    
+
     //search form values entered by user
     private String networkType = ""; //stores selected value of networkTypeCombo when search is run
     private String searchTerm = "";
-    public static final String HOMO_SAPIENS = "9606";
+    public static final String HOMO_SAPIENS = "9606"; //species ID for human
     private Set<String> organismSet;
     private Set<String> datasourceSet;
-    
+
     /**
      * Maps search hit URI of database to display name. Map contents are immutable.
      */
@@ -214,32 +214,32 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         .put(DATASOURCE_HUMANCYC, "HumanCyc")
         .put(DATASOURCE_HPRD , "HPRD")
         .put(DATASOURCE_PANTHER, "PANTHER")
-        
+
         .put(DATASOURCE_DIP, "DIP")
         .put(DATASOURCE_BIOGRID, "BioGRID")
-        .put(DATASOURCE_INTACT, "IntAct")    
+        .put(DATASOURCE_INTACT, "IntAct")
         .put(DATASOURCE_INTACT_COMPLEX, "IntAct Complex")
         .put(DATASOURCE_BIND, "BIND")
         .put(DATASOURCE_CORUM, "CORUM")
         .build();
 
     /**
-     * Map of NCBI organism ID to species name. Not immutable so we can add new species from NCBI web service. 
+     * Map of NCBI organism ID to species name. Not immutable so we can add new species from NCBI web service.
      * Common species hard coded to avoid unnecessary web service calls. Map is final but contents are not!
      * NB this was used with previous version of Pathway Commons which stored species as a link to identifiers.org
      */
-    
+
     private static final Map<String, String> organismIdNameMap = new HashMap<String, String>();
     static
     {
-        organismIdNameMap.put("9606", "Homo sapiens");
+        organismIdNameMap.put(HOMO_SAPIENS, "Homo sapiens");
         organismIdNameMap.put("11676", "Human immunodeficiency virus 1");
         organismIdNameMap.put("10090", "Mus musculus");
         organismIdNameMap.put("10116", "Rattus norvegicus");
     }
-    
+
     /**
-     * Map of Pathway Commons organism URI to species name. 
+     * Map of Pathway Commons organism URI to species name.
      * The URI is a link to a BioPAX document containing BioSource on Pathway Commons.
      * Species name is derived from BioSource and stored in the map to avoid repeated lookups.
      */
@@ -249,43 +249,44 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
     private GetWorker getWorker = null; //GET operation concurrent task runner
     private CPathQuery<SearchResponse> searchQuery; //query for top pathways and search
     private CPathQuery cPathQuery;
-    
+
     private static final Joiner commaJoiner = Joiner.on(',').skipNulls(); //for creating comma-separated strings
 
     /**
      * Name of directory where files are downloaded from the web service.
      */
-    public static final String DIRECTORY = "import";   
-    
+    public static final String DIRECTORY = "import";
+
     /**
      * Title of Top Pathways combo box item for display.
      */
-    public static final String TOP_PATHWAYS = "Top Pathways"; 
-    
+    public static final String TOP_PATHWAYS = "Top Pathways";
+
     /**
      * Constructor for search dialog.
      * @param frame
      * @param myMessage
-     * @param alwaysOnTop 
+     * @param alwaysOnTop
      */
-    public ImportWebServiceDialog(LayoutFrame frame, String myMessage, boolean alwaysOnTop) 
-    {        
+    public ImportWebServiceDialog(LayoutFrame frame, String myMessage, boolean alwaysOnTop)
+    {
         super();
-        
+
         setAlwaysOnTop(alwaysOnTop);
 
         hitInteractionCountMap = new HashMap<SearchHit, Integer>();
-        
+
         this.frame = frame;
         this.setTitle(myMessage);
-        
+        this.setIconImage(ICON_IMAGE);
+
         //search panel buttons
         searchButton = this.createJButton("Search", "Search Pathway Commons", false);
         cancelButton = this.createJButton("Close", "Close dialog", true); //cancel button
         stopButton = this.createJButton("Stop", "Stop Search", false); //stop button
         openButton = this.createJButton("Open", "Open network", false); //open button
         getRootPane().setDefaultButton(searchButton); //searches with enter key
-        
+
         //advanced panel buttons
         advancedExecuteButton = this.createJButton("Execute", "Execute query", false);
         advancedCancelButton = this.createJButton("Close", "Close dialog", true); //cancel button
@@ -294,55 +295,40 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         advancedClearButton = this.createJButton("Clear", "Remove all search hits", false);
 
         searchField = new JTextField(70);
-        //organismField = new JTextField(35); //organism text field
-        
+
         //disable search button if search field has no text
-        searchField.getDocument().addDocumentListener(new DocumentListener() 
+        searchField.getDocument().addDocumentListener(new DocumentListener()
         {
             @Override
             public void changedUpdate(DocumentEvent e) {
               searchFieldChanged();
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
               searchFieldChanged();
             }
-            
+
             @Override
             public void insertUpdate(DocumentEvent e) {
               searchFieldChanged();
             }
-          });        
-                /*
-        organismDisplayCommands = new LinkedHashMap<JCheckBox, String>();
-        organismDisplayCommands.put(new JCheckBox("Human"), "9606");
-        organismDisplayCommands.put(new JCheckBox("Mouse"), "10090");
-        organismDisplayCommands.put(new JCheckBox("Fruit Fly"), "7227");
-        organismDisplayCommands.put(new JCheckBox("Rat"), "10116");
-        organismDisplayCommands.put(new JCheckBox("C. elegans"), "6239");
-        organismDisplayCommands.put(new JCheckBox("S. cervisiae"), "4932");
-        
-        anyOrganismCheckBox = new JCheckBox("Any");
-        anyOrganismCheckBox.setSelected(true);
-        anyOrganismCheckBox.addActionListener(this);
-        enableDisableOrganism(true);
-        */
-        
+          });
+
         //Map checkboxes to web service commands
         datasourceDisplayCommands = new LinkedHashMap<JCheckBox, String>();
-        for (Map.Entry<String, String> entry : DATABASE_URI_DISPLAY.entrySet()) 
+        for (Map.Entry<String, String> entry : DATABASE_URI_DISPLAY.entrySet())
         {
             String commandString = entry.getKey();
             String displayString = entry.getValue();
             datasourceDisplayCommands.put(new JCheckBox(displayString), commandString);
         }
-        
+
         allDatasourceCheckBox = new JCheckBox("All");
         allDatasourceCheckBox.setSelected(true);
         allDatasourceCheckBox.addActionListener(this);
         enableDisableDatasource(true);
-        
+
         //Network Type Drop Down
         networkTypeCombo = new JComboBox<String>();
         networkTypeCombo.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "Pathway", "Interaction", "PhysicalEntity", "EntityReference", TOP_PATHWAYS }));
@@ -355,11 +341,11 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
              * The Top Pathways query does not take a search term.
              * @param event - the state change event
              */
-            public void itemStateChanged(ItemEvent event) 
+            public void itemStateChanged(ItemEvent event)
             {
                 JComboBox localCombo = (JComboBox)event.getSource();
-                String itemString = localCombo.getSelectedItem().toString();  
-                if (event.getStateChange() == ItemEvent.SELECTED) 
+                String itemString = localCombo.getSelectedItem().toString();
+                if (event.getStateChange() == ItemEvent.SELECTED)
                 {
                    if(itemString.equals(TOP_PATHWAYS))
                    {
@@ -371,43 +357,43 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                    }
                    else
                    {
-                     searchField.setEnabled(true);                   
+                     searchField.setEnabled(true);
                      nameCheckBox.setSelected(true);
-                     nameCheckBox.setEnabled(true);                     
+                     nameCheckBox.setEnabled(true);
                      if(searchField.getText() == null || searchField.getText().isEmpty())
                          searchButton.setEnabled(false);
                    }
                 }
-            }       
+            }
         });
 
         nameCheckBox = new JCheckBox("Name", true);
         nameCheckBox.setToolTipText("Restrict search to name field only");
-        
+
         getRadio.setToolTipText("Retrieve multiple search hits as a single network graph");
         nearestNeighborhoodRadio.setToolTipText("Search neighborhood of a given source set of nodes");
         commonStreamRadio.setToolTipText("Search common downstream or common upstream of a specified set of entities based on the given directions");
         pathsBetweenRadio.setToolTipText("Find the paths between specific source set of states or entities");
         pathsFromToRadio.setToolTipText("Find the paths from a specific source set of states or entities (highlighted rows) to a specific target set of states or entities (non-highlighted rows)");
-        
+
         upstreamRadio.setToolTipText("Graph search direction upstream");
         downstreamRadio.setToolTipText("Graph search direction downstream");
         bothRadio.setToolTipText("Graph search directions upstream and downstream");
 
         /**********add form fields******************/
-        
+
         //create Search panel
         SearchHitsPanel searchPanel = new SearchHitsPanel();
-        searchPanel.add(createFieldPanel(), BorderLayout.PAGE_START);   
-        
+        searchPanel.add(createFieldPanel(), BorderLayout.PAGE_START);
+
         //create panel for status message and stats
         JPanel hitsPanel = createHitsPanel();
         getContentPane().add(hitsPanel, BorderLayout.PAGE_END);
-        
+
         //create HTML editor panes
-        editorPane = createEditorPane(); 
+        editorPane = createEditorPane();
         advancedSearchHits = new LinkedHashSet<SearchHit>();
-        
+
         hitInteractionCountMap.clear();
 
         //create results table //create table model
@@ -417,9 +403,9 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
 
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.addMouseListener(new MouseAdapter() //double click adds search hit to Advanced
-        { 
+        {
             @Override
-            public void mouseClicked(MouseEvent e) 
+            public void mouseClicked(MouseEvent e)
             {
                 if (e.getClickCount() == 2) //open network
                 {
@@ -428,9 +414,9 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     SearchHit hit = searchHits.get(modelRow); //get SearchHit that relates to values in table model row (converted from sorted view row index)
                     if(advancedSearchHits.add(hit))
                     {
-                        advancedModel.addRow(new Object[]{hit.getName(), joinDatabases(hit), hit.getBiopaxClass(), hit.getPathway().size()});  
-                        //int lastRow = advancedTable.convertRowIndexToView(advancedModel.getRowCount() - 1);                        
-                        statusLabel.setText("Added " + hit.getName() + " to Advanced");                        
+                        advancedModel.addRow(new Object[]{hit.getName(), joinDatabases(hit), hit.getBiopaxClass(), hit.getPathway().size()});
+                        //int lastRow = advancedTable.convertRowIndexToView(advancedModel.getRowCount() - 1);
+                        statusLabel.setText("Added " + hit.getName() + " to Advanced");
                     }
                     else //unable to add because search hit already in Set
                     {
@@ -439,10 +425,10 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 }
             }
          });
-        
+
         //display search hit info when row selected
-        table.getSelectionModel().addListSelectionListener(new HitListSelectionListener());        
-        
+        table.getSelectionModel().addListSelectionListener(new HitListSelectionListener());
+
         //set column widths
         table.getColumn(colHeadings[0]).setPreferredWidth(400);
         table.getColumn(colHeadings[1]).setPreferredWidth(75);
@@ -453,11 +439,11 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         JScrollPane editorScrollPane = new JScrollPane(editorPane);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tableScrollPane, editorScrollPane);
         searchPanel.add(splitPane ,BorderLayout.CENTER);
-        
+
         //create Advanced panel
         JPanel advancedPanel = new SearchHitsPanel(); //advanced tab panel for graph search
         advancedPanel.add(createAdvancedFieldPanel(), BorderLayout.PAGE_START);
-        
+
         advancedModel = createHitsModel(colHeadings);
         advancedTable = new ZebraJTable(advancedModel, colHeadings);
 
@@ -465,15 +451,15 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         advancedTable.getColumn(colHeadings[0]).setPreferredWidth(DIALOG_WIDTH - 275);
         advancedTable.getColumn(colHeadings[1]).setPreferredWidth(75);
         advancedTable.getColumn(colHeadings[2]).setPreferredWidth(125);
-        
+
         advancedTable.getSelectionModel().addListSelectionListener(new AdvancedHitListSelectionListener());
-        
+
         //listener to disable radio buttons in advanced table if no data
-        advancedModel.addTableModelListener(new TableModelListener() 
+        advancedModel.addTableModelListener(new TableModelListener()
         {
             @Override
             public void tableChanged(TableModelEvent e) {
-                if (e.getType() == TableModelEvent.INSERT) 
+                if (e.getType() == TableModelEvent.INSERT)
                 {
                     if(advancedModel.getRowCount() >= 1) //first row, set up for get query
                     {
@@ -482,7 +468,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                         commonStreamRadio.setEnabled(true);
                         pathsBetweenRadio.setEnabled(true);
                         enableAdvancedBySelection(); //enable remove/pathsfromto according to row selection
-                        
+
                         enableAll(directionGroup, false);
                         advancedExecuteButton.setEnabled(true);
                         advancedStopButton.setEnabled(false);
@@ -502,23 +488,22 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     }
                 }
             }
-        });        
+        });
 
         JScrollPane advancedTableScrollPane = new JScrollPane(advancedTable);
-        advancedPanel.add(advancedTableScrollPane, BorderLayout.CENTER);       
-        
+        advancedPanel.add(advancedTableScrollPane, BorderLayout.CENTER);
+
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Search", searchPanel);
         tabbedPane.addTab("Advanced", advancedPanel);
-        getContentPane().add(tabbedPane, BorderLayout.CENTER);    
-        
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
+
         pack();
-        splitPane.setDividerLocation(0.75); //needs to be after pack() or split is reset to 50% 
-        //advancedSplitPane.setDividerLocation(0.75); //needs to be after pack() or split is reset to 50% 
+        splitPane.setDividerLocation(0.75); //needs to be after pack() or split is reset to 50%
         setLocationRelativeTo(frame);
         setVisible(true);
     }
-    
+
     private JPanel createAdvancedFieldPanel()
     {
         queryTypeGroup.add(getRadio);
@@ -526,11 +511,11 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         queryTypeGroup.add(commonStreamRadio);
         queryTypeGroup.add(pathsBetweenRadio);
         queryTypeGroup.add(pathsFromToRadio);
-        
+
         directionGroup.add(downstreamRadio);
         directionGroup.add(upstreamRadio);
         directionGroup.add(bothRadio);
-        
+
         JPanel queryTypePanel = new JPanel();
         queryTypePanel.setBorder(BorderFactory.createTitledBorder("BioPAX Query Type"));
         queryTypePanel.add(getRadio);
@@ -542,25 +527,25 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         //set initial state for radio buttons - all disabled until search hits added
         enableAll(queryTypeGroup, false);
         enableAll(directionGroup, false);
-        
+
         JPanel directionPanel = new JPanel();
         directionPanel.add(downstreamRadio);
         directionPanel.add(upstreamRadio);
         directionPanel.add(bothRadio);
         directionPanel.setBorder(BorderFactory.createTitledBorder("Direction"));
-        
+
         JPanel advancedFieldPanel = new JPanel();
         advancedFieldPanel.setLayout(new MigLayout("fill"));
         advancedFieldPanel.add(queryTypePanel, "wrap, span");
         advancedFieldPanel.add(directionPanel, "Wrap");
-                
+
         advancedFieldPanel.add(advancedExecuteButton, "tag right, span, split 5, sizegroup bttn");
         advancedFieldPanel.add(advancedStopButton, "tag right, sizegroup bttn");
         advancedFieldPanel.add(advancedCancelButton, "tag right, sizegroup bttn");
-        
+
         advancedFieldPanel.add(advancedRemoveButton, "tag left, sizegroup bttn");
         advancedFieldPanel.add(advancedClearButton, "tag left, sizegroup bttn");
-        
+
         ItemListener itemListener = new ItemListener() //listener for get, pathsbetween, pathsfromto
         {
             @Override
@@ -572,14 +557,14 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 else if (e.getStateChange() == ItemEvent.DESELECTED) {
                     enableAll(directionGroup, true);
                 }
-            }            
+            }
         };
-        
+
         //create listeners to conditionally enable radio buttons
         getRadio.addItemListener(itemListener);
-        pathsBetweenRadio.addItemListener(itemListener);        
+        pathsBetweenRadio.addItemListener(itemListener);
         pathsFromToRadio.addItemListener(itemListener);
-        
+
         nearestNeighborhoodRadio.addItemListener(new ItemListener()
         {
             @Override
@@ -587,9 +572,9 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     bothRadio.setSelected(true);
                 }
-            }            
+            }
         });
-        
+
         commonStreamRadio.addItemListener(new ItemListener()
         {
             @Override
@@ -601,19 +586,19 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 else if (e.getStateChange() == ItemEvent.DESELECTED) {
                     enableAll(directionGroup, true);
                 }
-            }            
-        });        
-        
+            }
+        });
+
         return advancedFieldPanel;
     }
-    
-    private void searchFieldChanged() 
+
+    private void searchFieldChanged()
     {
        if (searchField.getText().equals(""))
        {
          searchButton.setEnabled(false);
        }
-       else 
+       else
        {
          searchButton.setEnabled(true);
       }
@@ -622,56 +607,36 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             /**
      * Utility method to enable/disable all buttons in a ButtonGroup.
      * @param group
-     * @param enabled 
+     * @param enabled
      */
     public static void enableAll(ButtonGroup group, boolean enabled)
     {
         Enumeration<AbstractButton> elements = group.getElements();
-        while (elements.hasMoreElements()) 
+        while (elements.hasMoreElements())
         {
           AbstractButton button = elements.nextElement();
           button.setEnabled(enabled);
         }
     }
-    
+
     private JPanel createFieldPanel()
     {
         //search term label
-        JLabel searchLabel = new JLabel("Keywords", JLabel.TRAILING);    
-        searchLabel.setLabelFor(searchField);  
+        JLabel searchLabel = new JLabel("Keywords", JLabel.TRAILING);
+        searchLabel.setLabelFor(searchField);
 
-        /*
-        JLabel organismLabel = new JLabel("Organism", JLabel.TRAILING);
-        organismLabel.setLabelFor(organismField);  
-        */
         JLabel datasourceLabel = new JLabel("Data Source", JLabel.TRAILING);
 
-        JLabel networkTypeLabel = new JLabel("Type", JLabel.TRAILING);    
+        JLabel networkTypeLabel = new JLabel("Type", JLabel.TRAILING);
         networkTypeLabel.setLabelFor(networkTypeCombo);
 
         JPanel fieldPanel = new JPanel();
         fieldPanel.setLayout(new MigLayout());
         fieldPanel.add(searchLabel, "align label");
         fieldPanel.add(searchField, "");
-        
+
         fieldPanel.add(nameCheckBox, "wrap");
 
-//        fieldPanel.add(organismLabel, "align label");
-        //organism checkboxes
-        /*
-        JPanel organismPanel = new JPanel();
-        organismPanel.setLayout(new BoxLayout(organismPanel, BoxLayout.LINE_AXIS));
-        for(JCheckBox checkBox: organismDisplayCommands.keySet())
-        {
-            organismPanel.add(checkBox);
-        }        
-        organismPanel.add(anyOrganismCheckBox);        
-        fieldPanel.add(organismPanel, "wrap");
-        */
-        /*
-        fieldPanel.add(new JLabel(), "align label"); //dummy label for empty cell
-        fieldPanel.add(organismField, "wrap, span");                
-        */
         //datasource checkboxes
         fieldPanel.add(datasourceLabel);
         JPanel datasourcePanel = new JPanel();
@@ -693,11 +658,11 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         fieldPanel.add(stopButton, "tag right, sizegroup bttn");
         fieldPanel.add(openButton, "tag right, sizegroup bttn");
         fieldPanel.add(cancelButton, "tag right, sizegroup bttn");
-        
-        fieldPanel.setPreferredSize(new Dimension(DIALOG_WIDTH, 250));
+
+        fieldPanel.setPreferredSize(new Dimension(DIALOG_WIDTH, 200));
         return fieldPanel;
     }
-    
+
     private JPanel createHitsPanel()
     {
         //labels for search info
@@ -707,39 +672,39 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         // same font but bold
         Font font = numHitsLabel.getFont();
         Font boldFont = new Font(font.getFontName(), Font.BOLD, font.getSize());
-        numHitsLabel.setFont(boldFont);        
+        numHitsLabel.setFont(boldFont);
         numHitsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         retrievedLabel = new JLabel("Retrieved: 0");
         retrievedLabel.setFont(boldFont);
         retrievedLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
+
         currentPage = 0;
         pagesLabel = new JLabel("Page: " + currentPage);
         pagesLabel.setFont(boldFont);
         pagesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
+
         statusLabel = new JLabel("Ready");
         statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JPanel hitsPanel = new JPanel();
         hitsPanel.setLayout(new MigLayout());
-        
+
         //create next and previous buttons
         previousButton = this.createJButton("< Previous", "Return to previous page", false); //previous button
         nextButton = this.createJButton("Next >", "Next page", false); //next button
         hitsPanel.add(previousButton, "span, split 2, center, sizegroup hbttn");
         hitsPanel.add(nextButton, "sizegroup hbttn, wrap");
-        
+
         hitsPanel.add(statusLabel, "span, align center, wrap");
         hitsPanel.add(numHitsLabel, "w 33%, sizegroup hits");
         hitsPanel.add(retrievedLabel, "w 33%, sizegroup hits");
-        hitsPanel.add(pagesLabel, "w 33%, sizegroup hits");        
-        
+        hitsPanel.add(pagesLabel, "w 33%, sizegroup hits");
+
         hitsPanel.setPreferredSize(new Dimension(DIALOG_WIDTH, 88));
         return hitsPanel;
     }
-    
+
     /**
      * Look up HOMO_SAPIENS scientific name on Pathway Commons.
      * Checks if URI has already been looked up.
@@ -762,8 +727,8 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             InputStream input = new URL(organismUri).openStream();
             BioPAXIOHandler handler = new SimpleIOHandler();
             Model bioSourceModel = handler.convertFromOWL(input); //construct object model from OWL from Pathway Commons
-            Set<BioSource> bioSourceSet; 
-            bioSourceSet = bioSourceModel.getObjects(BioSource.class);                    
+            Set<BioSource> bioSourceSet;
+            bioSourceSet = bioSourceModel.getObjects(BioSource.class);
             if(!bioSourceSet.isEmpty())
             {
                 BioSource bioSource = bioSourceSet.iterator().next();
@@ -773,44 +738,25 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         }
         return displayName;
     }
-    
+
     /**
      * Generate HTML String for SearchHit excerpt.
      * Looks up HOMO_SAPIENS name.
- Counts interactions.
+     * Counts interactions.
      * @param hit - the SearchHit to generate HTML for
      * @return the HTML String
      */
     private String generateExcerptHTML(SearchHit hit)
     {
+
         //construct HTML snippet of HOMO_SAPIENS scientific names
-        //REMOVED - all human data now
-        /*
-        List<String> organismIdList = hit.getOrganism();
-        String organismHTML = "<b>Organism:</b>";
-        
-        for(String organismUri : organismIdList)
-        {
-            try
-            {
-                String displayName = lookUpOrganismDisplayName(organismUri);
-                organismHTML = organismHTML 
-                        + "<br /><a href='" + organismUri + "'>" + displayName + "</a>";
-            }
-            catch(IOException e)
-            {
-                organismHTML = organismHTML 
-                    + "<p>Unknown Organism</p>";
-                logger.warning(e.getMessage());
-            }
-        }
-        */
-        
+        //organism rem - all human data now
         //count number of interactions for a pathway
-        
+
         //removed interaction count as hitting 5 query limit on Pathway Commons - new search hit count coming in PC v6
+        //TODO get interaction count from search hit in PC v6
         /*
-        String interactionsHTML = "";    
+        String interactionsHTML = "";
         if(networkType.equals("Pathway"))
         {
             //check if interaction count has been previously cached
@@ -841,75 +787,80 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             interactionsHTML += "<br />";
         }
         */
-        
+
         //display excerpt
         String uri = hit.getUri();
-        String abbreviatedUri = uri.substring(0, Math.min(uri.length(), 22)) + "..."; 
+        String abbreviatedUri = uri.substring(0, Math.min(uri.length(), 22)) + "...";
 
-        String excerptHTML = 
-                "<b>Name:</b><br />" 
+        String excerptHTML =
+                "<b>Name:</b><br />"
                 + hit.getName();
-        
+
         String excerptString = hit.getExcerpt();
         if(excerptString != null && !excerptString.isEmpty())
         {
             excerptHTML += ("<br /><b>Excerpt:</b><br />" + excerptString);
         }
-                
-        excerptHTML += ("<br />" 
+
+        excerptHTML += ("<br />"
          + "<b>URI: </b><br />"
          + "<a href='" + hit.getUri() + "'>" + abbreviatedUri + "</a>"
                 /*
-                + "<br />" 
+                + "<br />"
                 + interactionsHTML
-                + organismHTML
                 */
                 );
-        return excerptHTML;        
+        return excerptHTML;
     }
-    
+
     private ExcerptPane createEditorPane()
     {
         ExcerptPane excerptPane = new ExcerptPane();
         excerptPane.setText("<b>Excerpt:</b>");
-        
+
         //open system web browser on hyperlink click
-        excerptPane.addHyperlinkListener(new HyperlinkListener() 
+        excerptPane.addHyperlinkListener(new HyperlinkListener()
         {
             @Override
-            public void hyperlinkUpdate(HyperlinkEvent e) 
+            public void hyperlinkUpdate(HyperlinkEvent e)
             {
-                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) 
+                if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
                 {
-                    if(Desktop.isDesktopSupported()) 
+                    if(Desktop.isDesktopSupported())
                     {
                         try
                         {
-                            Desktop.getDesktop().browse(e.getURL().toURI());                            
+                            Desktop.getDesktop().browse(e.getURL().toURI());
                         }
                         catch(Exception exception)
                         {
-                            logger.warning("Cannot open web browser: " + exception.getMessage()); //TODO error alert                            
+                            logger.warning("Cannot open web browser: " + exception.getMessage()); //TODO error alert
                             statusLabel.setText("Unable to open web browser");
                         }
                     }
                 }
             }
         });
-        
+
         return excerptPane;
-        
     }
-    
+
+    /**
+     * Perform a traverse query to count the number of interactions in a search hit.
+     * NB Pathway Commons v6 has a search hit size measure to be used instead.
+     * @param hit - search hit
+     * @return number of interactions
+     * @throws CPathException
+     */
     private int traverseInteractions(SearchHit hit) throws CPathException
     {
-        
+
         int pathwayCount = hit.getPathway().size() + 1; //getPathway returns sub-pathways - does not include the top level pathway
         ArrayList<String> uriList = new ArrayList<String>(pathwayCount);
         uriList.add(hit.getUri());
         uriList.addAll(hit.getPathway());
 
-        //traverse all interactions for all pathways 
+        //traverse all interactions for all pathways
         CPathClient client = CPathClient.newInstance();
         CPathTraverseQuery traverseQuery = client.createTraverseQuery().sources(uriList).propertyPath("Pathway/pathwayComponent*:Interaction");
         HashSet<String> uniqueUriSet = new HashSet<String>(); //set of unique interaction URIs
@@ -921,40 +872,40 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         {
             List<TraverseEntry> traverseEntryList = traverseResponse.getTraverseEntry();
 
-            for (TraverseEntry traverseEntry : traverseEntryList) 
+            for (TraverseEntry traverseEntry : traverseEntryList)
             {
                 List<String> traverseEntryValues = traverseEntry.getValue();
                 uniqueUriSet.addAll(traverseEntryValues);
             }
-            return uniqueUriSet.size();       
+            return uniqueUriSet.size();
         }
     }
-    
+
     private static DefaultTableModel createHitsModel(String[] colHeadings)
     {
-        int numRows = 0;       
-        DefaultTableModel model = new DefaultTableModel(numRows, colHeadings.length) 
+        int numRows = 0;
+        DefaultTableModel model = new DefaultTableModel(numRows, colHeadings.length)
         {
             @Override
-            public boolean isCellEditable(int row, int column) 
-            {               
+            public boolean isCellEditable(int row, int column)
+            {
                return false; //all cells false
             }
-        };        
+        };
         model.setColumnIdentifiers(colHeadings);
         return model;
     }
-    
+
     private class HitListSelectionListener implements ListSelectionListener
     {
-        public void valueChanged(ListSelectionEvent e) 
+        public void valueChanged(ListSelectionEvent e)
         {
             if (e.getValueIsAdjusting()) return; //Ignore extra messages.
 
             openButton.setEnabled(true);
 
             ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-            if (!lsm.isSelectionEmpty()) 
+            if (!lsm.isSelectionEmpty())
             {
                 int selectedRow = lsm.getMinSelectionIndex();
                 SearchHit hit = searchHits.get(selectedRow);
@@ -963,7 +914,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             }
         }
     }
-    
+
     /**
      * Listener for selection/deselection of rows in Advanced table.
      */
@@ -986,7 +937,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             }
         }
     }
-    
+
     /**
      * Enable Advanced components when table rows are selected.
      */
@@ -997,35 +948,39 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         enable Paths From to
             if at least one row is selected
             and not all rows are selected
-        disable PathsFromTo 
+        disable PathsFromTo
             if all rows are selected (i.e. all froms and no tos)
         */
-        if(advancedTable.getSelectedRowCount() > 0) 
+        if(advancedTable.getSelectedRowCount() > 0)
         {
             advancedRemoveButton.setEnabled(true);
             if(advancedTable.getSelectedRowCount() < advancedTable.getRowCount())
             {
-                pathsFromToRadio.setEnabled(true);            
+                pathsFromToRadio.setEnabled(true);
             }
             else
             {
-                pathsFromToRadio.setEnabled(false);            
+                pathsFromToRadio.setEnabled(false);
             }
         }
     }
-    
+
+    /**
+     * Clear search hits JTable.
+     * @param clearAdvanced - also clear advanced search results JTable
+     */
     private void clearSearchResults(boolean clearAdvanced)
     {
         model.setRowCount(0); //clear previous search results
         editorPane.setText(""); //clear excerpt pane
-        
+
         if(clearAdvanced)
         {
             advancedModel.setRowCount(0); //clear previous search results
             advancedSearchHits.clear(); //empty the list of added search hits
         }
     }
-    
+
     /**
      * Get a BioPAX OWL file from Pathway Commons and display network.
      * Gets URI of selected search hit in table
@@ -1048,12 +1003,12 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         {
             hitName = hit.getBiopaxClass();
         }
-        
+
         String fileName = hitName + BIOPAX_FILE_EXTENSION; //name of .owl file to be created
-        
+
         CPathClient client = CPathClient.newInstance();
         String[] uriArray = {uriString};
-        
+
         if(networkType.equals("Pathway") || networkType.equals(TOP_PATHWAYS)) //just get the pathway itself
         {
             cPathQuery = client.createGetQuery().sources(uriArray);
@@ -1067,22 +1022,22 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         getWorker = new GetWorker(fileName);
         getWorker.execute();
     }
-    
+
     private void openAdvancedNetwork()
     {
         CPathClient client = CPathClient.newInstance();
-        
+
         //String[] allUri = new String[advancedSearchHits.size()]; //array of all search hit URIs in advanced table
-        
+
         HashSet<String> allUri = new HashSet<String>(advancedSearchHits.size()); //all selected search hit URIs
-        
+
         //PATHSFROMTO query parameters
         HashSet<String> from = new HashSet<String>(); //all selected search hit URIs
-        HashSet<String> to = new HashSet<String>(); //all unselected search hit URIs        
-        
+        HashSet<String> to = new HashSet<String>(); //all unselected search hit URIs
+
         // convert selected row indices to those of the underlying TableModel
         int[] selection = advancedTable.getSelectedRows();
-        for (int i = 0; i < selection.length; i++) 
+        for (int i = 0; i < selection.length; i++)
         {
              selection[i] = table.convertRowIndexToModel(selection[i]);
         }
@@ -1104,7 +1059,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             }
             i++;
         }
-        
+
         String fileName = "Advanced" + BIOPAX_FILE_EXTENSION; //default name of .owl file to be created
 
         //set up the get or graph query
@@ -1116,11 +1071,11 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
            getWorker.execute();
         }
         else //create a graph query
-        {   
+        {
             CPathGraphQuery graphQuery = client.createGraphQuery();
             //add kind parameter
             if(nearestNeighborhoodRadio.isSelected())
-            {                
+            {
                 /* Searches the neighborhood of given source set of nodes. Any direction. */
                 graphQuery = graphQuery.sources(allUri).kind(GraphType.NEIGHBORHOOD);
                 fileName = GraphType.NEIGHBORHOOD.toString();
@@ -1141,17 +1096,17 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     graphQuery = graphQuery.direction(CPathClient.Direction.BOTHSTREAM);
                     fileName = fileName + "_" + CPathClient.Direction.BOTHSTREAM.toString();
                 }
-            
+
             }
             else if(commonStreamRadio.isSelected())
             {
                 /* Searches common downstream or common upstream of a specified set of entities
-                based on the given direction within the boundaries of a specified length limit. 
+                based on the given direction within the boundaries of a specified length limit.
                 Direction may be either upstream or downstream.
                 */
-                graphQuery = graphQuery.sources(allUri).kind(GraphType.COMMONSTREAM);            
+                graphQuery = graphQuery.sources(allUri).kind(GraphType.COMMONSTREAM);
                 fileName = GraphType.COMMONSTREAM.toString();
-            
+
                 //add direction parameter
                 if(upstreamRadio.isSelected())
                 {
@@ -1168,14 +1123,14 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             {
                 /* Finds the paths between the specified source set of states within the boundaries of a specified length limit.
                 Direction not applicable. */
-                graphQuery = graphQuery.sources(allUri).kind(GraphType.PATHSBETWEEN);            
+                graphQuery = graphQuery.sources(allUri).kind(GraphType.PATHSBETWEEN);
                 fileName = GraphType.PATHSBETWEEN.toString();
             }
             else if(pathsFromToRadio.isSelected())
             {
                 /* Finds the paths between the specified source set of states within the boundaries of a specified length limit.
                     Direction not applicable.   */
-                graphQuery = graphQuery.sources(from).targets(to).kind(GraphType.PATHSFROMTO);   
+                graphQuery = graphQuery.sources(from).targets(to).kind(GraphType.PATHSFROMTO);
                 fileName = GraphType.PATHSFROMTO.toString();
             }
 
@@ -1185,7 +1140,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             getWorker.execute();
         }
     }
-    
+
     /**
      * Removes selected rows from the Advanced tab table.
      */
@@ -1198,13 +1153,13 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         {
             //convert table row index to model index to safeguard against user sorting columns
             selection[i] = advancedTable.convertRowIndexToModel(selection[i]);
-            advancedModel.removeRow(selection[i]); 
+            advancedModel.removeRow(selection[i]);
         }
         Arrays.sort(selection);
 
         //remove corresponding search hits
         int i = 0;
-        int selectionIndex = 0;        
+        int selectionIndex = 0;
         Iterator<SearchHit> iterator = advancedSearchHits.iterator();
         while(iterator.hasNext())
         {
@@ -1217,7 +1172,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             i++;
         }
     }
-    
+
     /**
      * Clears advanced table model and advanced search hits.
      */
@@ -1237,17 +1192,17 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
          * Constructor
          * @param fileName - name of file to save BioPAX data in
          */
-        public GetWorker(String fileName) 
+        public GetWorker(String fileName)
         {
             super();
             fName = fileName;
         }
-        
+
         /**
          * The name of the BioPAX OWL file to be saved in sub-directory DIRECTORY of the application directorY
          */
         private String fName;
-        
+
         @Override
         /**
          * Perform GET operation on Pathway Commons web service to retrieve BioPAX file
@@ -1258,9 +1213,9 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             SwingWorker actualWorker = new SwingWorker<String, Void>() //anonymous inner worker to handle timeout for GET operation
             {
                  @Override
-                protected String doInBackground() throws Exception 
+                protected String doInBackground() throws Exception
                 {
-                    statusLabel.setText("Downloading...");              
+                    statusLabel.setText("Downloading...");
                     ImportWebServiceDialog.this.getRootPane().setCursor(waitCursor);
 
                     previousButton.setEnabled(false);
@@ -1269,20 +1224,20 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
 
                     stopButton.setEnabled(true);
                     openButton.setEnabled(false);
-                    
+
                     advancedExecuteButton.setEnabled(false);
                     advancedStopButton.setEnabled(true);
-                    
+
                     String responseString = cPathQuery.stringResult(OutputFormat.BIOPAX);
                     return responseString;
                 }
-                
+
             };
             actualWorker.execute();
             String responseString = "";
             try
             {
-                responseString = (String)actualWorker.get(TIMEOUT_GET, TimeUnit.SECONDS); //TODO constant 
+                responseString = (String)actualWorker.get(TIMEOUT_GET, TimeUnit.SECONDS); //TODO constant
             }
             catch(Exception exception)
             {
@@ -1293,14 +1248,14 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 {
                     exception = cause;
                 }
-                throw exception;                
+                throw exception;
             }
-            
+
             if(responseString == null || responseString.isEmpty()) //no data returned for query - do not create a file
             {
                 throw new PathwayCommonsException("Empty query results returned from Pathway Commons");
             }
-            
+
             //create directory to store downloaded file
             File importDir = new File(DataFolder.get(), DIRECTORY);
             if(!importDir.exists())
@@ -1312,15 +1267,15 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             File importFile = new File(importDir, fName);
             logger.fine("Writing to file " + importFile);
             FileUtils.writeStringToFile(importFile, responseString); //throws IOException
-            statusLabel.setText("Success! Downloaded file: " + fName);      
+            statusLabel.setText("Success! Downloaded file: " + fName);
             return importFile;
         }
-       
+
         @Override
         /**
          * Save OWL file, parse and display graph
          */
-        protected void done() 
+        protected void done()
         {
             /*
             * @throws PathwayCommonsException - when HTTP status code is not 200
@@ -1334,9 +1289,9 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 //parse and display file
                 logger.fine("Opening file: " + importFile);
                 frame.requestFocus();
-                frame.toFront();                        
+                frame.toFront();
                 frame.loadDataSet(importFile);
-                statusLabel.setText("Opened file: " + fName);      
+                statusLabel.setText("Opened file: " + fName);
             }
             catch(IllegalStateException exception) //runtime exception
             {
@@ -1350,13 +1305,13 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             }
             catch(Exception exception)
             {
-                logger.warning(exception.getMessage());                     
+                logger.warning(exception.getMessage());
                 Throwable cause = exception.getCause(); //get wrapped exception
                 if(cause == null)
                 {
                     cause = exception;
                 }
-                     
+
                 if(cause instanceof PathwayCommonsException || cause instanceof CPathException) //HTTP error code returned from GET request
                 {
                     logger.warning(exception.getMessage());
@@ -1380,24 +1335,24 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 else
                 {
                     logger.warning(exception.getMessage());
-                    statusLabel.setText("Fetch error: unable to get " + fName + " from Pathway Commons"); 
+                    statusLabel.setText("Fetch error: unable to get " + fName + " from Pathway Commons");
                 }
             }
             finally
             {
-                ImportWebServiceDialog.this.getRootPane().setCursor(defaultCursor);                
+                ImportWebServiceDialog.this.getRootPane().setCursor(defaultCursor);
                 restoreButtons();
             }
         }
     }
-    
+
     /**
      * Enable or disable dialog buttons when dialog is in resting state according to search results.
      */
     private void restoreButtons()
     {
         stopButton.setEnabled(false);
-        
+
         if(table.getSelectedRow() == -1) //a row is selected
         {
             openButton.setEnabled(false);
@@ -1406,26 +1361,26 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         {
             openButton.setEnabled(true);
         }
-        
+
         searchFieldChanged(); //enable search button if text in search field
-        enableDisablePreviousButton(); //enable/disable previous button 
+        enableDisablePreviousButton(); //enable/disable previous button
         enableDisableNextButton(); //enable/disable next button
-        
+
         //advanced tab
-        advancedStopButton.setEnabled(false);        
+        advancedStopButton.setEnabled(false);
         if(advancedModel.getRowCount() > 0)
         {
             advancedExecuteButton.setEnabled(true);
         }
     }
-    
+
     /**
      * Enable or disable the Next button according to whether more search hits exist following the current page
      */
     private void enableDisableNextButton()
     {
         if(maxHitsPerPage > 0 && totalHits > 0) //no hits - avoid division by zero
-        {    
+        {
             int numPages = (totalHits + maxHitsPerPage - 1) / maxHitsPerPage; //calculate number of pages, round up integer division
             if((currentPage + 1) < numPages) //pages indexed from zero
             {
@@ -1441,7 +1396,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             nextButton.setEnabled(false);
         }
     }
-    
+
     /**
      * Enable or disable the Previous button according to whether more search hits exist before the current page
      */
@@ -1456,7 +1411,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             previousButton.setEnabled(false);
         }
     }
-    
+
     /**
      * Creates a JButton with an ActionListener for this dialog. Convenience method.
      * @param text
@@ -1472,7 +1427,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         button.addActionListener(this);
         return button;
     }
-    
+
     /**
      * Performs Pathway Commons search concurrently
      */
@@ -1480,13 +1435,13 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
     {
         private boolean clearAdvanced;
         private boolean newSearch;
-        
+
         SearchWorker(boolean newSearch, boolean clearAdvanced)
         {
             this.newSearch = newSearch;
             this.clearAdvanced = clearAdvanced;
         }
-        
+
         /**
          * Perform Pathway Commons search
          */
@@ -1496,7 +1451,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             SwingWorker actualWorker = new SwingWorker<SearchResponse, Void>() //anonymous inner worker to handle timeout
             {
                 @Override
-                protected SearchResponse doInBackground() throws Exception 
+                protected SearchResponse doInBackground() throws Exception
                 {
                     //display message/cursor and disable buttons
                     statusLabel.setText("Searching...");
@@ -1506,21 +1461,21 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     searchButton.setEnabled(false);
                     stopButton.setEnabled(true);
                     openButton.setEnabled(false);
-                    
+
                     advancedExecuteButton.setEnabled(false);
                     advancedStopButton.setEnabled(true);
-                    
+
                     return searchQuery.result(); //perform search
                 }
             };
 
             actualWorker.execute();
-            try 
+            try
             {
                 SearchResponse sr = (SearchResponse)actualWorker.get(TIMEOUT_SEARCH, TimeUnit.SECONDS); //15 second timeout
                 return sr;
-            } 
-            catch (Exception exception) 
+            }
+            catch (Exception exception)
             {
                 logger.warning(exception.getMessage());
                 actualWorker.cancel(true); //stop inner search thread
@@ -1544,15 +1499,16 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 SearchResponse searchResponse = get(); //calls doInBackground() to perform search
                 if(searchResponse != null)
                 {
-                    searchHits = searchResponse.getSearchHit();            
+                    searchHits = searchResponse.getSearchHit();
                     maxHitsPerPage = searchResponse.getMaxHitsPerPage(); //maximum number of search hits per page
                     totalHits = searchResponse.getNumHits();
-                    currentPage = searchResponse.getPageNo();
+                    //currentPage = searchResponse.getPageNo();
+                    //TODO throwing NullPointerException - see if new cpath client fixes
 
                     statusLabel.setText("Search complete: success!");
-                                        
+
                     cacheSearchHits(); //store search hits in allSearchHits List
-                    
+
                     displaySearchResults(clearAdvanced);
 
                     /*
@@ -1579,13 +1535,13 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             }
             catch(ExecutionException exception)
             {
-                 logger.warning(exception.getMessage());                     
+                 logger.warning(exception.getMessage());
                  Throwable cause = exception.getCause(); //get wrapped exception - the culprit!
                  if(cause == null)
                  {
                      cause = exception;
                  }
-                     
+
                 if(cause instanceof PathwayCommonsException) //no search hits
                 {
                    logger.warning(cause.getMessage());
@@ -1615,11 +1571,11 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             }
             finally
             {
-                ImportWebServiceDialog.this.getRootPane().setCursor(defaultCursor);                
+                ImportWebServiceDialog.this.getRootPane().setCursor(defaultCursor);
                 restoreButtons();
             }
         }
-        
+
         private void cacheSearchHits()
         {
             if(newSearch) //search button pressed - create new page cache
@@ -1641,7 +1597,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             }
         }
     }
-    
+
     /**
      * Creates a HashSet of command strings associated with checked JCheckBoxes.
      * @param displayCommands - Map of JCheckBoxes and associated commands
@@ -1649,7 +1605,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
      */
     public static HashSet<String> createFilterSet(Map <JCheckBox, String> displayCommands)
     {
-        HashSet<String> filterSet = new HashSet<String>();                    
+        HashSet<String> filterSet = new HashSet<String>();
         for (Map.Entry<JCheckBox, String> entry : displayCommands.entrySet()) {
              JCheckBox checkBox = entry.getKey();
              if(checkBox.isSelected())
@@ -1660,24 +1616,23 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         }
         return filterSet;
     }
-    
+
     @Override
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
-        if(searchButton == e.getSource() || nextButton == e.getSource() || previousButton == e.getSource()) 
+        if(searchButton == e.getSource() || nextButton == e.getSource() || previousButton == e.getSource())
         {
             if(searchButton == e.getSource() && !networkType.equals(TOP_PATHWAYS)) //don't need search params for Top Pathways query
             {
                 currentPage = 0;
                 searchTerm = searchField.getText();
-               // HOMO_SAPIENS = organismField.getText();
 
                 //restrict search to name
                 if(nameCheckBox.isSelected())
                 {
                     searchTerm = "name:'" + searchTerm + "'";
                 }
-    
+
                 networkType = this.networkTypeCombo.getSelectedItem().toString();
 
                 //add parameters for datasource checkboxes
@@ -1687,13 +1642,12 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     datasourceSet = createFilterSet(datasourceDisplayCommands);
                 }
 
-                
+
                 //add parameters for HOMO_SAPIENS - filter for human only
                 organismSet = null;
                 //organismSet = createFilterSet(organismDisplayCommands);
-                organismSet = new HashSet<String>();   
-                organismSet.add(HOMO_SAPIENS); 
-                
+                organismSet = new HashSet<String>();
+                organismSet.add(HOMO_SAPIENS);
             }
 
             //CPathClient.newInstance() will block execution if Pathway Commons is down - set a timeout
@@ -1707,9 +1661,9 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             try
             {
                 ImportWebServiceDialog.this.getRootPane().setCursor(waitCursor);
-                CPathClient client = future.get(10, TimeUnit.SECONDS); 
-              
-                //CPathClient client = CPathClient.newInstance(); 
+                CPathClient client = future.get(10, TimeUnit.SECONDS);
+
+                //CPathClient client = CPathClient.newInstance();
                 if(networkType.equals(TOP_PATHWAYS) && searchButton == e.getSource())
                 {
                     searchQuery = client.createTopPathwaysQuery();
@@ -1727,7 +1681,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     {
                         pageParameter--;
                     }
-                    
+
                     //check if page already exists in cache
                     if(searchButton != e.getSource() && allPages != null && pageParameter < allPages.size() && allPages.get(pageParameter) != null)
                     {
@@ -1740,14 +1694,14 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     else //run the search
                     {
                         CPathSearchQuery searchQuery = client.createSearchQuery().queryString(searchTerm).typeFilter(networkType);
-                        searchQuery.page(pageParameter);                
+                        searchQuery.page(pageParameter);
 
                         if(datasourceSet != null && !datasourceSet.isEmpty())
                         {
                             searchQuery.datasourceFilter(datasourceSet);
                         }
 
-                        if(organismSet != null && !organismSet.isEmpty())                            
+                        if(organismSet != null && !organismSet.isEmpty())
                         {
                             searchQuery.organismFilter(organismSet);
                         }
@@ -1772,12 +1726,12 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 statusLabel.setText("Unable to connect to Pathway Commons");
                 logger.warning(exception.getMessage());
             } finally {
-                future.cancel(true); 
+                future.cancel(true);
                 ImportWebServiceDialog.this.getRootPane().setCursor(defaultCursor);
-            }           
+            }
         }
         else if(stopButton == e.getSource() || advancedStopButton == e.getSource()) //stop running process
-        { 
+        {
             if(searchWorker != null && !searchWorker.isDone()) //stop search process
             {
                 try //stop search
@@ -1802,7 +1756,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                     logger.warning("Unable to stop search SwingWorker: " + exception.getMessage());
                 }
             }
-            
+
             if(getWorker != null && !getWorker.isDone()) //stop download process
             {
                 try //stop download
@@ -1836,26 +1790,20 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 boolean cancelled = searchWorker.cancel(true);
                 logger.fine("search SwingWorker cancel returned " + cancelled);
             }
-            
+
             //stop GET threads
             if(getWorker != null && !getWorker.isDone())
             {
                 boolean cancelled = getWorker.cancel(true);
                 logger.fine("GET SwingWorker cancel returned " + cancelled);
             }
-            
+
             this.dispose(); //destroy the dialog to free up resources
         }
         else if(openButton == e.getSource()) //search hit selected in table then open button pressed
         {
             openNetwork();
         }
-        /*
-        else if(anyOrganismCheckBox == e.getSource()) //"Any" HOMO_SAPIENS checkbox has been checked or unchecked
-        {
-            enableDisableOrganism(anyOrganismCheckBox.isSelected()); //enable/disable HOMO_SAPIENS checkboxes and text field
-        }
-        */
         else if(allDatasourceCheckBox == e.getSource())
         {
             enableDisableDatasource(allDatasourceCheckBox.isSelected()); //enable/disable datasource checkboxes and text field
@@ -1868,7 +1816,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         {
             removeAdvanced(); //remove selected rows from advanced table
             statusLabel.setText("Removed selected rows from Advanced");
-            
+
         }
         else if(advancedClearButton == e.getSource()) //clear advanced table
         {
@@ -1886,31 +1834,8 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
     {
         searchWorker = new SearchWorker(newSearch, clearAdvanced); //concurrent threading for search process
         searchWorker.execute();
-    }    
-
-    /**
-     * Adds HOMO_SAPIENS NCBI IDs as key to HOMO_SAPIENSIdNameMap so that values may be populated later from NCBI Taxonomy SOAP service
-     */
-    /*
-    private void mapOrganisms(SearchHit hit)
-    {
-        List<String> organismList = hit.getOrganism(); //URIs of organisms at identifiers.org
-
-        //extract HOMO_SAPIENS ID for each HOMO_SAPIENS URI
-        String[] organismArray = organismList.toArray(new String[0]);
-        for (int i = 0; i < organismArray.length; i++)
-        {
-            String organismString = organismArray[i];
-            organismArray[i] = organismString.substring(organismString.lastIndexOf("/")+1, organismString.length()); //extract ID from URI
-            //add to NCBI ID/name map for later web service lookup if not already added
-            if(!organismIdNameMap.containsKey(organismArray[i]))
-            {
-                organismIdNameMap.put(organismArray[i], organismArray[i]); //value also has NCBI ID as placeholder - to be replaced with name from web service
-            }
-        }
     }
-    */
-    
+
     private void displaySearchResults(boolean clearAdvanced)
     {
         //update statistics
@@ -1919,16 +1844,16 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         retrievedLabel.setText("Retrieved: " + searchHits.size());
 
         clearSearchResults(clearAdvanced); //clear results tables
-        
+
         for(SearchHit hit : searchHits)
         {
             //this.mapOrganisms(hit);
             String joinedDatabases = joinDatabases(hit); //comma-separated string of datasources for display
-            model.addRow(new Object[]{hit.getName(), joinedDatabases, hit.getBiopaxClass(), hit.getPathway().size()});  
+            model.addRow(new Object[]{hit.getName(), joinedDatabases, hit.getBiopaxClass(), hit.getPathway().size()});
         }//end for
         tabbedPane.setSelectedIndex(0); //reselect the Search tab
     }
-    
+
     /**
      * Creates a comma-separated String of databases in a SearchHit.
      */
@@ -1941,7 +1866,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
                 String databaseUri = databaseArray[i];
 
                 //replace with database real name if found in map
-                for (Map.Entry<String, String> entry : DATABASE_URI_DISPLAY.entrySet()) 
+                for (Map.Entry<String, String> entry : DATABASE_URI_DISPLAY.entrySet())
                 {
                     String databaseString = entry.getKey();
                     if(databaseUri.contains(databaseString))
@@ -1953,10 +1878,10 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             String joinedDatabases = commaJoiner.join(databaseArray);
             return joinedDatabases;
     }
-    
+
     /**
     * Populate organism scientific names from NCBI web service
- NB - no longer used - organism stored as BioSource on Pathway Commons
+    * NB - no longer used - organism stored as BioSource on Pathway Commons
     */
     private boolean fetchScientificNames()
     {
@@ -1964,12 +1889,12 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
         EUtilsServiceSoap serviceSoap = service.getEUtilsServiceSoap();
         ObjectFactory objectFactory = new ObjectFactory();
         EFetchRequest requ = objectFactory.createEFetchRequest();
-         
-        //set comma-separated String of HOMO_SAPIENS IDs as search parameter
+
+        //set comma-separated String of NCBI species IDs as search parameter
         String eFetchQuery = commaJoiner.join(this.organismIdNameMap.keySet());
         logger.fine("eFetchQuery: " + eFetchQuery);
         requ.setId(eFetchQuery);
-        
+
         try
         {
             EFetchResult resp = serviceSoap.runEFetch(requ);
@@ -1987,36 +1912,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
             return false;
         }
     }
-    /*
-    private void enableDisableOrganism(boolean anySelected)
-    {
-        //enable/disable HOMO_SAPIENS checkboxes
-        for(JCheckBox checkBox: organismDisplayCommands.keySet())
-        {
-            if(anySelected)
-            {
-                checkBox.setSelected(true);
-                checkBox.setEnabled(false);
-            }
-            else
-            {
-                checkBox.setSelected(false);
-                checkBox.setEnabled(true);
-            }
-        }
 
-        //enable/disable HOMO_SAPIENS text field
-        if(anySelected)
-        {
-            organismField.setText("");
-            organismField.setEnabled(false);
-        }
-        else
-        {
-            organismField.setEnabled(true);
-        }
-    }
-    */
     private void enableDisableDatasource(boolean allSelected)
     {
         for(JCheckBox checkBox: datasourceDisplayCommands.keySet())
@@ -2042,8 +1938,8 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
      * @param table - the JTable containing the column to be packed
      * @param vColIndex - the index of the column to be packed
      * @param margin - size of margin in pixels
-     */ 
-    public static void packColumn(JTable table, int vColIndex, int margin) 
+     */
+    public static void packColumn(JTable table, int vColIndex, int margin)
     {
         DefaultTableColumnModel colModel = (DefaultTableColumnModel)table.getColumnModel();
         TableColumn col = colModel.getColumn(vColIndex);
@@ -2077,8 +1973,8 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
      * Accessor for search field so search terms can be set externally e.g. from Class Viewer
      * @return search field
      */
-    public JTextField getSearchField() 
+    public JTextField getSearchField()
     {
         return searchField;
-    }   
+    }
 }
