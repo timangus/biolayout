@@ -31,6 +31,7 @@
         <buildconfig.file>${generated.sources.dir}/org/Kajeka/BuildConfig.java</buildconfig.file>
 
         <osx.app.dir>${project.build.directory}/dmg</osx.app.dir>
+        <osx.appbundler.path>${project.basedir}/appbundler/appbundler-1.0.jar</osx.appbundler.path>
 
         <debug.build>true</debug.build>
 
@@ -501,7 +502,7 @@
                         </goals>
                     </execution>
                     -->
-                    <!--
+
                     <execution>
                         <id>osxAppCopy</id>
                         <phase>package</phase>
@@ -510,9 +511,12 @@
                         </goals>
                         <configuration>
                             <target>
+                                <path id="path.appbundler">
+                                    <pathelement path="${osx.appbundler.path}"></pathelement>
+                                </path>
                                 <taskdef name="bundleapp"
                                             classname="com.oracle.appbundler.AppBundlerTask"
-                                            classpathref="${project.basedir}/jars/com/oracle/appbundler/appbundler/1.0/appbundler-1.0.jar" />
+                                            classpathref="path.appbundler" />
                                 <bundleapp outputdirectory="${osx.app.dir}"
                                         name="${project.name}"
                                         displayname="${project.name}"
@@ -526,7 +530,6 @@
                             </target>
                         </configuration>
                     </execution>
-                    -->
                 </executions>
             </plugin>
 
