@@ -18,12 +18,12 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
 *
-*  The Fruchterman-Rheingold layout class.
+*  The Fruchterman-Reingold layout class.
 *
 *  Loch Tay vacations inspiration used for re-implementation of this code using advanced bitshift techniques for N-CP.
 *  Many thanks to Elaine Duncan for bouncing ideas backwards & forwards for this!
 *
-* @author Full Fruchterman-Rheingold layout algorithm rewrite/JNI/C support/N-Core parallelization code/GPU Computing by Thanos Theo, 2008-2009-2010-2011
+* @author Full Fruchterman-Reingold layout algorithm rewrite/JNI/C support/N-Core parallelization code/GPU Computing by Thanos Theo, 2008-2009-2010-2011
 * @version 3.0.0.0
 *
 */

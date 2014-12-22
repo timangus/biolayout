@@ -982,8 +982,8 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         layoutAlgorithmGroup.add(fmmmRadioButton);
         algorithmSubPanel.add(fmmmRadioButton);
 
-        frRadioButton = new JRadioButton("Fruchterman-Rheingold");
-        frRadioButton.setToolTipText("Fruchterman-Rheingold");
+        frRadioButton = new JRadioButton("Fruchterman-Reingold");
+        frRadioButton.setToolTipText("Fruchterman-Reingold");
         layoutAlgorithmGroup.add(frRadioButton);
         algorithmSubPanel.add(frRadioButton);
 
@@ -1007,15 +1007,15 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         algorithmPanel.add(labelledComponent("Minimum Component Size:", layoutMinimumComponentSizeField));
 
         // FR options
-        JPanel fruchtermanRheingoldPanel = new JPanel(true);
-        fruchtermanRheingoldPanel.setLayout( new BoxLayout(fruchtermanRheingoldPanel, BoxLayout.Y_AXIS) );
+        JPanel fruchtermanReingoldPanel = new JPanel(true);
+        fruchtermanReingoldPanel.setLayout( new BoxLayout(fruchtermanReingoldPanel, BoxLayout.Y_AXIS) );
 
-        fruchtermanRheingoldPanel.add(layoutUseEdgeWeightsForLayout);
-        fruchtermanRheingoldPanel.add(layoutTiledLayout);
-        fruchtermanRheingoldPanel.add(labelledComponent("Starting Temperature:", layoutStartingTemperatureField));
-        fruchtermanRheingoldPanel.add(labelledComponent("Number Of Layout Iterations:", layoutIterationsField));
-        fruchtermanRheingoldPanel.add(labelledComponent("K-Value Modifier:", layoutKvalueField));
-        fruchtermanRheingoldPanel.add(labelledComponent("Burst Layout Iterations:", layoutBurstIterationsField));
+        fruchtermanReingoldPanel.add(layoutUseEdgeWeightsForLayout);
+        fruchtermanReingoldPanel.add(layoutTiledLayout);
+        fruchtermanReingoldPanel.add(labelledComponent("Starting Temperature:", layoutStartingTemperatureField));
+        fruchtermanReingoldPanel.add(labelledComponent("Number Of Layout Iterations:", layoutIterationsField));
+        fruchtermanReingoldPanel.add(labelledComponent("K-Value Modifier:", layoutKvalueField));
+        fruchtermanReingoldPanel.add(labelledComponent("Burst Layout Iterations:", layoutBurstIterationsField));
 
         // FMMM options
         JPanel fmmmPanel = new JPanel(true);
@@ -1076,7 +1076,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         addPanelToBoxLayout("Algorithm", algorithmPanel, layoutLargePanel);
         addPanelToBoxLayout("FMMM", fmmmPanel, layoutLargePanel);
-        addPanelToBoxLayout("Fruchterman-Rheingold", fruchtermanRheingoldPanel, layoutLargePanel);
+        addPanelToBoxLayout("Fruchterman-Reingold", fruchtermanReingoldPanel, layoutLargePanel);
 
         layoutPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Layout Options");
         addTitledButtonBorderLarge(layoutPropertiesPanelBorder, layoutLargePanel,
@@ -2378,7 +2378,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalConfirmPreferencesSave.setSelected( CONFIRM_PREFERENCES_SAVE.get() );
 
         GraphLayoutAlgorithm gla = GRAPH_LAYOUT_ALGORITHM.get();
-        frRadioButton.setSelected(gla == GraphLayoutAlgorithm.FRUCHTERMAN_RHEINGOLD);
+        frRadioButton.setSelected(gla == GraphLayoutAlgorithm.FRUCHTERMAN_REINGOLD);
         fmmmRadioButton.setSelected(gla == GraphLayoutAlgorithm.FMMM);
         circleRadioButton.setSelected(gla == GraphLayoutAlgorithm.CIRCLE);
         askRadioButton.setSelected(gla == GraphLayoutAlgorithm.ALWAYS_ASK);
@@ -2657,7 +2657,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
 
         if (frRadioButton.isSelected())
         {
-            GRAPH_LAYOUT_ALGORITHM.set(GraphLayoutAlgorithm.FRUCHTERMAN_RHEINGOLD);
+            GRAPH_LAYOUT_ALGORITHM.set(GraphLayoutAlgorithm.FRUCHTERMAN_REINGOLD);
         }
         else if (fmmmRadioButton.isSelected())
         {
