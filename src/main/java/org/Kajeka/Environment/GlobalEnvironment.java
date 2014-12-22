@@ -13,6 +13,7 @@ import org.Kajeka.Utils.*;
 import org.Kajeka.StaticLibraries.*;
 import org.Kajeka.Textures.*;
 import static java.lang.Math.*;
+import java.util.logging.Logger;
 import org.Kajeka.BuildConfig;
 import static org.Kajeka.StaticLibraries.ImageProducer.*;
 
@@ -180,10 +181,11 @@ public final class GlobalEnvironment
         VERY_HIGH_QUALITY_VERY_LOW_SPEED,
         HIGH_QUALITY_LOW_SPEED,
         MEDIUM_QUALITY_MEDIUM_SPEED,
-        LOW_QUALITY_HIGH_SPEED
+        LOW_QUALITY_HIGH_SPEED,
     }
     public static final PrefEnum<FmmmQualityVsSpeed> FMMM_QUALITY_VS_SPEED = new PrefEnum<FmmmQualityVsSpeed>(
-            FmmmQualityVsSpeed.class, FmmmQualityVsSpeed.MEDIUM_QUALITY_MEDIUM_SPEED, "fmmm_quality_vs_speed", true);
+            FmmmQualityVsSpeed.class, FmmmQualityVsSpeed.LOW_QUALITY_HIGH_SPEED, "fmmm_quality_vs_speed", true);
+
     public static enum FmmmForceModel { EADES, FRUCHTERMAN_REINGOLD }
     public static final PrefEnum<FmmmForceModel> FMMM_FORCE_MODEL = new PrefEnum<FmmmForceModel>(
             FmmmForceModel.class, FmmmForceModel.FRUCHTERMAN_REINGOLD, "fmmm_force_model", true);
