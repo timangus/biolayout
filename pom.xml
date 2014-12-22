@@ -352,7 +352,6 @@
                                     <excludes>*newt.*,*_mobile.*</excludes>
                                 </artifactItem>
 
-
                                 <!-- jogl-all native windows-amd64 -->
                                 <artifactItem>
                                     <groupId>org.jogamp.jogl</groupId>
@@ -470,39 +469,6 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
                 <executions>
-                    <!--
-                    <execution>
-                        <id>osxAppCopy</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${osx.app.dir}/Contents/Resources/Java/"/>
-                                <mkdir dir="${osx.app.dir}/Contents/MacOS/"/>
-
-                                <copy file="${basedir}/src/main/osx/Contents/Info.plist"
-                                    tofile="${osx.app.dir}/Contents/Info.plist">
-                                    <filterset>
-                                        <filter token="name" value="${productName}"/>
-                                        <filter token="version" value="${versionNumber}"/>
-                                        <filter token="mainClass" value="${mainClass}"/>
-                                        <filter token="jarFilename" value="${outFilename}.jar"/>
-                                    </filterset>
-                                </copy>
-                                <copy file="${basedir}/src/main/osx/Contents/Resources/Icon.icns"
-                                    tofile="${osx.app.dir}/Contents/Resources/Icon.icns" />
-                                <copy file="${project.build.directory}/${outFilename}.jar"
-                                    tofile="${osx.app.dir}/Contents/Resources/Java/${outFilename}.jar" />
-                                <symlink failonerror="false" overwrite="true"
-                                    link="${osx.app.dir}/Contents/MacOS/JavaApplicationStub"
-                                    resource="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Resources/MacOS/JavaApplicationStub"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    -->
-
                     <execution>
                         <id>osxAppCopy</id>
                         <phase>package</phase>
@@ -514,18 +480,20 @@
                                 <path id="path.appbundler">
                                     <pathelement path="${osx.appbundler.path}"></pathelement>
                                 </path>
+                                <mkdir dir="${osx.app.dir}" />
                                 <taskdef name="bundleapp"
-                                            classname="com.oracle.appbundler.AppBundlerTask"
-                                            classpathref="path.appbundler" />
+                                        classname="com.oracle.appbundler.AppBundlerTask"
+                                        classpathref="path.appbundler" />
                                 <bundleapp outputdirectory="${osx.app.dir}"
                                         name="${project.name}"
                                         displayname="${project.name}"
                                         icon="${basedir}/src/main/osx/Contents/Resources/Icon.icns"
                                         identifier="${project.groupId}"
                                         shortversion="${project.version}"
-                                        copyright="${project.copyright}"
-                                        mainclassname="${mainClass}">
+                                        copyright="${copyright}"
+                                        mainclassname="${mainClass}" >
                                     <classpath file="${project.build.directory}/${outFilename}.jar" />
+                                    <option value="-Xmx32000m"/>
                                 </bundleapp>
                             </target>
                         </configuration>
