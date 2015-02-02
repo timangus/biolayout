@@ -13,7 +13,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class UsageTracker
 {
-    private final static String UPLOAD_URL = "http://localhost/uploadlog.php";
+    private final static String UPLOAD_URL = "http://kajeka.com/uploadlog.php";
     private String log;
 
     public UsageTracker()
