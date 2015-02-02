@@ -111,6 +111,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JCheckBox generalValidateXMLFiles = null;
     private JCheckBox generalUseInstallDirForScreenshots = null;
     private JCheckBox generalUseInstallDirForMCLTempFile = null;
+    private JCheckBox generalShowGraphPropertiesToolBar = null;
     private JCheckBox generalShowNavigationToolBar = null;
     private JCheckBox generalShowPopupOverlayPlot = null;
     private JCheckBox generalCollapseNodesByVolume = null;
@@ -815,6 +816,10 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalUseInstallDirForMCLTempFile.setActionCommand(CHANGE_ACTION_COMMAND);
         generalUseInstallDirForMCLTempFile.addActionListener(this);
         generalUseInstallDirForMCLTempFile.setToolTipText("Use install directory for MCL");
+        generalShowGraphPropertiesToolBar = new JCheckBox("Show Graph Properties ToolBar");
+        generalShowGraphPropertiesToolBar.setActionCommand(CHANGE_ACTION_COMMAND);
+        generalShowGraphPropertiesToolBar.addActionListener(this);
+        generalShowGraphPropertiesToolBar.setToolTipText("Show Graph Properties ToolBar");
         generalShowNavigationToolBar = new JCheckBox("Show Navigation ToolBar");
         generalShowNavigationToolBar.setActionCommand(CHANGE_ACTION_COMMAND);
         generalShowNavigationToolBar.addActionListener(this);
@@ -884,6 +889,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalOptionsPanel1.setLayout( new BoxLayout(generalOptionsPanel1, BoxLayout.Y_AXIS) );
         generalOptionsPanel1.add(generalUseInstallDirForScreenshots);
         generalOptionsPanel1.add(generalUseInstallDirForMCLTempFile);
+        generalOptionsPanel1.add(generalShowGraphPropertiesToolBar);
         generalOptionsPanel1.add(generalShowNavigationToolBar);
         generalOptionsPanel1.add(generalShowPopupOverlayPlot);
 
@@ -2365,6 +2371,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         generalShowNavigationWizardOnStartup.setSelected( SHOW_NAVIGATION_WIZARD_ON_STARTUP.get() );
         generalShowLayoutIterations.setSelected( SHOW_LAYOUT_ITERATIONS.get() );
         generalValidateXMLFiles.setSelected( VALIDATE_XML_FILES.get() );
+        generalShowGraphPropertiesToolBar.setSelected( SHOW_GRAPH_PROPERTIES_TOOLBAR.get() );
         generalShowNavigationToolBar.setSelected( SHOW_NAVIGATION_TOOLBAR.get() );
         generalShowPopupOverlayPlot.setSelected( SHOW_POPUP_OVERLAY_PLOT.get() );
         generalCollapseNodesByVolume.setSelected( COLLAPSE_NODES_BY_VOLUME.get() );
@@ -2723,10 +2730,13 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
             SHOW_LAYOUT_ITERATIONS.set( generalShowLayoutIterations.isSelected() );
             VALIDATE_XML_FILES.set( generalValidateXMLFiles.isSelected() );
 
+            boolean graphPropertiesToolbarChanged =
+                    SHOW_GRAPH_PROPERTIES_TOOLBAR.set(generalShowGraphPropertiesToolBar.isSelected());
+
             boolean navigationToolbarChanged =
                 SHOW_NAVIGATION_TOOLBAR.set(generalShowNavigationToolBar.isSelected());
 
-            if (navigationToolbarChanged)
+            if (graphPropertiesToolbarChanged || navigationToolbarChanged)
             {
                 layoutFrame.rebuildToolbars();
             }
@@ -3002,4 +3012,46 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     {
         return generalPropertiesAction;
     }
+
+    public AbstractAction getLayoutPropertiesAction()
+    {
+        return layoutPropertiesAction;
+    }
+
+    public AbstractAction getRenderingPropertiesAction()
+    {
+        return renderingPropertiesAction;
+    }
+
+    public AbstractAction getMCLPropertiesAction()
+    {
+        return MCL_propertiesAction;
+    }
+
+    public AbstractAction getSimulationPropertiesAction()
+    {
+        return simulationPropertiesAction;
+    }
+
+    public AbstractAction getSearchPropertiesAction()
+    {
+        return searchPropertiesAction;
+    }
+
+    public AbstractAction getNodesPropertiesAction()
+    {
+        return nodesPropertiesAction;
+    }
+
+    public AbstractAction getEdgesPropertiesAction()
+    {
+        return edgesPropertiesAction;
+    }
+
+    public AbstractAction getClassesPropertiesAction()
+    {
+        return classesPropertiesAction;
+    }
+
+
 }

@@ -23,7 +23,7 @@ public abstract class LayoutAbstractToolBar extends JToolBar
     public static final long serialVersionUID = 111222333444555694L;
 
     protected static enum GraphPropertiesToolBarButtons { GENERAL, LAYOUT, RENDERING, MCL, SIMULATION, SEARCH, NODES, EDGES, CLASSES }
-    protected static enum GeneralToolBarButtons { GRAPH_PROPERTIES, GRAPH_OPEN, GRAPH_LAST_OPEN, GRAPH_SAVE, SNAPSHOT, GRAPH_STATISTICS, GRAPH_FIND, RUN_MCL, RUN_SPN, CLASS_VIEWER, ANIMATION_CONTROL, BURST_LAYOUT_ITERATIONS, _2D_3D }
+    protected static enum GeneralToolBarButtons { GRAPH_OPEN, GRAPH_LAST_OPEN, GRAPH_SAVE, SNAPSHOT, GRAPH_STATISTICS, GRAPH_FIND, RUN_MCL, RUN_SPN, CLASS_VIEWER, ANIMATION_CONTROL, BURST_LAYOUT_ITERATIONS, _2D_3D }
     protected static enum NavigationToolBarButtons { UP, DOWN, LEFT, RIGHT, ROTATE_UP, ROTATE_DOWN, ROTATE_LEFT, ROTATE_RIGHT, ZOOM_IN, ZOOM_OUT, RESET_VIEW, NAVIGATION_WIZARD }
     protected static enum HomeToolBarButtons { HOME }
     protected static final int NUMBER_OF_GRAPH_PROPERTIES_TOOLBAR_BUTTONS = GraphPropertiesToolBarButtons.values().length;
