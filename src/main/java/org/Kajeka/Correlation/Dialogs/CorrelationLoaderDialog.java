@@ -57,13 +57,15 @@ public final class CorrelationLoaderDialog extends JDialog implements ActionList
         }
     }
     private DataRect dataRect;
+    private boolean tabDelimited;
 
-    public CorrelationLoaderDialog(JFrame frame, File correlationFile)
+    public CorrelationLoaderDialog(JFrame frame, File correlationFile, boolean tabDelimited)
     {
         super(frame, "Load Correlation Data", true);
 
         this.correlationFile = correlationFile;
         this.dataRect = new DataRect();
+        this.tabDelimited = tabDelimited;
 
         initActions(frame);
         initComponents();
@@ -359,15 +361,16 @@ public final class CorrelationLoaderDialog extends JDialog implements ActionList
         {
             creatingDialogElements = true;
             setCursor(STATIC_WAIT_CURSOR);
+            String delimiter = tabDelimited ? "\t" : "";
 
             if (transpose)
             {
                 tdm = new TextDelimitedMatrix(correlationFile,
-                        NUM_PREVIEW_ROWS, NUM_PREVIEW_COLUMNS);
+                        NUM_PREVIEW_ROWS, NUM_PREVIEW_COLUMNS, delimiter);
             } else
             {
                 tdm = new TextDelimitedMatrix(correlationFile,
-                        NUM_PREVIEW_COLUMNS, NUM_PREVIEW_ROWS);
+                        NUM_PREVIEW_COLUMNS, NUM_PREVIEW_ROWS, delimiter);
             }
 
 

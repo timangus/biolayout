@@ -102,7 +102,7 @@ public final class GlobalEnvironment
     public static final int MAX_FILE_HISTORY = 10;
 
     // file input/output variables
-    public static enum SupportedInputFileTypes { BLAST, OWL, CSV, GRAPHML, MEPN, LAYOUT, SIF, TGF, TXT, MATRIX, XML, GML }
+    public static enum SupportedInputFileTypes { BLAST, OWL, CSV, EXPRESSION, GRAPHML, MEPN, LAYOUT, SIF, TGF, TXT, MATRIX, XML, GML }
     public static enum SupportedOutputFileTypes { LAYOUT, TGF }
     public static enum SupportedImportExportFileTypes { CLASSSETS, TXT }
     public static enum SupportedSimulationFileTypes { SPN, TXT }

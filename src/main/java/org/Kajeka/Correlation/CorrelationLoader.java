@@ -72,7 +72,7 @@ public final class CorrelationLoader
         reasonForFailure += reason;
     }
 
-    public boolean parse(LayoutFrame layoutFrame)
+    public boolean parse(LayoutFrame layoutFrame, boolean tabDelimited)
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
@@ -89,7 +89,8 @@ public final class CorrelationLoader
         {
             reasonForFailure = "";
 
-            tdm = new TextDelimitedMatrix(file, ppi);
+            String delimiter = tabDelimited ? "\t" : "";
+            tdm = new TextDelimitedMatrix(file, ppi, delimiter);
 
             layoutProgressBarDialog.setText("Parsing " + tdm.numLines() + " lines");
 
@@ -204,7 +205,7 @@ public final class CorrelationLoader
         return true;
     }
 
-    public boolean parseAnnotations(LayoutFrame layoutFrame, NetworkContainer nc)
+    public boolean parseAnnotations(LayoutFrame layoutFrame, NetworkContainer nc, boolean tabDelimited)
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
@@ -219,7 +220,8 @@ public final class CorrelationLoader
 
         try
         {
-            tdm = new TextDelimitedMatrix(file, ppi);
+            String delimiter = tabDelimited ? "\t" : "";
+            tdm = new TextDelimitedMatrix(file, ppi, delimiter);
 
             layoutProgressBarDialog.setText("Parsing " + tdm.numLines() + " lines");
 

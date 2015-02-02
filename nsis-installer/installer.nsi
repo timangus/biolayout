@@ -154,6 +154,11 @@ SectionGroup "File associations"
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
+    Section "Gene expression file (.expression)"
+        !insertmacro APP_ASSOCIATE "expression" "Kajeka.expression" "Kajeka Expression File" \
+            "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
+    SectionEnd
+
     Section "Matrix file (.matrix)"
         !insertmacro APP_ASSOCIATE "matrix" "${BASE_NAME}.matrix" "${BASE_NAME} Matrix File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
@@ -190,6 +195,7 @@ Section "Uninstall"
     DeleteRegKey HKLM "SOFTWARE\${LONG_NAME}"
 
     !insertmacro APP_UNASSOCIATE "sif"        "${BASE_NAME}.sif"
+    !insertmacro APP_UNASSOCIATE "expression" "Kajeka.expression"
     !insertmacro APP_UNASSOCIATE "matrix"     "${BASE_NAME}.matrix"
     !insertmacro UPDATEFILEASSOC
 
