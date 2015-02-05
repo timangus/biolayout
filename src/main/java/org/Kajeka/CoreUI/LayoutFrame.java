@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import org.Kajeka.BuildConfig;
 import org.Kajeka.ClassViewerUI.*;
 import org.Kajeka.Clustering.MCL.*;
 import org.Kajeka.CoreUI.Dialogs.*;
@@ -813,7 +814,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     }
                     catch (Exception exc)
                     {
-                        if (DEBUG_BUILD) println(PRODUCT_NAME + " frame initialization error: " + exc.getMessage());
+                        if (DEBUG_BUILD) println(DISPLAY_PRODUCT_NAME + " frame initialization error: " + exc.getMessage());
 
                         dispose();
                         System.exit(1);
@@ -1376,44 +1377,57 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 }
             }
 
-            setStatusLabel("Layout");
+            final int EVALUATION_NODES_LIMIT = 5000;
+            boolean sizeLimitExceeded = BuildConfig.EVALUATION ? nc.getVertices().size() > EVALUATION_NODES_LIMIT : false;
 
-            // has to enable weights for SPN graphml graphs so as to have the correct rendering of the red inhibitor edges
-            // has to be enabled at this, so the graph is built with weight support on
-            if ( ( DATA_TYPE.equals(DataTypes.GRAPHML) || DATA_TYPE.equals(DataTypes.LAYOUT) ) && nc.getIsPetriNet() )
-                WEIGHTED_EDGES = true;
-
-            // directional edges off by default, since directionality there has no meaning
-            // for the rest of the data files, directionality can be on by default
-            boolean disableDirectionalEdges = DATA_TYPE.equals(DataTypes.CORRELATION) || DATA_TYPE.equals(DataTypes.MATRIX);
-            DIRECTIONAL_EDGES.set(!disableDirectionalEdges);
-            layoutGraphPropertiesDialog.setHasNewPreferencesBeenApplied(true);
-            graph.getSelectionManager().getGroupManager().resetState();
-            nc.createNetworkComponentsContainer();
-
-            GraphLayoutAlgorithm gla = GraphLayoutAlgorithm.ALWAYS_ASK;
-            if (!nc.getVertices().isEmpty()) // fail-safe check in case the parsed file is an empty graph
+            if(!sizeLimitExceeded)
             {
-                if (!nc.isOptimized())
-                {
-                    gla = GRAPH_LAYOUT_ALGORITHM.get();
+                setStatusLabel("Layout");
 
-                    if (gla == GraphLayoutAlgorithm.ALWAYS_ASK)
+                // has to enable weights for SPN graphml graphs so as to have the correct rendering of the red inhibitor edges
+                // has to be enabled at this, so the graph is built with weight support on
+                if ( ( DATA_TYPE.equals(DataTypes.GRAPHML) || DATA_TYPE.equals(DataTypes.LAYOUT) ) && nc.getIsPetriNet() )
+                    WEIGHTED_EDGES = true;
+
+                // directional edges off by default, since directionality there has no meaning
+                // for the rest of the data files, directionality can be on by default
+                boolean disableDirectionalEdges = DATA_TYPE.equals(DataTypes.CORRELATION) || DATA_TYPE.equals(DataTypes.MATRIX);
+                DIRECTIONAL_EDGES.set(!disableDirectionalEdges);
+                layoutGraphPropertiesDialog.setHasNewPreferencesBeenApplied(true);
+                graph.getSelectionManager().getGroupManager().resetState();
+                nc.createNetworkComponentsContainer();
+
+                GraphLayoutAlgorithm gla;
+                if (!nc.getVertices().isEmpty()) // fail-safe check in case the parsed file is an empty graph
+                {
+                    if (!nc.isOptimized())
                     {
-                        // Ask the user
-                        LayoutAlgorithmSelectionDialog lasd = new LayoutAlgorithmSelectionDialog(this);
-                        gla = lasd.getGraphLayoutAlgorithm();
-                    }
+                        gla = GRAPH_LAYOUT_ALGORITHM.get();
 
-                    nc.optimize(gla);
-                }
-                else
-                {
-                    nc.setKvalue();
+                        if (gla == GraphLayoutAlgorithm.ALWAYS_ASK)
+                        {
+                            // Ask the user
+                            LayoutAlgorithmSelectionDialog lasd = new LayoutAlgorithmSelectionDialog(this);
+                            gla = lasd.getGraphLayoutAlgorithm();
+                        }
+
+                        nc.optimize(gla);
+                    }
+                    else
+                    {
+                        nc.setKvalue();
+                    }
                 }
             }
+            else
+            {
+                JOptionPane.showMessageDialog(this, "This graph contains more than " +
+                        EVALUATION_NODES_LIMIT + " nodes.\n" +
+                        "Please purchase the full version to remove this limitation.",
+                        "Limit Exceeded", JOptionPane.ERROR_MESSAGE);
+            }
 
-            if (!layoutProgressBarDialog.userHasCancelled())
+            if (!layoutProgressBarDialog.userHasCancelled() && !sizeLimitExceeded)
             {
                 nc.clearRoot();
                 nc.normaliseWeights();
@@ -1555,7 +1569,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             layoutHomeToolBar.setEnabled(true);
 
 
-        if ( !saver.getSaveAction().isEnabled() )
+        if ( !saver.getSaveAction().isEnabled() && !BuildConfig.EVALUATION )
             saver.getSaveAction().setEnabled(true);
 
         if ( !importClassSetsParser.getImportClassSetsAction().isEnabled() )
@@ -1872,8 +1886,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if ( layoutGraphPropertiesDialog.getHasNewPreferencesBeenApplied() && CONFIRM_PREFERENCES_SAVE.get())
         {
             int option = JOptionPane.showConfirmDialog(this,
-                    "Do you want to save your preferences before exiting " + PRODUCT_NAME + "?",
-                    "Save Preferences & Exit " + PRODUCT_NAME, JOptionPane.YES_NO_CANCEL_OPTION);
+                    "Do you want to save your preferences before exiting " + DISPLAY_PRODUCT_NAME + "?",
+                    "Save Preferences & Exit " + DISPLAY_PRODUCT_NAME, JOptionPane.YES_NO_CANCEL_OPTION);
 
             if (option == JOptionPane.CANCEL_OPTION)
             {
@@ -1887,8 +1901,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
         else if (!nc.getVertices().isEmpty())
         {
             if (JOptionPane.showConfirmDialog(this,
-                    "Do you really want to exit " + PRODUCT_NAME + "?",
-                    "Exit " + PRODUCT_NAME, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
+                    "Do you really want to exit " + DISPLAY_PRODUCT_NAME + "?",
+                    "Exit " + DISPLAY_PRODUCT_NAME, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
             {
                 return;
             }

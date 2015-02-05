@@ -27,7 +27,8 @@ import static org.Kajeka.StaticLibraries.ImageProducer.*;
 public final class GlobalEnvironment
 {
     public static final String PRODUCT_NAME = BuildConfig.NAME;
-    public static final String TITLE = PRODUCT_NAME;
+    public static final String DISPLAY_PRODUCT_NAME = PRODUCT_NAME + (BuildConfig.EVALUATION ? " Evaluation" : "");
+    public static final String TITLE = DISPLAY_PRODUCT_NAME;
     public static final String TITLE_VERSION = " Version ";
     public static final String TITLE_VERSION_NUMBER = BuildConfig.VERSION;
     public static final boolean DEBUG_BUILD = BuildConfig.DEBUG;

@@ -34,6 +34,7 @@
         <osx.appbundler.path>${project.basedir}/appbundler/appbundler-1.0.jar</osx.appbundler.path>
 
         <debug.build>true</debug.build>
+        <evaluation>false</evaluation>
 
         <jarsigner.keystore>selfsign.jks</jarsigner.keystore>
         <jarsigner.alias>selfsigned</jarsigner.alias>
@@ -52,6 +53,18 @@
             </activation>
             <properties>
                 <debug.build>false</debug.build>
+            </properties>
+        </profile>
+        <profile>
+            <id>evaluation</id>
+            <activation>
+                <property>
+                    <name>evaluation</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <evaluation>true</evaluation>
             </properties>
         </profile>
     </profiles>
@@ -539,6 +552,10 @@
                                 <replacement>
                                     <token>@debug@</token>
                                     <value>${debug.build}</value>
+                                </replacement>
+                                <replacement>
+                                    <token>@evaluation@</token>
+                                    <value>${evaluation}</value>
                                 </replacement>
                             </replacements>
                         </configuration>

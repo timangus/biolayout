@@ -7,13 +7,12 @@ HTML_TEMPLATE="${SCRIPT_DIR}/index.html.template"
 WEBSTART_TEMPLATE="${SCRIPT_DIR}/WebStart.jnlp.template"
 BASE_URL="http://kajeka.com/internal"
 
-echo "PRE ${BASE_NAME}"
-if [ -z "${BASE_NAME}" ];
+if [ -z "${OUTPUT_NAME}" ];
 then
-  BASE_NAME="Kajeka"
+  OUTPUT_NAME="Kajeka"
 fi
-echo "POST ${BASE_NAME}"
 
+echo OUTPUT_NAME=${OUTPUT_NAME}
 echo SCRIPT_NAME=${SCRIPT_NAME}
 echo SCRIPT_DIR=${SCRIPT_DIR}
 echo SRC_DIR=${SRC_DIR}
@@ -31,32 +30,34 @@ echo GIT_REV=${GIT_REV}
 echo BUILD_DIR=${BUILD_DIR}
 echo BUILD_URL=${BUILD_URL}
 
-rm -r ${BUILD_DIR}
+#rm -r ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 
 # Windows
 cd ${SRC_DIR}/nsis-installer
 cat installer.nsi | sed \
   -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+  -e "s/_OUTPUT_NAME_/${OUTPUT_NAME}/g" \
   -e "s/_VERSION_/${VERSION}/g" \
   | makensis -
 if [ "$?" != "0" ];
 then
     exit $?
 fi
-cp ${SRC_DIR}/nsis-installer/${BASE_NAME}-${VERSION}-installer.exe ${BUILD_DIR}
+cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe ${BUILD_DIR}
 
 # OS X
 cd ${SRC_DIR}/target
 genisoimage -D -V Kajeka -no-pad -uid 0 -gid 0 -dir-mode 755 -file-mode 644 \
-    -apple -o ${BUILD_DIR}/${BASE_NAME}-${VERSION}.dmg dmg/
+    -apple -o ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg dmg/
 
 # Everything else
-cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar ${BUILD_DIR}
+cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar \
+  ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.jar
 
 # Source code
 cd ${SRC_DIR}
-git archive --format zip -9 --output ${BUILD_DIR}/${BASE_NAME}-${VERSION}-source.zip ${GIT_REV}
+git archive --format zip -9 --output ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}-source.zip ${GIT_REV}
 
 cat ${HTML_TEMPLATE} | sed \
     -e "s/_BUILD_NAME_/${BUILD_NAME}/g" \

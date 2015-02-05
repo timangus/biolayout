@@ -8,9 +8,10 @@
 !define LONG_NAME "_BASE_NAME_"
 !define VERSION "_VERSION_"
 !define BASE_NAME "_BASE_NAME_"
+!define OUTPUT_NAME "_OUTPUT_NAME_"
 !define BASE_DIR ".."
 
-!define INSTALLER_NAME "${BASE_NAME}-_VERSION_-installer.exe"
+!define INSTALLER_NAME "${OUTPUT_NAME}-_VERSION_-installer.exe"
 !define 32BIT_EXE_NAME "${BASE_NAME}-_VERSION_-32bit.exe"
 !define 64BIT_EXE_NAME "${BASE_NAME}-_VERSION_-64bit.exe"
 !define OUTPUT_EXE_NAME "${BASE_NAME}.exe"

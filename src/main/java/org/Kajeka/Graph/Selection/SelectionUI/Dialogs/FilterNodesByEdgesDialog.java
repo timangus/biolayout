@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import org.Kajeka.BuildConfig;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.Utils.*;
@@ -227,7 +228,7 @@ public final class FilterNodesByEdgesDialog extends JDialog implements ChangeLis
 
             // enable the unhide all and delete hidden actions if a change has been detected
             boolean flag = ( visibleNodes.size() != movedNodes.size() );
-            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag);
+            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag && !BuildConfig.EVALUATION);
             layoutFrame.getGraph().getSelectionManager().getUnhideAllAction().setEnabled(flag);
             layoutFrame.getGraph().getSelectionManager().getDeleteHiddenAction().setEnabled(flag);
 
