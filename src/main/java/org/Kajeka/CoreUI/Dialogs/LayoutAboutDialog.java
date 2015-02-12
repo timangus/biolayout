@@ -2,6 +2,7 @@ package org.Kajeka.CoreUI.Dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.net.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -33,7 +34,7 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
     {
         super(frame, "About " + VERSION, !isSplash);
 
-        this.setIconImage(ICON_IMAGE);
+        this.setIconImages(ICON_IMAGES);
         image = new JLabel( new ImageIcon(LOGO_IMAGE) );
 
         if (isSplash)
@@ -77,7 +78,26 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(new EmptyBorder(10, 10, 10, 10) );
 
-        JLabel icon = new JLabel(new ImageIcon(ICON_IMAGE));
+        BufferedImage idealImage = null;
+        for(BufferedImage iconImage : ICON_IMAGES)
+        {
+            if (iconImage.getWidth() <= 256)
+            {
+                if (idealImage != null)
+                {
+                    if (iconImage.getWidth() > idealImage.getWidth())
+                    {
+                        idealImage = iconImage;
+                    }
+                }
+                else
+                {
+                    idealImage = iconImage;
+                }
+            }
+        }
+
+        JLabel icon = new JLabel(new ImageIcon(idealImage));
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(icon);
         panel.add(Box.createRigidArea(new Dimension(20,20)));

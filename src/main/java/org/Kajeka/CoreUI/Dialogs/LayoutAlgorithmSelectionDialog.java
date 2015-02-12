@@ -24,7 +24,7 @@ public final class LayoutAlgorithmSelectionDialog extends JDialog implements Act
     public LayoutAlgorithmSelectionDialog(JFrame frame)
     {
         super(frame, "Layout Algorithm", true);
-        this.setIconImage(ICON_IMAGE);
+        this.setIconImages(ICON_IMAGES);
 
         initComponents();
     }

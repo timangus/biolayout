@@ -130,8 +130,7 @@ public final class GlobalEnvironment
     public static boolean IS_RENDERER_MODE_FIRST_SWITCH = true;
     public static final Dimension SCREEN_DIMENSION = new Dimension( Toolkit.getDefaultToolkit().getScreenSize() );
     public static final Dimension APPLICATION_SCREEN_DIMENSION = new Dimension( (int)( 0.9 * SCREEN_DIMENSION.width ), (int)( 0.9 * SCREEN_DIMENSION.height ) );
-    public static final BufferedImage ICON_IMAGE = loadImageFromURL( GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon.png") );
-    public static final ImageIcon MENU_ITEM_ICON = new ImageIcon( resizeImageByGivenRatio(ICON_IMAGE, 0.125f, true) );
+    public static final ArrayList<BufferedImage> ICON_IMAGES = loadIconsWithPattern(IMAGE_FILES_PATH + "/Icon*.png");
     public static final float MENUBAR_IMAGE_ICON_RESIZE_RATIO = 0.4f;
     public static final boolean USE_NEW_DESKTOP_PRINTING_FEATURE = LoadNativeLibrary.isWinVista() || LoadNativeLibrary.isWin7();
     public static final PrefInt PRINT_COPIES = new PrefInt(0, "print_copies", false);

@@ -5,8 +5,11 @@ import java.awt.image.*;
 import java.io.*;
 import javax.imageio.*;
 import java.net.*;
+import java.util.ArrayList;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 /**
 *
@@ -213,6 +216,33 @@ public final class ImageProducer
 
             return createNullPointerBufferedImage();
         }
+    }
+
+    public static ArrayList<BufferedImage> loadIconsWithPattern(String pattern)
+    {
+        ArrayList<BufferedImage> list = new ArrayList<>();
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+
+        try
+        {
+            Resource[] resources = resolver.getResources(pattern);
+
+            for(Resource resource : resources)
+            {
+                BufferedImage image = ImageIO.read(resource.getURL());
+                list.add(image);
+            }
+        }
+        catch (Exception e)
+        {
+            if (DEBUG_BUILD)
+            {
+                println("loadIconsWithPattern Exception:\n" + e.getMessage());
+            }
+        }
+
+        return list;
     }
 
     /**

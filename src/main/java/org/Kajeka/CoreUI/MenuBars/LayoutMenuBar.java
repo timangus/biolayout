@@ -691,7 +691,6 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
     {
         addSeparator(helpMenu);
         JMenuItem helpAbout = helpMenu.add(aboutAction);
-        helpAbout.setIcon(MENU_ITEM_ICON);
         helpAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.SHIFT_MASK));
         helpAbout.setMnemonic(KeyEvent.VK_A);
     }

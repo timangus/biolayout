@@ -99,7 +99,6 @@ import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 import org.Kajeka.CoreUI.LayoutFrame;
 import org.Kajeka.Environment.DataFolder;
-import static org.Kajeka.Environment.GlobalEnvironment.ICON_IMAGE;
 import org.apache.commons.io.FileUtils;
 import org.biopax.paxtools.io.BioPAXIOHandler;
 import org.biopax.paxtools.io.SimpleIOHandler;
@@ -278,7 +277,7 @@ public class ImportWebServiceDialog extends JFrame implements ActionListener{
 
         this.frame = frame;
         this.setTitle(myMessage);
-        this.setIconImage(ICON_IMAGE);
+        this.setIconImages(ICON_IMAGES);
 
         //search panel buttons
         searchButton = this.createJButton("Search", "Search Pathway Commons", false);

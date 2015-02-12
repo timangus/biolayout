@@ -77,7 +77,6 @@ public final class GraphPopupComponent implements Runnable
     {
         initPopupMenu();
         popupMenuItem = popupMenu.add(popupMenuItemName);
-        popupMenuItem.setIcon(MENU_ITEM_ICON);
         popupMenuItem.setForeground(Color.BLACK);
     }
 
