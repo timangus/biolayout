@@ -8,8 +8,7 @@ import java.net.*;
 import java.util.ArrayList;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.Kajeka.Environment.GlobalEnvironment;
 
 /**
 *
@@ -222,25 +221,12 @@ public final class ImageProducer
     {
         ArrayList<BufferedImage> list = new ArrayList<>();
 
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-
-        try
-        {
-            Resource[] resources = resolver.getResources(pattern);
-
-            for(Resource resource : resources)
-            {
-                BufferedImage image = ImageIO.read(resource.getURL());
-                list.add(image);
-            }
-        }
-        catch (Exception e)
-        {
-            if (DEBUG_BUILD)
-            {
-                println("loadIconsWithPattern Exception:\n" + e.getMessage());
-            }
-        }
+        list.add(loadImageFromURL(GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon16x16.png")));
+        list.add(loadImageFromURL(GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon32x32.png")));
+        list.add(loadImageFromURL(GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon64x64.png")));
+        list.add(loadImageFromURL(GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon128x128.png")));
+        list.add(loadImageFromURL(GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon256x256.png")));
+        list.add(loadImageFromURL(GlobalEnvironment.class.getResource(IMAGE_FILES_PATH + "Icon512x512.png")));
 
         return list;
     }
