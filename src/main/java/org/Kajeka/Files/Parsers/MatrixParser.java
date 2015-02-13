@@ -19,8 +19,6 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 public final class MatrixParser extends CoreParser
 {
-    private static final ImageIcon ICON_IMAGE_SMALL = new ImageIcon( ImageProducer.resizeImageByGivenRatio(ICON_IMAGE, 0.35f, true) );
-
     private double correlationCutOffValue = 0.5;
     private String[] namesArray = null;
     private float[][] dataArray = null;
@@ -35,7 +33,7 @@ public final class MatrixParser extends CoreParser
 
     public boolean proceed()
     {
-        String value = (String)JOptionPane.showInputDialog(layoutFrame, "Please select a matrix cutoff value:", "Matrix CutOff Dialog", JOptionPane.PLAIN_MESSAGE, ICON_IMAGE_SMALL, null, "0" + DECIMAL_SEPARATOR_STRING + "5");
+        String value = (String)JOptionPane.showInputDialog(layoutFrame, "Please select a matrix cutoff value:", "Matrix CutOff Dialog", JOptionPane.PLAIN_MESSAGE, null, null, "0" + DECIMAL_SEPARATOR_STRING + "5");
         if (value != null)
         {
             value = value.replace(',', '.');
