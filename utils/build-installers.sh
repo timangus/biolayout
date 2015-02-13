@@ -74,7 +74,7 @@ cat ${WEBSTART_TEMPLATE} | sed -e "s%_BUILD_URL_%${BUILD_URL}%g" \
     -e "s/_VERSION_/${VERSION}/g" \
     -e "s/_HEAP_SIZE_/32000m/g" > ${BUILD_DIR}/WebStart64.jnlp
 cp ${SRC_DIR}/src/main/resources/Resources/Images/Splash.png ${BUILD_DIR}
-cp ${SRC_DIR}/src/main/resources/Resources/Images/Icon.png ${BUILD_DIR}
+cp ${SRC_DIR}/src/main/resources/Resources/Images/Icon512x512.png ${BUILD_DIR}
 
 rm ${BUILDS_DIR}/current
 ln -s ${BUILD_DIR} ${BUILDS_DIR}/current
