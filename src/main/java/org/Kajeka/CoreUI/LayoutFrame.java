@@ -1377,7 +1377,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 }
             }
 
-            final int EVALUATION_NODES_LIMIT = 5000;
+            final int EVALUATION_NODES_LIMIT = 3000;
             boolean sizeLimitExceeded = BuildConfig.EVALUATION ? nc.getVertices().size() > EVALUATION_NODES_LIMIT : false;
 
             if(!sizeLimitExceeded)
