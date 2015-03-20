@@ -86,7 +86,15 @@ public class VertexClassColorAssigner
 
             if (!digits.isEmpty())
             {
-                int value = Integer.parseInt(digits);
+                int value = 0;
+                try
+                {
+                    value = (int)Long.parseLong(digits);
+                }
+                catch(NumberFormatException nfe)
+                {
+                    // This can happen when the value is too large to parse
+                }
                 sumOfValues += value;
             }
 
