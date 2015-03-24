@@ -44,10 +44,10 @@ public final class CoreSaver
     private int totalLines = 0;
 
     private FileNameExtensionFilter fileNameExtensionFilterLayout = null;
-    private FileNameExtensionFilter fileNameExtensionFilterTGF = null;
+    private FileNameExtensionFilter fileNameExtensionFilterPairwise = null;
     private FileNameExtensionFilter fileNameExtensionFilterCollapsedLayout = null;
-    private FileNameExtensionFilter fileNameExtensionFilterCollapsedTGF = null;
-    private FileNameExtensionFilter fileNameExtensionFilterCollapsedClusterNodesTGF = null;
+    private FileNameExtensionFilter fileNameExtensionFilterCollapsedPairwise = null;
+    private FileNameExtensionFilter fileNameExtensionFilterCollapsedClusterNodesPairwise = null;
     private boolean isCollapsed = false;
 
     public CoreSaver(NetworkContainer nc, LayoutFrame layoutFrame)
@@ -61,10 +61,10 @@ public final class CoreSaver
     private void initComponents()
     {
         fileNameExtensionFilterLayout = new FileNameExtensionFilter( "Save as a Layout File", SupportedOutputFileTypes.LAYOUT.toString().toLowerCase() );
-        fileNameExtensionFilterTGF = new FileNameExtensionFilter( "Save as a TGF File", SupportedOutputFileTypes.TGF.toString().toLowerCase() );
+        fileNameExtensionFilterPairwise = new FileNameExtensionFilter( "Save as a Pairwise TXT File", SupportedOutputFileTypes.TXT.toString().toLowerCase() );
         fileNameExtensionFilterCollapsedLayout = new FileNameExtensionFilter( "Save as a Collapsed Layout File (Remove Redundancies)", SupportedOutputFileTypes.LAYOUT.toString().toLowerCase() );
-        fileNameExtensionFilterCollapsedTGF = new FileNameExtensionFilter( "Save as a Collapsed TGF File (Remove Redudancies)", SupportedOutputFileTypes.TGF.toString().toLowerCase() );
-        fileNameExtensionFilterCollapsedClusterNodesTGF = new FileNameExtensionFilter( "Save as a Collapsed TGF File (With Collapsed Cluster Nodes & Remove Redundancies)", SupportedOutputFileTypes.TGF.toString().toLowerCase() );
+        fileNameExtensionFilterCollapsedPairwise = new FileNameExtensionFilter( "Save as a Collapsed Pairwise TXT File (Remove Redudancies)", SupportedOutputFileTypes.TXT.toString().toLowerCase() );
+        fileNameExtensionFilterCollapsedClusterNodesPairwise = new FileNameExtensionFilter( "Save as a Collapsed Pairwise TXT File (With Collapsed Cluster Nodes & Remove Redundancies)", SupportedOutputFileTypes.TXT.toString().toLowerCase() );
 
         String saveFilePath = FILE_CHOOSER_PATH.get().substring(0, FILE_CHOOSER_PATH.get().lastIndexOf( System.getProperty("file.separator") ) + 1);
         fileChooser = new JFileChooser(saveFilePath);
@@ -160,23 +160,23 @@ public final class CoreSaver
 
     private void removeAllFileFilters()
     {
-        fileChooser.removeChoosableFileFilter(fileNameExtensionFilterTGF);
+        fileChooser.removeChoosableFileFilter(fileNameExtensionFilterPairwise);
         fileChooser.removeChoosableFileFilter(fileNameExtensionFilterLayout);
-        fileChooser.removeChoosableFileFilter(fileNameExtensionFilterCollapsedTGF);
-        fileChooser.removeChoosableFileFilter(fileNameExtensionFilterCollapsedClusterNodesTGF);
+        fileChooser.removeChoosableFileFilter(fileNameExtensionFilterCollapsedPairwise);
+        fileChooser.removeChoosableFileFilter(fileNameExtensionFilterCollapsedClusterNodesPairwise);
         fileChooser.removeChoosableFileFilter(fileNameExtensionFilterCollapsedLayout);
     }
 
     private void addAllFileFilters()
     {
         // last filter appears as default in save list
-        fileChooser.setFileFilter(fileNameExtensionFilterTGF);
+        fileChooser.setFileFilter(fileNameExtensionFilterPairwise);
         fileChooser.setFileFilter(fileNameExtensionFilterLayout);
 
         if (isCollapsed)
         {
-            fileChooser.setFileFilter(fileNameExtensionFilterCollapsedTGF);
-            fileChooser.setFileFilter(fileNameExtensionFilterCollapsedClusterNodesTGF);
+            fileChooser.setFileFilter(fileNameExtensionFilterCollapsedPairwise);
+            fileChooser.setFileFilter(fileNameExtensionFilterCollapsedClusterNodesPairwise);
             fileChooser.setFileFilter(fileNameExtensionFilterCollapsedLayout);
         }
     }
@@ -200,7 +200,7 @@ public final class CoreSaver
     {
         int dialogReturnValue = 0;
         boolean saveLayout = false;
-        boolean saveTGF = false;
+        boolean savePairwise = false;
         boolean doSaveFile = false;
         File saveFile = null;
 
@@ -213,12 +213,12 @@ public final class CoreSaver
                 fileExtension = fileNameExtensionFilterLayout.getExtensions()[0];
                 saveLayout = true;
             }
-            else if ( fileChooser.getFileFilter().equals(fileNameExtensionFilterTGF) || fileChooser.getFileFilter().equals(fileNameExtensionFilterCollapsedTGF) || fileChooser.getFileFilter().equals(fileNameExtensionFilterCollapsedClusterNodesTGF) )
+            else if ( fileChooser.getFileFilter().equals(fileNameExtensionFilterPairwise) || fileChooser.getFileFilter().equals(fileNameExtensionFilterCollapsedPairwise) || fileChooser.getFileFilter().equals(fileNameExtensionFilterCollapsedClusterNodesPairwise) )
             {
-                fileExtension = fileNameExtensionFilterTGF.getExtensions()[0];
-                saveTGF = true;
+                fileExtension = fileNameExtensionFilterPairwise.getExtensions()[0];
+                savePairwise = true;
 
-                if ( fileChooser.getFileFilter().equals(fileNameExtensionFilterCollapsedClusterNodesTGF) )
+                if ( fileChooser.getFileFilter().equals(fileNameExtensionFilterCollapsedClusterNodesPairwise) )
                     saveWithCollapsedClusterNodes(saveAllGraph);
             }
             else // default file extension will be the layout file format
@@ -254,7 +254,7 @@ public final class CoreSaver
         if (doSaveFile)
         {
             // saving process on its own thread, to effectively decouple it from the main GUI thread
-            Thread runLightWeightThread = new Thread( new CoreSaverProcess(saveLayout, saveTGF, saveFile, saveAllGraph) );
+            Thread runLightWeightThread = new Thread( new CoreSaverProcess(saveLayout, savePairwise, saveFile, saveAllGraph) );
             runLightWeightThread.setPriority(Thread.NORM_PRIORITY);
             runLightWeightThread.start();
         }
@@ -334,7 +334,7 @@ public final class CoreSaver
         }
     }
 
-    private void saveTGFFile(File saveFile, boolean saveAllGraph)
+    private void savePairwiseFile(File saveFile, boolean saveAllGraph)
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
         FileWriter fileWriter = null;
@@ -342,7 +342,7 @@ public final class CoreSaver
         try
         {
             layoutProgressBarDialog.startProgressBar();
-            layoutProgressBarDialog.prepareProgressBar(totalLines, (isCollapsed) ? "Now Saving Collapsed TGF File..." : "Now Saving TGF File...");
+            layoutProgressBarDialog.prepareProgressBar(totalLines, (isCollapsed) ? "Now Saving Collapsed pairwise File..." : "Now Saving pairwise File...");
 
             fileWriter = new FileWriter(saveFile);
 
@@ -352,7 +352,7 @@ public final class CoreSaver
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in CoreSaver.saveTGFFile():\n" + ioe.getMessage());
+            if (DEBUG_BUILD) println("IOException in CoreSaver.savePairwiseFile():\n" + ioe.getMessage());
 
             layoutProgressBarDialog.endProgressBar();
             layoutProgressBarDialog.stopProgressBar();
@@ -367,7 +367,7 @@ public final class CoreSaver
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException while closing streams in CoreSaver.saveTGFFile():\n" + ioe.getMessage());
+                if (DEBUG_BUILD) println("IOException while closing streams in CoreSaver.savePairwiseFile():\n" + ioe.getMessage());
             }
             finally
             {
@@ -590,14 +590,14 @@ public final class CoreSaver
     {
 
         private boolean saveLayout = false;
-        private boolean saveTGF = false;
+        private boolean savePairwise = false;
         private File saveFile = null;
         private boolean saveAllGraph = false;
 
-        private CoreSaverProcess(boolean saveLayout, boolean saveTGF, File saveFile, boolean saveAllGraph)
+        private CoreSaverProcess(boolean saveLayout, boolean savePairwise, File saveFile, boolean saveAllGraph)
         {
             this.saveLayout = saveLayout;
-            this.saveTGF = saveTGF;
+            this.savePairwise = savePairwise;
             this.saveFile = saveFile;
             this.saveAllGraph = saveAllGraph;
         }
@@ -607,8 +607,8 @@ public final class CoreSaver
         {
             if (saveLayout)
                 saveLayoutFile(saveFile, saveAllGraph);
-            else if (saveTGF)
-                saveTGFFile(saveFile, saveAllGraph);
+            else if (savePairwise)
+                savePairwiseFile(saveFile, saveAllGraph);
 
             FILE_CHOOSER_PATH.set( saveFile.getAbsolutePath() );
         }

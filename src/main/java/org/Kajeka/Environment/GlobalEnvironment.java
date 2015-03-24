@@ -105,7 +105,7 @@ public final class GlobalEnvironment
 
     // file input/output variables
     public static enum SupportedInputFileTypes { BLAST, OWL, CSV, EXPRESSION, GRAPHML, MEPN, LAYOUT, SIF, TGF, TXT, MATRIX, XML, GML }
-    public static enum SupportedOutputFileTypes { LAYOUT, TGF }
+    public static enum SupportedOutputFileTypes { LAYOUT, TXT }
     public static enum SupportedImportExportFileTypes { CLASSSETS, TXT }
     public static enum SupportedSimulationFileTypes { SPN, TXT }
     public static enum LicensesFiles { LICENSE_KAJEKA, LICENSE_GPLV3, LICENSE_JOGL }
