@@ -3,6 +3,7 @@ package org.Kajeka.Utils;
 import org.Kajeka.BuildConfig;
 import static org.Kajeka.DebugConsole.ConsoleOutput.println;
 import static org.Kajeka.Environment.GlobalEnvironment.DEBUG_BUILD;
+import static org.Kajeka.Environment.GlobalEnvironment.LICENSE_EMAIL;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -24,9 +25,10 @@ public class UsageTracker
     public void log(String text)
     {
         String build = BuildConfig.VERSION + "(" + BuildConfig.BUILD_TIME + ")";
+        String licenseEmail = LICENSE_EMAIL.get();
         long unixTime = System.currentTimeMillis() / 1000L;
 
-        String line = build + "," + unixTime + "," + text;
+        String line = build + "," + licenseEmail + "," + unixTime + "," + text;
 
         log += "\n" + line;
     }

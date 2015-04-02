@@ -285,7 +285,7 @@ public final class CoreSaver
             layoutProgressBarDialog.prepareProgressBar(totalLines, (isCollapsed) ? "Now Saving Collapsed Layout File..." : "Now Saving Layout File...");
 
             fileWriter = new FileWriter(saveFile);
-            fileWriter.write("//" + VERSION + " " + " Layout File\n");
+            fileWriter.write("//" + DISPLAY_PRODUCT_NAME_AND_VERSION + " " + " Layout File\n");
             if ( DATA_TYPE.equals(DataTypes.CORRELATION) )
             {
                 String saveFilePath = saveFile.getAbsolutePath().substring(0, saveFile.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);

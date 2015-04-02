@@ -301,7 +301,7 @@ public final class FilterEdgesByWeightDialog extends JDialog implements ChangeLi
 
             // enable the unhide all and delete hidden actions if a change has been detected
             boolean flag = ( visibleEdges.size() != movedEdges.size() );
-            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag && !BuildConfig.EVALUATION);
+            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag && IS_LICENSED);
             layoutFrame.getGraph().getSelectionManager().getUnhideAllAction().setEnabled(flag);
             layoutFrame.getGraph().getSelectionManager().getDeleteHiddenAction().setEnabled(flag);
 

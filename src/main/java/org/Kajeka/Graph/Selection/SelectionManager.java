@@ -111,7 +111,7 @@ public final class SelectionManager
         {
             layoutFrame.getGraph().setEnabledUndoNodeDragging(value);
             layoutFrame.getGraph().setEnabledRedoNodeDragging(value);
-            layoutFrame.getCoreSaver().getSaveSelectedAction().setEnabled( !selectedNodes.isEmpty() && !BuildConfig.EVALUATION );
+            layoutFrame.getCoreSaver().getSaveSelectedAction().setEnabled( !selectedNodes.isEmpty() && IS_LICENSED );
             layoutFrame.getExportClassSets().getExportClassSetsFromGraphSelectionAction().setEnabled(value);
             layoutFrame.getLayoutAnimationControlDialog().setEnabledSelectedNodesCheckbox(value);
         }
@@ -761,7 +761,7 @@ public final class SelectionManager
         deleteHiddenAction.setEnabled(true);
 
         if ( !layoutFrame.getCoreSaver().getSaveVisibleAction().isEnabled() )
-            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(true && !BuildConfig.EVALUATION);
+            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(true && IS_LICENSED);
 
         if ( !layoutFrame.getExportClassSets().getExportClassSetsFromVisibleGraphAction().isEnabled() )
             layoutFrame.getExportClassSets().getExportClassSetsFromVisibleGraphAction().setEnabled(true);

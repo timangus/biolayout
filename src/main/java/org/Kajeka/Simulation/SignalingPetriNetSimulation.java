@@ -913,7 +913,7 @@ public class SignalingPetriNetSimulation
                 layoutProgressBarDialog.startProgressBar();
 
                 fileWriter = new FileWriter(saveFile);
-                fileWriter.write("//" + VERSION + " " + " SPN Results File\n");
+                fileWriter.write("//" + DISPLAY_PRODUCT_NAME_AND_VERSION + " " + " SPN Results File\n");
                 fileWriter.write("//SPN_RESULTS\t\"" + layoutFrame.getFileNameLoaded() +
                         "\"\t\"" + SAVE_DETAILS_DATA_COLUMN_NAME_NODES + numberOfVertices +
                         "\"\t\"" + SAVE_DETAILS_DATA_COLUMN_NAME_TIMEBLOCKS + totalTimeBlocks +

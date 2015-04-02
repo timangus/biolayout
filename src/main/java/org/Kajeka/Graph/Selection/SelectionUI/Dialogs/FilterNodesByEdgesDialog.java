@@ -228,7 +228,7 @@ public final class FilterNodesByEdgesDialog extends JDialog implements ChangeLis
 
             // enable the unhide all and delete hidden actions if a change has been detected
             boolean flag = ( visibleNodes.size() != movedNodes.size() );
-            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag && !BuildConfig.EVALUATION);
+            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag && IS_LICENSED);
             layoutFrame.getGraph().getSelectionManager().getUnhideAllAction().setEnabled(flag);
             layoutFrame.getGraph().getSelectionManager().getDeleteHiddenAction().setEnabled(flag);
 

@@ -44,9 +44,9 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
+import org.Kajeka.Utils.LicenseKeyValidator;
 import org.Kajeka.Utils.ToolbarLayout;
 import org.Kajeka.Utils.UsageTracker;
-import org.biopax.paxtools.util.IllegalBioPAXArgumentException;
 
 /**
 *
@@ -102,7 +102,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private LayoutLicensesDialog layoutLicensesDialog = null;
     private LayoutOpenGLDriverCapsDialog layoutOpenGLDriverCapsDialog = null;
     private LayoutJavaPlatformCapsDialog layoutJavaPlatformCapsDialog = null;
-    private LayoutOnlineServices layoutOnlineServices = null;
+    private LayoutValidateLicenseKeyDialog layoutValidateLicenseKeyDialog = null;
     private UsageTracker usageTracker;
 
     private AbstractAction fileMenuOpenAction = null;
@@ -141,7 +141,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     */
     public LayoutFrame()
     {
-        super(VERSION);
+        super(DISPLAY_PRODUCT_NAME_AND_VERSION);
     }
 
     /**
@@ -159,6 +159,13 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         loadRestOfPreferences();
 
+        LicenseKeyValidator lkv = new LicenseKeyValidator(LICENSE_EMAIL.get());
+        IS_LICENSED = lkv.valid(LICENSE_KEY.get());
+        DISPLAY_PRODUCT_NAME = PRODUCT_NAME + (!IS_LICENSED ? " Evaluation" : "");
+        DISPLAY_PRODUCT_NAME_AND_VERSION = DISPLAY_PRODUCT_NAME + (BuildConfig.VERSION.equals("development") ?
+            " internal development version" :
+            " Version " + BuildConfig.VERSION);
+
         Insets insets = this.getInsets();
         this.setSize( new Dimension(APPLICATION_SCREEN_DIMENSION.width + insets.left + insets.right - 2, APPLICATION_SCREEN_DIMENSION.height + insets.top + insets.bottom - 2) );
         this.setMinimumSize(new Dimension(320, 240));
@@ -174,7 +181,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutProgressBarDialog = new LayoutProgressBarDialog(this);
         layoutNavigationWizardDialog = new LayoutNavigationWizardDialog(this);
         layoutTipOfTheDayDialog = new LayoutTipOfTheDayDialog(this);
-        layoutOnlineServices = new LayoutOnlineServices(this);
+        layoutValidateLicenseKeyDialog = new LayoutValidateLicenseKeyDialog(this);
         usageTracker = new UsageTracker();
 
         sleepMaxTime(prevTimeInMSecs);
@@ -335,7 +342,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         } );
 
         this.setLocation( (SCREEN_DIMENSION.width - APPLICATION_SCREEN_DIMENSION.width) / 2, (SCREEN_DIMENSION.height - APPLICATION_SCREEN_DIMENSION.height) / 2 );
-        this.setTitle(VERSION);
+        this.setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         sleep(MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING);
@@ -691,6 +698,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setHelpMenuOpenGLDriverCapsAction( layoutOpenGLDriverCapsDialog.getOpenGLDriverCapsAction() );
         layoutMenuBar.setHelpMenuJavaPlatformCapsAction( layoutJavaPlatformCapsDialog.getJavaPlatformCapsAction() );
         layoutMenuBar.setHelpMenuAboutAction( layoutAboutDialog.getAboutAction() );
+        layoutMenuBar.setHelpMenuValidateLicenseKeyAction(layoutValidateLicenseKeyDialog.getValidateLicenseKeyAction());
 
         // Adds the 2D/3D menus in 2D/3D mode
         if (RENDERER_MODE_3D)
@@ -808,7 +816,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         setVisible(true);
 
                         usageTracker.log("open");
-                        layoutOnlineServices.checkApplicationUsage();
                         if (!startWithAutomaticFileLoading)
                             checkToShowNavigationWizardOnStartup();
                     }
@@ -1224,7 +1231,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     CORRELATION_FILE_PATH = "";
                     fileNameLoaded = "";
                     fileNameAbsolutePath = "";
-                    setTitle(VERSION);
+                    setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
                     INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
                     disableAllActions();
@@ -1378,7 +1385,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             }
 
             final int EVALUATION_NODES_LIMIT = 3000;
-            boolean sizeLimitExceeded = BuildConfig.EVALUATION ? nc.getVertices().size() > EVALUATION_NODES_LIMIT : false;
+            boolean sizeLimitExceeded = !IS_LICENSED ? nc.getVertices().size() > EVALUATION_NODES_LIMIT : false;
 
             if(!sizeLimitExceeded)
             {
@@ -1446,7 +1453,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             fileNameLoaded = file.getName();
             fileNameAbsolutePath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
             String correlationValueString = ( DATA_TYPE.equals(DataTypes.CORRELATION) ) ? " at " + CURRENT_CORRELATION_THRESHOLD : ( DATA_TYPE.equals(DataTypes.MATRIX) ? " at " + correlationCutOffValue : "" );
-            this.setTitle(VERSION + "  [ " + file.getAbsolutePath() + correlationValueString + " ] " + ( (WEIGHTED_EDGES) ? "(" : "(non-" ) + "weighted graph)");
+            this.setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION + "  [ " + file.getAbsolutePath() + correlationValueString + " ] " + ( (WEIGHTED_EDGES) ? "(" : "(non-" ) + "weighted graph)");
             INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = !USE_INSTALL_DIR_FOR_SCREENSHOTS.get();
 
             classViewerFrame.getClassViewerAction().setEnabled(true);
@@ -1470,7 +1477,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 CORRELATION_FILE_PATH = "";
                 fileNameLoaded = "";
                 fileNameAbsolutePath = "";
-                setTitle(VERSION);
+                setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
                 INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
                 disableAllActions();
@@ -1541,7 +1548,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         CORRELATION_FILE_PATH = "";
         fileNameLoaded = "";
         fileNameAbsolutePath = "";
-        setTitle(VERSION);
+        setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
         INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
         if(disableAllActions)
@@ -1569,7 +1576,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             layoutHomeToolBar.setEnabled(true);
 
 
-        if ( !saver.getSaveAction().isEnabled() && !BuildConfig.EVALUATION )
+        if ( !saver.getSaveAction().isEnabled() && IS_LICENSED )
             saver.getSaveAction().setEnabled(true);
 
         if ( !importClassSetsParser.getImportClassSetsAction().isEnabled() )

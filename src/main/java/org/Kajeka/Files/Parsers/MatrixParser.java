@@ -149,7 +149,7 @@ public final class MatrixParser extends CoreParser
         try
         {
             FileWriter fileWriter = new FileWriter( new File(IOUtils.getPrefix( file.getAbsolutePath() ) + ".layout") );
-            fileWriter.write("//" + VERSION + " " + " Layout File\n");
+            fileWriter.write("//" + DISPLAY_PRODUCT_NAME_AND_VERSION + " " + " Layout File\n");
 
             for (int i = 0; i < totalLines - 1; i++)
             {

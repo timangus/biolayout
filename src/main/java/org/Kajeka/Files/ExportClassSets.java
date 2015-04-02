@@ -193,7 +193,7 @@ public final class ExportClassSets
             layoutProgressBarDialog.startProgressBar();
 
             fileWriter = new FileWriter(saveFile);
-            fileWriter.write("//" + VERSION + " " + " Class Sets File\n");
+            fileWriter.write("//" + DISPLAY_PRODUCT_NAME_AND_VERSION + " " + " Class Sets File\n");
             if ( DATA_TYPE.equals(DataTypes.CORRELATION) )
                 fileWriter.write("//CORRELATION_DATA\t\"" + CORRELATION_FILE + "\"\n");
 
