@@ -10,7 +10,7 @@ public class LicenseKeyValidator
 
     public LicenseKeyValidator(String emailAddress)
     {
-        this.emailAddress = emailAddress;
+        this.emailAddress = emailAddress.toLowerCase();
     }
 
     public boolean valid(String key)
