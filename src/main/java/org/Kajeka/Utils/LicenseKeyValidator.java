@@ -26,7 +26,7 @@ public class LicenseKeyValidator
             for(int i = 0; i < d.length; i += 2)
             {
                 int vi = (int)(d[i] & 0xFF);
-                int viPlus1 = (int)((d[i] + 1) & 0xFF);
+                int viPlus1 = (int)(d[i + 1] & 0xFF);
                 int value = 65 + ((vi + viPlus1) % 26);
                 sb.append(Character.toChars(value));
             }
