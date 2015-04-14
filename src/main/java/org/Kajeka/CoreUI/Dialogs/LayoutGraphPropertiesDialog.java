@@ -198,6 +198,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
     private JButton nodeRevertOverride = null;
     private ColorButton nodeColorButton = null;
     private ModelShapeEditorParentUIDialog modelShapeEditorParentUIDialog = null;
+    private JComboBox<Integer> nodeSizeComboBox = null;
     private ClassComboBox nodeClassComboBox = null;
     private JTextField nodeClassSetName = null;
     private JTextField nodeClassName = null;
@@ -536,6 +537,17 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 {
                     nodeColorButton.isBlank = false;
                     nodeColorButton.setBackground( graphNode.getColor() );
+                }
+
+                if (!multipleSize)
+                {
+                    int selectedNodeSize = (int) graphNode.getNodeSize();
+                    int index = selectedNodeSize - 1;
+                    nodeSizeComboBox.setSelectedIndex(index < nodeSizeComboBox.getItemCount() ? index : 0);
+                }
+                else
+                {
+                    nodeSizeComboBox.setSelectedIndex(0);
                 }
 
                 if (multiple2DShape)
@@ -1663,6 +1675,15 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeColorButton.addActionListener(this);
         nodeColorButton.setToolTipText("Color");
 
+        nodeSizeComboBox = new JComboBox<Integer>();
+        nodeSizeComboBox.setActionCommand(CHANGE_ACTION_COMMAND_NODES);
+        nodeSizeComboBox.addActionListener(this);
+        nodeSizeComboBox.setToolTipText("Node Size");
+
+        for (int i = MIN_NODE_SIZE; i <= MAX_NODE_SIZE; i++)
+            nodeSizeComboBox.addItem(i);
+
+
         JButton lathe3DViewer = new JButton("Lathe3D Shape Editor");
         lathe3DViewer.setAction( modelShapeEditorParentUIDialog.getModelShapeLathe3DAction() );
         lathe3DViewer.setToolTipText("Lathe3D Interactive Shape Editor");
@@ -1700,16 +1721,20 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeSettingsRightPanel.setLayout( new BoxLayout(nodeSettingsRightPanel, BoxLayout.Y_AXIS) );
 
         JPanel nodeSettingsSubPanel5 = new JPanel(true);
-        nodeSettingsSubPanel5.add( new JLabel("Customize Shape:") );
-        nodeSettingsSubPanel5.add(lathe3DViewer);
+        nodeSettingsSubPanel5.add( new JLabel("Node Size:") );
+        nodeSettingsSubPanel5.add(nodeSizeComboBox);
 
         JPanel nodeSettingsSubPanel6 = new JPanel(true);
         nodeSettingsSubPanel6.add( new JLabel("Customize Shape:") );
-        nodeSettingsSubPanel6.add(superQuadricViewer);
+        nodeSettingsSubPanel6.add(lathe3DViewer);
 
         JPanel nodeSettingsSubPanel7 = new JPanel(true);
         nodeSettingsSubPanel7.add( new JLabel("Customize Shape:") );
-        nodeSettingsSubPanel7.add(objModelLoaderViewer);
+        nodeSettingsSubPanel7.add(superQuadricViewer);
+
+        JPanel nodeSettingsSubPanel8 = new JPanel(true);
+        nodeSettingsSubPanel8.add( new JLabel("Customize Shape:") );
+        nodeSettingsSubPanel8.add(objModelLoaderViewer);
 
         nodeSettingsLeftPanel.add(nodeSettingsSubPanel1);
         nodeSettingsLeftPanel.add(nodeSettingsSubPanel2);
@@ -1718,6 +1743,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         nodeSettingsRightPanel.add(nodeSettingsSubPanel5);
         nodeSettingsRightPanel.add(nodeSettingsSubPanel6);
         nodeSettingsRightPanel.add(nodeSettingsSubPanel7);
+        nodeSettingsRightPanel.add(nodeSettingsSubPanel8);
 
         JPanel nodeSettingsPanel = new JPanel(true);
         nodeSettingsPanel.setLayout( new BoxLayout(nodeSettingsPanel, BoxLayout.X_AXIS) );
@@ -1980,7 +2006,11 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                 }
             }
 
-            if ( e.getSource().equals(nodeColorButton) )
+            if ( e.getSource().equals(nodeSizeComboBox) )
+            {
+                nodeSizeChange = true;
+            }
+            else if ( e.getSource().equals(nodeColorButton) )
             {
                 nodeColorChange = true;
             }
@@ -2587,6 +2617,9 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
                         graphNode.setColor( nodeColorButton.getBackground() );
                 }
             }
+
+            if (nodeSizeChange)
+                graphNode.setNodeSize(nodeSizeComboBox.getSelectedIndex() + 1);
 
             if (node2DShapeChange)
             {
