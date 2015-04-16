@@ -5,7 +5,9 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.println;
 import static org.Kajeka.Environment.GlobalEnvironment.DEBUG_BUILD;
 import static org.Kajeka.Environment.GlobalEnvironment.LICENSE_EMAIL;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -44,7 +46,10 @@ public class UsageTracker
             HttpPost post = new HttpPost(UPLOAD_URL);
             post.setEntity(builder.build());
 
-            HttpClient client = HttpClientBuilder.create().build();
+            final int TIMEOUT = 5000;
+            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(TIMEOUT).build();
+            SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(TIMEOUT).build();
+            HttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).setDefaultSocketConfig(socketConfig).build();
             client.execute(post);
         }
         catch (Exception e)
