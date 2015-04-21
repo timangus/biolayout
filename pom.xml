@@ -158,6 +158,7 @@
                     <enabled>true</enabled>
                 </snapshots>
         </repository>
+
         <!-- BioPAX release repository -->
         <repository>
                 <id>biopax.releases</id>
