@@ -25,8 +25,14 @@ function signexe
     return
   fi
 
-  echo ${SIGN_PASSWORD} | signcode -spc ${SIGN_SPC} -v ${SIGN_PVK} \
-    -t http://tsa.starfieldtech.com/ $1
+  echo ${SIGN_PASSWORD} | signcode \
+    -spc ${SIGN_SPC} \
+    -v ${SIGN_PVK} \
+    -a sha1 -$ commercial \
+    -n Miru \
+    -i http://kajeka.com/ \
+    -t http://tsa.starfieldtech.com/ \
+    $1
 }
 
 cd ${SRC_DIR}
