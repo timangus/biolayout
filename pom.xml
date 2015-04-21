@@ -168,6 +168,7 @@
                     <enabled>false</enabled>
                 </snapshots>
         </repository>
+
         <repository>
                 <id>biopax.snapshots</id>
                 <name>BioPAX Snapshots Repository</name>
