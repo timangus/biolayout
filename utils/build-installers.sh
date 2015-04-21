@@ -17,6 +17,18 @@ echo SCRIPT_NAME=${SCRIPT_NAME}
 echo SCRIPT_DIR=${SCRIPT_DIR}
 echo SRC_DIR=${SRC_DIR}
 
+function signexe
+{
+  if [ -z "${SIGN_PASSWORD}" ];
+  then
+    echo "Not signing $1, no credentials supplied..."
+    return
+  fi
+
+  echo ${SIGN_PASSWORD} | signcode -spc ${SIGN_SPC} -v ${SIGN_PVK} \
+    -t http://tsa.starfieldtech.com/ $1
+}
+
 cd ${SRC_DIR}
 VERSION=`${SCRIPT_DIR}/version.sh`
 
@@ -34,6 +46,9 @@ echo BUILD_URL=${BUILD_URL}
 mkdir -p ${BUILD_DIR}
 
 # Windows
+signexe ${SRC_DIR}/target/${BASE_NAME}-${VERSION}-32bit.exe
+signexe ${SRC_DIR}/target/${BASE_NAME}-${VERSION}-64bit.exe
+
 cd ${SRC_DIR}/nsis-installer
 cat installer.nsi | sed \
   -e "s/_BASE_NAME_/${BASE_NAME}/g" \
@@ -44,6 +59,7 @@ if [ "$?" != "0" ];
 then
     exit $?
 fi
+signexe ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe
 cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe ${BUILD_DIR}
 
 # OS X
