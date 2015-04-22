@@ -25,14 +25,16 @@ function signexe
     return
   fi
 
-  echo ${SIGN_PASSWORD} | signcode \
-    -spc ${SIGN_SPC} \
-    -v ${SIGN_PVK} \
-    -a sha1 -$ commercial \
-    -n Miru \
-    -i http://kajeka.com/ \
+  osslsigncode sign \
+    -pkcs12 ${SIGN_P12} \
+    -pass ${SIGN_PASSWORD} \
+    -n "${BASE_NAME}" \
+    -i http://www.kajeka.com/ \
     -t http://tsa.starfieldtech.com/ \
-    $1
+    -in ${1} \
+    -out ${1}.signed
+
+  mv ${1}.signed ${1}
 }
 
 cd ${SRC_DIR}
