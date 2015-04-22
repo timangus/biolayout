@@ -354,22 +354,22 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                                <tasks if="codesign">
-                                    <exec executable="sign4j">
-                                        <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
+                            <tasks if="codesign">
+                                <exec executable="sign4j">
+                                    <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
                                             -pass ${jarsigner.storepass} -n ${productName}
                                             -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
                                             -in ${project.build.directory}/${outFilename}-32bit-unsigned.exe
                                             -out ${project.build.directory}/${outFilename}-32bit.exe"/>
-                                    </exec>
-                                    <exec executable="sign4j">
-                                        <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
+                                </exec>
+                                <exec executable="sign4j">
+                                    <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
                                             -pass ${jarsigner.storepass} -n ${productName}
                                             -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
                                             -in ${project.build.directory}/${outFilename}-64bit-unsigned.exe
                                             -out ${project.build.directory}/${outFilename}-64bit.exe"/>
-                                    </exec>
-                                </tasks>
+                                </exec>
+                            </tasks>
                         </configuration>
                     </execution>
 
