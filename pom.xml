@@ -354,8 +354,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <target if="codesign">
-                                <tasks>
+                                <tasks if="codesign">
                                     <exec executable="sign4j">
                                         <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
                                             -pass ${jarsigner.storepass} -n ${productName}
@@ -371,7 +370,6 @@
                                             -out ${project.build.directory}/${outFilename}-64bit.exe"/>
                                     </exec>
                                 </tasks>
-                            </target>
                         </configuration>
                     </execution>
 
