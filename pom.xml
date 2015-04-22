@@ -257,7 +257,7 @@
                     <execution>
                         <id>sign</id>
                         <goals>
-                            <goal>package</goal>
+                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>
