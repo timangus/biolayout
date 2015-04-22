@@ -54,9 +54,6 @@ echo BUILD_URL=${BUILD_URL}
 mkdir -p ${BUILD_DIR}
 
 # Windows
-signexe ${SRC_DIR}/target/${BASE_NAME}-${VERSION}-32bit.exe
-signexe ${SRC_DIR}/target/${BASE_NAME}-${VERSION}-64bit.exe
-
 cd ${SRC_DIR}/nsis-installer
 cat installer.nsi | sed \
   -e "s/_BASE_NAME_/${BASE_NAME}/g" \
