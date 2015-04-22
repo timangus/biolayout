@@ -276,7 +276,7 @@
                     </arguments>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
@@ -342,7 +342,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
@@ -370,6 +370,36 @@
                                         -out ${project.build.directory}/${outFilename}-64bit.exe"/>
                                 </exec>
                             </tasks>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>osxAppCopy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <path id="path.appbundler">
+                                    <pathelement path="${osx.appbundler.path}"></pathelement>
+                                </path>
+                                <mkdir dir="${osx.app.dir}" />
+                                <taskdef name="bundleapp"
+                                        classname="com.oracle.appbundler.AppBundlerTask"
+                                        classpathref="path.appbundler" />
+                                <bundleapp outputdirectory="${osx.app.dir}"
+                                        name="${project.name}"
+                                        displayname="${project.name}"
+                                        icon="${basedir}/src/main/osx/Contents/Resources/Icon.icns"
+                                        identifier="${project.groupId}"
+                                        shortversion="${project.version}"
+                                        copyright="${copyright}"
+                                        mainclassname="${mainClass}" >
+                                    <classpath file="${project.build.directory}/${outFilename}.jar" />
+                                    <option value="-Xmx32000m"/>
+                                </bundleapp>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
@@ -525,42 +555,6 @@
                                 </artifactItem>
 
                             </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>osxAppCopy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <path id="path.appbundler">
-                                    <pathelement path="${osx.appbundler.path}"></pathelement>
-                                </path>
-                                <mkdir dir="${osx.app.dir}" />
-                                <taskdef name="bundleapp"
-                                        classname="com.oracle.appbundler.AppBundlerTask"
-                                        classpathref="path.appbundler" />
-                                <bundleapp outputdirectory="${osx.app.dir}"
-                                        name="${project.name}"
-                                        displayname="${project.name}"
-                                        icon="${basedir}/src/main/osx/Contents/Resources/Icon.icns"
-                                        identifier="${project.groupId}"
-                                        shortversion="${project.version}"
-                                        copyright="${copyright}"
-                                        mainclassname="${mainClass}" >
-                                    <classpath file="${project.build.directory}/${outFilename}.jar" />
-                                    <option value="-Xmx32000m"/>
-                                </bundleapp>
-                            </target>
                         </configuration>
                     </execution>
                 </executions>
