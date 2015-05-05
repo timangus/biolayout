@@ -44,7 +44,8 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
-import org.Kajeka.Utils.LicenseKeyValidator;
+import org.Kajeka.Licensing.LicenseKeyValidator;
+import org.Kajeka.Licensing.RevocationChecker;
 import org.Kajeka.Utils.ToolbarLayout;
 import org.Kajeka.Utils.UsageTracker;
 
@@ -129,6 +130,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private ExportCorrelationNodesEdgesTable exportCorrelationNodesEdgesTable = null;
     private ExportD3 exportD3 = null;
 
+    private RevocationChecker revocationChecker = null;
+
     private boolean navigationWizardShownOnce = false;
 
     /**
@@ -160,7 +163,28 @@ public final class LayoutFrame extends JFrame implements GraphListener
         loadRestOfPreferences();
 
         LicenseKeyValidator lkv = new LicenseKeyValidator(LICENSE_EMAIL.get());
+        layoutValidateLicenseKeyDialog = new LayoutValidateLicenseKeyDialog(this);
+
         IS_LICENSED = lkv.valid(LICENSE_KEY.get());
+
+        if (IS_LICENSED)
+        {
+            revocationChecker = new RevocationChecker(LICENSE_EMAIL.get());
+            while (revocationChecker.start())
+            {
+                IS_LICENSED = false;
+                layoutValidateLicenseKeyDialog.setSuggestRestart(false);
+                layoutValidateLicenseKeyDialog.getValidateLicenseKeyAction().actionPerformed(
+                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Validate"));
+
+                if(!layoutValidateLicenseKeyDialog.isLicensed())
+                {
+                    this.dispose();
+                    System.exit(0);
+                }
+            }
+        }
+
         DISPLAY_PRODUCT_NAME = PRODUCT_NAME + (!IS_LICENSED ? " Evaluation" : "");
         DISPLAY_PRODUCT_NAME_AND_VERSION = DISPLAY_PRODUCT_NAME + (BuildConfig.VERSION.equals("development") ?
             " internal development version" :
@@ -181,7 +205,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutProgressBarDialog = new LayoutProgressBarDialog(this);
         layoutNavigationWizardDialog = new LayoutNavigationWizardDialog(this);
         layoutTipOfTheDayDialog = new LayoutTipOfTheDayDialog(this);
-        layoutValidateLicenseKeyDialog = new LayoutValidateLicenseKeyDialog(this);
+
         usageTracker = new UsageTracker();
 
         sleepMaxTime(prevTimeInMSecs);
@@ -1922,6 +1946,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         usageTracker.log("close");
         usageTracker.upload();
+
+        if(revocationChecker != null)
+        {
+            revocationChecker.stop();
+        }
 
         fileDragNDrop.remove(graph, true);
         this.dispose();

@@ -1,4 +1,4 @@
-package org.Kajeka.Utils;
+package org.Kajeka.Licensing;
 
 import java.security.MessageDigest;
 import static org.Kajeka.DebugConsole.ConsoleOutput.println;

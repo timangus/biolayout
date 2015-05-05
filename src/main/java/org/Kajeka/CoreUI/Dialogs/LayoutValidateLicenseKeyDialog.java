@@ -21,13 +21,13 @@ import static org.Kajeka.Environment.GlobalEnvironment.DISPLAY_PRODUCT_NAME;
 import static org.Kajeka.Environment.GlobalEnvironment.IS_LICENSED;
 import static org.Kajeka.Environment.GlobalEnvironment.LICENSE_EMAIL;
 import static org.Kajeka.Environment.GlobalEnvironment.LICENSE_KEY;
-import org.Kajeka.Utils.LicenseKeyValidator;
+import org.Kajeka.Licensing.LicenseKeyValidator;
 
 public final class LayoutValidateLicenseKeyDialog extends JDialog implements DocumentListener, ActionListener
 {
     public LayoutValidateLicenseKeyDialog(JFrame frame)
     {
-        super(frame, "License Validation");
+        super(frame, "License Validation", true);
 
         initComponents();
         initActions();
@@ -58,15 +58,29 @@ public final class LayoutValidateLicenseKeyDialog extends JDialog implements Doc
                     }
                 }
 
+                licensed = false;
+
                 setLocationRelativeTo(null);
                 setVisible(true);
             }
         };
     }
 
+    boolean suggestRestart = true;
+    public void setSuggestRestart(boolean suggestRestart)
+    {
+        this.suggestRestart = suggestRestart;
+    }
+
     JTextField emailAddressField;
     JTextField licenseKeyField;
     JButton validateButton;
+
+    boolean licensed = false;
+    public boolean isLicensed()
+    {
+        return licensed;
+    }
 
     private void initComponents()
     {
@@ -160,11 +174,16 @@ public final class LayoutValidateLicenseKeyDialog extends JDialog implements Doc
             LICENSE_EMAIL.set(emailAddressField.getText());
             LICENSE_KEY.set(licenseKeyField.getText());
 
+            licensed = true;
+
             this.setVisible(false);
 
-            // Tell user to restart
-            JOptionPane.showMessageDialog(null, "License accepted. Please restart " + DISPLAY_PRODUCT_NAME + " to complete the process.",
-                            "License accepted", JOptionPane.INFORMATION_MESSAGE);
+            if (suggestRestart)
+            {
+                // Tell user to restart
+                JOptionPane.showMessageDialog(null, "License accepted. Please restart " + DISPLAY_PRODUCT_NAME + " to complete the process.",
+                        "License accepted", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }
 }
