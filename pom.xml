@@ -389,8 +389,8 @@
                                         classname="com.oracle.appbundler.AppBundlerTask"
                                         classpathref="path.appbundler" />
                                 <bundleapp outputdirectory="${osx.app.dir}"
-                                        name="${project.name}"
-                                        displayname="${project.name}"
+                                        name="${productName}"
+                                        displayname="${productName}"
                                         icon="${basedir}/src/main/osx/Contents/Resources/Icon.icns"
                                         identifier="${project.groupId}"
                                         shortversion="${project.version}"
