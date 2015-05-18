@@ -69,6 +69,7 @@ cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe ${BUILD_DIR
 
 # OS X
 cd ${SRC_DIR}/target
+ln -sf /Applications dmg/Applications
 genisoimage -D -V ${OUTPUT_NAME} -no-pad -uid 0 -gid 0 \
     -apple -o ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg dmg/
 
