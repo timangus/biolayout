@@ -3,9 +3,6 @@
 SCRIPT_NAME=`readlink -f $0`
 SCRIPT_DIR=`dirname ${SCRIPT_NAME}`
 SRC_DIR=`readlink -f ${SCRIPT_DIR}/..`
-HTML_TEMPLATE="${SCRIPT_DIR}/index.html.template"
-WEBSTART_TEMPLATE="${SCRIPT_DIR}/WebStart.jnlp.template"
-BASE_URL="http://kajeka.com/internal"
 
 if [ -z "${OUTPUT_NAME}" ];
 then
@@ -68,10 +65,8 @@ signexe ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe
 cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe ${BUILD_DIR}
 
 # OS X
-cd ${SRC_DIR}/target
-ln -sf /Applications dmg/Applications
-genisoimage -D -V ${OUTPUT_NAME} -no-pad -uid 0 -gid 0 \
-    -apple -o ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg dmg/
+cd ${SRC_DIR}/target/dmg
+zip -r9 {BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.app.zip ${OUTPUT_NAME}.app
 
 # Everything else
 cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar \
@@ -81,20 +76,6 @@ cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar \
 cd ${SRC_DIR}
 git archive --format zip -9 --output ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}-source.zip ${GIT_REV}
 
-cat ${HTML_TEMPLATE} | sed \
-    -e "s/_BUILD_NAME_/${BUILD_NAME}/g" \
-    -e "s/_BASE_NAME_/${BASE_NAME}/g" \
-    -e "s/_VERSION_/${VERSION}/g" \
-    -e "s/_GIT_REV_/${GIT_REV}/g" \
-    > ${BUILD_DIR}/index.html
-cat ${WEBSTART_TEMPLATE} | sed -e "s%_BUILD_URL_%${BUILD_URL}%g" \
-    -e "s/_BASE_NAME_/${BASE_NAME}/g" \
-    -e "s/_VERSION_/${VERSION}/g" \
-    -e "s/_HEAP_SIZE_/920m/g" > ${BUILD_DIR}/WebStart32.jnlp
-cat ${WEBSTART_TEMPLATE} | sed -e "s%_BUILD_URL_%${BUILD_URL}%g" \
-    -e "s/_BASE_NAME_/${BASE_NAME}/g" \
-    -e "s/_VERSION_/${VERSION}/g" \
-    -e "s/_HEAP_SIZE_/32000m/g" > ${BUILD_DIR}/WebStart64.jnlp
 cp ${SRC_DIR}/src/main/resources/Resources/Images/Splash.png ${BUILD_DIR}
 cp ${SRC_DIR}/src/main/resources/Resources/Images/Icon512x512.png ${BUILD_DIR}
 
