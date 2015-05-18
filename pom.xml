@@ -399,6 +399,7 @@
                                     <classpath file="${project.build.directory}/${outFilename}.jar" />
                                     <option value="-Xmx32000m"/>
                                     <option value="-Dapple.laf.useScreenMenuBar=true"/>
+                                    <option value="-Xdock:name=${productName}"/>
                                 </bundleapp>
                             </target>
                         </configuration>
