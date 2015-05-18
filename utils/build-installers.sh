@@ -66,7 +66,7 @@ cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe ${BUILD_DIR
 
 # OS X
 cd ${SRC_DIR}/target/dmg
-zip -r9 {BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.app.zip ${OUTPUT_NAME}.app
+zip -r9 ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.app.zip ${OUTPUT_NAME}.app
 
 # Everything else
 cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar \
