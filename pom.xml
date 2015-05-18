@@ -398,6 +398,7 @@
                                         mainclassname="${mainClass}" >
                                     <classpath file="${project.build.directory}/${outFilename}.jar" />
                                     <option value="-Xmx32000m"/>
+                                    <option value="-Dapple.laf.useScreenMenuBar=true"/>
                                 </bundleapp>
                             </target>
                         </configuration>
