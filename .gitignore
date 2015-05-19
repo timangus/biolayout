@@ -8,3 +8,5 @@ nsis-installer/*.jar
 utils/builds/*
 utils/splash/generated/*
 codesign.jks
+osx-installer/Miru.app
+osx-installer/Miru.dmg
