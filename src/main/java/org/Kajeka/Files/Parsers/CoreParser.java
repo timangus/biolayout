@@ -577,7 +577,7 @@ public class CoreParser
             weightString = getNext();
         }
 
-        float weight = 0.0f;
+        float weight = Float.NaN;
 
         if (weightString.length() > 0)
         {
@@ -605,7 +605,7 @@ public class CoreParser
         }
         else
         {
-            if (weight > 0.0f)
+            if (weight != Float.NaN)
             {
                 if (weight > filterWeight)
                 {
