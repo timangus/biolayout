@@ -946,6 +946,12 @@ public final class CorrelationData
     */
     public String getColumnName(int index)
     {
+        if (sortColumnAnnotation != null)
+        {
+            int[] sortedColumnMap = sortColumnAnnotation.getSortedColumnMap();
+            return columnNamesArray[sortedColumnMap[index]];
+        }
+
         return columnNamesArray[index];
     }
 
