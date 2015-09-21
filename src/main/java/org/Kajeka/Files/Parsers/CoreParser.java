@@ -605,7 +605,7 @@ public class CoreParser
         }
         else
         {
-            if (weight != Float.NaN)
+            if (!Float.isNaN(weight))
             {
                 if (weight > filterWeight)
                 {
