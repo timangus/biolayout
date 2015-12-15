@@ -77,7 +77,7 @@ public final class ClassViewerTableModelAnalysis extends AbstractTableModel
 
     public HashSet<String> proccessSelected()
     {
-        HashSet<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
+        Set<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
 
         if ( selectedNodes.isEmpty() )
         {

@@ -16,13 +16,13 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 public final class GraphGroupNode extends GraphNode implements Comparable<GraphNode>
 {
-    private HashSet<GraphNode> groupNodes = null;
+    private Set<GraphNode> groupNodes = null;
     private HashSet<GraphEdge> groupEdges = null;
     private GroupManager groupManager = null;
     private String groupName = "";
     private int nodeID = 0;
 
-    public GraphGroupNode(HashSet<GraphNode> groupNodes, NetworkContainer nc, String name, GroupManager groupManager, float nodeSize)
+    public GraphGroupNode(Set<GraphNode> groupNodes, NetworkContainer nc, String name, GroupManager groupManager, float nodeSize)
     {
         super( new Vertex(name, nc) );
 
@@ -122,7 +122,7 @@ public final class GraphGroupNode extends GraphNode implements Comparable<GraphN
         return new Point3D(minX + (maxX - minX) / 2, minY + (maxY - minY) / 2, minZ + (maxZ - minZ) / 2);
     }
 
-    public void setSelectedEdges(HashSet<GraphEdge> selectedGraphEdges)
+    public void setSelectedEdges(Set<GraphEdge> selectedGraphEdges)
     {
         groupEdges = new HashSet<GraphEdge>(selectedGraphEdges);
     }
@@ -132,7 +132,7 @@ public final class GraphGroupNode extends GraphNode implements Comparable<GraphN
         return groupEdges;
     }
 
-    public HashSet<GraphNode> getGroupNodes()
+    public Set<GraphNode> getGroupNodes()
     {
         return groupNodes;
     }

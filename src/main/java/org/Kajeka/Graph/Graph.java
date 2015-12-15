@@ -550,7 +550,7 @@ public class Graph extends GLCanvas implements GraphInterface
     */
     void increaseNodeSize(boolean increase, boolean isManualChange)
     {
-        HashSet<GraphNode> nodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> nodes = selectionManager.getSelectedNodes();
         if ( nodes.isEmpty() )
             nodes = visibleNodes;
 

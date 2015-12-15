@@ -5,7 +5,7 @@ import org.Kajeka.Correlation.CorrelationData;
 import java.awt.*;
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Set;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.Graph.GraphElements.*;
 import org.Kajeka.Network.*;
@@ -96,7 +96,7 @@ public final class GraphPopupComponent implements Runnable
     *  Sets the GraphPopupComponent object.
     */
     public void setPopupComponent(Component component, int popupX, int popupY,
-            HashSet<GraphNode> graphNodes, NetworkContainer nc, LayoutFrame layoutFrame)
+            Set<GraphNode> graphNodes, NetworkContainer nc, LayoutFrame layoutFrame)
     {
         ArrayList<GraphNode> localGraphNodes = new ArrayList<GraphNode>(graphNodes);
         setPopupComponent(component, popupX, popupY, localGraphNodes, nc, layoutFrame);

@@ -10,6 +10,8 @@ import org.Kajeka.CoreUI.Dialogs.*;
 import static org.Kajeka.ClassViewerUI.ClassViewerFrame.ClassViewerTabTypes.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
 
 /**
 *
@@ -24,6 +26,9 @@ public final class ClassViewerUpdateDetailedEntropyTable implements Runnable
     private ClassViewerFrame classViewerFrame = null;
     private HashSet<String> selectedGenes = null;
     private JTabbedPane tabbedPane = null;
+    
+    // JFreeChart
+    private JFreeChart fisherBarChart = null;
 
     private RelativeEntropyCalc relEntropyCalc = null;
     private ClassViewerTableModelDetail modelDetail = null;

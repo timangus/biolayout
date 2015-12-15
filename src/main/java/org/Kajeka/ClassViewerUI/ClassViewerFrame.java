@@ -2,6 +2,10 @@ package org.Kajeka.ClassViewerUI;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.text.*;
 import java.util.*;
@@ -10,6 +14,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
 import javax.swing.table.*;
+import org.Kajeka.Analysis.AnnotationTypeManagerBG;
 import org.Kajeka.ClassViewerUI.Dialogs.*;
 import org.Kajeka.ClassViewerUI.Tables.*;
 import org.Kajeka.ClassViewerUI.Tables.TableModels.*;
@@ -24,25 +29,30 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Correlation.Panels.CorrelationGraphPanel;
 import org.Kajeka.Simulation.Panels.SimulationResultsPanel;
+import org.Kajeka.StaticLibraries.Random;
+import org.jfree.chart.renderer.PaintScale;
+import org.jfree.data.general.DefaultHeatMapDataset;
+import org.jfree.data.general.HeatMapDataset;
 
 /**
-*
-* The Class Viewer Frame class.
-*
-* @author Thanos Theo, 2008-2009-2010-2011
-* @version 3.0.0.0
-*
-*/
+ *
+ * The Class Viewer Frame class.
+ *
+ * @author Thanos Theo, 2008-2009-2010-2011
+ * @version 3.0.0.0
+ *
+ */
+public final class ClassViewerFrame extends JFrame implements ActionListener, ListSelectionListener, ChangeListener, ItemListener {
 
-public final class ClassViewerFrame extends JFrame implements ActionListener, ListSelectionListener, ChangeListener, ItemListener
-{
     private static final Logger logger = Logger.getLogger(ClassViewerFrame.class.getName());
     /**
-    *  Serial version UID variable for the ClassViewerFrame class.
-    */
+     * Serial version UID variable for the ClassViewerFrame class.
+     */
     public static final long serialVersionUID = 111222333444555791L;
 
-    public static enum ClassViewerTabTypes { GENERAL_TAB, ENTROPY_TAB, ENTROPY_DETAILS_TAB }
+    public static enum ClassViewerTabTypes {
+        GENERAL_TAB, ENTROPY_TAB, ENTROPY_DETAILS_TAB, ENRICHMENT_TAB
+    }
     private static final int NAME_COLUMN = 1;
     private static final int TIME_TO_SLEEP_TO_ABORT_THREADS = 50;
 
@@ -95,7 +105,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private JButton exportTableAsButton = null;
     private AbstractAction chooseColumnsToHideAction = null;
     private AbstractAction exportTableToFileAction = null;
-
+    private JLabel heatmap = null;
+    private JScrollPane heatmapPane = null;
 
     //search database
     private JButton searchDatabaseButton = null;
@@ -111,12 +122,27 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private JButton detailsForAllButton = null;
     private AbstractAction detailsAction = null;
     private AbstractAction detailsOfAllAction = null;
+    private AbstractAction enrichmentAction = null;
+    private AbstractAction heatmapAction = null;
 
     // entropy analysis details table
     private ClassViewerTableModelDetail analysisTableModel = null;
+    private SelectorTableModel enrichmentSelectorTableModel = null;
+    private ClassViewerTableModelEnrichment enrichmentTableModel = null;
+
+    JTable enrichmentSelectorTable = null;
+    JTable enrichmentTable = null;
+    JScrollPane scrollPaneEntropySelector = null;
+    JScrollPane scrollPaneEnrichment = null;
+    JPanel tabEntropySelectorPanel = null;
+    JButton btnDisplayHeatmap = null;
+
+    private JComboBox<String> cmbClassSelector;
+    private JComboBox<String> cmbComparisonMode;
 
     private ClassViewerUpdateEntropyTable updateEntropyTableRunnable = null;
     private ClassViewerUpdateDetailedEntropyTable updateDetailedEntropyTableRunnable = null;
+    private ClassViewerUpdateEnrichmentTable updateDetailedEnrichmentRunnable = null;
 
     // variables used for proper window event usage
     private boolean isWindowIconified = false;
@@ -130,8 +156,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private int prevSplitPaneDividerLocation = 0;
     private String currentClassName = "";
 
-    public ClassViewerFrame(LayoutFrame layoutFrame)
-    {
+    public ClassViewerFrame(LayoutFrame layoutFrame) {
         super("Class Viewer");
 
         this.layoutFrame = layoutFrame;
@@ -145,40 +170,32 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         initExportTableViewToFileChooser();
     }
 
-    private void initFrame(final ClassViewerFrame classViewerFrame)
-    {
+    private void initFrame(final ClassViewerFrame classViewerFrame) {
         this.setIconImages(ICON_IMAGES);
-        this.addWindowListener( new WindowAdapter()
-        {
+        this.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e)
-            {
+            public void windowClosing(WindowEvent e) {
                 closeClassViewerWindow();
             }
 
             @Override
-            public void windowIconified(WindowEvent e)
-            {
+            public void windowIconified(WindowEvent e) {
                 isWindowIconified = true;
                 windowWasMaximizedBeforeIconification = isWindowMaximized; // maximized state is not 'remembered' once frame is iconified, so has to be done manually!
             }
 
             @Override
-            public void windowDeiconified(WindowEvent e)
-            {
+            public void windowDeiconified(WindowEvent e) {
                 isWindowIconified = false;
             }
-        } );
-        this.addWindowStateListener( new WindowAdapter()
-        {
+        });
+        this.addWindowStateListener(new WindowAdapter() {
             @Override
-            public void windowStateChanged(WindowEvent e)
-            {
+            public void windowStateChanged(WindowEvent e) {
                 isWindowMaximized = (getExtendedState() == JFrame.MAXIMIZED_VERT || getExtendedState() == JFrame.MAXIMIZED_HORIZ || getExtendedState() == JFrame.MAXIMIZED_BOTH);
-                if (isWindowMaximized)
-                {
+                if (isWindowMaximized) {
                     //FIXME this whole thing smells bad
-                    if ( splitPane != null && splitPane.getDividerLocation() == (classViewerWidthValue / 2) ) // only do this if the slit pane divider is in original location (classViewerWidthValue / 2) of the Class Viewer
+                    if (splitPane != null && splitPane.getDividerLocation() == (classViewerWidthValue / 2)) // only do this if the slit pane divider is in original location (classViewerWidthValue / 2) of the Class Viewer
                     {
                         validate();
                         splitPane.setDividerLocation(classViewerFrame.getWidth() / 2);
@@ -186,209 +203,183 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                     }
                 }
             }
-        } );
+        });
     }
 
     /**
-     * Displays the Class Viewer. May be called by an Action or programmatically.
-     * Initializes the Class Viewer if not already visible.
-     * If visible, deiconifies the frame, maximizes and brings to the front.
+     * Displays the Class Viewer. May be called by an Action or
+     * programmatically. Initializes the Class Viewer if not already visible. If
+     * visible, deiconifies the frame, maximizes and brings to the front.
      */
-    public void displayClassViewer()
-    {
-        if ( !isVisible() )
-        {
+    public void displayClassViewer() {
+        if (!isVisible()) {
             initializeCommonComponents();
 
-            if (getExtendedState() != JFrame.NORMAL)
+            if (getExtendedState() != JFrame.NORMAL) {
                 setExtendedState(JFrame.NORMAL);
+            }
 
-            classViewerWidthValue = (SCREEN_DIMENSION.width > 1280) ? (int)(0.75 * SCREEN_DIMENSION.width) : 1010;
-            int classViewerHeightValue = (SCREEN_DIMENSION.height > 1024) ? (int)(0.75 * SCREEN_DIMENSION.height) : 680;
+            classViewerWidthValue = (SCREEN_DIMENSION.width > 1280) ? (int) (0.75 * SCREEN_DIMENSION.width) : 1010;
+            int classViewerHeightValue = (SCREEN_DIMENSION.height > 1024) ? (int) (0.75 * SCREEN_DIMENSION.height) : 680;
             setSize(classViewerWidthValue, classViewerHeightValue);
             setLocationRelativeTo(null);
             setVisible(true);
 
-            if ( ( this.getWidth() + 1.5 * classViewerHideColumnsDialog.getWidth() ) > SCREEN_DIMENSION.width )
-                classViewerHideColumnsDialog.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2, ( SCREEN_DIMENSION.height - classViewerHideColumnsDialog.getHeight() ) / 2 );
-            else
-                classViewerHideColumnsDialog.setLocation( ( SCREEN_DIMENSION.width - this.getWidth() ) / 2 - classViewerHideColumnsDialog.getWidth(), ( SCREEN_DIMENSION.height - classViewerHideColumnsDialog.getHeight() ) / 2 );
+            if ((this.getWidth() + 1.5 * classViewerHideColumnsDialog.getWidth()) > SCREEN_DIMENSION.width) {
+                classViewerHideColumnsDialog.setLocation((SCREEN_DIMENSION.width - this.getWidth()) / 2, (SCREEN_DIMENSION.height - classViewerHideColumnsDialog.getHeight()) / 2);
+            } else {
+                classViewerHideColumnsDialog.setLocation((SCREEN_DIMENSION.width - this.getWidth()) / 2 - classViewerHideColumnsDialog.getWidth(), (SCREEN_DIMENSION.height - classViewerHideColumnsDialog.getHeight()) / 2);
+            }
 
             // only if data is loaded, otherwise the divider location will have been already set to 0
-            if (splitPane != null)
-            {
+            if (splitPane != null) {
                 splitPane.setDividerLocation(this.getWidth() / 2);
                 prevSplitPaneDividerLocation = splitPane.getDividerLocation();
             }
 
             // make sure to clear all plot/tables if current selection is empty
-            if ( layoutFrame.getGraph().getSelectionManager().getSelectedNodes().isEmpty() )
+            if (layoutFrame.getGraph().getSelectionManager().getSelectedNodes().isEmpty()) {
                 populateClassViewer();
+            }
 
-            if (plotPanel != null)
-            {
+            if (plotPanel != null) {
                 plotPanel.onFirstShown();
             }
-        }
-        else
-        {
+        } else {
             processAndSetWindowState();
         }
     }
 
-    private void initActions(final ClassViewerFrame classViewerFrame)
-    {
-        classViewerDialogAction = new AbstractAction("Class Viewer")
-        {
+    private void initActions(final ClassViewerFrame classViewerFrame) {
+        classViewerDialogAction = new AbstractAction("Class Viewer") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555992L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 displayClassViewer();
             }
         };
         classViewerDialogAction.setEnabled(false);
 
-        findNameAction = new AbstractAction("Find By Name")
-        {
+        findNameAction = new AbstractAction("Find By Name") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 112222333444555993L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 findNameDialog.setVisible(true);
             }
         };
 
-        findClassAction = new AbstractAction("Find By Class")
-        {
+        findClassAction = new AbstractAction("Find By Class") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 112222333444555993L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 findClassDialog.setVisible(true);
             }
         };
 
-        findMultipleClassesAction = new AbstractAction("Find By Multiple Classes")
-        {
+        findMultipleClassesAction = new AbstractAction("Find By Multiple Classes") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 112222333444555993L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 findMultipleClassesDialog.openDialogWindow();
             }
         };
 
-        previousClassAction = new AbstractAction("◄◄ (Previous Class)")
-        {
+        previousClassAction = new AbstractAction("◄◄ (Previous Class)") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 112222333444555993L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 navigateToPreviousClass();
             }
         };
 
-        nextClassAction = new AbstractAction("►► (Next Class)")
-        {
+        nextClassAction = new AbstractAction("►► (Next Class)") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 112222333444555993L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 navigateToNextClass();
             }
         };
 
-        refreshSelectionInTableAction = new AbstractAction("Hide Unselected Rows")
-        {
+        refreshSelectionInTableAction = new AbstractAction("Hide Unselected Rows") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555993L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 populateClassViewer(false, true);
             }
         };
 
-        chooseColumnsToHideAction = new AbstractAction("Choose Columns To Hide")
-        {
+        chooseColumnsToHideAction = new AbstractAction("Choose Columns To Hide") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555993L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 classViewerHideColumnsDialog.setVisible(true);
             }
         };
 
-        exportTableToFileAction = new AbstractAction("Export Table As...")
-        {
+        exportTableToFileAction = new AbstractAction("Export Table As...") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555793L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 save();
             }
         };
 
-        okAction = new AbstractAction("Close")
-        {
+        okAction = new AbstractAction("Close") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555793L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 closeClassViewerWindow();
             }
         };
 
-        detailsAction = new AbstractAction("Details")
-        {
+        detailsAction = new AbstractAction("Details") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555794L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 // disable any running thread
                 checkAndAbortUpdateEntropyTableRunnable();
                 checkAndAbortUpdateDetailedEntropyTableRunnable();
@@ -398,16 +389,14 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             }
         };
 
-        detailsOfAllAction = new AbstractAction("Details For All")
-        {
+        detailsOfAllAction = new AbstractAction("Details For All") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555795L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 // disable any running thread
                 checkAndAbortUpdateEntropyTableRunnable();
                 checkAndAbortUpdateDetailedEntropyTableRunnable();
@@ -416,32 +405,138 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 executeRunnableInThread(updateDetailedEntropyTableRunnable);
             }
         };
+
+        enrichmentAction = new AbstractAction("Perform Enrichment analysis") {
+            /**
+             * Serial version UID variable for the AbstractAction class.
+             */
+            public static final long serialVersionUID = 111222333444555795L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (scrollPaneEntropySelector.isVisible()) {
+                    if (cmbComparisonMode.getSelectedItem() == "Individual Set")
+                        btnDisplayHeatmap.setVisible(true);
+                    // Update the UI
+                    JButton btn = (JButton) e.getSource();
+                    btn.setText("Select Classes for Enrichment analysis");
+                    
+                    tabEntropySelectorPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
+                    tabEntropySelectorPanel.validate();
+
+                    scrollPaneEntropySelector.setVisible(false);
+                    scrollPaneEnrichment.setVisible(true);
+
+                    // disable any running thread
+                    checkAndAbortUpdateEntropyTableRunnable();
+                    checkAndAbortUpdateDetailedEntropyTableRunnable();
+
+                    Set<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
+                    LinkedHashMap<VertexClass, HashSet<String>> groups = new LinkedHashMap<>();
+//                    for (Iterator<GraphNode> iterator = selectedNodes.iterator(); iterator.hasNext();) {
+//                        GraphNode next = iterator.next();
+//                        
+//                        VertexClass res = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getVertexClass( next.getVertex() );
+//                        if (groups.containsKey(res)){
+//                            groups.get(res).add(next.getNodeName());
+//                        } else {
+//                            HashSet<String> tempList = new HashSet<>();
+//                            tempList.add(next.getNodeName());
+//                            groups.put(res, tempList);
+//                        }
+//                    }
+                    Collection<VertexClass> classes = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getAllVertexClasses();
+                    for (Iterator<VertexClass> iterator = classes.iterator(); iterator.hasNext();) {
+                        VertexClass className = iterator.next();
+                        HashSet<String> tempList = new HashSet<>();
+                        groups.put(className, tempList);
+                        for (Iterator<GraphNode> nodeIter = selectedNodes.iterator(); nodeIter.hasNext();) {
+                            GraphNode node = nodeIter.next();
+                            VertexClass res = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getVertexClass(node.getVertex());
+                            if (res.getClassID() == className.getClassID()) {
+                                if (groups.containsKey(className)) {
+                                    groups.get(res).add(node.getNodeName());
+                                }
+                            }
+                        }
+                        if (groups.get(className).isEmpty())
+                            groups.remove(className);
+                    }
+
+                    HashSet<String> genes = new HashSet<String>();
+                    for (GraphNode graphNode : selectedNodes) {
+                        genes.add(graphNode.getNodeName());
+                    }
+                    
+
+                    updateDetailedEnrichmentRunnable = new ClassViewerUpdateEnrichmentTable(classViewerFrame, layoutFrame, enrichmentTableModel, enrichmentSelectorTableModel.getSelectedClasses(), groups, tabbedPane, cmbComparisonMode.getSelectedItem() == "Individual Set", heatmap, enrichmentTable);
+                    executeRunnableInThread(updateDetailedEnrichmentRunnable);
+                    
+                    
+
+                    // Perform enrichment analysis
+                } else {
+                    JButton btn = (JButton) e.getSource();
+                    btn.setText("Perform Enrichment analysis");
+                    btnDisplayHeatmap.setText("Display Heatmap");
+                    heatmapPane.setVisible(false);
+                    btnDisplayHeatmap.setVisible(false);
+
+                    tabEntropySelectorPanel.add(scrollPaneEntropySelector, BorderLayout.CENTER);
+                    tabEntropySelectorPanel.validate();
+
+                    scrollPaneEntropySelector.setVisible(true);
+                    scrollPaneEnrichment.setVisible(false);
+                }
+
+            }
+        };
+ 
+        heatmapAction = new AbstractAction("Display Heatmap") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (!scrollPaneEntropySelector.isVisible()) {
+                    if (heatmapPane.isVisible()) {
+                        scrollPaneEnrichment.setVisible(true);
+                        tabEntropySelectorPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
+                        tabEntropySelectorPanel.validate();
+                        heatmapPane.setVisible(false);
+                        JButton btn = (JButton) e.getSource();
+                        btn.setText("Display Heatmap");
+                    } else {
+                        scrollPaneEnrichment.setVisible(false);
+                        heatmapPane.setVisible(true);
+                        tabEntropySelectorPanel.add(heatmapPane, BorderLayout.CENTER);
+                        tabEntropySelectorPanel.validate();
+                        JButton btn = (JButton) e.getSource();
+                        btn.setText("Display Enrichment Table");
+                    }
+                }
+            }
+        };
     }
 
-    public void processAndSetWindowState()
-    {
+    public void processAndSetWindowState() {
         // this process deiconifies a frame, the maximized bits are not affected
-        if (isWindowIconified)
-        {
+        if (isWindowIconified) {
             int iconifyState = this.getExtendedState();
 
             // set the iconified bit, inverse process
             // deIconifyState |= Frame.ICONIFIED;
-
             // clear the iconified bit
             iconifyState &= ~JFrame.ICONIFIED;
 
             // deiconify the frame
             this.setExtendedState(iconifyState);
 
-            if (windowWasMaximizedBeforeIconification)
-            {
+            if (windowWasMaximizedBeforeIconification) {
                 // this process maximizes a frame; the iconified bit is not affected
                 int maximizeState = this.getExtendedState();
 
                 // clear the maximized bits, inverse process
                 // minimizeState &= ~Frame.MAXIMIZED_BOTH;
-
                 // set the maximized bits
                 maximizeState |= JFrame.MAXIMIZED_BOTH;
 
@@ -453,35 +548,25 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         this.toFront();
     }
 
-    private void initializeCommonComponents()
-    {
-        if (DATA_TYPE.equals(DataTypes.CORRELATION) && !layoutFrame.getCorrelationData().isTransposed())
-        {
+    private void initializeCommonComponents() {
+        if (DATA_TYPE.equals(DataTypes.CORRELATION) && !layoutFrame.getCorrelationData().isTransposed()) {
             // Correlation data
             plotPanel = new CorrelationGraphPanel(this, layoutFrame, layoutFrame.getCorrelationData());
-        }
-        else if (DATA_TYPE.equals(DataTypes.GRAPHML) && layoutFrame.getNetworkRootContainer().getIsPetriNet())
-        {
+        } else if (DATA_TYPE.equals(DataTypes.GRAPHML) && layoutFrame.getNetworkRootContainer().getIsPetriNet()) {
             // SPN simulation data
             plotPanel = new SimulationResultsPanel(this, layoutFrame);
-        }
-        else
-        {
+        } else {
             // No plot at all
             plotPanel = null;
         }
 
-        if (splitPane != null && Arrays.asList(tabGeneralPanel.getComponents()).contains(splitPane))
-        {
+        if (splitPane != null && Arrays.asList(tabGeneralPanel.getComponents()).contains(splitPane)) {
             tabGeneralPanel.remove(splitPane);
-        }
-        else if (Arrays.asList(tabGeneralPanel.getComponents()).contains(generalTablePanel))
-        {
+        } else if (Arrays.asList(tabGeneralPanel.getComponents()).contains(generalTablePanel)) {
             tabGeneralPanel.remove(generalTablePanel);
         }
 
-        if (plotPanel != null)
-        {
+        if (plotPanel != null) {
             plotPanel.setMinimumSize(new Dimension(300, 300));
 
             splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotPanel, generalTablePanel);
@@ -489,34 +574,26 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             splitPane.setContinuousLayout(false);
             tabGeneralPanel.add(splitPane, BorderLayout.CENTER);
 
-            AbstractAction renderAllCurrentClassSetPlotImagesToFilesAction =
-                    plotPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction();
-            if (renderAllCurrentClassSetPlotImagesToFilesAction != null)
-            {
+            AbstractAction renderAllCurrentClassSetPlotImagesToFilesAction
+                    = plotPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction();
+            if (renderAllCurrentClassSetPlotImagesToFilesAction != null) {
                 renderAllCurrentClassSetPlotImagesToFilesAction.setEnabled(true);
                 renderAllCurrentClassSetPlotImagesToFilesButton.setAction(
                         renderAllCurrentClassSetPlotImagesToFilesAction);
                 renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(true);
-            }
-            else
-            {
+            } else {
                 renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(false);
             }
 
             AbstractAction renderPlotImageToFileAction = plotPanel.getRenderPlotImageToFileAction();
-            if (renderPlotImageToFileAction != null)
-            {
+            if (renderPlotImageToFileAction != null) {
                 renderPlotImageToFileAction.setEnabled(true);
                 renderPlotImageToFileButton.setAction(renderPlotImageToFileAction);
                 renderPlotImageToFileButton.setVisible(true);
-            }
-            else
-            {
+            } else {
                 renderPlotImageToFileButton.setVisible(false);
             }
-        }
-        else
-        {
+        } else {
             tabGeneralPanel.add(generalTablePanel, BorderLayout.CENTER);
             splitPane = null;
 
@@ -524,79 +601,83 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             renderPlotImageToFileButton.setVisible(false);
         }
 
-        tableModelGeneral.proccessSelected( viewAllClassSets.isSelected() );
+        tableModelGeneral.proccessSelected(viewAllClassSets.isSelected());
         selectedGenes = entropyTableModel.proccessSelected();
 
         ClassComboBox classComboBox = new ClassComboBox(layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses(), false, false);
 
-        if ( !selectedGenes.isEmpty() )
-            classSetsBox.setSelectedItem( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName() );
+        if (!selectedGenes.isEmpty()) {
+            classSetsBox.setSelectedItem(layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName());
+        }
 
         // Clear it out
-        ClassViewerTableModelGeneral model = (ClassViewerTableModelGeneral)generalTable.getModel();
+        ClassViewerTableModelGeneral model = (ClassViewerTableModelGeneral) generalTable.getModel();
         model.clear();
 
-        generalTable.setDefaultEditor( VertexClass.class, new DefaultCellEditor(classComboBox) );
-        generalTable.setDefaultRenderer( VertexClass.class, classComboBox.getClassRenderer() );
+        generalTable.setDefaultEditor(VertexClass.class, new DefaultCellEditor(classComboBox));
+        generalTable.setDefaultRenderer(VertexClass.class, classComboBox.getClassRenderer());
         generalTable.setHighlightIsSelection(false);
         highlightIsSelectionCheckbox.setSelected(false);
 
-        if (DEBUG_BUILD) println("Reinit Due to Initial Init.");
+        if (DEBUG_BUILD) {
+            println("Reinit Due to Initial Init.");
+        }
 
-        if ( !selectedGenes.isEmpty() )
-        {
+        if (!selectedGenes.isEmpty()) {
             populateClassViewer(false, true); //to update the classComboBox and generalTable with the current selection
         }
     }
 
-    private void checkAndAbortUpdateEntropyTableRunnable()
-    {
+    private void checkAndAbortUpdateEntropyTableRunnable() {
         // abort previous thread & sleep before initializing a new one!
-        if (updateEntropyTableRunnable != null)
-        {
-            if ( !updateEntropyTableRunnable.getAbortThread() )
-            {
+        if (updateEntropyTableRunnable != null) {
+            if (!updateEntropyTableRunnable.getAbortThread()) {
                 updateEntropyTableRunnable.setAbortThread(true);
 
-                if (updateEntropyTableRunnable.getThreadStarted())
-                {
+                if (updateEntropyTableRunnable.getThreadStarted()) {
                     while (!updateEntropyTableRunnable.getThreadFinished());
                 }
             }
         }
     }
 
-    private void checkAndAbortUpdateDetailedEntropyTableRunnable()
-    {
+    private void checkAndAbortUpdateDetailedEntropyTableRunnable() {
         // abort previous thread & sleep before initializing a new one!
-        if (updateDetailedEntropyTableRunnable != null)
-        {
-            if ( !updateDetailedEntropyTableRunnable.getAbortThread() )
-            {
+        if (updateDetailedEntropyTableRunnable != null) {
+            if (!updateDetailedEntropyTableRunnable.getAbortThread()) {
                 updateDetailedEntropyTableRunnable.setAbortThread(true);
 
-                if (updateDetailedEntropyTableRunnable.getThreadStarted())
-                {
+                if (updateDetailedEntropyTableRunnable.getThreadStarted()) {
                     while (!updateDetailedEntropyTableRunnable.getThreadFinished());
                 }
             }
         }
     }
 
-    private void executeRunnableInThread(Runnable runnable)
-    {
+    private void executeRunnableInThread(Runnable runnable) {
         Thread executeThread = new Thread(runnable);
         executeThread.setPriority(Thread.NORM_PRIORITY);
         executeThread.start();
     }
 
-    private void initComponents()
-    {
-        if (DEBUG_BUILD) println("Create Class Viewer Frame Elements.");
+    private void initComponents() {
+        if (DEBUG_BUILD) {
+            println("Create Class Viewer Frame Elements.");
+        }
+
+        this.addComponentListener(new ComponentAdapter() {
+            public void componentHidden(ComponentEvent e) {
+                /* code run when component hidden*/
+            }
+
+            public void componentShown(ComponentEvent e) {
+                populateEnrichmentTab();
+            }
+        });
 
         //// GENERAL PANEL ////
         tabGeneralPanel = new JPanel(true);
-        tabGeneralPanel.setLayout( new BorderLayout() );
+        tabGeneralPanel.setLayout(new BorderLayout());
         tabGeneralPanel.setBackground(Color.WHITE);
 
         // topPanel, north
@@ -630,7 +711,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         setUpStringEditor(generalTable);
 
         generalTablePanel = new JPanel(true);
-        generalTablePanel.setLayout( new BoxLayout(generalTablePanel, BoxLayout.Y_AXIS) );
+        generalTablePanel.setLayout(new BoxLayout(generalTablePanel, BoxLayout.Y_AXIS));
         generalTablePanel.add(scrollPane);
 
         selectDeselectAllButton = createSelectDeselectAllButton();
@@ -640,16 +721,15 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         highlightIsSelectionCheckbox.setToolTipText("Highlight Is Selection");
 
         JPanel generalTableButtonPanel = new JPanel(true);
-        generalTableButtonPanel.setLayout( new BoxLayout(generalTableButtonPanel, BoxLayout.X_AXIS) );
+        generalTableButtonPanel.setLayout(new BoxLayout(generalTableButtonPanel, BoxLayout.X_AXIS));
         generalTableButtonPanel.add(highlightIsSelectionCheckbox);
         generalTableButtonPanel.add(selectDeselectAllButton);
 
         // generalTableButtonPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
         // generalTableButtonPanel.add( new JButton("Dummy Button 2") );
-
-        generalTablePanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
+        generalTablePanel.add(Box.createRigidArea(new Dimension(10, 10)));
         generalTablePanel.add(generalTableButtonPanel);
-        generalTablePanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
+        generalTablePanel.add(Box.createRigidArea(new Dimension(10, 10)));
 
         // button panel, south
         JPanel generalButtonPanel = new JPanel(true);
@@ -660,7 +740,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         findMultipleClassesDialog = new FindMultipleClassesDialog(layoutFrame, this);
 
         //Provide minimum sizes for the two components in the split pane
-        scrollPane.setMinimumSize( new Dimension(400, 300) );
+        scrollPane.setMinimumSize(new Dimension(400, 300));
 
         findNameButton = new JButton(findNameAction);
         findNameButton.setToolTipText("Find By Name");
@@ -687,7 +767,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         generalButtonPanelLine1.add(findNameButton);
         generalButtonPanelLine1.add(findClassButton);
         generalButtonPanelLine1.add(findMultipleClassesButton);
-        generalButtonPanelLine1.add( Box.createRigidArea( new Dimension(10, 10) ) );
+        generalButtonPanelLine1.add(Box.createRigidArea(new Dimension(10, 10)));
         generalButtonPanelLine1.add(previousClassButton);
         generalButtonPanelLine1.add(nextClassButton);
 
@@ -710,7 +790,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         setUpSearchDatabaseButton(false); //set texts and disable
 
         // topPanel, north
-        generalTopPanel.add( new JLabel("Class Set:") );
+        generalTopPanel.add(new JLabel("Class Set:"));
         generalTopPanel.add(classSetsBox);
         generalTopPanel.add(viewAllClassSets);
         generalTopPanel.add(refreshSelectionInTableButton);
@@ -730,20 +810,20 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         generalButtonPanel.add(generalButtonPanelLine1);
         generalButtonPanel.add(generalButtonPanelLine2);
         tabGeneralPanel.add(generalButtonPanel, BorderLayout.SOUTH);
+        entropyTableModel = new ClassViewerTableModelAnalysis(layoutFrame);
 
         //// ENTROPY PANEL ////
         JPanel tabEntropyPanel = new JPanel(true);
-        tabEntropyPanel.setLayout( new BorderLayout() );
+        tabEntropyPanel.setLayout(new BorderLayout());
         tabEntropyPanel.setBackground(Color.WHITE);
 
         // entropy, center
-        entropyTableModel = new ClassViewerTableModelAnalysis(layoutFrame);
         entropyTable = new ClassViewerTable(entropyTableModel, ClassViewerTableModelAnalysis.COLUMN_NAMES, CV_AUTO_SIZE_COLUMNS.get());
-        entropyTable.setRowSorter( new TableRowSorter<ClassViewerTableModelAnalysis>(entropyTableModel) ); // provide a sorting mechanism to the table
+        entropyTable.setRowSorter(new TableRowSorter<ClassViewerTableModelAnalysis>(entropyTableModel)); // provide a sorting mechanism to the table
         entropyTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         entropyTable.setAutoscrolls(true);
         entropyTable.setDefaultRenderer(Double.class, new EntropyTableCellRenderer());
-        ( (DefaultTableCellRenderer)entropyTable.getTableHeader().getDefaultRenderer() ).setHorizontalAlignment(SwingConstants.CENTER);
+        ((DefaultTableCellRenderer) entropyTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 
         ListSelectionModel listModel = entropyTable.getSelectionModel();
         listModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -773,20 +853,22 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
         // ANALYSIS DETAILS PANEL
         JPanel tabEntropyDetailPanel = new JPanel(true);
-        tabEntropyDetailPanel.setLayout( new BorderLayout() );
+        tabEntropyDetailPanel.setLayout(new BorderLayout());
         tabEntropyDetailPanel.setBackground(Color.WHITE);
 
         // analysis table
         analysisTableModel = new ClassViewerTableModelDetail();
+        JTable tblEntropy = new JTable(analysisTableModel);
+
         ClassViewerTable analysisDetailsTable = new ClassViewerTable(analysisTableModel, ClassViewerTableModelDetail.COLUMN_NAMES, CV_AUTO_SIZE_COLUMNS.get());
-        analysisDetailsTable.setRowSorter( new TableRowSorter<ClassViewerTableModelDetail>(analysisTableModel) ); // provide a sorting mechanism to the table
+        analysisDetailsTable.setRowSorter(new TableRowSorter<ClassViewerTableModelDetail>(analysisTableModel)); // provide a sorting mechanism to the table
         analysisDetailsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         analysisDetailsTable.setAutoscrolls(true);
         analysisDetailsTable.setDefaultRenderer(Double.class, new EntropyTableCellRenderer());
         analysisDetailsTable.setDefaultRenderer(Integer.class, new EntropyTableCellRenderer());
-        ( (DefaultTableCellRenderer)analysisDetailsTable.getTableHeader().getDefaultRenderer() ).setHorizontalAlignment(SwingConstants.CENTER);
+        ((DefaultTableCellRenderer) analysisDetailsTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 
-        JScrollPane scrollPaneEntropyDetails = new JScrollPane(analysisDetailsTable);
+        JScrollPane scrollPaneEntropyDetails = new JScrollPane(tblEntropy);
         scrollPaneEntropyDetails.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPaneEntropyDetails.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -799,12 +881,85 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         okButtonPanelDetails.add(okButton);
         tabEntropyDetailPanel.add(okButtonPanelDetails, BorderLayout.SOUTH);
 
+        // Enrichment
+        // Create class selector
+        cmbClassSelector = new JComboBox<String>();
+        // Create Enrichment comparison selector
+        cmbComparisonMode = new JComboBox<>(new String[]{"Group Comparison", "Individual Set"});
+        cmbComparisonMode.addItemListener(this);
+        JPanel topBox = new JPanel();
+        JPanel bottomBox = new JPanel();
+        JPanel centerBox = new JPanel();
+
+        JLabel lblComparisonMode = new JLabel("Comparison Method");
+        topBox.add(lblComparisonMode);
+        topBox.add(cmbComparisonMode);
+
+        tabEntropySelectorPanel = new JPanel(true);
+        tabEntropySelectorPanel.setLayout(new BorderLayout());
+        tabEntropySelectorPanel.setBackground(Color.WHITE);
+        String[] columnNames = {"Class Set",
+            "Include in Enrichment?"};
+
+        Set<String> annotationClasses = AnnotationTypeManagerBG.getInstanceSingleton().getAllTypes();
+        Object[][] data = new Object[annotationClasses.size()][2];
+        int i = 0;
+        for (String obj : annotationClasses) {
+            data[i][0] = obj;
+            data[i][1] = new Boolean(false);
+            i++;
+        }
+        enrichmentSelectorTableModel = new SelectorTableModel(data, columnNames);
+        enrichmentSelectorTable = new JTable(enrichmentSelectorTableModel);
+        // Create Enrichment Results table
+        enrichmentTableModel = new ClassViewerTableModelEnrichment();
+        enrichmentTable = new JTable(enrichmentTableModel);
+        enrichmentTable.setAutoCreateRowSorter(true);
+
+        JButton btnRunEnrichment = new JButton(enrichmentAction);
+        bottomBox.add(btnRunEnrichment);
+        tabEntropySelectorPanel.add(topBox, BorderLayout.PAGE_START);
+        tabEntropySelectorPanel.add(enrichmentSelectorTable, BorderLayout.CENTER);
+        tabEntropySelectorPanel.add(bottomBox, BorderLayout.PAGE_END);
+
+        btnDisplayHeatmap = new JButton(heatmapAction);
+        btnDisplayHeatmap.setVisible(false);
+        bottomBox.add(btnDisplayHeatmap);
+
+        // Create dataset and heatmap
+        heatmap = new JLabel();
+        heatmap.setVisible(true);
+        heatmapPane = new JScrollPane(heatmap);
+        heatmapPane.setVisible(false);
+
+        // TODO: Enrichment fix
+        scrollPaneEntropySelector = new JScrollPane(enrichmentSelectorTable);
+        scrollPaneEntropySelector.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneEntropySelector.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        centerBox.add(scrollPaneEntropySelector);
+
+        scrollPaneEnrichment = new JScrollPane(enrichmentTable);
+        scrollPaneEnrichment.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneEnrichment.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneEnrichment.setVisible(false);
+        centerBox.add(scrollPaneEnrichment);
+
+        tabEntropySelectorPanel.add(scrollPaneEntropySelector, BorderLayout.CENTER);
+        populateEnrichmentTab();
+
+        JPanel okButtonPanelSelector = new JPanel(true);
+        okButton = new JButton(okAction);
+        okButton.setToolTipText("Close");
+        okButtonPanelSelector.add(okButton);
+        bottomBox.add(okButtonPanelDetails);
+
         // create & add to tab pane
         tabbedPane = new JTabbedPane();
-        tabbedPane.insertTab( "General", null, tabGeneralPanel, "General Node Information", GENERAL_TAB.ordinal() );
-        tabbedPane.insertTab( "Analysis", null, tabEntropyPanel, "Analysis Calculations", ENTROPY_TAB.ordinal() );
+        tabbedPane.insertTab("General", null, tabGeneralPanel, "General Node Information", GENERAL_TAB.ordinal());
+        tabbedPane.insertTab("Analysis", null, tabEntropyPanel, "Analysis Calculations", ENTROPY_TAB.ordinal());
         tabbedPane.add("Analysis Per Term", tabEntropyDetailPanel);
-        tabbedPane.insertTab( "Analysis Detailed", null, tabEntropyDetailPanel, "Shows Analysis Per Term", ENTROPY_DETAILS_TAB.ordinal() );
+        tabbedPane.insertTab("Analysis Detailed", null, tabEntropyDetailPanel, "Shows Analysis Per Term", ENTROPY_DETAILS_TAB.ordinal());
+        tabbedPane.insertTab("Enrichment", null, tabEntropySelectorPanel, "Shows Enrichment", ENRICHMENT_TAB.ordinal());
         tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), false);
         tabbedPane.addChangeListener(this);
 
@@ -820,74 +975,153 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         classViewerHideColumnsDialog = new ClassViewerHideColumnsDialog(this);
     }
 
-    private JButton createSelectDeselectAllButton()
-    {
-        return new JButton( new AbstractAction("Deselect All")
-        {
+    public static BufferedImage generateHeatMap(DefaultHeatMapDataset hmds, String[] columnTitles, String[] rowTitles) {
+
+        BufferedImage heatmap = ClassViewerFrame.createHeatmapImage(hmds, new PaintScale() {
+            @Override
+            public double getLowerBound() {
+                return 0;
+            }
+
+            @Override
+            public double getUpperBound() {
+                return 1;
+            }
+
+            @Override
+            public Paint getPaint(double d) {
+                // Statistically significant
+                if (d == 0)
+                    d = Double.MIN_VALUE;
+                // If value is negative it was not sampled
+                if (d < 0){
+                    return Color.BLACK;
+                }
+                if (d <= 0.05){
+                    int red = (int)java.lang.Math.min(Lerp(0, 255, d/0.05),255);
+                    int green = 255;
+                    return new Color(red, green, 0, 255);
+                }
+                // If value is approaching statistically significant
+                if (d <= 0.3 ){
+                    int red = (int)java.lang.Math.min(Lerp(0, 255, 0.05/d), 255);
+                    int green = (int)java.lang.Math.min(Lerp(0, 255, 0.05/d),255);
+                    return new Color(red, green, 0, 255);
+                }
+                return Color.BLACK;
+            }
+        }, columnTitles, rowTitles);
+        return heatmap;
+    }
+    
+    public static double Lerp(double value, double value2, double amount){
+        amount = java.lang.Math.min(amount, 1);
+        return (value + amount*(value2 - value));
+    }
+
+    public static BufferedImage createHeatmapImage(HeatMapDataset dataset, PaintScale paintScale, String[] columnTitles, String[] rowTitles) {
+        int CELLWIDTH = 20;
+        int CELLHEIGHT = 20;
+        int xCount = dataset.getXSampleCount();
+        int yCount = dataset.getYSampleCount();
+        Font font = new Font(new JLabel().getFont().getFontName(), Font.PLAIN, CELLHEIGHT);
+        FontRenderContext frc = new FontRenderContext(null, false, false);
+        int xTextOffset = 0;
+        int yTextOffset = 0;
+        // Calculate max xoffset;y
+        
+        for (int i = 0; i < rowTitles.length; i++) {
+            xTextOffset = (int) java.lang.Math.max((double) new TextLayout(rowTitles[i], font, frc).getBounds().getWidth(), (double) xTextOffset);
+        }
+        xTextOffset += 5;
+        // Calculate max yoffset;
+        for (int i = 0; i < columnTitles.length; i++) {
+            yTextOffset = (int) java.lang.Math.max((double) new TextLayout(columnTitles[i], font, frc).getBounds().getWidth(), (double) yTextOffset);
+        }
+        yTextOffset += 5;
+        BufferedImage image = new BufferedImage(xCount * CELLWIDTH + xTextOffset, yCount * CELLHEIGHT + yTextOffset + 25,
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+        g2.setFont(font);
+
+        AffineTransform originalRotate = g2.getTransform();
+
+        for (int xIndex = 0; xIndex < xCount; xIndex++) {
+            for (int yIndex = 0; yIndex < yCount; yIndex++) {
+                double z = dataset.getZValue(xIndex, yIndex);
+                Paint p = paintScale.getPaint(z);
+                g2.setPaint(p);
+                g2.fillRect(xTextOffset + (xIndex * CELLWIDTH), yCount * CELLHEIGHT - yIndex * CELLHEIGHT, CELLWIDTH, CELLHEIGHT);
+            }
+        }
+        g2.setPaint(Color.BLACK);
+        g2.rotate(-java.lang.Math.PI / 2);
+        for (int xIndex = 0; xIndex < xCount; xIndex++) {
+            g2.drawString(columnTitles[xIndex], -CELLHEIGHT + (-yCount * CELLHEIGHT) - (int) new TextLayout(columnTitles[xIndex], font, frc).getBounds().getWidth() - 5, xTextOffset + CELLWIDTH + (xIndex * CELLWIDTH));
+        }
+        g2.setTransform(originalRotate);
+        for (int yIndex = 0; yIndex < yCount; yIndex++) {
+            g2.drawString(rowTitles[yIndex], (xTextOffset - (int) new TextLayout(rowTitles[yIndex], font, frc).getBounds().getWidth())-3, CELLHEIGHT + yCount * CELLHEIGHT - yIndex * CELLHEIGHT);
+        }
+        return image;
+    }
+
+    private JButton createSelectDeselectAllButton() {
+        return new JButton(new AbstractAction("Deselect All") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555691L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 selectDeselectAllButtonModeState = !selectDeselectAllButtonModeState;
-                String buttonText = ( (!selectDeselectAllButtonModeState) ? "Deselect" : "Select" ) + " All" ;
+                String buttonText = ((!selectDeselectAllButtonModeState) ? "Deselect" : "Select") + " All";
                 selectDeselectAllButton.setText(buttonText);
                 selectDeselectAllButton.setToolTipText(buttonText);
                 tableModelGeneral.setSelectedAllRows(!selectDeselectAllButtonModeState);
                 generalTable.setHighlightIsSelection(highlightIsSelectionCheckbox.isSelected());
             }
-        } );
+        });
     }
 
-    private JCheckBox createHighlightIsSelectionButton()
-    {
-        return new JCheckBox( new AbstractAction("Highlight Is Selection")
-        {
+    private JCheckBox createHighlightIsSelectionButton() {
+        return new JCheckBox(new AbstractAction("Highlight Is Selection") {
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 generalTable.setHighlightIsSelection(highlightIsSelectionCheckbox.isSelected());
             }
-        } );
+        });
     }
 
-    private void resetSelectDeselectAllButton()
-    {
+    private void resetSelectDeselectAllButton() {
         this.selectDeselectAllButtonModeState = false;
         selectDeselectAllButton.setText("Deselect All");
     }
 
-    private void initExportTableViewToFileChooser()
-    {
-        String saveFilePath = FILE_CHOOSER_PATH.get().substring(0, FILE_CHOOSER_PATH.get().lastIndexOf( System.getProperty("file.separator") ) + 1);
+    private void initExportTableViewToFileChooser() {
+        String saveFilePath = FILE_CHOOSER_PATH.get().substring(0, FILE_CHOOSER_PATH.get().lastIndexOf(System.getProperty("file.separator")) + 1);
         exportTableViewToFileChooser = new JFileChooser(saveFilePath);
         fileNameExtensionFilterText = new FileNameExtensionFilter("Save as a Text File", "txt");
         exportTableViewToFileChooser.setFileFilter(fileNameExtensionFilterText);
         exportTableViewToFileChooser.setDialogTitle("Export Table View As");
     }
 
-    public AbstractAction getClassViewerAction()
-    {
+    public AbstractAction getClassViewerAction() {
         return classViewerDialogAction;
     }
 
-    private void setUpStringEditor(JTable table)
-    {
+    private void setUpStringEditor(JTable table) {
         final JTextField textField = new JTextField();
 
-        DefaultCellEditor stringEditor = new DefaultCellEditor(textField)
-        {
+        DefaultCellEditor stringEditor = new DefaultCellEditor(textField) {
             /**
-            *  Serial version UID variable for the DefaultCellEditor class.
-            */
+             * Serial version UID variable for the DefaultCellEditor class.
+             */
             public static final long serialVersionUID = 111222333444555796L;
 
             @Override
-            public Object getCellEditorValue()
-            {
+            public Object getCellEditorValue() {
                 return textField.getText();
             }
         };
@@ -895,48 +1129,50 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         table.setDefaultEditor(String.class, stringEditor);
     }
 
-    public void populateClassViewer()
-    {
+    public void populateEnrichmentTab() {
+        addClassSets(cmbClassSelector);
+        enrichmentSelectorTableModel.refreshContent(layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames());
+        enrichmentSelectorTableModel.fireTableStructureChanged();
+        enrichmentSelectorTableModel.fireTableDataChanged();
+    }
+
+    public void populateClassViewer() {
         populateClassViewer(null, false, false, true);
     }
 
-    public void populateClassViewer(Object[][] hideColumnsData)
-    {
+    public void populateClassViewer(Object[][] hideColumnsData) {
         populateClassViewer(hideColumnsData, false, false, true);
     }
 
-    public void populateClassViewer(boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar)
-    {
+    public void populateClassViewer(boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar) {
         populateClassViewer(null, updateCorrelationGraphViewOnly, notUpdateTitleBar, true);
     }
 
-    public void populateClassViewer(Object[][] hideColumnsData, boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar, boolean refreshPlot)
-    {
+    public void populateClassViewer(Object[][] hideColumnsData, boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar, boolean refreshPlot) {
         NetworkContainer nc = layoutFrame.getNetworkRootContainer();
-        if (nc != null)
-        {
-            if (!updateCorrelationGraphViewOnly)
-            {
-                if (DEBUG_BUILD) println("populateClassViewer(): " + layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName());
+        if (nc != null) {
+            if (!updateCorrelationGraphViewOnly) {
+                if (DEBUG_BUILD) {
+                    println("populateClassViewer(): " + layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName());
+                }
 
-                HashSet<GraphNode> currentSelection = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
+                Set<GraphNode> currentSelection = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
 
                 // only update, if a new set of nodes is selected or it is mandatory
-                if ( !oldSelection.equals(currentSelection) )
-                {
+                if (!oldSelection.equals(currentSelection)) {
                     oldSelection = new HashSet<GraphNode>(currentSelection); // don't use the reference
-                    if ( !( tabbedPane.getTabCount() < ENTROPY_DETAILS_TAB.ordinal() ) )
-                    {
+                    if (!(tabbedPane.getTabCount() < ENTROPY_DETAILS_TAB.ordinal())) {
                         tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), false);
-                        if ( tabbedPane.getSelectedIndex() == ENTROPY_DETAILS_TAB.ordinal() )
-                            tabbedPane.setSelectedIndex( ENTROPY_TAB.ordinal() );
+                        if (tabbedPane.getSelectedIndex() == ENTROPY_DETAILS_TAB.ordinal()) {
+                            tabbedPane.setSelectedIndex(ENTROPY_TAB.ordinal());
+                        }
 
                         analysisTableModel.setTerm2Entropy(null, null, null, null, null, null, null, null, null, null, null);
                     }
                 }
 
                 tableModelGeneral.proccessSelected(viewAllClassSets.isSelected(), hideColumnsData);
-                generalTable.updateTableColumnNames( getGeneralTableColumnNames() );
+                generalTable.updateTableColumnNames(getGeneralTableColumnNames());
 
                 refreshTables();
 
@@ -945,7 +1181,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 boolean enableHideColumnsAndExportButtons = (generalTable.getRowCount() > 0);
                 refreshSelectionInTableButton.setEnabled(enableHideColumnsAndExportButtons);
                 exportTableAsButton.setEnabled(enableHideColumnsAndExportButtons);
-                chooseColumnsToHideButton.setEnabled( enableHideColumnsAndExportButtons || classViewerHideColumnsDialog.isVisible() );
+                chooseColumnsToHideButton.setEnabled(enableHideColumnsAndExportButtons || classViewerHideColumnsDialog.isVisible());
 
                 //reuse the Action from the Import Network menu option
                 searchDatabaseButton.setAction(layoutFrame.getImportWebService().getImportWebServiceAction());
@@ -958,11 +1194,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 checkAndAbortUpdateEntropyTableRunnable();
                 checkAndAbortUpdateDetailedEntropyTableRunnable();
 
-                if (hideColumnsData == null && classViewerHideColumnsDialog != null)
+                if (hideColumnsData == null && classViewerHideColumnsDialog != null) {
                     classViewerHideColumnsDialog.updateClassViewerHideColumnsTable(this, enableHideColumnsAndExportButtons, updateCorrelationGraphViewOnly, notUpdateTitleBar);
+                }
 
-                if (generalTable.getColumnCount() < NAME_COLUMN + 1)
-                {
+                if (generalTable.getColumnCount() < NAME_COLUMN + 1) {
                     System.out.println("generalTable.getColumnCount() " + generalTable.getColumnCount() + " < NAME_COLUMN + 1 " + Thread.currentThread().getStackTrace());
                     /*JOptionPane.showMessageDialog(this, "It is possible a crash is about to occur in relation to the number of columns in the class viewer (currently " +
                             generalTable.getColumnCount() + "). Please note down what you were doing up until this point.",
@@ -971,10 +1207,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 generalTable.sortTableByColumn(NAME_COLUMN, generalTableSorter);
             }
 
-            if (plotPanel != null)
-            {
-                if (refreshPlot)
-                {
+            if (plotPanel != null) {
+                if (refreshPlot) {
                     plotPanel.refreshPlot();
                 }
 
@@ -984,46 +1218,41 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             generalTable.repaint();
 
             checkClassViewerNavigationButtons();
-            if (updateResetSelectDeselectAllButton)
+            if (updateResetSelectDeselectAllButton) {
                 resetSelectDeselectAllButton();
-            if (!notUpdateTitleBar)
+            }
+            if (!notUpdateTitleBar) {
                 setCurrentClassName("");
+            }
         }
     }
 
-    public void setCurrentClassIndex(int currentClassIndex)
-    {
+    public void setCurrentClassIndex(int currentClassIndex) {
         findClassDialog.setCurrentClassIndex(currentClassIndex);
     }
 
-    public int numberOfAllClasses()
-    {
+    public int numberOfAllClasses() {
         return findClassDialog.numberOfAllClasses();
     }
 
-    public int getClassIndex()
-    {
+    public int getClassIndex() {
         return findClassDialog.getClassIndex();
     }
 
-    public void synchroniseHighlightWithSelection()
-    {
-        if (generalTable != null)
-        {
+    public void synchroniseHighlightWithSelection() {
+        if (generalTable != null) {
             generalTable.synchroniseHighlightWithSelection();
         }
     }
 
-    public VertexClass navigateToCurrentClass()
-    {
+    public VertexClass navigateToCurrentClass() {
         VertexClass currentVertexClass = findClassDialog.currentVertexClass();
-        if (currentVertexClass != null)
-        {
+        if (currentVertexClass != null) {
             setUpdateResetSelectDeselectAllButton(false);
             layoutFrame.getGraph().getSelectionManager().selectByClass(currentVertexClass);
             generalTable.getDefaultEditor(String.class).stopCellEditing();
             layoutFrame.getGraph().updateSelectedNodesDisplayList();
-            setCurrentClassName( currentVertexClass.getName() );
+            setCurrentClassName(currentVertexClass.getName());
 
             nextClassButton.setEnabled(true);
             setUpdateResetSelectDeselectAllButton(true);
@@ -1033,175 +1262,163 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         return currentVertexClass;
     }
 
-    private VertexClass navigateToPreviousClass()
-    {
+    private VertexClass navigateToPreviousClass() {
         VertexClass previousVertexClass = findClassDialog.previousVertexClass();
-        if (previousVertexClass != null)
-        {
+        if (previousVertexClass != null) {
             setUpdateResetSelectDeselectAllButton(false);
             layoutFrame.getGraph().getSelectionManager().selectByClass(previousVertexClass);
             generalTable.getDefaultEditor(String.class).stopCellEditing();
             layoutFrame.getGraph().updateSelectedNodesDisplayList();
-            setCurrentClassName( previousVertexClass.getName() );
+            setCurrentClassName(previousVertexClass.getName());
 
             nextClassButton.setEnabled(true);
             setUpdateResetSelectDeselectAllButton(true);
             synchroniseHighlightWithSelection();
         }
 
-        previousClassButton.setEnabled( findClassDialog.checkPreviousVertexClass() );
+        previousClassButton.setEnabled(findClassDialog.checkPreviousVertexClass());
 
         return previousVertexClass;
     }
 
-    private VertexClass navigateToNextClass()
-    {
+    private VertexClass navigateToNextClass() {
         return navigateToNextClass(true);
     }
 
-    public VertexClass navigateToNextClass(boolean enableTitleBarUpdate)
-    {
+    public VertexClass navigateToNextClass(boolean enableTitleBarUpdate) {
         VertexClass nextVertexClass = findClassDialog.nextVertexClass();
-        if (nextVertexClass != null)
-        {
+        if (nextVertexClass != null) {
             setUpdateResetSelectDeselectAllButton(false);
             layoutFrame.getGraph().getSelectionManager().selectByClass(nextVertexClass);
             generalTable.getDefaultEditor(String.class).stopCellEditing();
             layoutFrame.getGraph().updateSelectedNodesDisplayList();
-            if (enableTitleBarUpdate)
-                setCurrentClassName( nextVertexClass.getName() );
+            if (enableTitleBarUpdate) {
+                setCurrentClassName(nextVertexClass.getName());
+            }
 
             previousClassButton.setEnabled(findClassDialog.getClassIndex() != 0);
             setUpdateResetSelectDeselectAllButton(true);
             synchroniseHighlightWithSelection();
         }
 
-        nextClassButton.setEnabled( findClassDialog.checkNextVertexClass() );
+        nextClassButton.setEnabled(findClassDialog.checkNextVertexClass());
 
         return nextVertexClass;
     }
 
-    private void checkClassViewerNavigationButtons()
-    {
-        previousClassButton.setEnabled( findClassDialog.checkPreviousVertexClass() );
-        nextClassButton.setEnabled( findClassDialog.checkNextVertexClass() );
+    private void checkClassViewerNavigationButtons() {
+        previousClassButton.setEnabled(findClassDialog.checkPreviousVertexClass());
+        nextClassButton.setEnabled(findClassDialog.checkNextVertexClass());
     }
 
-    private void refreshTables()
-    {
-        if ( tabbedPane.getSelectedIndex() == GENERAL_TAB.ordinal() )
-        {
-            if (DEBUG_BUILD) println("refreshTables() General Tab.");
+    private void refreshTables() {
+        if (tabbedPane.getSelectedIndex() == GENERAL_TAB.ordinal()) {
+            if (DEBUG_BUILD) {
+                println("refreshTables() General Tab.");
+            }
 
             setUpdateResetSelectDeselectAllButton(false);
             rebuildClassSets();
             tableModelGeneral.fireTableStructureChanged();
             setVertexClassSortingToGeneralTable();
             setUpdateResetSelectDeselectAllButton(true);
-        }
-        else if ( tabbedPane.getSelectedIndex() == ENTROPY_TAB.ordinal() )
-        {
-            if (DEBUG_BUILD) println("refreshTables() Entropy Tab.");
+        } else if (tabbedPane.getSelectedIndex() == ENTROPY_TAB.ordinal()) {
+            if (DEBUG_BUILD) {
+                println("refreshTables() Entropy Tab.");
+            }
 
             selectedGenes = entropyTableModel.proccessSelected();
             entropyTableModel.fireTableStructureChanged();
         }
     }
 
-    private void rebuildClassSets()
-    {
-        if (DEBUG_BUILD) println("Rebuilding ClassSets for the Class Viewer.");
+    private void rebuildClassSets() {
+        if (DEBUG_BUILD) {
+            println("Rebuilding ClassSets for the Class Viewer.");
+        }
 
         rebuildClassSets = true;
         classSetsBox.removeAllItems();
         addClassSets(classSetsBox);
 
-        classSetsBox.setSelectedItem( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName() );
+        classSetsBox.setSelectedItem(layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName());
 
         rebuildClassSets = false;
     }
 
-    private void setVertexClassSortingToGeneralTable()
-    {
+    private void setVertexClassSortingToGeneralTable() {
         String[] generalTableColumnNames = getGeneralTableColumnNames();
-        for (int i = 0; i < generalTableColumnNames.length; i++)
-            if ( !tableModelGeneral.findNonVertexClassColumnNamesInOriginalColumnNameArray(generalTableColumnNames[i]) )
-                generalTableSorter.setComparator( i, new ClassViewerTable.VertexClassSorting() );
-    }
-
-    private void addClassSets(JComboBox<String> comboBox)
-    {
-        comboBox.removeAllItems();
-
-        if (DEBUG_BUILD) println("Adding Class Sets to Class Viewer.");
-
-        if (layoutFrame.getNetworkRootContainer() != null)
-        {
-            if (layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager() != null)
-            {
-                for ( LayoutClasses classes : layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames() )
-                    comboBox.addItem( classes.getClassSetName() );
+        for (int i = 0; i < generalTableColumnNames.length; i++) {
+            if (!tableModelGeneral.findNonVertexClassColumnNamesInOriginalColumnNameArray(generalTableColumnNames[i])) {
+                generalTableSorter.setComparator(i, new ClassViewerTable.VertexClassSorting());
             }
         }
     }
 
-    private void save()
-    {
+    private void addClassSets(JComboBox<String> comboBox) {
+        comboBox.removeAllItems();
+
+        if (DEBUG_BUILD) {
+            println("Adding Class Sets to Class Viewer.");
+        }
+
+        if (layoutFrame.getNetworkRootContainer() != null) {
+            if (layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager() != null) {
+                for (LayoutClasses classes : layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames()) {
+                    comboBox.addItem(classes.getClassSetName());
+                }
+            }
+        }
+    }
+
+    private void save() {
         int dialogReturnValue = 0;
         boolean doSaveFile = false;
         File saveFile = null;
 
-        exportTableViewToFileChooser.setSelectedFile( new File( IOUtils.getPrefix( layoutFrame.getFileNameLoaded() ) + "_Table_View" ) );
+        exportTableViewToFileChooser.setSelectedFile(new File(IOUtils.getPrefix(layoutFrame.getFileNameLoaded()) + "_Table_View"));
 
-        if (exportTableViewToFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
-        {
+        if (exportTableViewToFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             String extension = fileNameExtensionFilterText.getExtensions()[0];
             String fileName = exportTableViewToFileChooser.getSelectedFile().getAbsolutePath();
-            if ( fileName.endsWith(extension) ) fileName = IOUtils.getPrefix(fileName);
+            if (fileName.endsWith(extension)) {
+                fileName = IOUtils.getPrefix(fileName);
+            }
 
             saveFile = new File(fileName + "." + extension);
 
-            if ( saveFile.exists() )
-            {
+            if (saveFile.exists()) {
                 dialogReturnValue = JOptionPane.showConfirmDialog(this, "This File Already Exists.\nDo you want to Overwrite it?", "This File Already Exists. Overwrite?", JOptionPane.YES_NO_CANCEL_OPTION);
 
-                if (dialogReturnValue == JOptionPane.YES_OPTION)
+                if (dialogReturnValue == JOptionPane.YES_OPTION) {
                     doSaveFile = true;
-            }
-            else
-            {
+                }
+            } else {
                 doSaveFile = true;
             }
         }
 
-        if (doSaveFile)
-        {
+        if (doSaveFile) {
             saveExportTableViewFile(saveFile);
-            FILE_CHOOSER_PATH.set( saveFile.getAbsolutePath() );
+            FILE_CHOOSER_PATH.set(saveFile.getAbsolutePath());
         }
     }
 
-    private void saveExportTableViewFile(File file)
-    {
-        try
-        {
+    private void saveExportTableViewFile(File file) {
+        try {
             FileWriter fileWriter = new FileWriter(file);
-            for (int j = 1; j < generalTable.getColumnCount(); j++)
+            for (int j = 1; j < generalTable.getColumnCount(); j++) {
                 fileWriter.write(generalTable.getModel().getColumnName(j) + "\t");
+            }
             fileWriter.write("\n");
 
-            for (int i = 0; i < generalTable.getRowCount(); i++)
-            {
-                for (int j = 1; j < generalTable.getColumnCount(); j++)
-                {
+            for (int i = 0; i < generalTable.getRowCount(); i++) {
+                for (int j = 1; j < generalTable.getColumnCount(); j++) {
                     Object value = generalTable.getValueAt(i, j);
 
-                    if (value != null)
-                    {
+                    if (value != null) {
                         fileWriter.write(value.toString() + "\t");
-                    }
-                    else
-                    {
+                    } else {
                         fileWriter.write("\t");
                     }
                 }
@@ -1212,41 +1429,36 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             fileWriter.close();
 
             InitDesktop.edit(file);
-        }
-        catch (IOException ioe)
-        {
-            if (DEBUG_BUILD) println("Exception in saveExportTableViewFile():\n" + ioe.getMessage());
+        } catch (IOException ioe) {
+            if (DEBUG_BUILD) {
+                println("Exception in saveExportTableViewFile():\n" + ioe.getMessage());
+            }
 
             JOptionPane.showMessageDialog(this, "Something went wrong while saving the file:\n" + ioe.getMessage() + "\nPlease try again with a different file name/path/drive.", "Error with saving the file!", JOptionPane.ERROR_MESSAGE);
             save();
         }
     }
 
-    public void refreshCurrentClassSetSelection()
-    {
+    public void refreshCurrentClassSetSelection() {
         findClassDialog.resetCurrentClassIndex();
 
         // nextClassButton.doClick();
         // fire actionPerformed event directly, thus effectively avoiding the JButton being pressed down for some time
-        nextClassAction.actionPerformed( new ActionEvent(nextClassAction, ActionEvent.ACTION_PERFORMED, "") );
+        nextClassAction.actionPerformed(new ActionEvent(nextClassAction, ActionEvent.ACTION_PERFORMED, ""));
 
-        if (plotPanel != null)
-        {
-            if (plotPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction() != null)
-            {
+        if (plotPanel != null) {
+            if (plotPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction() != null) {
                 plotPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction().setEnabled(
                         (layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getTotalClasses() > 0));
             }
 
-            if (plotPanel.getRenderPlotImageToFileAction() != null)
-            {
+            if (plotPanel.getRenderPlotImageToFileAction() != null) {
                 plotPanel.getRenderPlotImageToFileAction().setEnabled(true);
             }
         }
     }
 
-    public void closeClassViewerWindow()
-    {
+    public void closeClassViewerWindow() {
         // disable any running threads
         checkAndAbortUpdateEntropyTableRunnable();
         checkAndAbortUpdateDetailedEntropyTableRunnable();
@@ -1257,93 +1469,85 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     }
 
     /**
-    *   Process a light-weight thread using the Adapter technique to avoid any GUI latencies with the JButton setEnabled() update.
-    */
-    private void runLightWeightThread(int threadPriority)
-    {
-        Thread runLightWeightThread = new Thread( new Runnable()
-        {
+     * Process a light-weight thread using the Adapter technique to avoid any
+     * GUI latencies with the JButton setEnabled() update.
+     */
+    private void runLightWeightThread(int threadPriority) {
+        Thread runLightWeightThread = new Thread(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 boolean enableDetailsButton = !annotationClass.isEmpty();
 
                 // used as an 'animation' trick to visually show JButton update when moved to another row!
-                if ( detailsButton.isEnabled() )
-                {
+                if (detailsButton.isEnabled()) {
                     detailsButton.setEnabled(false);
                     LayoutFrame.sleep(TIME_TO_SLEEP_TO_ABORT_THREADS);
                 }
 
                 detailsButton.setEnabled(enableDetailsButton);
             }
-        }, "runLightWeightThread" );
+        }, "runLightWeightThread");
 
         runLightWeightThread.setPriority(threadPriority);
         runLightWeightThread.start();
     }
 
-    public String[] getGeneralTableColumnNames()
-    {
+    public String[] getGeneralTableColumnNames() {
         return tableModelGeneral.getColumnNames();
     }
 
-    public JButton getChooseColumnsToHideButton()
-    {
+    public JButton getChooseColumnsToHideButton() {
         return chooseColumnsToHideButton;
     }
 
-    public void setCurrentClassName(String currentClassName)
-    {
+    public void setCurrentClassName(String currentClassName) {
         this.currentClassName = currentClassName;
 
         int numberOfSelectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes().size();
-        this.setTitle("Class Viewer " + ( ( !currentClassName.isEmpty() ) ? "(Current Class Selected: " + ( (numberOfSelectedNodes > 0) ? currentClassName + " with " + numberOfSelectedNodes + " nodes" : currentClassName ) + ")" : "" ) );
+        this.setTitle("Class Viewer " + ((!currentClassName.isEmpty()) ? "(Current Class Selected: " + ((numberOfSelectedNodes > 0) ? currentClassName + " with " + numberOfSelectedNodes + " nodes" : currentClassName) + ")" : ""));
     }
 
-    public String getCurrentClassName()
-    {
+    public String getCurrentClassName() {
         return currentClassName;
     }
 
-    public void setUpdateResetSelectDeselectAllButton(boolean updateResetSelectDeselectAllButton)
-    {
+    public void setUpdateResetSelectDeselectAllButton(boolean updateResetSelectDeselectAllButton) {
         this.updateResetSelectDeselectAllButton = updateResetSelectDeselectAllButton;
         generalTable.setUpdateResetSelectDeselectAllButton(updateResetSelectDeselectAllButton);
     }
 
     @Override
-    public void itemStateChanged(ItemEvent e)
-    {
-        if (!rebuildClassSets)
-        {
+    public void itemStateChanged(ItemEvent e) {
+
+        if (!rebuildClassSets) {
             // if ( (e.getStateChange() == ItemEvent.SELECTED) && ( e.getSource().equals(classSetsBox) ) )
-            if ( e.getSource().equals(classSetsBox) )
-            {
-                layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().switchClassSet( (String)classSetsBox.getSelectedItem() );
+            if (e.getSource().equals(classSetsBox)) {
+                layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().switchClassSet((String) classSetsBox.getSelectedItem());
                 layoutFrame.getGraph().updateAllDisplayLists();
                 layoutFrame.getGraph().refreshDisplay();
 
                 refreshCurrentClassSetSelection();
 
-                if (DEBUG_BUILD) println("Reinit Due to Action:" + e.toString());
+                if (DEBUG_BUILD) {
+                    println("Reinit Due to Action:" + e.toString());
+                }
 
                 populateClassViewer(false, true);
+
             }
         }
+
     }
 
     @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        if ( e.getSource().equals(viewAllClassSets) )
-        {
-            if (DEBUG_BUILD) println("Reinit Due to Action:" + e.toString());
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(viewAllClassSets)) {
+            if (DEBUG_BUILD) {
+                println("Reinit Due to Action:" + e.toString());
+            }
 
             populateClassViewer(false, true);
-        }
-        else if ( e.getSource().equals(autoSizeColumnsCheckBox) )
-        {
+        } else if (e.getSource().equals(autoSizeColumnsCheckBox)) {
             CV_AUTO_SIZE_COLUMNS.set(autoSizeColumnsCheckBox.isSelected());
             generalTable.setAutoSizeColumns(CV_AUTO_SIZE_COLUMNS.get());
             populateClassViewer(false, true);
@@ -1351,58 +1555,59 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     }
 
     @Override
-    public void valueChanged(ListSelectionEvent listSelectionEvent)
-    {
+    public void valueChanged(ListSelectionEvent listSelectionEvent) {
         int selectedRow = entropyTable.getSelectedRow();
-        boolean isDifferent = (selectedRow > -1) ? !annotationClass.equals( (String)entropyTable.getModel().getValueAt(selectedRow, 0) ) : true;
-        annotationClass = (selectedRow > -1) ? (String)entropyTable.getModel().getValueAt(selectedRow, 0) : "";
-        if (isDifferent)
+        boolean isDifferent = (selectedRow > -1) ? !annotationClass.equals((String) entropyTable.getModel().getValueAt(selectedRow, 0)) : true;
+        annotationClass = (selectedRow > -1) ? (String) entropyTable.getModel().getValueAt(selectedRow, 0) : "";
+        if (isDifferent) {
             runLightWeightThread(Thread.NORM_PRIORITY);
+        }
     }
 
     @Override
-    public void stateChanged(ChangeEvent changeEvent)
-    {
-        if (DEBUG_BUILD) println( changeEvent.toString() );
+    public void stateChanged(ChangeEvent changeEvent) {
+        if (DEBUG_BUILD) {
+            println(changeEvent.toString());
+        }
 
-        if ( changeEvent.getSource().equals(tabbedPane) )
-        {
-            if (DEBUG_BUILD) println("Reinit due to change event: " + changeEvent.toString());
+        if (changeEvent.getSource().equals(tabbedPane)) {
+            if (DEBUG_BUILD) {
+                println("Reinit due to change event: " + changeEvent.toString());
+            }
 
             populateClassViewer(false, true);
         }
     }
 
     /**
-     * Sets text, tooltip text and enabled/disabled state of searchDatabaseButton
+     * Sets text, tooltip text and enabled/disabled state of
+     * searchDatabaseButton
+     *
      * @param enabled - true to enable, false to disable
      */
-    private void setUpSearchDatabaseButton(boolean enabled)
-    {
+    private void setUpSearchDatabaseButton(boolean enabled) {
         searchDatabaseButton.setText("Search Pathway Commons");
         searchDatabaseButton.setToolTipText("Search Pathway Commons for selected node names");
         searchDatabaseButton.setEnabled(enabled);
     }
 
-    public static class EntropyTableCellRenderer extends DefaultTableCellRenderer
-    {
+    public static class EntropyTableCellRenderer extends DefaultTableCellRenderer {
+
         /**
-        *  Serial version UID variable for the EntropyTableCellRenderer class.
-        */
+         * Serial version UID variable for the EntropyTableCellRenderer class.
+         */
         public static final long serialVersionUID = 111222333444555797L;
 
         public static final DecimalFormat DECIMAL_FORMAT_1 = new DecimalFormat("0.##E0");
         public static final DecimalFormat DECIMAL_FORMAT_2 = new DecimalFormat("0.####");
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
-        {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-            if (value instanceof Double)
-            {
-                double val = ( (Double)value ).doubleValue();
-                String text = ( (val > 1000.0) || (val < 0.0001) ) ? DECIMAL_FORMAT_1.format(value) : DECIMAL_FORMAT_2.format(value);
+            if (value instanceof Double) {
+                double val = ((Double) value).doubleValue();
+                String text = ((val > 1000.0) || (val < 0.0001)) ? DECIMAL_FORMAT_1.format(value) : DECIMAL_FORMAT_2.format(value);
                 setText(text);
                 setToolTipText(text);
             }
@@ -1410,4 +1615,5 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             return this;
         }
     }
+    
 }

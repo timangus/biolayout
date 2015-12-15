@@ -2237,7 +2237,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
     {
         if (DEBUG_BUILD) println("Building Selected Display List");
 
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if ( !selectedNodes.isEmpty() )
         {
             float transparencyValue = 0.0f;
@@ -3104,7 +3104,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
     */
     private void increaseNodeDepth(boolean increase)
     {
-        HashSet<GraphNode> nodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> nodes = selectionManager.getSelectedNodes();
         if ( nodes.isEmpty() )
             nodes = visibleNodes;
 

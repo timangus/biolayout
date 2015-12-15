@@ -115,7 +115,7 @@ public final class LayoutGraphStatisticsDialog extends JDialog implements Runnab
         {
             // don't use selectionManager.getSelectedEdges() as that introduces problems!
             HashSet<GraphEdge> selectedEdges = new HashSet<GraphEdge>();
-            HashSet<GraphNode> selectedNodes = graph.getSelectionManager().getSelectedNodes();
+            Set<GraphNode> selectedNodes = graph.getSelectionManager().getSelectedNodes();
             for ( GraphEdge graphEdge : graph.getVisibleEdges() )
                 if ( selectedNodes.contains( graphEdge.getNodeFirst() ) && selectedNodes.contains( graphEdge.getNodeSecond() ) )
                     selectedEdges.add(graphEdge);

@@ -84,7 +84,7 @@ public class RelativeEntropyCalc
             if (abortThread) return null;
             if (DEBUG_BUILD) println("Cluster:>" + clusterName + "<" + " " + genes.size());
 
-            n = chipGenes;
+            n = nc.getNumberOfVertices();
             selectedInCategory = annotationType.getCount(clusterName);
             r1 = bg.getCount(clusterName);
             fobs = (double) selectedInCategory / (double) genes.size();
@@ -96,7 +96,7 @@ public class RelativeEntropyCalc
 
             if (DEBUG_BUILD) println("STDEVS:" + stdevs[0] + " " + stdevs[1]);
 
-            expectedNo = round((((double) r1 / (double) n) *(double) genes.size()), 5);
+            expectedNo = round((((double) r1 / (double) n) * (double) genes.size()), 5);
             expectedDev = round(((stdevs[0]) * (double) genes.size()), 5);
             expectedOverrep = stdevs[3];
             zScore = (overRep - expectedOverrep) / stdevs[1];
@@ -108,11 +108,12 @@ public class RelativeEntropyCalc
             }
 
             Observed.put(clusterName, selectedInCategory + "/" + genes.size());
-            Expected.put(clusterName, r1 + "/" + n);
+            Expected.put(clusterName, round(expectedNo,2) + "/" + genes.size());
             ExpectedTrial.put(clusterName, expectedNo + "/" + genes.size() + "±" + expectedDev);
             Fobs.put(clusterName, Double.toString(fobs));
             Fexp.put(clusterName, Double.toString(fexp));
-            OverRep.put(clusterName, overRep + "±" + stdevs[1]);
+            //OverRep.put(clusterName, overRep + "±" + stdevs[1]);
+            OverRep.put(clusterName, Double.toString(round(selectedInCategory/expectedNo,2)));
             Zscore.put(clusterName, Double.toString(zScore));
         }
 
@@ -149,7 +150,7 @@ public class RelativeEntropyCalc
 
         if (abortThread) return null;
 
-        int chipGenes = AnnotationTypeManagerBG.getInstanceSingleton().getChipGeneCount();
+        int chipGenes = nc.getNumberOfVertices();
         int n = 0;
         int selectedInCategory = 0;
         int r1 = 0;
@@ -191,7 +192,7 @@ public class RelativeEntropyCalc
             f = MathUtil.fisher(selectedInCategory, nonSelectedInCategory, selectedNotInCategory, nonSelectedNotInCategory)[2];
 
             if (DEBUG_BUILD) println("Fisher:" + f);
-            clusterNames2FisherValues.put(clusterName, new Double(f));
+            clusterNames2FisherValues.put(clusterName, f);
         }
 
         return clusterNames2FisherValues;
@@ -345,6 +346,29 @@ public class RelativeEntropyCalc
     public void setAbortThread(boolean abortThread)
     {
         this.abortThread = abortThread;
+    }
+    
+    public Map<String, Set<String>> getGroupSubTerms(){
+        Map<String, Set<String>> subTerms = new HashMap<String,Set<String>>();
+
+        VertexClass vc = null;
+        for ( Vertex vertex : nc.getVertices() )
+        {
+            if (abortThread) return null;
+
+            for ( LayoutClasses layoutClass : layoutClassSetsManager.getClassSetNames() )
+            {
+                    vc = layoutClass.getVertexClass(vertex);
+                    if (vc != null){
+                        if (!subTerms.containsKey(layoutClass.getClassSetName())){
+                            subTerms.put(layoutClass.getClassSetName(), new HashSet<String>());
+                        }
+                        subTerms.get(layoutClass.getClassSetName()).add(vc.getName());
+                    }
+            }
+        }
+
+        return subTerms;
     }
 
 

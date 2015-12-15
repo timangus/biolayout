@@ -7,6 +7,7 @@ package org.Kajeka.Files.webservice;
 import com.google.common.base.Joiner;
 import java.awt.event.ActionEvent;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import org.Kajeka.CoreUI.LayoutFrame;
@@ -63,7 +64,7 @@ public class ImportWebService {
                     String searchString = "";       
                     
                     //populate search field with selected node names
-                    HashSet<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
+                    Set<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
                     int size = selectedNodes.size();
                     if(size > 0)
                     {

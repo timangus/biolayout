@@ -1846,7 +1846,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
         // each pixel in the texture by the current alpha value
         gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if (DEBUG_BUILD) println("GraphRenderer2D selectedNodes size: " + selectedNodes.size());
         for (GraphNode node : selectedNodes)
         {
@@ -2157,7 +2157,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     /**
     *  Updates all selected the nodes and edges.
     */
-    private void updateVisibleNodesAndEdgesAccordingToSelection(HashSet<GraphNode> selectedNodes)
+    private void updateVisibleNodesAndEdgesAccordingToSelection(Set<GraphNode> selectedNodes)
     {
         visibleNodes.removeAll(selectedNodes);
 
@@ -2181,7 +2181,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     /**
     *  Updates the nodes positions.
     */
-    private void updateSelectedNodesPositionsAndReAddToVisibleNodes(HashSet<GraphNode> selectedNodes)
+    private void updateSelectedNodesPositionsAndReAddToVisibleNodes(Set<GraphNode> selectedNodes)
     {
         if ( (translateXSelectedValue != 0.0f) || (translateYSelectedValue != 0.0f) )
         {
@@ -2218,7 +2218,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     */
     private void startDraggedNodesProcess()
     {
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if ( !selectedNodes.isEmpty() )
         {
             updateVisibleNodesAndEdgesAccordingToSelection(selectedNodes);
@@ -2236,7 +2236,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     */
     private void endDraggedNodesProcess()
     {
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if ( !selectedNodes.isEmpty() )
         {
             updateSelectedNodesPositionsAndReAddToVisibleNodes(selectedNodes);
@@ -2256,7 +2256,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     */
     private void processUndoEvent()
     {
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
         {
             GraphmlNetworkContainer gnc = nc.getGraphmlNetworkContainer();
@@ -2281,7 +2281,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     */
     private void processRedoEvent()
     {
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
         {
             GraphmlNetworkContainer gnc = nc.getGraphmlNetworkContainer();
@@ -3332,7 +3332,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     @Override
     public boolean hasMoreUndoSteps()
     {
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
         {
             GraphmlNetworkContainer gnc = nc.getGraphmlNetworkContainer();
@@ -3358,7 +3358,7 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
     @Override
     public boolean hasMoreRedoSteps()
     {
-        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
         if ( nc.getIsGraphml() && YED_STYLE_RENDERING_FOR_GPAPHML_FILES.get() )
         {
             GraphmlNetworkContainer gnc = nc.getGraphmlNetworkContainer();

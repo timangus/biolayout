@@ -243,7 +243,7 @@ public final class CorrelationLoader
                 layoutProgressBarDialog.incrementProgress(percent);
 
                 Vertex vertex = null;
-
+                chipGeneCount++;
                 for (int column = 0; column < firstDataColumn; column++)
                 {
                     String value = tdm.valueAt(column, row);
@@ -256,7 +256,6 @@ public final class CorrelationLoader
                     }
                     else if (vertex != null)
                     {
-                        chipGeneCount++;
                         String annotation = cleanString(value);
                         LayoutClasses layoutClasses =
                                 layoutClassSetsManager.getClassSetByName(rowAnnotationLabels[column - 1]);

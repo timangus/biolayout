@@ -101,7 +101,7 @@ public final class GroupManager
     {
         selectionManager.unhideAll(false);
 
-        HashSet<GraphNode> selected = null;
+        Set<GraphNode> selected = null;
         GraphGroupNode graphGroupNode = null;
         float size = 0.0f;
         HashSet<GraphEdge> newEdgesSet = null;
@@ -209,7 +209,7 @@ public final class GroupManager
         selectionManager.clearAllSelection();
         selectionManager.addNodesToSelected(tempSelected, false, true, true, false, false, false); // do not update viewers so as to avoid crashes!
 
-        HashSet<GraphNode> selected = null;
+        Set<GraphNode> selected = null;
         GraphGroupNode graphGroupNode = null;
         float size = 0.0f;
         HashSet<GraphEdge> newEdgesSet = null;
@@ -258,7 +258,7 @@ public final class GroupManager
         selectionManager.clearAllSelection();
         selectionManager.addNodesToSelected(tempSelected, false, true, true, false, false, false); // do not update viewers so as to avoid crashes!
 
-        HashSet<GraphNode> selected = null;
+        Set<GraphNode> selected = null;
         GraphGroupNode graphGroupNode = null;
         float size = 0.0f;
         HashSet<GraphEdge> newEdgesSet = null;
@@ -319,7 +319,7 @@ public final class GroupManager
                     @Override
                     public void run()
                     {
-                        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+                        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
                         HashSet<GraphGroupNode> restoreGroups = new HashSet<GraphGroupNode>();
                         for (GraphNode graphNode : selectedNodes)
                             if (graphNode instanceof GraphGroupNode)
@@ -373,7 +373,7 @@ public final class GroupManager
                     public void run()
                     {
                         HashSet<GraphGroupNode> restoreGroups = new HashSet<GraphGroupNode>();
-                        HashSet<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
+                        Set<GraphNode> selectedNodes = selectionManager.getSelectedNodes();
 
                         for (GraphNode graphNode : selectedNodes)
                             if (graphNode instanceof GraphGroupNode)
@@ -413,7 +413,7 @@ public final class GroupManager
         unGroupAllAction.setEnabled(false);
     }
 
-    public void processNodes(HashSet<GraphNode> nodes)
+    public void processNodes(Set<GraphNode> nodes)
     {
         GraphGroupNode groupNode = null;
         HashSet<GraphNode> nodesToRemove = new HashSet<GraphNode>();
@@ -434,7 +434,7 @@ public final class GroupManager
 
     private void proccessSelectedEdges(GraphGroupNode graphGroupNode)
     {
-        HashSet<GraphEdge> selectedGraphEdges = selectionManager.getSelectedEdges();
+        Set<GraphEdge> selectedGraphEdges = selectionManager.getSelectedEdges();
         graphGroupNode.setSelectedEdges(selectedGraphEdges);
         graph.getGraphEdges().removeAll(selectedGraphEdges);
     }
@@ -442,7 +442,7 @@ public final class GroupManager
     private void proccessSelectedNodes(GraphGroupNode graphGroupNode)
     {
         HashMap<Integer, GraphNode> allNodesMap = graph.getGraphNodesMap();
-        HashSet<GraphNode> groupNodes = graphGroupNode.getGroupNodes();
+        Set<GraphNode> groupNodes = graphGroupNode.getGroupNodes();
 
         for (GraphNode node : groupNodes)
             allNodesMap.remove( node.getNodeID() );
@@ -453,7 +453,7 @@ public final class GroupManager
         graph.getVisibleNodes().add(graphGroupNode);
     }
 
-    private HashSet<GraphNode> getNextGroup(HashSet<GraphNode> selected)
+    private Set<GraphNode> getNextGroup(Set<GraphNode> selected)
     {
         if (selected.size() > 0)
         {

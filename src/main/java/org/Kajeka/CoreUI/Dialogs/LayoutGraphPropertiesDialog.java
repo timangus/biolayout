@@ -2596,7 +2596,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         applyGeneralProperties();
         applySearchProperties();
 
-        HashSet<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
+        Set<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
         for (GraphNode graphNode : selectedNodes)
         {
             if (nodeColorChange)

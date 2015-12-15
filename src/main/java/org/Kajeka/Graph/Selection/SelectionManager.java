@@ -27,7 +27,7 @@ public final class SelectionManager
 
     private LayoutFrame layoutFrame = null;
     private Graph graph = null;
-    private HashSet<GraphNode> selectedNodes = null;
+    private HashMap<GraphNode, String[]> selectedNodes = null;
     private HashSet<GraphEdge> selectedEdges = null;
 
     private AbstractAction deleteSelectionAction = null;
@@ -63,7 +63,7 @@ public final class SelectionManager
         this.layoutFrame = layoutFrame;
         this.graph = graph;
 
-        selectedNodes = new HashSet<GraphNode>();
+        selectedNodes = new HashMap<GraphNode, String[]>();
         selectedEdges = new HashSet<GraphEdge>();
 
         groupManager = new GroupManager(this, graph);
@@ -144,7 +144,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectNeighbours(selectedNodes);
+                selectNeighbours((HashSet<GraphNode>)selectedNodes.keySet());
             }
         };
         selectNeighbourAction.setEnabled(false);
@@ -159,7 +159,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectAllNeighbours(selectedNodes);
+                selectAllNeighbours((HashSet<GraphNode>)selectedNodes.keySet());
             }
         };
         selectAllNeighbourAction.setEnabled(false);
@@ -174,7 +174,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectParents(selectedNodes);
+                selectParents((HashSet<GraphNode>)selectedNodes.keySet());
             }
         };
         selectParentsAction.setEnabled(false);
@@ -189,7 +189,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectAllParents(selectedNodes);
+                selectAllParents((HashSet<GraphNode>)selectedNodes.keySet());
             }
         };
         selectAllParentsAction.setEnabled(false);
@@ -204,7 +204,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectChildren(selectedNodes);
+                selectChildren((HashSet<GraphNode>)selectedNodes.keySet());
             }
         };
         selectChildrenAction.setEnabled(false);
@@ -219,7 +219,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectAllChildren(selectedNodes);
+                selectAllChildren((HashSet<GraphNode>)selectedNodes.keySet());
             }
         };
         selectAllChildrenAction.setEnabled(false);
@@ -480,7 +480,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                for (GraphNode graphNode : selectedNodes)
+                for (GraphNode graphNode : selectedNodes.keySet())
                     graphNode.setShowNodeName(true);
 
                 graph.updateNodesDisplayList();
@@ -524,7 +524,7 @@ public final class SelectionManager
                 // don't use selectionManager.getSelectedEdges() as that introduces problems!
                 HashSet<GraphEdge> selectedEdges = new HashSet<GraphEdge>();
                 for ( GraphEdge graphEdge : graph.getVisibleEdges() )
-                    if ( selectedNodes.contains( graphEdge.getNodeFirst() ) && selectedNodes.contains( graphEdge.getNodeSecond() ) )
+                    if ( selectedNodes.keySet().contains( graphEdge.getNodeFirst() ) && selectedNodes.keySet().contains( graphEdge.getNodeSecond() ) )
                         selectedEdges.add(graphEdge);
 
                 boolean doProcess = true;
@@ -568,7 +568,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                for (GraphNode graphNode : selectedNodes)
+                for (GraphNode graphNode : selectedNodes.keySet())
                     graphNode.setShowNodeName(false);
 
                 graph.updateNodesDisplayList();
@@ -605,7 +605,7 @@ public final class SelectionManager
             public void actionPerformed(ActionEvent e)
             {
                 for ( GraphEdge graphEdge : graph.getVisibleEdges() )
-                    if ( selectedNodes.contains( graphEdge.getNodeFirst() ) && selectedNodes.contains( graphEdge.getNodeSecond() ) )
+                    if ( selectedNodes.keySet().contains( graphEdge.getNodeFirst() ) && selectedNodes.keySet().contains( graphEdge.getNodeSecond() ) )
                         graphEdge.setShowEdgeName(false);
 
                 graph.updateEdgesDisplayList();
@@ -636,7 +636,7 @@ public final class SelectionManager
         HashSet<VertexClass> selectedClasses = new HashSet<VertexClass>();
         HashSet<GraphNode> foundNodes = new HashSet<GraphNode>();
 
-        for (GraphNode graphNode : selectedNodes)
+        for (GraphNode graphNode : selectedNodes.keySet())
             selectedClasses.add( graphNode.getVertexClass() );
 
         for ( GraphNode graphNode : graph.getGraphNodes() )
@@ -688,7 +688,7 @@ public final class SelectionManager
 
     private void deleteSelection()
     {
-        deleteNodes(selectedNodes, "Now Deleting Selection...");
+        deleteNodes((HashSet<GraphNode>)selectedNodes.keySet(), "Now Deleting Selection...");
     }
 
     private void deleteHidden()
@@ -744,14 +744,14 @@ public final class SelectionManager
 
         HashSet<GraphEdge> edges = new HashSet<GraphEdge>();
         for ( GraphEdge graphEdge : graph.getVisibleEdges() )
-              if ( !(selectedNodes.contains( graphEdge.getNodeFirst() ) || selectedNodes.contains( graphEdge.getNodeSecond() ) ) )
+              if ( !(selectedNodes.keySet().contains( graphEdge.getNodeFirst() ) || selectedNodes.keySet().contains( graphEdge.getNodeSecond() ) ) )
                   edges.add(graphEdge);
 
         graph.recreateVisibleEdges(edges);
 
         if (DEBUG_BUILD) println("Removing nodes from array");
 
-        graph.getVisibleNodes().removeAll(selectedNodes);
+        graph.getVisibleNodes().removeAll(selectedNodes.keySet());
 
         clearAllSelection();
 
@@ -795,7 +795,7 @@ public final class SelectionManager
     private void reverseSelection()
     {
         HashSet<GraphNode> tempSetNodes = new HashSet<GraphNode>( graph.getVisibleNodes() );
-        tempSetNodes.removeAll(selectedNodes);
+        tempSetNodes.removeAll(selectedNodes.keySet());
         clearAllSelection();
         addNodesToSelected(tempSetNodes, false, true);
 
@@ -807,11 +807,11 @@ public final class SelectionManager
     {
         if (selectedNodes.size() == 1)
         {
-            for (GraphNode node : selectedNodes)
+            for (GraphNode node : selectedNodes.keySet())
                 layoutFrame.setEnabledNodeNameTextFieldAndSelectNodesTab(true, node, 1);
         }
         else
-            layoutFrame.setEnabledNodeNameTextFieldAndSelectNodesTab( false, null, selectedNodes.size() );
+            layoutFrame.setEnabledNodeNameTextFieldAndSelectNodesTab( false, null, selectedNodes.keySet().size() );
     }
 
     private void showInformationDialog(JFrame jFrame, String title, String message)
@@ -876,7 +876,7 @@ public final class SelectionManager
 
         boolean hasAddedNodes = false;
         HashSet<GraphEdge> tempEdges = new HashSet<GraphEdge>();
-        if ( !selectedNodes.containsAll(nodes) )
+        if ( !selectedNodes.keySet().containsAll(nodes) )
         {
             for (GraphNode graphNode : nodes)
             {
@@ -886,7 +886,7 @@ public final class SelectionManager
                         graph.getVisibleNodes().add(graphNode);
 
                     if (addSelectedNodes)
-                        selectedNodes.add(graphNode);
+                        selectedNodes.put(graphNode, null);
 
                     if ( (includeHidden || addEdges) && !(graphNode instanceof GraphGroupNode) ) tempEdges.addAll( graphNode.getNodeEdges() );
                     hasAddedNodes = true;
@@ -916,7 +916,7 @@ public final class SelectionManager
         {
             HashSet<GraphEdge> tempEdgesToAdd = new HashSet<GraphEdge>();
             for (GraphEdge edge : edges)
-                if ( (selectedNodes.contains( edge.getNodeFirst() ) && selectedNodes.contains( edge.getNodeSecond() ) ) ) // get rid of edges that do not connect from both sides
+                if ( (selectedNodes.keySet().contains( edge.getNodeFirst() ) && selectedNodes.keySet().contains( edge.getNodeSecond() ) ) ) // get rid of edges that do not connect from both sides
                     tempEdgesToAdd.add(edge);
 
             edges = new HashSet<GraphEdge>(tempEdgesToAdd);
@@ -929,7 +929,7 @@ public final class SelectionManager
         }
     }
 
-    private HashSet<GraphNode> getNeighbours(HashSet<GraphNode> nodes)
+    private Set<GraphNode> getNeighbours(Set<GraphNode> nodes)
     {
         HashSet<GraphNode> neighbours = new HashSet<GraphNode>();
         for (GraphNode graphNode : nodes)
@@ -950,7 +950,7 @@ public final class SelectionManager
         return neighbours;
     }
 
-    private HashSet<GraphNode> getChildren(HashSet<GraphNode> nodes)
+    private Set<GraphNode> getChildren(Set<GraphNode> nodes)
     {
         HashSet<GraphNode> neighbours = new HashSet<GraphNode>();
         HashSet<GraphEdge> nodeEdges = null;
@@ -968,10 +968,10 @@ public final class SelectionManager
         return neighbours;
     }
 
-    private HashSet<GraphNode> getParents(HashSet<GraphNode> nodes)
+    private Set<GraphNode> getParents(Set<GraphNode> nodes)
     {
-        HashSet<GraphNode> neighbours = new HashSet<GraphNode>();
-        HashSet<GraphEdge> nodeEdges = null;
+        Set<GraphNode> neighbours = new HashSet<GraphNode>();
+        Set<GraphEdge> nodeEdges = null;
         for (GraphNode graphNode : nodes)
         {
             nodeEdges = graphNode.getNodeEdges();
@@ -986,9 +986,9 @@ public final class SelectionManager
         return neighbours;
     }
 
-    private void selectNeighbours(HashSet<GraphNode> nodes)
+    private void selectNeighbours(Set<GraphNode> nodes)
     {
-        HashSet<GraphNode> neighbours = getNeighbours(nodes);
+        Set<GraphNode> neighbours = getNeighbours(nodes);
         if ( neighbours.isEmpty() )
         {
             showInformationDialog(layoutFrame, "Select Neighbours", "No more Neighbours found!");
@@ -1009,7 +1009,7 @@ public final class SelectionManager
 
     private void selectChildren(HashSet<GraphNode> nodes)
     {
-        HashSet<GraphNode> neighbours = getChildren(nodes);
+        Set<GraphNode> neighbours = getChildren(nodes);
         if ( neighbours.isEmpty() )
         {
             showInformationDialog(layoutFrame, "Select Children", "No more Children found!");
@@ -1030,7 +1030,7 @@ public final class SelectionManager
 
     private void selectParents(HashSet<GraphNode> nodes)
     {
-        HashSet<GraphNode> neighbours = getParents(nodes);
+        Set<GraphNode> neighbours = getParents(nodes);
         if ( neighbours.isEmpty() )
         {
             showInformationDialog(layoutFrame, "Select Parents", "No more Parents found!");
@@ -1049,10 +1049,10 @@ public final class SelectionManager
         graph.updateNodesAndSelectedNodesDisplayList();
     }
 
-    private void selectAllNeighbours(HashSet<GraphNode> nodes)
+    private void selectAllNeighbours(Set<GraphNode> nodes)
     {
-        HashSet<GraphNode> neighbours = getNeighbours(nodes);
-        HashSet<GraphNode> newNeighbours = getNeighbours(neighbours);
+        Set<GraphNode> neighbours = getNeighbours(nodes);
+        Set<GraphNode> newNeighbours = getNeighbours(neighbours);
 
         while ( !newNeighbours.isEmpty() )
         {
@@ -1068,10 +1068,10 @@ public final class SelectionManager
         graph.updateNodesAndSelectedNodesDisplayList();
     }
 
-    private void selectAllChildren(HashSet<GraphNode> nodes)
+    private void selectAllChildren(Set<GraphNode> nodes)
     {
-        HashSet<GraphNode> neighbours = getNeighbours(nodes);
-        HashSet<GraphNode> newNeighbours = getParents(neighbours);
+        Set<GraphNode> neighbours = getNeighbours(nodes);
+        Set<GraphNode> newNeighbours = getParents(neighbours);
 
         while ( !newNeighbours.isEmpty() )
         {
@@ -1089,8 +1089,8 @@ public final class SelectionManager
 
     private void selectAllParents(HashSet<GraphNode> nodes)
     {
-        HashSet<GraphNode> neighbours = getParents(nodes);
-        HashSet<GraphNode> newNeighbours = getParents(neighbours);
+        Set<GraphNode> neighbours = getParents(nodes);
+        Set<GraphNode> newNeighbours = getParents(neighbours);
 
         while ( !newNeighbours.isEmpty() )
         {
@@ -1245,7 +1245,7 @@ public final class SelectionManager
     public HashSet<GraphNode> getExpandedSelectedNodes()
     {
         HashSet<GraphNode> expandedSelection = new HashSet<GraphNode>();
-        for (GraphNode node : selectedNodes)
+        for (GraphNode node : selectedNodes.keySet())
         {
             if (node instanceof GraphGroupNode)
             {
@@ -1263,12 +1263,12 @@ public final class SelectionManager
         return expandedSelection;
     }
 
-    public HashSet<GraphNode> getSelectedNodes()
+    public Set<GraphNode> getSelectedNodes()
     {
-        return selectedNodes;
+        return selectedNodes.keySet();
     }
 
-    public HashSet<GraphEdge> getSelectedEdges()
+    public Set<GraphEdge> getSelectedEdges()
     {
         return selectedEdges;
     }
@@ -1463,7 +1463,7 @@ public final class SelectionManager
         selectedNodes.remove(node);
 
         for ( GraphEdge graphEdge : node.getNodeEdges() )
-            if ( !selectedNodes.contains( graphEdge.getNodeFirst() ) && !selectedNodes.contains( graphEdge.getNodeSecond() ) )
+            if ( !selectedNodes.keySet().contains( graphEdge.getNodeFirst() ) && !selectedNodes.keySet().contains( graphEdge.getNodeSecond() ) )
                 selectedEdges.remove(graphEdge);
 
         setActionsEnable( !selectedNodes.isEmpty() );
@@ -1475,11 +1475,11 @@ public final class SelectionManager
 
     public void removeNodeFromSelected(Collection<GraphNode> nodes, boolean updateViewers, boolean updateCorrelationGraphViewOnly, boolean notUpdateTitleBar)
     {
-        selectedNodes.removeAll(nodes);
+        selectedNodes.keySet().removeAll(nodes);
 
         for (GraphNode node :nodes)
             for ( GraphEdge graphEdge : node.getNodeEdges() )
-                if ( !selectedNodes.contains( graphEdge.getNodeFirst() ) && !selectedNodes.contains( graphEdge.getNodeSecond() ) )
+                if ( !selectedNodes.keySet().contains( graphEdge.getNodeFirst() ) && !selectedNodes.keySet().contains( graphEdge.getNodeSecond() ) )
                     selectedEdges.remove(graphEdge);
 
         setActionsEnable( !selectedNodes.isEmpty() );
