@@ -1224,6 +1224,7 @@ public final class SelectionManager
         }
         else
         {
+            layoutFrame.getClassViewerFrame().synchroniseHighlightWithSelection();
             // since the GUI of Multiple Classes selection is a table with checkboxes, the suer can not have selected something, thus effectively clearing current selection
             deselectAll();
             setActionsEnable(false);

@@ -190,8 +190,7 @@ public class RelativeEntropyCalc
             }
 
             f = MathUtil.fisher(selectedInCategory, nonSelectedInCategory, selectedNotInCategory, nonSelectedNotInCategory)[2];
-
-            if (DEBUG_BUILD) println("Fisher:" + f);
+            
             clusterNames2FisherValues.put(clusterName, f);
         }
 

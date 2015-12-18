@@ -1,9 +1,9 @@
 package org.Kajeka.ClassViewerUI.Tables.TableModels;
 
-import java.awt.Component;
-import java.text.DecimalFormat;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
-import javax.swing.JTable;
 import javax.swing.table.*;
 import org.Kajeka.Analysis.Utils.*;
 
@@ -51,8 +51,17 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
 
     private  Double[] relativeEntropy = null;
     private  Double[] fishersPvalue = null;
+    private  Double[] adjustedPValue = null;
     private Integer[] clusterMembers = null;
     private  Double[] score = null;
+    
+    private HashMap<String, Integer> heatmapPosition = null;
+
+    public ClassViewerTableModelEnrichment() {
+        heatmapPosition = new HashMap<>();
+    }
+    
+    
 
     private int overallEntropies = 0;
 
@@ -112,7 +121,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
 
             //case(9): return relativeEntropy[row];
             case(6): return fishersPvalue[row];
-            case(7): return (fishersPvalue[row] * this.getRowCount());
+            case(7): return adjustedPValue[row];
 
             case(8): return clusterMembers[row];
             //case(13): return score[row];
@@ -138,6 +147,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
             fishersPvalue   = new Double[0];
             clusterMembers  = new Integer[0];
             score           = new Double[0];
+            adjustedPValue  = new Double[0];
 
             return;
         }
@@ -162,6 +172,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
             relativeEntropy[i] = Term2Entropy.get(annotationTerm[i]);
             fishersPvalue[i]   = Fishers.get(annotationTerm[i]);
             clusterMembers[i]  = Members.get(annotationTerm[i]);
+            adjustedPValue[i]  = fishersPvalue[i] * Fishers.size();
 
             score[i]           = new Double( MathUtil.calcScore( fishersPvalue[i].doubleValue(), clusterMembers[i].intValue(), relativeEntropy[i].doubleValue() ) );
 
@@ -185,6 +196,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
         zscore           = new Double[size];
         relativeEntropy  = new Double[size];
         fishersPvalue    = new Double[size];
+        adjustedPValue   = new Double[size];
         clusterMembers   = new Integer[size];
         score            = new Double[size];
         overallEntropies = 0;
@@ -207,6 +219,8 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
             fexp[overallEntropies]            = Double.parseDouble( Fexp.get(annotationTerm[overallEntropies]) );
             overRep[overallEntropies]         = Double.parseDouble( OverRep.get(annotationTerm[overallEntropies]) );
             zscore[overallEntropies]          = Double.parseDouble( Zscore.get(annotationTerm[overallEntropies]) );
+            
+            adjustedPValue[overallEntropies]  = Term2FisherPVal.get(annotationTerm[overallEntropies])*Term2FisherPVal.size();
 
             relativeEntropy[overallEntropies] = Term2Entropy.get(annotationTerm[overallEntropies]);
             fishersPvalue[overallEntropies]   = Term2FisherPVal.get(annotationTerm[overallEntropies]);
@@ -216,6 +230,43 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
         }
         System.out.println("Overall Entropies Model: "  + overallEntropies);
     }
+    
+    public void setHeatmapData(String heatmapPosition, int modelPosition){
+        this.heatmapPosition.put(heatmapPosition, modelPosition);
+    }
+    
+   public int getHeatmapTableIndex(int heatmapX, int heatmapY){
+       String id = heatmapX+" "+heatmapY;
+       if (!this.heatmapPosition.containsKey(id)){
+           return -1;
+       }
+       return this.heatmapPosition.get(id).intValue();
+   }
+   
+   public ArrayList<String> generateCSV(){
+       
+       // TO-DO escape CSV
+       ArrayList<String> csvFile = new ArrayList<>();
+       String columnTitles = "";
+       for (int c = 0; c < this.getColumnCount(); c++) {
+            columnTitles += escapeCommas(this.getColumnName(c).toString()) + ",";
+       }
+       csvFile.add(columnTitles);
+       
+       for (int r = 0; r < this.getRowCount(); r++) {
+           String line = "";
+           for (int c = 0; c < this.getColumnCount(); c++) {
+               line += escapeCommas(this.getValueAt(r, c).toString()) + ",";
+           }
+           csvFile.add(line);
+       }
+       
+       return csvFile;
+   }
+   
+   private String escapeCommas(String input){
+       return "\""+input+"\"";
+   }
 
 
 }

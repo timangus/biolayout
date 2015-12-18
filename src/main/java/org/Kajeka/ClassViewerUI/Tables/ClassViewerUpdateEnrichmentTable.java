@@ -1,6 +1,7 @@
 package org.Kajeka.ClassViewerUI.Tables;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -29,7 +30,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
     private HashSet<String> selectedClasses = null;
     private JTabbedPane tabbedPane = null;
     private Boolean performIndividually = false;
-    private JLabel heatmap = null;
+    private ClassViewerFrame.JHeatMap heatmap = null;
 
     // JFreeChart
     private JFreeChart fisherBarChart = null;
@@ -40,12 +41,15 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
     private JTable enrichmentTable = null;
 
+    private DefaultHeatMapDataset hmds = null;
+    private HashMap<String, Integer> elementPosition = null;
+
     /**
      * The abortThread variable is used to silently abort the Runnable/Thread.
      */
     private volatile boolean abortThread = false;
 
-    public ClassViewerUpdateEnrichmentTable(ClassViewerFrame classViewerFrame, LayoutFrame layoutFrame, ClassViewerTableModelEnrichment modelDetail, HashSet<String> selectedClasses, HashMap<VertexClass, HashSet<String>> selectedGeneGroups, JTabbedPane tabbedPane, Boolean performIndividually, JLabel heatmap, JTable enrichmentTable) {
+    public ClassViewerUpdateEnrichmentTable(ClassViewerFrame classViewerFrame, LayoutFrame layoutFrame, ClassViewerTableModelEnrichment modelDetail, HashSet<String> selectedClasses, HashMap<VertexClass, HashSet<String>> selectedGeneGroups, JTabbedPane tabbedPane, Boolean performIndividually, ClassViewerFrame.JHeatMap heatmap, JTable enrichmentTable) {
         this.classViewerFrame = classViewerFrame;
         this.modelDetail = modelDetail;
         this.geneGroups = selectedGeneGroups;
@@ -76,19 +80,18 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
     @Override
     public void run() {
+        if (geneGroups.size() == 0){
+            modelDetail.setSize(0);
+            return;
+        }
         setThreadStarted();
         selectedGenes = geneGroups.values().iterator().next();
 
         Set<String> annotationClasses = AnnotationTypeManagerBG.getInstanceSingleton().getAllTypes();
         int numberOfAllAnnotationClasses = annotationClasses.size();
 
-        layoutProgressBarDialog.prepareProgressBar(numberOfAllAnnotationClasses, " Calculating analysis values for all terms of all classes...");
-        layoutProgressBarDialog.startProgressBar();
-
         // analysis calc
         int overallEntropiesEntries = 0;
-
-        DefaultHeatMapDataset hmds;
 
         int loopCount = 1;
         selectedGenes = new HashSet<String>();
@@ -100,6 +103,9 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         } else {
             loopCount = geneGroups.size();
         }
+        
+        layoutProgressBarDialog.prepareProgressBar(numberOfAllAnnotationClasses * loopCount, " Calculating analysis values for all terms of all classes...");
+        layoutProgressBarDialog.startProgressBar();
 
         Map<String, Set<String>> groupSubGroups = relEntropyCalc.getGroupSubTerms();
         Iterator<Entry<VertexClass, HashSet<String>>> geneIterator = geneGroups.entrySet().iterator();
@@ -215,6 +221,8 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
             }
         }
 
+        elementPosition = new HashMap<String, Integer>();
+
         System.out.println("Overall entropies: " + overallEntropiesEntries);
 
         layoutProgressBarDialog.endProgressBar();
@@ -222,13 +230,14 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
         // add these calculated values to model
         modelDetail.setSize(overallEntropiesEntries);
-        layoutProgressBarDialog.prepareProgressBar(list.iterator().next().perType.keySet().size() * list.size(), " Now updating table and inserting values...");
+        layoutProgressBarDialog.prepareProgressBar(numberOfAllAnnotationClasses * loopCount, " Now updating table and inserting values...");
         layoutProgressBarDialog.startProgressBar();
 
         String[] termNames = subTermList.toArray(new String[1]);
         String[] clusterNames = new String[loopCount];
 
         Iterator<HashSet<String>> iterator = geneGroups.values().iterator();
+        int indexCounter = 0;
         for (int i = 0; i < loopCount; i++) {
             selectedGenes = iterator.next();
             EnrichmentData enrichmentData = list.get(i);
@@ -236,12 +245,13 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
             Set<String> keys = enrichmentData.perType.keySet();
             for (String type : keys) {
-
                 layoutProgressBarDialog.incrementProgress();
                 Set<String> terms = enrichmentData.perType.get(type).keySet();
                 for (String term : terms) {
                     int index = subTermList.indexOf(term);
-                    hmds.setZValue(i, index, enrichmentData.fishers.get(type).get(term));
+                    modelDetail.setHeatmapData(i + " " + index, indexCounter);
+                    hmds.setZValue(i, index, enrichmentData.fishers.get(type).get(term) * enrichmentData.fishers.get(type).size());
+                    indexCounter++;
                 }
                 if (abortThread) {
                     layoutProgressBarDialog.endProgressBar();
@@ -276,41 +286,30 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                 return;
             }
 
-            tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
+        }
+        tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
 
-            if (abortThread) {
-                layoutProgressBarDialog.endProgressBar();
-                layoutProgressBarDialog.stopProgressBar();
-                setThreadFinished();
-                return;
-            }
+        layoutProgressBarDialog.endProgressBar();
+        layoutProgressBarDialog.stopProgressBar();
 
-            if (abortThread) {
-                layoutProgressBarDialog.endProgressBar();
-                layoutProgressBarDialog.stopProgressBar();
-                setThreadFinished();
-                return;
-            }
-
-            layoutProgressBarDialog.endProgressBar();
-            layoutProgressBarDialog.stopProgressBar();
-
-            if (classViewerFrame.isVisible()) {
-                classViewerFrame.processAndSetWindowState();
-            }
+        if (classViewerFrame.isVisible()) {
+            classViewerFrame.processAndSetWindowState();
         }
         if (performIndividually) {
-            heatmap.setIcon(new ImageIcon(ClassViewerFrame.generateHeatMap(hmds, clusterNames, termNames)));
+            heatmap.updateHeatMap(hmds, clusterNames, termNames);
         }
 
         modelDetail.fireTableStructureChanged();
 
+        // Set the columns to render in enough precision
         if (performIndividually) {
             enrichmentTable.getColumnModel().getColumn(5).setCellRenderer(enrichmentTable.getDefaultRenderer(enrichmentTable.getColumnClass(5)));
             enrichmentTable.getColumnModel().getColumn(6).setCellRenderer(new FishersPRenderer());
+            enrichmentTable.getColumnModel().getColumn(7).setCellRenderer(new FishersPRenderer());
         } else {
-            enrichmentTable.getColumnModel().getColumn(6).setCellRenderer(enrichmentTable.getDefaultRenderer(enrichmentTable.getColumnClass(6)));
+            enrichmentTable.getColumnModel().getColumn(6).setCellRenderer(new FishersPRenderer());
             enrichmentTable.getColumnModel().getColumn(5).setCellRenderer(new FishersPRenderer());
+            enrichmentTable.getColumnModel().getColumn(7).setCellRenderer(enrichmentTable.getDefaultRenderer(enrichmentTable.getColumnClass(7)));
         }
         setThreadFinished();
     }
@@ -353,17 +352,23 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         public FishersPRenderer() {
             this.setHorizontalAlignment(RIGHT);
         }
-        
+
         @Override
         public Component getTableCellRendererComponent(
                 JTable table, Object value, boolean isSelected,
                 boolean hasFocus, int row, int column) {
 
+            if (value == null) {
+                return super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
+            }
+
             // First format the cell value as required]
-            if ((Double)value < 0.1)
+            if ((Double) value < 0.1) {
                 value = SCIENCEFORMATTER.format((Number) value);
-            else
+            } else {
                 value = FORMATTER.format((Number) value);
+            }
 
             // And pass it on to parent class
             return super.getTableCellRendererComponent(

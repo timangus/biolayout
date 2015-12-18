@@ -103,7 +103,7 @@ public final class MathUtil
     {
         return gammaLn(n + 1) - gammaLn(r + 1) - gammaLn(n - r + 1);
     }
-
+    
     public static double hyperGeometricProb(double x, double r1, double r2, double c1, double c2)
     {
         return exp( logComb(r1, x) + logComb(r2, c1 - x) - logComb( c1 + c2, c1) );

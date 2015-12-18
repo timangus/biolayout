@@ -7,9 +7,13 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.*;
 import java.util.*;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
@@ -29,7 +33,6 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Correlation.Panels.CorrelationGraphPanel;
 import org.Kajeka.Simulation.Panels.SimulationResultsPanel;
-import org.Kajeka.StaticLibraries.Random;
 import org.jfree.chart.renderer.PaintScale;
 import org.jfree.data.general.DefaultHeatMapDataset;
 import org.jfree.data.general.HeatMapDataset;
@@ -105,8 +108,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private JButton exportTableAsButton = null;
     private AbstractAction chooseColumnsToHideAction = null;
     private AbstractAction exportTableToFileAction = null;
-    private JLabel heatmap = null;
+    private JHeatMap heatmap = null;
     private JScrollPane heatmapPane = null;
+    private JPanel topBox = null;
 
     //search database
     private JButton searchDatabaseButton = null;
@@ -123,7 +127,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private AbstractAction detailsAction = null;
     private AbstractAction detailsOfAllAction = null;
     private AbstractAction enrichmentAction = null;
+    private AbstractAction exportTableAction = null;
     private AbstractAction heatmapAction = null;
+    private AbstractAction saveHeatmapAction = null;
 
     // entropy analysis details table
     private ClassViewerTableModelDetail analysisTableModel = null;
@@ -136,6 +142,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     JScrollPane scrollPaneEnrichment = null;
     JPanel tabEntropySelectorPanel = null;
     JButton btnDisplayHeatmap = null;
+    JButton btnSaveHeatmap = null;
+    JButton btnRunEnrichment = null;
+    JButton btnExportTable = null;
 
     private JComboBox<String> cmbClassSelector;
     private JComboBox<String> cmbComparisonMode;
@@ -406,6 +415,36 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             }
         };
 
+        exportTableAction = new AbstractAction("Export Table to CSV") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // parent component of the dialog
+                JFrame parentFrame = new JFrame();
+
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Save CSV file");
+                fileChooser.setSelectedFile(new File("enrichment.csv"));
+
+                ArrayList<String> list = enrichmentTableModel.generateCSV();
+
+                int userSelection = fileChooser.showSaveDialog(parentFrame);
+
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = fileChooser.getSelectedFile();
+
+                    BufferedImage bi = heatmap.getImg();
+                    File outputfile = fileToSave;
+
+                    try {
+                        Files.write(outputfile.toPath(), list, Charset.forName("UTF-8"));
+                    } catch (Exception ex) {
+
+                    }
+
+                }
+            }
+        };
+
         enrichmentAction = new AbstractAction("Perform Enrichment analysis") {
             /**
              * Serial version UID variable for the AbstractAction class.
@@ -416,12 +455,18 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             public void actionPerformed(ActionEvent e) {
 
                 if (scrollPaneEntropySelector.isVisible()) {
-                    if (cmbComparisonMode.getSelectedItem() == "Individual Set")
+                    if (enrichmentSelectorTableModel.getSelectedClasses().size() == 0) {
+                        return;
+                    }
+                    if (cmbComparisonMode.getSelectedItem() == "Individual Set") {
                         btnDisplayHeatmap.setVisible(true);
+                    }
                     // Update the UI
                     JButton btn = (JButton) e.getSource();
                     btn.setText("Select Classes for Enrichment analysis");
-                    
+                    topBox.setVisible(false);
+                    btnExportTable.setVisible(true);
+
                     tabEntropySelectorPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
                     tabEntropySelectorPanel.validate();
 
@@ -460,28 +505,28 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                                 }
                             }
                         }
-                        if (groups.get(className).isEmpty())
+                        if (groups.get(className).isEmpty()) {
                             groups.remove(className);
+                        }
                     }
 
                     HashSet<String> genes = new HashSet<String>();
                     for (GraphNode graphNode : selectedNodes) {
                         genes.add(graphNode.getNodeName());
                     }
-                    
 
                     updateDetailedEnrichmentRunnable = new ClassViewerUpdateEnrichmentTable(classViewerFrame, layoutFrame, enrichmentTableModel, enrichmentSelectorTableModel.getSelectedClasses(), groups, tabbedPane, cmbComparisonMode.getSelectedItem() == "Individual Set", heatmap, enrichmentTable);
                     executeRunnableInThread(updateDetailedEnrichmentRunnable);
-                    
-                    
 
                     // Perform enrichment analysis
                 } else {
                     JButton btn = (JButton) e.getSource();
                     btn.setText("Perform Enrichment analysis");
+                    topBox.setVisible(true);
                     btnDisplayHeatmap.setText("Display Heatmap");
                     heatmapPane.setVisible(false);
                     btnDisplayHeatmap.setVisible(false);
+                    btnExportTable.setVisible(false);
 
                     tabEntropySelectorPanel.add(scrollPaneEntropySelector, BorderLayout.CENTER);
                     tabEntropySelectorPanel.validate();
@@ -492,7 +537,35 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
             }
         };
- 
+
+        saveHeatmapAction = new AbstractAction("Save Heatmap") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // parent component of the dialog
+                JFrame parentFrame = new JFrame();
+
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Save Heatmap image");
+                fileChooser.setSelectedFile(new File("heatmap.png"));
+
+                int userSelection = fileChooser.showSaveDialog(parentFrame);
+
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = fileChooser.getSelectedFile();
+
+                    BufferedImage bi = heatmap.getImg();
+                    File outputfile = fileToSave;
+
+                    try {
+                        ImageIO.write(bi, "png", outputfile);
+                    } catch (Exception ex) {
+
+                    }
+
+                }
+            }
+        };
+
         heatmapAction = new AbstractAction("Display Heatmap") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -505,6 +578,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                         heatmapPane.setVisible(false);
                         JButton btn = (JButton) e.getSource();
                         btn.setText("Display Heatmap");
+                        btnSaveHeatmap.setVisible(false);
                     } else {
                         scrollPaneEnrichment.setVisible(false);
                         heatmapPane.setVisible(true);
@@ -512,6 +586,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                         tabEntropySelectorPanel.validate();
                         JButton btn = (JButton) e.getSource();
                         btn.setText("Display Enrichment Table");
+                        btnSaveHeatmap.setVisible(true);
                     }
                 }
             }
@@ -887,7 +962,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         // Create Enrichment comparison selector
         cmbComparisonMode = new JComboBox<>(new String[]{"Group Comparison", "Individual Set"});
         cmbComparisonMode.addItemListener(this);
-        JPanel topBox = new JPanel();
+        topBox = new JPanel();
         JPanel bottomBox = new JPanel();
         JPanel centerBox = new JPanel();
 
@@ -916,18 +991,26 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         enrichmentTable = new JTable(enrichmentTableModel);
         enrichmentTable.setAutoCreateRowSorter(true);
 
-        JButton btnRunEnrichment = new JButton(enrichmentAction);
+        btnRunEnrichment = new JButton(enrichmentAction);
         bottomBox.add(btnRunEnrichment);
         tabEntropySelectorPanel.add(topBox, BorderLayout.PAGE_START);
         tabEntropySelectorPanel.add(enrichmentSelectorTable, BorderLayout.CENTER);
         tabEntropySelectorPanel.add(bottomBox, BorderLayout.PAGE_END);
 
+        btnExportTable = new JButton(exportTableAction);
+        btnExportTable.setVisible(false);
+        bottomBox.add(btnExportTable);
+
         btnDisplayHeatmap = new JButton(heatmapAction);
         btnDisplayHeatmap.setVisible(false);
         bottomBox.add(btnDisplayHeatmap);
 
+        btnSaveHeatmap = new JButton(saveHeatmapAction);
+        btnSaveHeatmap.setVisible(false);
+        bottomBox.add(btnSaveHeatmap);
+
         // Create dataset and heatmap
-        heatmap = new JLabel();
+        heatmap = new JHeatMap();
         heatmap.setVisible(true);
         heatmapPane = new JScrollPane(heatmap);
         heatmapPane.setVisible(false);
@@ -991,21 +1074,22 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             @Override
             public Paint getPaint(double d) {
                 // Statistically significant
-                if (d == 0)
+                if (d == 0) {
                     d = Double.MIN_VALUE;
+                }
                 // If value is negative it was not sampled
-                if (d < 0){
+                if (d < 0) {
                     return Color.BLACK;
                 }
-                if (d <= 0.05){
-                    int red = (int)java.lang.Math.min(Lerp(0, 255, d/0.05),255);
+                if (d <= 0.05) {
+                    int red = (int) java.lang.Math.min(Lerp(0, 255, d / 0.05), 255);
                     int green = 255;
                     return new Color(red, green, 0, 255);
                 }
                 // If value is approaching statistically significant
-                if (d <= 0.3 ){
-                    int red = (int)java.lang.Math.min(Lerp(0, 255, 0.05/d), 255);
-                    int green = (int)java.lang.Math.min(Lerp(0, 255, 0.05/d),255);
+                if (d <= 0.3) {
+                    int red = (int) java.lang.Math.min(Lerp(0, 255, 0.05 / d), 255);
+                    int green = (int) java.lang.Math.min(Lerp(0, 255, 0.05 / d), 255);
                     return new Color(red, green, 0, 255);
                 }
                 return Color.BLACK;
@@ -1013,10 +1097,10 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         }, columnTitles, rowTitles);
         return heatmap;
     }
-    
-    public static double Lerp(double value, double value2, double amount){
+
+    public static double Lerp(double value, double value2, double amount) {
         amount = java.lang.Math.min(amount, 1);
-        return (value + amount*(value2 - value));
+        return (value + amount * (value2 - value));
     }
 
     public static BufferedImage createHeatmapImage(HeatMapDataset dataset, PaintScale paintScale, String[] columnTitles, String[] rowTitles) {
@@ -1029,7 +1113,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         int xTextOffset = 0;
         int yTextOffset = 0;
         // Calculate max xoffset;y
-        
+
         for (int i = 0; i < rowTitles.length; i++) {
             xTextOffset = (int) java.lang.Math.max((double) new TextLayout(rowTitles[i], font, frc).getBounds().getWidth(), (double) xTextOffset);
         }
@@ -1061,9 +1145,45 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         }
         g2.setTransform(originalRotate);
         for (int yIndex = 0; yIndex < yCount; yIndex++) {
-            g2.drawString(rowTitles[yIndex], (xTextOffset - (int) new TextLayout(rowTitles[yIndex], font, frc).getBounds().getWidth())-3, CELLHEIGHT + yCount * CELLHEIGHT - yIndex * CELLHEIGHT);
+            g2.drawString(rowTitles[yIndex], (xTextOffset - (int) new TextLayout(rowTitles[yIndex], font, frc).getBounds().getWidth()) - 3, CELLHEIGHT + yCount * CELLHEIGHT - yIndex * CELLHEIGHT);
         }
         return image;
+    }
+
+    public static MouseAdapter generateMouseListener(HeatMapDataset dataset, String[] columnTitles, String[] rowTitles) {
+        final int CELLWIDTH = 20;
+        final int CELLHEIGHT = 20;
+        final int xCount = dataset.getXSampleCount();
+        final int yCount = dataset.getYSampleCount();
+        Font font = new Font(new JLabel().getFont().getFontName(), Font.PLAIN, CELLHEIGHT);
+        FontRenderContext frc = new FontRenderContext(null, false, false);
+        int xTextOffset = 0;
+        int yTextOffset = 0;
+
+        // Calculate max xoffset;y
+        for (int i = 0; i < rowTitles.length; i++) {
+            xTextOffset = (int) java.lang.Math.max((double) new TextLayout(rowTitles[i], font, frc).getBounds().getWidth(), (double) xTextOffset);
+        }
+        xTextOffset += 5;
+        // Calculate max yoffset;
+        for (int i = 0; i < columnTitles.length; i++) {
+            yTextOffset = (int) java.lang.Math.max((double) new TextLayout(columnTitles[i], font, frc).getBounds().getWidth(), (double) yTextOffset);
+        }
+        yTextOffset += 5;
+
+        final int offsetX = xTextOffset;
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JHeatMap src = (JHeatMap) e.getSource();
+                int cellX = 0;
+                int cellY = 0;
+                int clickX = e.getX();
+                int clickY = e.getY();
+                cellX = (clickX - offsetX) / CELLWIDTH;
+                cellY = yCount - (clickY) / CELLHEIGHT;
+            }
+        };
     }
 
     private JButton createSelectDeselectAllButton() {
@@ -1243,6 +1363,19 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if (generalTable != null) {
             generalTable.synchroniseHighlightWithSelection();
         }
+
+        JButton btn = btnRunEnrichment;
+        btn.setText("Perform Enrichment analysis");
+        topBox.setVisible(true);
+        btnDisplayHeatmap.setText("Display Heatmap");
+        heatmapPane.setVisible(false);
+        btnDisplayHeatmap.setVisible(false);
+
+        tabEntropySelectorPanel.add(scrollPaneEntropySelector, BorderLayout.CENTER);
+        tabEntropySelectorPanel.validate();
+
+        scrollPaneEntropySelector.setVisible(true);
+        scrollPaneEnrichment.setVisible(false);
     }
 
     public VertexClass navigateToCurrentClass() {
@@ -1615,5 +1748,188 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             return this;
         }
     }
-    
+
+    public class JHeatMap extends JPanel implements MouseListener {
+
+        final int CELLWIDTH = 20;
+        final int CELLHEIGHT = 20;
+        private int xTextOffset = 0;
+        private int yTextOffset = 0;
+
+        BufferedImage img = null;
+        DefaultHeatMapDataset hmds = null;
+        String[] columnTitles = null;
+        String[] rowTitles = null;
+        PaintScale paintscale = new PaintScale() {
+            @Override
+            public double getLowerBound() {
+                return 0;
+            }
+
+            @Override
+            public double getUpperBound() {
+                return 1;
+            }
+
+            @Override
+            public Paint getPaint(double d) {
+                // Statistically significant
+                if (d == 0) {
+                    d = Double.MIN_VALUE;
+                }
+                // If value is negative it was not sampled
+                if (d < 0) {
+                    return Color.BLACK;
+                }
+                if (d <= 0.05) {
+                    int red = (int) java.lang.Math.min(Lerp(0, 255, d / 0.05), 255);
+                    int green = 255;
+                    return new Color(red, green, 0, 255);
+                }
+                // If value is approaching statistically significant
+                if (d <= 0.3) {
+                    int red = (int) java.lang.Math.min(Lerp(0, 255, 0.05 / d), 255);
+                    int green = (int) java.lang.Math.min(Lerp(0, 255, 0.05 / d), 255);
+                    return new Color(red, green, 0, 255);
+                }
+                return Color.BLACK;
+            }
+        };
+
+        public JHeatMap() {
+            this.addMouseListener(this);
+        }
+
+        public void updateHeatMap(DefaultHeatMapDataset hmds, String[] columnTitles, String[] rowTitles) {
+            this.hmds = hmds;
+            this.columnTitles = columnTitles;
+            this.rowTitles = rowTitles;
+            generateImage();
+        }
+
+        public DefaultHeatMapDataset getHmds() {
+            return hmds;
+        }
+
+        public void setHmds(DefaultHeatMapDataset hmds) {
+            this.hmds = hmds;
+        }
+
+        public PaintScale getPaintScale() {
+            return paintscale;
+        }
+
+        public void setPaintScale(PaintScale paintScale) {
+            this.paintscale = paintScale;
+        }
+
+        public BufferedImage getImg() {
+            return img;
+        }
+
+        public void setImg(BufferedImage img) {
+            this.img = img;
+            this.setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
+            this.revalidate();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g); //To change body of generated methods, choose Tools | Templates.
+            g.drawImage(img, 0, 0, null);
+
+        }
+
+        private void generateImage() {
+            int xCount = hmds.getXSampleCount();
+            int yCount = hmds.getYSampleCount();
+            Font font = new Font(new JLabel().getFont().getFontName(), Font.PLAIN, CELLHEIGHT);
+            FontRenderContext frc = new FontRenderContext(null, false, false);
+            xTextOffset = 0;
+            yTextOffset = 0;
+            // Calculate max xoffset;y
+
+            for (int i = 0; i < rowTitles.length; i++) {
+                xTextOffset = (int) java.lang.Math.max((double) new TextLayout(rowTitles[i], font, frc).getBounds().getWidth(), (double) xTextOffset);
+            }
+            xTextOffset += 5;
+            // Calculate max yoffset;
+            for (int i = 0; i < columnTitles.length; i++) {
+                yTextOffset = (int) java.lang.Math.max((double) new TextLayout(columnTitles[i], font, frc).getBounds().getWidth(), (double) yTextOffset);
+            }
+            yTextOffset += 5;
+            BufferedImage image = new BufferedImage(xCount * CELLWIDTH + xTextOffset, yCount * CELLHEIGHT + yTextOffset + 25,
+                    BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = image.createGraphics();
+            g2.setFont(font);
+
+            AffineTransform originalRotate = g2.getTransform();
+
+            for (int xIndex = 0; xIndex < xCount; xIndex++) {
+                for (int yIndex = 0; yIndex < yCount; yIndex++) {
+                    double z = hmds.getZValue(xIndex, yIndex);
+                    Paint p = paintscale.getPaint(z);
+                    g2.setPaint(p);
+                    g2.fillRect(xTextOffset + (xIndex * CELLWIDTH), yCount * CELLHEIGHT - yIndex * CELLHEIGHT, CELLWIDTH, CELLHEIGHT);
+                }
+            }
+            g2.setPaint(Color.BLACK);
+            g2.rotate(-java.lang.Math.PI / 2);
+            for (int xIndex = 0; xIndex < xCount; xIndex++) {
+                g2.drawString(columnTitles[xIndex], -CELLHEIGHT + (-yCount * CELLHEIGHT) - (int) new TextLayout(columnTitles[xIndex], font, frc).getBounds().getWidth() - 5, xTextOffset + CELLWIDTH + (xIndex * CELLWIDTH));
+            }
+            g2.setTransform(originalRotate);
+            for (int yIndex = 0; yIndex < yCount; yIndex++) {
+                g2.drawString(rowTitles[yIndex], (xTextOffset - (int) new TextLayout(rowTitles[yIndex], font, frc).getBounds().getWidth()) - 3, CELLHEIGHT + yCount * CELLHEIGHT - yIndex * CELLHEIGHT);
+            }
+            this.setImg(image);
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int cellX = 0;
+            int cellY = 0;
+            int clickX = e.getX();
+            int clickY = e.getY();
+            cellX = (clickX - xTextOffset) / CELLWIDTH;
+            cellY = hmds.getYSampleCount() - (clickY) / CELLHEIGHT;
+            if (cellX > hmds.getXSampleCount() || cellY > hmds.getYSampleCount()) {
+                return;
+            }
+
+            int modelId = enrichmentTableModel.getHeatmapTableIndex(cellX, cellY);
+            if (modelId == -1) {
+                return;
+            }
+            int rowId = enrichmentTable.convertRowIndexToView(modelId);
+
+            btnDisplayHeatmap.doClick();
+            enrichmentTable.getSelectionModel().setSelectionInterval(rowId, rowId);
+            enrichmentTable.scrollRectToVisible(new Rectangle(enrichmentTable.getCellRect(rowId, 0, true)));
+        }
+
+        ;
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+    }
+
 }
