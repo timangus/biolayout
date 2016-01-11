@@ -102,7 +102,7 @@ public final class ClassViewerUpdateEntropyTable implements Runnable
             }
             layoutProgressBarDialog.incrementProgress();
 
-            tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
+            //tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
 
             if (abortThread)
             {

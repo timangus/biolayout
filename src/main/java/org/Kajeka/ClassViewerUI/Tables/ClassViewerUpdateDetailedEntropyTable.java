@@ -191,7 +191,7 @@ public final class ClassViewerUpdateDetailedEntropyTable implements Runnable
             return;
         }
 
-        tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
+        //tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
 
         if (abortThread)
         {

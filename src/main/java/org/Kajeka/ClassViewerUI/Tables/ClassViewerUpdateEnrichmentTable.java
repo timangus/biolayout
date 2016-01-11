@@ -173,7 +173,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     enrichmentData.ExpectedTrial.put(type, overRepData.get("ExpT"));
                     enrichmentData.Zscore.put(type, overRepData.get("Zscore"));
 
-                    Map<String, Integer> numberOfMember = relEntropyCalc.clusterMembers(selectedGenes, type);
+                    Map<String, Integer> numberOfMember = relEntropyCalc.totalTermCount(selectedGenes, type);
                     enrichmentData.numberOfMembers.put(type, numberOfMember);
 
                     if (abortThread) {
@@ -287,7 +287,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
             }
 
         }
-        tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
+        //tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), true);
 
         layoutProgressBarDialog.endProgressBar();
         layoutProgressBarDialog.stopProgressBar();

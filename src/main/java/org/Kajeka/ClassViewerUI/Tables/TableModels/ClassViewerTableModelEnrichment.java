@@ -22,7 +22,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     */
     public static final long serialVersionUID = 111222333444555789L;
 
-    public static final String[] COLUMN_NAMES = { "Cluster", "Term", "Type", "Observed" , "Expected" , "OverRep (Obs/Exp)", "Fisher's P", "Adj. Fisher's P", "Members"};
+    public static final String[] COLUMN_NAMES = { "Current Class", "Class", "Class Set", "Observed" , "Expected" , "OverRep (Obs/Exp)", "Fisher's P", "Adj. Fisher's P", "Members"};
     private static final Class[]  COLUMN_CLASSES = {
                                                       String.class, // Cluster name
                                                       String.class,  //Term
@@ -60,8 +60,6 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     public ClassViewerTableModelEnrichment() {
         heatmapPosition = new HashMap<>();
     }
-    
-    
 
     private int overallEntropies = 0;
 

@@ -212,6 +212,23 @@ public class RelativeEntropyCalc
 
         return clusterNames2MembersCount;
     }
+    
+    public Map<String, Integer> totalTermCount(Set<String> genes, String type)
+    {
+        HashMap<String, Integer> clusterNames2MembersCount = new HashMap();
+        AnnotationTypeManagerBG bg = AnnotationTypeManagerBG.getInstanceSingleton();
+
+        if (abortThread) return null;
+        
+        AnnotationType annoType = bg.getType(type);
+        for ( String clusterName : annoType.getKeys() )
+        {
+            if (abortThread) return null;
+            clusterNames2MembersCount.put(clusterName, bg.getType(type).getCount(clusterName)); // Integer autoboxing
+        }
+
+        return clusterNames2MembersCount;
+    }
 
     //Gene names as strings or GraphNodes
     public Map<String, Double> relEntropy4Selection(Set<String> genes)
