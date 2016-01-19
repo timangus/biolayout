@@ -2289,9 +2289,12 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             }
 
             double pValue = hmds.getZValue(cellX, cellY);
-            if (pValue != 0) {
+            if (pValue > 0) {
                 this.setToolTipText("p: " + pValue);
-            } else {
+            } else if (pValue < 0){
+                this.setToolTipText("(Underrepresented) p: " + (-pValue));
+            }
+            else {
                 this.setToolTipText(null);
             }
 
