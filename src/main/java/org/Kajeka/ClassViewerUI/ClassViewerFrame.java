@@ -11,10 +11,11 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.text.*;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.Timer;
+import javax.swing.RowFilter.ComparisonType;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
 import javax.swing.table.*;
@@ -139,15 +140,20 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     JTable enrichmentSelectorTable = null;
     JTable enrichmentTable = null;
-    JScrollPane scrollPaneEntropySelector = null;
+    JScrollPane scrollPaneEnrichmentSelector = null;
     JScrollPane scrollPaneEnrichment = null;
-    JPanel tabEntropySelectorPanel = null;
+    JPanel selectorContainer = null;
+    JPanel tabEnrichmentPanel = null;
     JButton btnDisplayHeatmap = null;
     JButton btnSaveHeatmap = null;
     JButton btnRunEnrichment = null;
     JButton btnExportTable = null;
     JLabel lblComparisonMode = null;
     JCheckBox chkHeatmapGrid = null;
+    JCheckBox chkShowOnlyEnriched = null;
+    JPanel leftBox = null;
+    JPanel rightBox = null;
+    JSplitPane enrichmentSplitPane = null;
 
     private JComboBox<String> cmbClassSelector;
     private JComboBox<String> cmbComparisonMode;
@@ -428,7 +434,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 fileChooser.setDialogTitle("Save CSV file");
                 fileChooser.setSelectedFile(new File("enrichment.csv"));
 
-                ArrayList<String> list = enrichmentTableModel.generateCSV();
+                ArrayList<String> list = generateEnrichmentCSVTable();
 
                 int userSelection = fileChooser.showSaveDialog(parentFrame);
 
@@ -456,53 +462,57 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                if (scrollPaneEntropySelector.isVisible()) {
-                    if (enrichmentSelectorTableModel.getSelectedClasses().size() == 0) {
-                        return;
+                if (enrichmentSelectorTableModel.getSelectedClasses().size() == 0) {
+                    return;
+                }
+                if (cmbComparisonMode.getSelectedItem() == "Individually") {
+                    btnDisplayHeatmap.setVisible(true);
+                    if (chkShowOnlyEnriched.isSelected()) {
+                        filterEnrichmentTable(false);
                     }
-                    if (cmbComparisonMode.getSelectedItem() == "Individually") {
-                        btnDisplayHeatmap.setVisible(true);
+                } else {
+                    btnDisplayHeatmap.setVisible(false);
+                    if (chkShowOnlyEnriched.isSelected()) {
+                        filterEnrichmentTable(true);
                     }
-                    // Update the UI
-                    setEnrichmentTabViewForTableResult();
+                }
+                // Update the UI
+                displayTable();
 
-                    // disable any running thread
-                    checkAndAbortUpdateEntropyTableRunnable();
-                    checkAndAbortUpdateDetailedEntropyTableRunnable();
+                // disable any running thread
+                checkAndAbortUpdateEntropyTableRunnable();
+                checkAndAbortUpdateDetailedEntropyTableRunnable();
 
-                    // Collect Nodes + identify relevant class groups
-                    Set<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
-                    LinkedHashMap<VertexClass, HashSet<String>> groups = new LinkedHashMap<>();
-                    Collection<VertexClass> classes = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getAllVertexClasses();
-                    for (VertexClass className : classes) {
-                        HashSet<String> tempList = new HashSet<>();
-                        groups.put(className, tempList);
-                        for (GraphNode node : selectedNodes) {
-                            VertexClass res = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getVertexClass(node.getVertex());
-                            if (res.getClassID() == className.getClassID()) {
-                                if (groups.containsKey(className)) {
-                                    groups.get(res).add(node.getNodeName());
-                                }
+                // Collect Nodes + identify relevant class groups
+                Set<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
+                LinkedHashMap<VertexClass, HashSet<String>> groups = new LinkedHashMap<>();
+                Collection<VertexClass> classes = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getAllVertexClasses();
+                for (VertexClass className : classes) {
+                    HashSet<String> tempList = new HashSet<>();
+                    groups.put(className, tempList);
+                    for (GraphNode node : selectedNodes) {
+                        VertexClass res = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getCurrentClassSetAllClasses().getVertexClass(node.getVertex());
+                        if (res.getClassID() == className.getClassID()) {
+                            if (groups.containsKey(className)) {
+                                groups.get(res).add(node.getNodeName());
                             }
                         }
-                        if (groups.get(className).isEmpty()) {
-                            groups.remove(className);
-                        }
                     }
-
-                    HashSet<String> genes = new HashSet<String>();
-                    for (GraphNode graphNode : selectedNodes) {
-                        genes.add(graphNode.getNodeName());
+                    if (groups.get(className).isEmpty()) {
+                        groups.remove(className);
                     }
-
-                    updateDetailedEnrichmentRunnable = new ClassViewerUpdateEnrichmentTable(classViewerFrame, layoutFrame, enrichmentTableModel, enrichmentSelectorTableModel.getSelectedClasses(), groups, tabbedPane, cmbComparisonMode.getSelectedItem() == "Individually", heatmap, enrichmentTable);
-                    executeRunnableInThread(updateDetailedEnrichmentRunnable);
-
-                    // Perform enrichment analysis
-                } else {
-                    setEnrichmentTabViewForSelection();
                 }
+
+                HashSet<String> genes = new HashSet<String>();
+                for (GraphNode graphNode : selectedNodes) {
+                    genes.add(graphNode.getNodeName());
+                }
+
+                checkAndAbortUpdateEntropyTableRunnable();
+                checkAndAbortUpdateDetailedEntropyTableRunnable();
+
+                updateDetailedEnrichmentRunnable = new ClassViewerUpdateEnrichmentTable(classViewerFrame, layoutFrame, enrichmentTableModel, enrichmentSelectorTableModel.getSelectedClasses(), groups, tabbedPane, cmbComparisonMode.getSelectedItem() == "Individually", heatmap, enrichmentTable);
+                executeRunnableInThread(updateDetailedEnrichmentRunnable);
 
             }
         };
@@ -539,15 +549,36 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if (!scrollPaneEntropySelector.isVisible()) {
-                    if (heatmapPane.isVisible()) {
-                        setEnrichmentTabViewForTableResult();
-                    } else {
-                        setEnrichmentTabViewForHeatmap();
-                    }
+                if (heatmapPane.getParent() == rightBox) {
+                    displayTable();
+                } else {
+                    displayHeatmap();
                 }
             }
         };
+    }
+
+    public ArrayList<String> generateEnrichmentCSVTable() {
+        ArrayList<String> csvFile = new ArrayList<>();
+        String columnTitles = "";
+        for (int c = 0; c < enrichmentTableModel.getColumnCount(); c++) {
+            columnTitles += escapeCommas(enrichmentTableModel.getColumnName(c).toString()) + ",";
+        }
+        csvFile.add(columnTitles);
+
+        for (int r = 0; r < enrichmentTable.getRowCount(); r++) {
+            String line = "";
+            for (int c = 0; c < enrichmentTableModel.getColumnCount(); c++) {
+                line += escapeCommas(enrichmentTableModel.getValueAt(enrichmentTable.convertRowIndexToModel(r), c).toString()) + ",";
+            }
+            csvFile.add(line);
+        }
+
+        return csvFile;
+    }
+
+    private String escapeCommas(String input) {
+        return "\"" + input + "\"";
     }
 
     public void processAndSetWindowState() {
@@ -920,19 +951,38 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         cmbComparisonMode = new JComboBox<>(new String[]{"Combined", "Individually"});
         cmbComparisonMode.addItemListener(this);
         cmbComparisonMode.setAlignmentX(Component.CENTER_ALIGNMENT);
+        selectorContainer = new JPanel();
+
         topBox = new JPanel();
-        //topBox.setLayout(new BoxLayout(topBox, BoxLayout.LINE_AXIS));
+
         JPanel bottomBox = new JPanel();
-        JPanel centerBox = new JPanel();
+        leftBox = new JPanel();
+        rightBox = new JPanel();
+        rightBox.setLayout(new BorderLayout());
+        //centerBox.setLayout();
 
         lblComparisonMode = new JLabel("Compare Selected Classes:");
         lblComparisonMode.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topBox.add(lblComparisonMode);
-        topBox.add(cmbComparisonMode);
+        JPanel comparisonPanel = new JPanel();
+        leftBox.setLayout(new GridBagLayout());
 
-        tabEntropySelectorPanel = new JPanel(true);
-        tabEntropySelectorPanel.setLayout(new BorderLayout());
-        tabEntropySelectorPanel.setBackground(Color.WHITE);
+        comparisonPanel.add(lblComparisonMode);
+        comparisonPanel.add(cmbComparisonMode);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.PAGE_START;
+
+        lblStats = new JLabel("Stats");
+        lblStats.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        leftBox.add(lblStats, gbc);
+        gbc.gridy = 1;
+        leftBox.add(comparisonPanel, gbc);
+
+        tabEnrichmentPanel = new JPanel(true);
+        tabEnrichmentPanel.setLayout(new BorderLayout());
+        tabEnrichmentPanel.setBackground(Color.WHITE);
         String[] columnNames = {"Class Set",
             "Include in Enrichment?"};
 
@@ -945,184 +995,211 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             i++;
         }
         enrichmentSelectorTableModel = new SelectorTableModel(data, columnNames);
-        enrichmentSelectorTable = new JTable(enrichmentSelectorTableModel);
+        enrichmentSelectorTable = new JTable(enrichmentSelectorTableModel) {
+//            @Override
+//            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+//                Component component = super.prepareRenderer(renderer, row, column);
+//                int rendererWidth = component.getPreferredSize().width;
+//                TableColumn tableColumn = getColumnModel().getColumn(column);
+//                Component comp = getTableHeader().getDefaultRenderer().getTableCellRendererComponent(this, tableColumn.getHeaderValue(), false, false, 0, 0);
+//                int width = comp.getPreferredSize().width;
+//                int headerHeight = comp.getPreferredSize().height;
+//
+//                tableColumn.setPreferredWidth(java.lang.Math.max(java.lang.Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()), width));
+//
+//                int totalWidth = 0;
+//                int totalHeight = headerHeight;
+//                for (int i = 0; i < enrichmentSelectorTable.getColumnModel().getColumnCount(); i++) {
+//                    totalWidth += enrichmentSelectorTable.getColumnModel().getColumn(i).getPreferredWidth() + enrichmentSelectorTable.getColumnModel().getColumnMargin();
+//                }
+//                totalHeight += (enrichmentSelectorTable.getRowHeight() + enrichmentSelectorTable.getRowMargin()) * enrichmentSelectorTable.getRowCount();
+//                int calcHeight = java.lang.Math.min(totalHeight, leftBox.getSize().height - 10);
+//                totalWidth += scrollPaneEnrichmentSelector.getVerticalScrollBar().getPreferredSize().width*5;
+//                scrollPaneEnrichmentSelector.setPreferredSize(new Dimension(totalWidth, calcHeight));
+//                leftBox.validate();
+//                enrichmentSplitPane.validate();
+//                scrollPaneEnrichmentSelector.validate();
+//
+//                return component;
+//            }
+        };
+        enrichmentSelectorTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        enrichmentSelectorTable.getTableHeader().setResizingAllowed(true);
         // Create Enrichment Results table
         enrichmentTableModel = new ClassViewerTableModelEnrichment();
         enrichmentTable = new JTable(enrichmentTableModel);
-        enrichmentTable.setAutoCreateRowSorter(true);
 
+        //enrichmentTable.setAutoCreateRowSorter(true);
         btnRunEnrichment = new JButton(enrichmentAction);
-        bottomBox.add(btnRunEnrichment);
-        tabEntropySelectorPanel.add(topBox, BorderLayout.PAGE_START);
-        tabEntropySelectorPanel.add(enrichmentSelectorTable, BorderLayout.CENTER);
-        tabEntropySelectorPanel.add(bottomBox, BorderLayout.PAGE_END);
 
         btnExportTable = new JButton(exportTableAction);
-        btnExportTable.setVisible(false);
+
+        btnExportTable.setVisible(
+                false);
         topBox.add(btnExportTable);
 
-        chkHeatmapGrid = new JCheckBox("Grid lines");
-        chkHeatmapGrid.setSelected(true);
-        chkHeatmapGrid.addItemListener(new ItemListener() {
+        chkShowOnlyEnriched = new JCheckBox("Show Only Enriched");
+        chkShowOnlyEnriched.setVisible(false);
+        chkShowOnlyEnriched.setSelected(true);
+        chkShowOnlyEnriched.addItemListener(
+                new ItemListener() {
             @Override
-            public void itemStateChanged(ItemEvent e) {
+            public void itemStateChanged(ItemEvent e
+            ) {
+                if (chkShowOnlyEnriched.isSelected()) {
+                    filterEnrichmentTable(enrichmentTableModel.getColumnCount() == 7);
+                } else {
+                    removeFilterEnrichmentTable();
+                }
+            }
+        }
+        );
+        topBox.add(chkShowOnlyEnriched);
+
+        chkHeatmapGrid = new JCheckBox("Grid lines");
+        chkHeatmapGrid.setVisible(false);
+
+        chkHeatmapGrid.setSelected(
+                true);
+        chkHeatmapGrid.addItemListener(
+                new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e
+            ) {
                 heatmap.setGridLines(chkHeatmapGrid.isSelected());
                 heatmap.validate();
             }
-        });
+        }
+        );
         topBox.add(chkHeatmapGrid);
 
         btnSaveHeatmap = new JButton(saveHeatmapAction);
+
         btnSaveHeatmap.setVisible(false);
+
         topBox.add(btnSaveHeatmap);
 
         btnDisplayHeatmap = new JButton(heatmapAction);
+
         btnDisplayHeatmap.setVisible(false);
         topBox.add(btnDisplayHeatmap);
 
-        topBox.add(Box.createHorizontalGlue());
-        lblStats = new JLabel("Stats");
-        topBox.add(lblStats);
+        rightBox.add(topBox, BorderLayout.PAGE_START);
+
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.BOTH;
 
         // Create dataset and heatmap
         heatmap = new JHeatMap();
-        heatmap.setVisible(true);
+
+        heatmap.setVisible(
+                true);
         heatmapPane = new JScrollPane(heatmap);
-        heatmapPane.setVisible(false);
+
+        heatmapPane.setVisible(
+                false);
 
         // TODO: Enrichment fix
-        scrollPaneEntropySelector = new JScrollPane(enrichmentSelectorTable);
-        scrollPaneEntropySelector.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPaneEntropySelector.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        centerBox.add(scrollPaneEntropySelector);
+        scrollPaneEnrichmentSelector = new JScrollPane(enrichmentSelectorTable);
+        //scrollPaneEntropySelector.setPreferredSize(enrichmentSelectorTable);
+
+        scrollPaneEnrichmentSelector.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        scrollPaneEnrichmentSelector.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        scrollPaneEnrichmentSelector.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        gbc.weighty = 1;
+        //gbc.insets = new Insets(0, scrollPaneEnrichmentSelector.getVerticalScrollBar().getPreferredSize().width, 0, scrollPaneEnrichmentSelector.getVerticalScrollBar().getPreferredSize().width);
+        leftBox.add(scrollPaneEnrichmentSelector, gbc);
+
+        gbc.anchor = GridBagConstraints.PAGE_END;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy = 3;
+        gbc.weighty = 0;
+        leftBox.add(btnRunEnrichment, gbc);
 
         scrollPaneEnrichment = new JScrollPane(enrichmentTable);
-        scrollPaneEnrichment.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPaneEnrichment.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPaneEnrichment.setVisible(false);
-        centerBox.add(scrollPaneEnrichment);
 
-        tabEntropySelectorPanel.add(scrollPaneEntropySelector, BorderLayout.CENTER);
+        scrollPaneEnrichment.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        scrollPaneEnrichment.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        scrollPaneEnrichment.setVisible(true);
+
+        rightBox.add(scrollPaneEnrichment, BorderLayout.CENTER);
+
+        enrichmentSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftBox, rightBox);
+
+        enrichmentSplitPane.setOneTouchExpandable(true);
+        enrichmentSplitPane.setDividerLocation(leftBox.getMinimumSize().width);
+        //centerBox.add(scrollPaneEnrichment);
+
+        tabEnrichmentPanel.add(enrichmentSplitPane, BorderLayout.CENTER);
+
+        tabEnrichmentPanel.add(bottomBox, BorderLayout.PAGE_END);
+
         populateEnrichmentTab();
 
         JPanel okButtonPanelSelector = new JPanel(true);
         okButton = new JButton(okAction);
-        okButton.setToolTipText("Close");
+
+        okButton.setToolTipText(
+                "Close");
         okButtonPanelSelector.add(okButton);
+
         bottomBox.add(okButtonPanelDetails);
 
         // create & add to tab pane
         tabbedPane = new JTabbedPane();
-        tabbedPane.insertTab("General", null, tabGeneralPanel, "General Node Information", GENERAL_TAB.ordinal());
+
+        tabbedPane.insertTab(
+                "General", null, tabGeneralPanel, "General Node Information", GENERAL_TAB.ordinal());
         // tabbedPane.insertTab("Analysis", null, tabEntropyPanel, "Analysis Calculations", ENTROPY_TAB.ordinal());
         //tabbedPane.add("Analysis Per Term", tabEntropyDetailPanel);
         //tabbedPane.insertTab("Analysis Detailed", null, tabEntropyDetailPanel, "Shows Analysis Per Term", ENTROPY_DETAILS_TAB.ordinal());
-        tabbedPane.insertTab("Enrichment", null, tabEntropySelectorPanel, "Shows Enrichment", ENRICHMENT_TAB.ordinal());
+        tabbedPane.insertTab("Enrichment", null, tabEnrichmentPanel, "Shows Enrichment", ENRICHMENT_TAB.ordinal());
         //tabbedPane.setEnabledAt(ENTROPY_DETAILS_TAB.ordinal(), false);
-        tabbedPane.addChangeListener(this);
+        tabbedPane.addChangeListener(
+                this);
 
         // add tab pane to content pane
-        this.getContentPane().add(tabbedPane);
+        this.getContentPane()
+                .add(tabbedPane);
 
         // this.pack();
-        this.setSize(800, 680);
+        this.setSize(
+                800, 680);
+
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(null);
+
+        this.setLocationRelativeTo(
+                null);
 
         // at end the ClassViewerHideColumns initialization, to have already initialized the ClassViewer setLocation() method
         classViewerHideColumnsDialog = new ClassViewerHideColumnsDialog(this);
     }
 
-    public static BufferedImage generateHeatMap(DefaultHeatMapDataset hmds, String[] columnTitles, String[] rowTitles) {
-
-        BufferedImage heatmap = ClassViewerFrame.createHeatmapImage(hmds, new PaintScale() {
+    public void centerView(final JScrollPane scrollPane) {
+        scrollPane.revalidate();
+        scrollPane.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public double getLowerBound() {
-                return 0;
+            public void run() {
+                Dimension portSize = scrollPane.getViewport().getSize();
+                Dimension viewSize = scrollPane.getViewport().getView()
+                        .getSize();
+                scrollPane.scrollRectToVisible(new Rectangle(
+                        (viewSize.width - portSize.width) / 2,
+                        (viewSize.height - portSize.height) / 2,
+                        portSize.width, portSize.height));
             }
-
-            @Override
-            public double getUpperBound() {
-                return 1;
-            }
-
-            @Override
-            public Paint getPaint(double d) {
-                // Statistically significant
-                if (d == 0) {
-                    d = Double.MIN_VALUE;
-                }
-                // If value is negative it was not sampled
-                if (d < 0) {
-                    return Color.BLACK;
-                }
-                if (d <= 0.05) {
-                    int red = (int) java.lang.Math.min(Lerp(0, 255, d / 0.05), 255);
-                    int green = 255;
-                    return new Color(red, green, 0, 255);
-                }
-                // If value is approaching statistically significant
-                if (d <= 0.3) {
-                    int red = (int) java.lang.Math.min(Lerp(0, 255, 0.05 / d), 255);
-                    int green = (int) java.lang.Math.min(Lerp(0, 255, 0.05 / d), 255);
-                    return new Color(red, green, 0, 255);
-                }
-                return Color.BLACK;
-            }
-        }, columnTitles, rowTitles);
-        return heatmap;
+        });
     }
 
     public static double Lerp(double value, double value2, double amount) {
         amount = java.lang.Math.min(amount, 1);
         return (value + amount * (value2 - value));
-    }
-
-    public static BufferedImage createHeatmapImage(HeatMapDataset dataset, PaintScale paintScale, String[] columnTitles, String[] rowTitles) {
-        int CELLWIDTH = 20;
-        int CELLHEIGHT = 20;
-        int xCount = dataset.getXSampleCount();
-        int yCount = dataset.getYSampleCount();
-        Font font = new Font(new JLabel().getFont().getFontName(), Font.PLAIN, CELLHEIGHT);
-        FontRenderContext frc = new FontRenderContext(null, false, false);
-        int xTextOffset = 0;
-        int yTextOffset = 0;
-        // Calculate max xoffset;y
-
-        for (int i = 0; i < rowTitles.length; i++) {
-            xTextOffset = (int) java.lang.Math.max((double) new TextLayout(rowTitles[i], font, frc).getBounds().getWidth(), (double) xTextOffset);
-        }
-        xTextOffset += 5;
-        // Calculate max yoffset;
-        for (int i = 0; i < columnTitles.length; i++) {
-            yTextOffset = (int) java.lang.Math.max((double) new TextLayout(columnTitles[i], font, frc).getBounds().getWidth(), (double) yTextOffset);
-        }
-        yTextOffset += 5;
-        BufferedImage image = new BufferedImage(xCount * CELLWIDTH + xTextOffset, yCount * CELLHEIGHT + yTextOffset + 25,
-                BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = image.createGraphics();
-        g2.setFont(font);
-
-        AffineTransform originalRotate = g2.getTransform();
-
-        for (int xIndex = 0; xIndex < xCount; xIndex++) {
-            for (int yIndex = 0; yIndex < yCount; yIndex++) {
-                double z = dataset.getZValue(xIndex, yIndex);
-                Paint p = paintScale.getPaint(z);
-                g2.setPaint(p);
-                g2.fillRect(xTextOffset + (xIndex * CELLWIDTH), yCount * CELLHEIGHT - yIndex * CELLHEIGHT, CELLWIDTH, CELLHEIGHT);
-            }
-        }
-        g2.setPaint(Color.BLACK);
-        g2.rotate(-java.lang.Math.PI / 2);
-        for (int xIndex = 0; xIndex < xCount; xIndex++) {
-            g2.drawString(columnTitles[xIndex], -CELLHEIGHT + (-yCount * CELLHEIGHT) - (int) new TextLayout(columnTitles[xIndex], font, frc).getBounds().getWidth() - 5, xTextOffset + CELLWIDTH + (xIndex * CELLWIDTH));
-        }
-        g2.setTransform(originalRotate);
-        for (int yIndex = 0; yIndex < yCount; yIndex++) {
-            g2.drawString(rowTitles[yIndex], (xTextOffset - (int) new TextLayout(rowTitles[yIndex], font, frc).getBounds().getWidth()) - 3, CELLHEIGHT + yCount * CELLHEIGHT - yIndex * CELLHEIGHT);
-        }
-        return image;
     }
 
     public static MouseAdapter generateMouseListener(HeatMapDataset dataset, String[] columnTitles, String[] rowTitles) {
@@ -1221,14 +1298,17 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             }
         };
 
-        table.setDefaultEditor(String.class, stringEditor);
+        table
+                .setDefaultEditor(String.class, stringEditor);
     }
 
     public void populateEnrichmentTab() {
         addClassSets(cmbClassSelector);
         enrichmentSelectorTableModel.refreshContent(layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames());
-        enrichmentSelectorTableModel.fireTableStructureChanged();
-        enrichmentSelectorTableModel.fireTableDataChanged();
+        enrichmentSplitPane.validate();
+        leftBox.validate();
+        enrichmentSelectorTable.validate();
+        updateStatsLabel();
     }
 
     public void populateClassViewer() {
@@ -1334,16 +1414,58 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         return findClassDialog.getClassIndex();
     }
 
+    private void displayHeatmap() {
+        chkShowOnlyEnriched.setVisible(false);
+        btnExportTable.setVisible(false);
+        scrollPaneEnrichment.setVisible(false);
+        heatmapPane.setVisible(true);
+
+        rightBox.remove(scrollPaneEnrichment);
+        if (heatmapPane.getParent() != rightBox) {
+            rightBox.add(heatmapPane, BorderLayout.CENTER);
+        }
+        //tabEnrichmentPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
+        rightBox.validate();
+        tabEnrichmentPanel.validate();
+        JButton btn = btnDisplayHeatmap;
+        btn.setText("Display Enrichment Table");
+        btnSaveHeatmap.setVisible(true);
+        chkHeatmapGrid.setVisible(true);
+    }
+
+    private void displayTable() {
+        // Update the UI
+        btnExportTable.setVisible(true);
+        enrichmentTable.setVisible(true);
+        chkShowOnlyEnriched.setVisible(true);
+
+        rightBox.remove(heatmapPane);
+        if (scrollPaneEnrichment.getParent() != rightBox) {
+            rightBox.add(scrollPaneEnrichment, BorderLayout.CENTER);
+        }
+        //tabEnrichmentPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
+        scrollPaneEnrichment.setVisible(true);
+        rightBox.validate();
+
+        heatmapPane.setVisible(false);
+
+        btnDisplayHeatmap.setText("Display Heatmap");
+        btnSaveHeatmap.setVisible(false);
+        chkHeatmapGrid.setVisible(false);
+    }
+
     private void setEnrichmentTabViewForTableResult() {
         // Update the UI
         JButton btn = btnRunEnrichment;
         btn.setText("Select Classes for Enrichment analysis");
         btnExportTable.setVisible(true);
 
-        tabEntropySelectorPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
-        tabEntropySelectorPanel.validate();
+        tabEnrichmentPanel.remove(leftBox);
+        tabEnrichmentPanel.remove(heatmapPane);
+        //tabEnrichmentPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
+        tabEnrichmentPanel.validate();
 
-        scrollPaneEntropySelector.setVisible(false);
+        scrollPaneEnrichmentSelector.setVisible(false);
         scrollPaneEnrichment.setVisible(true);
 
         heatmapPane.setVisible(false);
@@ -1359,34 +1481,16 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         btnExportTable.setVisible(false);
         scrollPaneEnrichment.setVisible(false);
         heatmapPane.setVisible(true);
-        tabEntropySelectorPanel.add(heatmapPane, BorderLayout.CENTER);
-        tabEntropySelectorPanel.validate();
+        tabEnrichmentPanel.remove(scrollPaneEnrichment);
+        //tabEnrichmentPanel.add(heatmapPane, BorderLayout.CENTER);
+        tabEnrichmentPanel.validate();
         JButton btn = btnDisplayHeatmap;
         btn.setText("Display Enrichment Table");
         btnSaveHeatmap.setVisible(true);
         chkHeatmapGrid.setVisible(true);
     }
 
-    private void setEnrichmentTabViewForSelection() {
-        JButton btn = btnRunEnrichment;
-        btn.setText("Perform Enrichment analysis");
-        cmbComparisonMode.setVisible(true);
-        lblComparisonMode.setVisible(true);
-        topBox.setVisible(true);
-        btnDisplayHeatmap.setText("Display Heatmap");
-        heatmapPane.setVisible(false);
-        btnDisplayHeatmap.setVisible(false);
-        btnSaveHeatmap.setVisible(false);
-        btnExportTable.setVisible(false);
-
-        tabEntropySelectorPanel.add(scrollPaneEntropySelector, BorderLayout.CENTER);
-        tabEntropySelectorPanel.validate();
-
-        scrollPaneEntropySelector.setVisible(true);
-        scrollPaneEnrichment.setVisible(false);
-
-        chkHeatmapGrid.setVisible(false);
-
+    private void updateStatsLabel() {
         // Count Nodes + Collect Class Group counts
         Set<GraphNode> selectedNodes = layoutFrame.getGraph().getSelectionManager().getSelectedNodes();
         LinkedHashMap<VertexClass, HashSet<String>> groups = new LinkedHashMap<>();
@@ -1406,6 +1510,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                 groups.remove(className);
             }
         }
+        if (selectedNodes.isEmpty()) {
+            btnRunEnrichment.setEnabled(false);
+        } else {
+            btnRunEnrichment.setEnabled(true);
+        }
 
         lblStats.setText(selectedNodes.size() + " Nodes selected across " + groups.size() + " Classes");
     }
@@ -1414,8 +1523,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if (generalTable != null) {
             generalTable.synchroniseHighlightWithSelection();
         }
-
-        setEnrichmentTabViewForSelection();
+        updateStatsLabel();
     }
 
     public VertexClass navigateToCurrentClass() {
@@ -1423,7 +1531,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if (currentVertexClass != null) {
             setUpdateResetSelectDeselectAllButton(false);
             layoutFrame.getGraph().getSelectionManager().selectByClass(currentVertexClass);
-            generalTable.getDefaultEditor(String.class).stopCellEditing();
+            generalTable
+                    .getDefaultEditor(String.class
+                    ).stopCellEditing();
             layoutFrame.getGraph().updateSelectedNodesDisplayList();
             setCurrentClassName(currentVertexClass.getName());
 
@@ -1431,6 +1541,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             setUpdateResetSelectDeselectAllButton(true);
             synchroniseHighlightWithSelection();
         }
+
+        updateStatsLabel();
 
         return currentVertexClass;
     }
@@ -1440,7 +1552,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if (previousVertexClass != null) {
             setUpdateResetSelectDeselectAllButton(false);
             layoutFrame.getGraph().getSelectionManager().selectByClass(previousVertexClass);
-            generalTable.getDefaultEditor(String.class).stopCellEditing();
+            generalTable
+                    .getDefaultEditor(String.class
+                    ).stopCellEditing();
             layoutFrame.getGraph().updateSelectedNodesDisplayList();
             setCurrentClassName(previousVertexClass.getName());
 
@@ -1463,7 +1577,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         if (nextVertexClass != null) {
             setUpdateResetSelectDeselectAllButton(false);
             layoutFrame.getGraph().getSelectionManager().selectByClass(nextVertexClass);
-            generalTable.getDefaultEditor(String.class).stopCellEditing();
+            generalTable
+                    .getDefaultEditor(String.class
+                    ).stopCellEditing();
             layoutFrame.getGraph().updateSelectedNodesDisplayList();
             if (enableTitleBarUpdate) {
                 setCurrentClassName(nextVertexClass.getName());
@@ -1637,7 +1753,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         checkAndAbortUpdateEntropyTableRunnable();
         checkAndAbortUpdateDetailedEntropyTableRunnable();
 
-        generalTable.getDefaultEditor(String.class).stopCellEditing();
+        generalTable
+                .getDefaultEditor(String.class
+                ).stopCellEditing();
 
         setVisible(false);
     }
@@ -1688,6 +1806,35 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     public void setUpdateResetSelectDeselectAllButton(boolean updateResetSelectDeselectAllButton) {
         this.updateResetSelectDeselectAllButton = updateResetSelectDeselectAllButton;
         generalTable.setUpdateResetSelectDeselectAllButton(updateResetSelectDeselectAllButton);
+    }
+
+    public void filterEnrichmentTable(boolean isCombined) {
+        enrichmentTable.setAutoCreateRowSorter(false);
+        chkShowOnlyEnriched.setSelected(true);
+        int colOverRep, colFisherP;
+        if (isCombined) {
+            colOverRep = 4;
+            colFisherP = 6;
+        } else {
+            colOverRep = 5;
+            colFisherP = 7;
+        }
+        // Row Filters
+        List<RowFilter<ClassViewerTableModelEnrichment, Object>> filters = new ArrayList<>(2);
+        RowFilter<ClassViewerTableModelEnrichment, Object> overRepFilter = null;
+        overRepFilter = RowFilter.numberFilter(ComparisonType.AFTER, 1.0, colOverRep);
+        RowFilter<ClassViewerTableModelEnrichment, Object> pFilter = null;
+        pFilter = RowFilter.numberFilter(ComparisonType.BEFORE, 0.05, colFisherP);
+        filters.add(overRepFilter);
+        filters.add(pFilter);
+        TableRowSorter<ClassViewerTableModelEnrichment> sorter = new TableRowSorter<ClassViewerTableModelEnrichment>(enrichmentTableModel);
+        sorter.setRowFilter(RowFilter.andFilter(filters));
+        enrichmentTable.setRowSorter(sorter);
+    }
+
+    public void removeFilterEnrichmentTable() {
+        enrichmentTable.setAutoCreateRowSorter(true);
+        chkShowOnlyEnriched.setSelected(false);
     }
 
     @Override
@@ -1763,6 +1910,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         searchDatabaseButton.setText("Search Pathway Commons");
         searchDatabaseButton.setToolTipText("Search Pathway Commons for selected node names");
         searchDatabaseButton.setEnabled(enabled);
+
     }
 
     public static class EntropyTableCellRenderer extends DefaultTableCellRenderer {
@@ -1806,6 +1954,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         Rectangle keyFourRect = null;
 
         Color colorNoSample = Color.GRAY;
+        Color colorUnderrepSig = Color.BLUE;
+        Color colorUnderrepNotSig = Color.PINK;
         Color colorSignificant = Color.YELLOW;
         Color colorPastSignificant = Color.GREEN;
         Color colorNotSignificant = Color.BLACK;
@@ -1824,8 +1974,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         private void createPaintScale() {
             paintscale = new PaintScale() {
 
-                double sigP = 0.05;
-                double notSigP = 0.3;
+                double sigP = 0.01;
+                double notSigP = 0.05;
 
                 @Override
                 public double getLowerBound() {
@@ -1839,11 +1989,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
                 @Override
                 public Paint getPaint(double d) {
-                    // Statistically significant
+                    // If value is 0.0 no data
                     if (d == 0.0) {
-                        d = Double.MIN_VALUE;
+                        return colorNoSample;
                     }
-                    // If value is negative it was not sampled
+                    // If value is negative it is underrepresented
                     if (d < 0) {
                         return colorNoSample;
                     }
@@ -1859,10 +2009,10 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                         return new Color(red, green, blue, 255);
                     }
                     // If value is approaching statistically significant
-                    if (d <= 0.3) {
+                    if (d <= notSigP) {
 
-                        double range = 0.3 - 0.05;
-                        double delta = (d - 0.05) / (range);
+                        double range = notSigP - sigP;
+                        double delta = (d - sigP) / (range);
 
                         double blending = delta;
                         double inverse_blending = 1 - delta;
@@ -1872,7 +2022,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                         int blue = (int) (colorNotSignificant.getBlue() * blending + colorSignificant.getBlue() * inverse_blending);
                         return new Color(red, green, blue, 255);
                     }
-                    if (d > 0.3) {
+                    if (d > notSigP) {
                         return colorNotSignificant;
                     }
                     return Color.BLACK;
@@ -1940,7 +2090,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             for (int i = 0; i < rowTitles.length; i++) {
                 xTextOffset = (int) java.lang.Math.max((double) new TextLayout(rowTitles[i], font, frc).getBounds().getWidth(), (double) xTextOffset);
             }
-            xTextOffset += 5;
+            xTextOffset += 10;
             // Calculate max yoffset;
             for (int i = 0; i < columnTitles.length; i++) {
                 yTextOffset = (int) java.lang.Math.max((double) new TextLayout(columnTitles[i], font, frc).getBounds().getWidth(), (double) yTextOffset);
@@ -1950,10 +2100,10 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             // Setup Key Sizes
             int padding = 15;
             int tailPadding = (CELLWIDTH * 3);
-            String keyOne = "Adjusted P-Value Key  0 - 0.05:";
-            String keyTwo = "0.05 - 0.3:";
-            String keyThree = "p > 0.3:";
-            String keyFour = "No Sample";
+            String keyOne = "Adjusted P-Value Key  0 - 0.01:";
+            String keyTwo = "0.01 - 0.05:";
+            String keyThree = "p > 0.05:";
+            String keyFour = "Underrepresented/Absent";
             int lenKeyOne = getTextWidth(keyOne, keyFont);
             int lenKeyTwo = getTextWidth(keyTwo, keyFont);
             int lenKeyThree = getTextWidth(keyThree, keyFont);
@@ -2044,12 +2194,12 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             g2.rotate(-java.lang.Math.PI / 2);
             // Draw Column titles
             for (int xIndex = 0; xIndex < xCount; xIndex++) {
-                g2.drawString(columnTitles[xIndex], -CELLHEIGHT + (-yCount * CELLHEIGHT) - (int) new TextLayout(columnTitles[xIndex], font, frc).getBounds().getWidth() - 5, xTextOffset + CELLWIDTH + (xIndex * CELLWIDTH));
+                g2.drawString(columnTitles[xIndex], -CELLHEIGHT + (-yCount * CELLHEIGHT) - (int) new TextLayout(columnTitles[xIndex], font, frc).getBounds().getWidth() - 5, xTextOffset + CELLWIDTH + (xIndex * CELLWIDTH) - 2);
             }
             // Draw Row titles
             g2.setTransform(originalRotate);
             for (int yIndex = 0; yIndex < yCount; yIndex++) {
-                g2.drawString(rowTitles[yIndex], (xTextOffset - (int) new TextLayout(rowTitles[yIndex], font, frc).getBounds().getWidth()) - 3, CELLHEIGHT + yCount * CELLHEIGHT - yIndex * CELLHEIGHT);
+                g2.drawString(rowTitles[yIndex], (xTextOffset - (int) new TextLayout(rowTitles[yIndex], font, frc).getBounds().getWidth()) - 5, (CELLHEIGHT + yCount * CELLHEIGHT - yIndex * CELLHEIGHT) - 3);
             }
             this.setImg(image);
         }
@@ -2132,20 +2282,18 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             int clickY = e.getY();
             cellX = (clickX - xTextOffset) / CELLWIDTH;
             cellY = hmds.getYSampleCount() - (clickY - keyOffset) / CELLHEIGHT;
-            if (cellX >= hmds.getXSampleCount() || cellY >= hmds.getYSampleCount() 
+            if (cellX >= hmds.getXSampleCount() || cellY >= hmds.getYSampleCount()
                     || cellX < 0 || cellY < 0) {
                 this.setToolTipText(null);
                 return;
             }
-            
+
             double pValue = hmds.getZValue(cellX, cellY);
-            if (pValue != -1){
-                this.setToolTipText("p: "+pValue);
+            if (pValue != 0) {
+                this.setToolTipText("p: " + pValue);
             } else {
                 this.setToolTipText(null);
             }
-            
-            
 
         }
 

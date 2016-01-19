@@ -5,6 +5,8 @@ import java.awt.Point;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import org.Kajeka.Analysis.*;
@@ -80,7 +82,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
     @Override
     public void run() {
-        if (geneGroups.size() == 0){
+        if (geneGroups.size() == 0) {
             modelDetail.setSize(0);
             return;
         }
@@ -103,7 +105,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         } else {
             loopCount = geneGroups.size();
         }
-        
+
         layoutProgressBarDialog.prepareProgressBar(numberOfAllAnnotationClasses * loopCount, " Calculating analysis values for all terms of all classes...");
         layoutProgressBarDialog.startProgressBar();
 
@@ -217,7 +219,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         hmds = new DefaultHeatMapDataset(geneGroups.size(), countSubTerms, 0, 100, 0, 100);
         for (int i = 0; i < hmds.getXSampleCount(); i++) {
             for (int j = 0; j < hmds.getYSampleCount(); j++) {
-                hmds.setZValue(i, j, -1);
+                hmds.setZValue(i, j, 0);
             }
         }
 
@@ -250,7 +252,8 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                 for (String term : terms) {
                     int index = subTermList.indexOf(term);
                     modelDetail.setHeatmapData(i + " " + index, indexCounter);
-                    hmds.setZValue(i, index, enrichmentData.fishers.get(type).get(term) * enrichmentData.fishers.get(type).size());
+                    int multiplyer = (Double.parseDouble(enrichmentData.OverRep.get(type).get(term)) < 1) ? -1 : 1;
+                    hmds.setZValue(i, index, enrichmentData.fishers.get(type).get(term) * enrichmentData.fishers.get(type).size() * multiplyer);
                     indexCounter++;
                 }
                 if (abortThread) {
@@ -260,12 +263,30 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     return;
                 }
 
-                Map<String, Double> entropies = enrichmentData.perType.get(type);
-                Map<String, Double> fisher = enrichmentData.fishers.get(type);
-                Map<String, Integer> members = enrichmentData.numberOfMembers.get(type);
+                final Map<String, Double> entropies = enrichmentData.perType.get(type);
+                final Map<String, Double> fisher = enrichmentData.fishers.get(type);
+                final Map<String, Integer> members = enrichmentData.numberOfMembers.get(type);
 
-                modelDetail.addAnalysisValues(enrichmentData.Observed.get(type), enrichmentData.Expected.get(type), enrichmentData.ExpectedTrial.get(type), enrichmentData.Fobs.get(type), enrichmentData.Fexp.get(type),
-                        enrichmentData.OverRep.get(type), enrichmentData.Zscore.get(type), entropies, fisher, members, type, enrichmentData.clusterName);
+                final EnrichmentData enrichmentFinal = enrichmentData;
+                final String typeFinal = type;
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        modelDetail.addAnalysisValues(enrichmentFinal.Observed.get(typeFinal), enrichmentFinal.Expected.get(typeFinal), enrichmentFinal.ExpectedTrial.get(typeFinal), enrichmentFinal.Fobs.get(typeFinal), enrichmentFinal.Fexp.get(typeFinal),
+                                enrichmentFinal.OverRep.get(typeFinal), enrichmentFinal.Zscore.get(typeFinal), entropies, fisher, members, typeFinal, enrichmentFinal.clusterName);
+                        modelDetail.fireTableStructureChanged();
+                        if (performIndividually) {
+                            enrichmentTable.getColumnModel().getColumn(5).setCellRenderer(enrichmentTable.getDefaultRenderer(enrichmentTable.getColumnClass(5)));
+                            enrichmentTable.getColumnModel().getColumn(6).setCellRenderer(new FishersPRenderer());
+                            enrichmentTable.getColumnModel().getColumn(7).setCellRenderer(new FishersPRenderer());
+                        } else {
+                            enrichmentTable.getColumnModel().getColumn(6).setCellRenderer(new FishersPRenderer());
+                            enrichmentTable.getColumnModel().getColumn(5).setCellRenderer(new FishersPRenderer());
+                            enrichmentTable.getColumnModel().getColumn(7).setCellRenderer(enrichmentTable.getDefaultRenderer(enrichmentTable.getColumnClass(7)));
+                        }
+                    }
+                });
             }
 
             if (abortThread) {
@@ -299,17 +320,11 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
             heatmap.updateHeatMap(hmds, clusterNames, termNames);
         }
 
-        modelDetail.fireTableStructureChanged();
-
         // Set the columns to render in enough precision
-        if (performIndividually) {
-            enrichmentTable.getColumnModel().getColumn(5).setCellRenderer(enrichmentTable.getDefaultRenderer(enrichmentTable.getColumnClass(5)));
-            enrichmentTable.getColumnModel().getColumn(6).setCellRenderer(new FishersPRenderer());
-            enrichmentTable.getColumnModel().getColumn(7).setCellRenderer(new FishersPRenderer());
-        } else {
-            enrichmentTable.getColumnModel().getColumn(6).setCellRenderer(new FishersPRenderer());
-            enrichmentTable.getColumnModel().getColumn(5).setCellRenderer(new FishersPRenderer());
-            enrichmentTable.getColumnModel().getColumn(7).setCellRenderer(enrichmentTable.getDefaultRenderer(enrichmentTable.getColumnClass(7)));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ClassViewerUpdateEnrichmentTable.class.getName()).log(Level.SEVERE, null, ex);
         }
         setThreadFinished();
     }

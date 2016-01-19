@@ -1219,7 +1219,6 @@ public final class SelectionManager
                 layoutFrame.getClassViewerFrame().setCurrentClassName(className);
             }
 
-            layoutFrame.getClassViewerFrame().synchroniseHighlightWithSelection();
             graph.updateAllDisplayLists();
         }
         else
@@ -1229,6 +1228,8 @@ public final class SelectionManager
             deselectAll();
             setActionsEnable(false);
         }
+        
+        layoutFrame.getClassViewerFrame().synchroniseHighlightWithSelection();
     }
 
     private boolean showConfirmationDialogSomeHidden()

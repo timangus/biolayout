@@ -96,5 +96,7 @@ public class SelectorTableModel extends AbstractTableModel {
             }
           i++;
         }
+        this.fireTableStructureChanged();
+        this.fireTableDataChanged();
     }
 }
