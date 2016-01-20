@@ -144,7 +144,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectNeighbours((HashSet<GraphNode>)selectedNodes.keySet());
+                selectNeighbours((Set<GraphNode>)selectedNodes.keySet());
             }
         };
         selectNeighbourAction.setEnabled(false);
