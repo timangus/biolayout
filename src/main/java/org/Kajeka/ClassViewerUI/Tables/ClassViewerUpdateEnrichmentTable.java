@@ -324,9 +324,13 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
       layoutProgressBarDialog.startProgressBar();
 
       if (chartData.getRowKeys().size() > 0){
+        String title = enrichmentData.clusterName;
+        if (enrichmentData.clusterName == null){
+          title = "Combined ";
+        }
         JFreeChart chart = ChartFactory.createBarChart(
-                enrichmentData.clusterName + " Significant Values", // chart title
-                enrichmentData.clusterName, // domain axis label
+                title + " Significant Values", // chart title
+                title, // domain axis label
                 "(0.05 - p-Value)", // range axis label
                 chartData, // data
                 PlotOrientation.HORIZONTAL, // orientation

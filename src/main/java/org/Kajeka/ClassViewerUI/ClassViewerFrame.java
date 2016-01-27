@@ -131,6 +131,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
   private HashSet<String> selectedGenes = null;
   private String annotationClass = "";
   private boolean rebuildClassSets = false;
+  private boolean isCombinedSet = false;
 
   private JButton detailsButton = null;
   private JButton detailsForAllButton = null;
@@ -479,16 +480,18 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         }
         if (cmbComparisonMode.getSelectedItem() == "Individually") {
           btnDisplayHeatmap.setVisible(true);
+          isCombinedSet = false;
           if (chkShowOnlyEnriched.isSelected()) {
             filterEnrichmentTable(false);
           }
         } else {
           btnDisplayHeatmap.setVisible(false);
+          isCombinedSet = true;
           if (chkShowOnlyEnriched.isSelected()) {
             filterEnrichmentTable(true);
           }
         }
-        // Update the UI
+        
         displayTable();
 
         // disable any running thread
@@ -1508,7 +1511,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     heatmapPane.setVisible(false);
     
-    btnDisplayHeatmap.setVisible(true);
+    if (!isCombinedSet)
+      btnDisplayHeatmap.setVisible(true);
     btnDisplayTable.setVisible(true);
     btnDisplayPValue.setVisible(false);
 
@@ -1534,7 +1538,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     heatmapPane.setVisible(false);
     
-    btnDisplayHeatmap.setVisible(true);
+    if (!isCombinedSet)
+      btnDisplayHeatmap.setVisible(true);
+    
     btnDisplayTable.setVisible(false);
     btnDisplayPValue.setVisible(true);
 
