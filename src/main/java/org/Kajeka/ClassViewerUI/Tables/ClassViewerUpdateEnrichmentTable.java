@@ -362,14 +362,10 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
       heatmap.updateHeatMap(hmds, clusterNames, termNames);
 
     }
-
-    // Set the columns to render in enough precision
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException ex) {
-      Logger.getLogger(ClassViewerUpdateEnrichmentTable.class.getName()).log(Level.SEVERE, null, ex);
-    }
     setThreadFinished();
+    if (chartPanel.getComponentCount() == 0) {
+      JOptionPane.showMessageDialog(chartPanel, "No enriched clusters found. Ensure \"Show only enriched\" is unchecked to view results.", "No enriched clusters found", JOptionPane.INFORMATION_MESSAGE);
+    }
   }
 
   public void setAbortThread(boolean abortThread) {

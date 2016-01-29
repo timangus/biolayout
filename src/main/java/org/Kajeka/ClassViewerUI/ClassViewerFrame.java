@@ -491,7 +491,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             filterEnrichmentTable(true);
           }
         }
-        
+
         displayTable();
 
         // disable any running thread
@@ -573,7 +573,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         displayPValueChart();
       }
     };
-    
+
     displayTableAction = new AbstractAction("Display Enrichment Table") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -610,7 +610,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     if (isWindowIconified) {
       int iconifyState = this.getExtendedState();
 
-            // set the iconified bit, inverse process
+      // set the iconified bit, inverse process
       // deIconifyState |= Frame.ICONIFIED;
       // clear the iconified bit
       iconifyState &= ~JFrame.ICONIFIED;
@@ -622,7 +622,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         // this process maximizes a frame; the iconified bit is not affected
         int maximizeState = this.getExtendedState();
 
-                // clear the maximized bits, inverse process
+        // clear the maximized bits, inverse process
         // minimizeState &= ~Frame.MAXIMIZED_BOTH;
         // set the maximized bits
         maximizeState |= JFrame.MAXIMIZED_BOTH;
@@ -812,7 +812,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     generalTableButtonPanel.add(highlightIsSelectionCheckbox);
     generalTableButtonPanel.add(selectDeselectAllButton);
 
-        // generalTableButtonPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
+    // generalTableButtonPanel.add( Box.createRigidArea( new Dimension(10, 10) ) );
     // generalTableButtonPanel.add( new JButton("Dummy Button 2") );
     generalTablePanel.add(Box.createRigidArea(new Dimension(10, 10)));
     generalTablePanel.add(generalTableButtonPanel);
@@ -968,7 +968,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     okButtonPanelDetails.add(okButton);
     tabEntropyDetailPanel.add(okButtonPanelDetails, BorderLayout.SOUTH);
 
-        // Enrichment
+    // Enrichment
     // Create class selector
     cmbClassSelector = new JComboBox<String>();
     // Create Enrichment comparison selector
@@ -1067,16 +1067,16 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     chkShowOnlyEnriched.setSelected(true);
     chkShowOnlyEnriched.addItemListener(
             new ItemListener() {
-              @Override
-              public void itemStateChanged(ItemEvent e
-              ) {
-                if (chkShowOnlyEnriched.isSelected()) {
-                  filterEnrichmentTable(enrichmentTableModel.getColumnCount() == 7);
-                } else {
-                  removeFilterEnrichmentTable();
-                }
-              }
-            }
+      @Override
+      public void itemStateChanged(ItemEvent e
+      ) {
+        if (chkShowOnlyEnriched.isSelected()) {
+          filterEnrichmentTable(enrichmentTableModel.getColumnCount() == 7);
+        } else {
+          removeFilterEnrichmentTable();
+        }
+      }
+    }
     );
     topBox.add(chkShowOnlyEnriched);
 
@@ -1087,13 +1087,13 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             true);
     chkHeatmapGrid.addItemListener(
             new ItemListener() {
-              @Override
-              public void itemStateChanged(ItemEvent e
-              ) {
-                heatmap.setGridLines(chkHeatmapGrid.isSelected());
-                heatmap.validate();
-              }
-            }
+      @Override
+      public void itemStateChanged(ItemEvent e
+      ) {
+        heatmap.setGridLines(chkHeatmapGrid.isSelected());
+        heatmap.validate();
+      }
+    }
     );
     topBox.add(chkHeatmapGrid);
 
@@ -1106,7 +1106,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     btnDisplayHeatmap = new JButton(heatmapAction);
     btnDisplayHeatmap.setVisible(false);
     topBox.add(btnDisplayHeatmap);
-    
+
     btnDisplayTable = new JButton(displayTableAction);
     btnDisplayTable.setVisible(false);
     topBox.add(btnDisplayTable);
@@ -1131,25 +1131,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             false);
 
     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    dataset.addValue(1.0, "Series1", "Category");
-    dataset.addValue(2.0, "Series2", "Category");
-    dataset.addValue(3.0, "Series3", "Category");
-    dataset.addValue(4.0, "Series4", "Category");
-
-    JFreeChart chart = ChartFactory.createBarChart(
-            "Bar Chart Demo", // chart title
-            "Category", // domain axis label
-            "Value", // range axis label
-            dataset, // data
-            PlotOrientation.HORIZONTAL, // orientation
-            true, // include legend
-            true, // tooltips?
-            false // URLs?
-    );
-
     chartPane = new JPanel();
     chartPane.setLayout(new BoxLayout(chartPane, BoxLayout.Y_AXIS));
-    chartPane.add(new ChartPanel(chart));
     scrollChartPane = new JScrollPane(chartPane);
 
     heatmapPane.setVisible(
@@ -1211,7 +1194,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     tabbedPane.insertTab(
             "General", null, tabGeneralPanel, "General Node Information", GENERAL_TAB.ordinal());
-        // tabbedPane.insertTab("Analysis", null, tabEntropyPanel, "Analysis Calculations", ENTROPY_TAB.ordinal());
+    // tabbedPane.insertTab("Analysis", null, tabEntropyPanel, "Analysis Calculations", ENTROPY_TAB.ordinal());
     //tabbedPane.add("Analysis Per Term", tabEntropyDetailPanel);
     //tabbedPane.insertTab("Analysis Detailed", null, tabEntropyDetailPanel, "Shows Analysis Per Term", ENTROPY_DETAILS_TAB.ordinal());
     tabbedPane.insertTab("Enrichment", null, tabEnrichmentPanel, "Shows Enrichment", ENRICHMENT_TAB.ordinal());
@@ -1484,11 +1467,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     //tabEnrichmentPanel.add(scrollPaneEnrichment, BorderLayout.CENTER);
     rightBox.validate();
     tabEnrichmentPanel.validate();
-    
+
     btnDisplayHeatmap.setVisible(false);
     btnDisplayTable.setVisible(true);
     btnDisplayPValue.setVisible(true);
-    
+
     btnSaveHeatmap.setVisible(true);
     chkHeatmapGrid.setVisible(true);
   }
@@ -1510,14 +1493,20 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     rightBox.validate();
 
     heatmapPane.setVisible(false);
-    
-    if (!isCombinedSet)
+
+    if (!isCombinedSet) {
       btnDisplayHeatmap.setVisible(true);
+    }
     btnDisplayTable.setVisible(true);
     btnDisplayPValue.setVisible(false);
 
     btnSaveHeatmap.setVisible(false);
     chkHeatmapGrid.setVisible(false);
+
+    if (chartPane.getComponentCount() == 0) {
+      JOptionPane.showMessageDialog(this, "No enriched clusters found", "No enriched clusters found", JOptionPane.INFORMATION_MESSAGE);
+    }
+
   }
 
   private void displayTable() {
@@ -1537,10 +1526,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     rightBox.validate();
 
     heatmapPane.setVisible(false);
-    
-    if (!isCombinedSet)
+
+    if (!isCombinedSet) {
       btnDisplayHeatmap.setVisible(true);
-    
+    }
+
     btnDisplayTable.setVisible(false);
     btnDisplayPValue.setVisible(true);
 
@@ -1826,7 +1816,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
   public void refreshCurrentClassSetSelection() {
     findClassDialog.resetCurrentClassIndex();
 
-        // nextClassButton.doClick();
+    // nextClassButton.doClick();
     // fire actionPerformed event directly, thus effectively avoiding the JButton being pressed down for some time
     nextClassAction.actionPerformed(new ActionEvent(nextClassAction, ActionEvent.ACTION_PERFORMED, ""));
 
