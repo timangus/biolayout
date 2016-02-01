@@ -34,11 +34,9 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Correlation.Panels.CorrelationGraphPanel;
 import org.Kajeka.Simulation.Panels.SimulationResultsPanel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.PaintScale;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultHeatMapDataset;
 import org.jfree.data.general.HeatMapDataset;
@@ -1009,6 +1007,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     tabEnrichmentPanel.setBackground(Color.WHITE);
     String[] columnNames = {"Class Set",
       "Include in Enrichment?"};
+    BarRenderer.setDefaultBarPainter(new StandardBarPainter());
 
     Set<String> annotationClasses = AnnotationTypeManagerBG.getInstanceSingleton().getAllTypes();
     Object[][] data = new Object[annotationClasses.size()][2];
