@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.*;
 import javax.swing.table.*;
 import org.Kajeka.Analysis.Utils.*;
+import org.apache.commons.collections15.map.MultiKeyMap;
 
 /**
 *
@@ -56,9 +57,11 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     private  Double[] score = null;
     
     private HashMap<String, Integer> heatmapPosition = null;
+    private MultiKeyMap<String, Integer> pValuePosition = null;
 
     public ClassViewerTableModelEnrichment() {
         heatmapPosition = new HashMap<>();
+        pValuePosition = new MultiKeyMap<>();
     }
 
     private int overallEntropies = 0;
@@ -231,6 +234,14 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     
     public void setHeatmapData(String heatmapPosition, int modelPosition){
         this.heatmapPosition.put(heatmapPosition, modelPosition);
+    }
+    
+    public void setPValueData(String rowcol, String term, int modelPosition){
+        this.pValuePosition.put(rowcol, term, modelPosition);
+    }
+    
+    public int getPValueTableIndex(String key, String term){
+        return this.pValuePosition.get(key, term);
     }
     
    public int getHeatmapTableIndex(int heatmapX, int heatmapY){

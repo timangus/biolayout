@@ -1,9 +1,9 @@
 package org.Kajeka.ClassViewerUI.Tables;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
@@ -22,19 +22,25 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Network.VertexClass;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.entity.CategoryItemEntity;
+import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRendererState;
 import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultHeatMapDataset;
 import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.RectangleInsets;
 
 public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
@@ -59,7 +65,6 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
     private JTable enrichmentTable = null;
 
     private DefaultHeatMapDataset hmds = null;
-    private DefaultCategoryDataset pValueChartDataset = null;
     private HashMap<String, Integer> elementPosition = null;
 
     /**
@@ -257,6 +262,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         chartPanel.removeAll();
         Iterator<HashSet<String>> iterator = geneGroups.values().iterator();
         int indexCounter = 0;
+        int sizeOfSet = 0;
         for (int i = 0; i < loopCount; i++) {
             selectedGenes = iterator.next();
             EnrichmentData enrichmentData = list.get(i);
@@ -265,7 +271,8 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
             Set<String> keys = enrichmentData.perType.keySet();
             for (String type : keys) {
                 DefaultCategoryDataset chartData = new DefaultCategoryDataset();
-                int sizeOfSet = 0;
+                DefaultCategoryDataset pValueData = new DefaultCategoryDataset();
+                DefaultCategoryDataset InvpValueData = new DefaultCategoryDataset();
                 layoutProgressBarDialog.incrementProgress();
                 Set<String> terms = enrichmentData.perType.get(type).keySet();
                 for (String term : terms) {
@@ -273,8 +280,12 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     modelDetail.setHeatmapData(i + " " + index, indexCounter);
                     int multiplyer = (Double.parseDouble(enrichmentData.OverRep.get(type).get(term)) < 1) ? -1 : 1;
                     double adjustPValue = enrichmentData.fishers.get(type).get(term) * enrichmentData.fishers.get(type).size();
-                    if (adjustPValue < 0.05) {
-                        chartData.setValue(1 - Math.log(adjustPValue), (Comparable) sizeOfSet++, term);
+                    if (adjustPValue < 0.05 && Double.parseDouble(enrichmentData.OverRep.get(type).get(term)) > 1) {
+                        chartData.setValue(-Math.log(adjustPValue), (Comparable) sizeOfSet, term);
+                        pValueData.setValue(adjustPValue, (Comparable) sizeOfSet, term);
+                        InvpValueData.setValue(0.05 - adjustPValue, (Comparable) sizeOfSet, term);
+                        modelDetail.setPValueData("" + sizeOfSet, term, indexCounter);
+                        sizeOfSet++;
                     }
                     hmds.setZValue(i, index, adjustPValue * multiplyer);
 
@@ -286,16 +297,21 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     if (enrichmentData.clusterName == null) {
                         title = "Combined";
                     }
+                    // Create d-Log Adjust P-value chart
                     JFreeChart chart = ChartFactory.createBarChart(
-                            title + " " + type + " Significant Values", // chart title
-                            title, // domain axis label
-                            "(1 - log(p-Value))", // range axis label
+                            title + " " + type + " Sig. Adj. p-Value (Scaled)", // chart title
+                            null, // domain axis label
+                            "-Log ( Adj. P-value )", // range axis label
                             chartData, // data
                             PlotOrientation.HORIZONTAL, // orientation
                             true, // include legend
                             true, // tooltips?
                             false // URLs?
                     );
+                    chart.getCategoryPlot().setDrawingSupplier(new DefaultDrawingSupplier(scaledColors,
+                            DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE, DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
+                            DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE, DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE) {
+                    });
                     chart.getCategoryPlot().setRenderer(new BarRenderer() {
 
                         @Override
@@ -309,17 +325,134 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                             state.setBarWidth(50);
                         }
                     });
+                    chart.getCategoryPlot().getRangeAxis().setAutoRangeMinimumSize(Double.MIN_VALUE);
                     BarRenderer renderer = (BarRenderer) chart.getCategoryPlot().getRenderer();
+                    final DefaultCategoryDataset finalPValue = pValueData;
+                    renderer.setBaseToolTipGenerator(new CategoryToolTipGenerator() {
+                        DecimalFormat SCIENCEFORMATTER = new DecimalFormat("0.##E0");
+
+                        @Override
+                        public String generateToolTip(CategoryDataset cd, int row, int column) {
+                            return "Adjusted P-value: " + SCIENCEFORMATTER.format(finalPValue.getValue(row, column));
+                        }
+                    });
                     chart.removeLegend();
                     renderer.setBarPainter(new StandardBarPainter());
                     renderer.setShadowVisible(false);
+                    renderer.setItemMargin(0.01);
+                    chart.getCategoryPlot().getDomainAxis().setUpperMargin(0.01);
+                    chart.getCategoryPlot().getDomainAxis().setLowerMargin(0.01);
+                    chart.getCategoryPlot().getDomainAxis().setCategoryMargin(0.01);
+                    chart.getCategoryPlot().setBackgroundPaint(Color.WHITE);
+                    chart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
                     //chart.getCategoryPlot().getRangeAxis().setRange(0.0, 0.05d);
                     ChartPanel cpanel = new ChartPanel(chart);
-                    cpanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100 * chartData.getColumnCount() + 100));
+                    cpanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60 * chartData.getColumnCount() + 100));
                     cpanel.setMaximumDrawWidth(4096);
                     cpanel.setMaximumDrawHeight(4096);
+                    cpanel.setMinimumDrawHeight(60 * chartData.getColumnCount() + 100);
+                    chart.setBackgroundPaint(null);
                     chartPanel.add(cpanel);
+                    cpanel.addChartMouseListener(new ChartMouseListener() {
+                        @Override
+                        public void chartMouseClicked(ChartMouseEvent event) {
+                            if (event.getEntity() instanceof CategoryItemEntity) {
 
+                                CategoryItemEntity ent = (CategoryItemEntity) event.getEntity();
+                                int rowId = enrichmentTable.convertRowIndexToView(
+                                        modelDetail.getPValueTableIndex(ent.getRowKey().toString(), ent.getColumnKey().toString())
+                                );
+                                classViewerFrame.displayTable();
+                                enrichmentTable.getSelectionModel().setSelectionInterval(rowId, rowId);
+                                enrichmentTable.scrollRectToVisible(new Rectangle(enrichmentTable.getCellRect(rowId, 0, true)));
+                            }
+                        }
+
+                        @Override
+                        public void chartMouseMoved(ChartMouseEvent event) {
+
+                        }
+                    });
+
+                    // Create P-valuechart
+                    JFreeChart pValuechart = ChartFactory.createBarChart(
+                            title + " " + type + " Sig. Adj. 0.05 - p-Values", // chart title
+                            null, // domain axis label
+                            "0.05 - Adj. P-value", // range axis label
+                            InvpValueData, // data
+                            PlotOrientation.HORIZONTAL, // orientation
+                            true, // include legend
+                            true, // tooltips?
+                            false // URLs?
+                    );
+                    pValuechart.getCategoryPlot().setRenderer(new BarRenderer() {
+
+                        @Override
+                        protected double calculateBarW0(CategoryPlot plot, PlotOrientation orientation, Rectangle2D dataArea, CategoryAxis domainAxis, CategoryItemRendererState state, int row, int column) {
+                            return domainAxis.getCategoryMiddle(column, getColumnCount(), dataArea, plot.getDomainAxisEdge()) - state.getBarWidth() / 2.0;
+                            //return super.calculateBarW0(plot, orientation, dataArea, domainAxis, state, row, column); //To change body of generated methods, choose Tools | Templates.
+                        }
+
+                        @Override
+                        protected void calculateBarWidth(CategoryPlot plot, Rectangle2D dataArea, int rendererIndex, CategoryItemRendererState state) {
+                            state.setBarWidth(50);
+                        }
+
+                    });
+                    renderer = (BarRenderer) pValuechart.getCategoryPlot().getRenderer();
+                    renderer.setBaseToolTipGenerator(new CategoryToolTipGenerator() {
+                        DecimalFormat SCIENCEFORMATTER = new DecimalFormat("0.##E0");
+
+                        @Override
+                        public String generateToolTip(CategoryDataset cd, int row, int column) {
+                            return "Adjusted P-value: " + SCIENCEFORMATTER.format(finalPValue.getValue(row, column));
+                        }
+                    });
+                    pValuechart.getCategoryPlot().getRangeAxis().setAutoRangeMinimumSize(Double.MIN_VALUE);
+                    pValuechart.getCategoryPlot().setDrawingSupplier(new DefaultDrawingSupplier(pValueColors,
+                            DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE, DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
+                            DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE, DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE) {
+                    });
+                    pValuechart.removeLegend();
+                    renderer.setBarPainter(new StandardBarPainter());
+                    renderer.setShadowVisible(false);
+                    NumberAxis axis = (NumberAxis) (pValuechart.getCategoryPlot().getRangeAxis());
+                    axis.setAutoRangeIncludesZero(false);
+                    renderer.setIncludeBaseInRange(false);
+                    pValuechart.getCategoryPlot().setBackgroundPaint(Color.WHITE);
+                    pValuechart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
+                    pValuechart.getCategoryPlot().getDomainAxis().setUpperMargin(0.01);
+                    pValuechart.getCategoryPlot().getDomainAxis().setLowerMargin(0.01);
+                    pValuechart.getCategoryPlot().getDomainAxis().setCategoryMargin(0.01);
+                    renderer.setItemMargin(0.01);
+                    //chart.getCategoryPlot().getRangeAxis().setRange(0.0, 0.05d);
+                    cpanel = new ChartPanel(pValuechart);
+                    cpanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60 * chartData.getColumnCount() + 100));
+                    cpanel.setMaximumDrawWidth(4096);
+                    cpanel.setMaximumDrawHeight(4096);
+                    cpanel.setMinimumDrawHeight(60 * chartData.getColumnCount() + 100);
+                    pValuechart.setBackgroundPaint(null);
+                    chartPanel.add(cpanel);
+                    cpanel.addChartMouseListener(new ChartMouseListener() {
+                        @Override
+                        public void chartMouseClicked(ChartMouseEvent event) {
+                            if (event.getEntity() instanceof CategoryItemEntity) {
+
+                                CategoryItemEntity ent = (CategoryItemEntity) event.getEntity();
+                                int rowId = enrichmentTable.convertRowIndexToView(
+                                        modelDetail.getPValueTableIndex(ent.getRowKey().toString(), ent.getColumnKey().toString())
+                                );
+                                classViewerFrame.displayTable();
+                                enrichmentTable.getSelectionModel().setSelectionInterval(rowId, rowId);
+                                enrichmentTable.scrollRectToVisible(new Rectangle(enrichmentTable.getCellRect(rowId, 0, true)));
+                            }
+                        }
+
+                        @Override
+                        public void chartMouseMoved(ChartMouseEvent event) {
+
+                        }
+                    });
                 }
 
                 final Map<String, Double> entropies = enrichmentData.perType.get(type);
@@ -369,7 +502,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         }
 
         FontRenderContext frc = new FontRenderContext(null, false, false);
-        Font keyFont = new Font(new JLabel().getFont().getFontName(), Font.PLAIN, 15);
+        Font keyFont = new Font(new JLabel().getFont().getFontName(), Font.PLAIN, 13);
         AxisSpace space = new AxisSpace();
         //Setup the offset
         double biggestLeftInset = 0;
@@ -442,6 +575,29 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
     public boolean getThreadFinished() {
         return threadFinished;
     }
+
+    static private Color[] generateColourArray(Color mix) {
+        Color[] returnArr = new Color[25];
+        for (int i = 0; i < returnArr.length; i++) {
+            Random random = new Random();
+            int red = random.nextInt(256);
+            int green = random.nextInt(256);
+            int blue = random.nextInt(256);
+
+            // mix the color
+            if (mix != null) {
+                red = (red + mix.getRed()) / 2;
+                green = (green + mix.getGreen()) / 2;
+                blue = (blue + mix.getBlue()) / 2;
+            }
+
+            Color color = new Color(red, green, blue);
+            returnArr[i] = color;
+        }
+        return returnArr;
+    }
+    static Color[] pValueColors = generateColourArray(new Color(255, 200, 200));
+    static Color[] scaledColors = generateColourArray(new Color(200, 200, 255));
 
     static class FishersPRenderer extends DefaultTableCellRenderer {
 
