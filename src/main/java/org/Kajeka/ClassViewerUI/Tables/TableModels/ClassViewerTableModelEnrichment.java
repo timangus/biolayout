@@ -69,7 +69,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     @Override
     public int getColumnCount()
     {
-        if (clusterName == null || clusterName[0] == null)
+        if (clusterName == null || clusterName.length == 0)
             return COLUMN_NAMES.length - 1;
         else
             return COLUMN_NAMES.length;
@@ -84,7 +84,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     @Override
     public Class<?> getColumnClass(int col)
     {
-        if (clusterName == null  || clusterName[0] == null)
+        if (clusterName == null  || clusterName.length == 0)
             return COLUMN_CLASSES[col + 1];
         else
             return COLUMN_CLASSES[col];
@@ -93,7 +93,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     @Override
     public String getColumnName(int col)
     {
-        if (clusterName == null  || clusterName[0] == null)
+        if (clusterName == null  || clusterName.length == 0)
             return COLUMN_NAMES[col + 1];
         else
             return COLUMN_NAMES[col];
@@ -102,7 +102,7 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     @Override
     public Object getValueAt(int row, int col)
     {
-        if (clusterName == null || clusterName[0] == null)
+        if (clusterName == null || clusterName.length == 0)
             col++;
         
         switch(col)

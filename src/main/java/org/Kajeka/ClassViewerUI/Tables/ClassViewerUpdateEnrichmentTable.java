@@ -263,7 +263,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         Iterator<HashSet<String>> iterator = geneGroups.values().iterator();
         int indexCounter = 0;
         int sizeOfSet = 0;
-        for (int i = 0; i < loopCount; i++) {
+        for (int i = 0; i < loopCount; i++) { 
             selectedGenes = iterator.next();
             EnrichmentData enrichmentData = list.get(i);
             clusterNames[i] = enrichmentData.clusterName;
