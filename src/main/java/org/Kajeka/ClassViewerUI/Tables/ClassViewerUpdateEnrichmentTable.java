@@ -28,7 +28,8 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -301,7 +302,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     JFreeChart chart = ChartFactory.createBarChart(
                             title + " " + type + " Sig. Adj. p-Value (Scaled)", // chart title
                             null, // domain axis label
-                            "-Log ( Adj. P-value )", // range axis label
+                            "-Log ( Adj. P-value ) (Larger is more significant)", // range axis label
                             chartData, // data
                             PlotOrientation.HORIZONTAL, // orientation
                             true, // include legend
@@ -376,15 +377,16 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
                     // Create P-valuechart
                     JFreeChart pValuechart = ChartFactory.createBarChart(
-                            title + " " + type + " Sig. Adj. 0.05 - p-Values", // chart title
+                            title + " " + type + " Sig. Adj. p-Values", // chart title
                             null, // domain axis label
-                            "0.05 - Adj. P-value", // range axis label
-                            InvpValueData, // data
+                            "Adj. P-value (Smaller is more significant)", // range axis label
+                            pValueData, // data
                             PlotOrientation.HORIZONTAL, // orientation
                             true, // include legend
                             true, // tooltips?
                             false // URLs?
                     );
+
                     pValuechart.getCategoryPlot().setRenderer(new BarRenderer() {
 
                         @Override
@@ -399,6 +401,14 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                         }
 
                     });
+                    for (int j = 0; j < pValueData.getColumnCount(); j++) {
+                        for (int k = 0; k < pValueData.getRowCount(); k++) {
+                            System.out.println(pValueData.getValue(k, j));
+                        }
+                    }
+                    LogAxis logaxis = new LogAxis("Adj. P-value (Smaller is more significant)");
+                    //logaxis.setLowerBound(Double.MIN_VALUE);
+                    pValuechart.getCategoryPlot().setRangeAxis(logaxis);
                     renderer = (BarRenderer) pValuechart.getCategoryPlot().getRenderer();
                     renderer.setBaseToolTipGenerator(new CategoryToolTipGenerator() {
                         DecimalFormat SCIENCEFORMATTER = new DecimalFormat("0.##E0");
@@ -409,6 +419,12 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                         }
                     });
                     pValuechart.getCategoryPlot().getRangeAxis().setAutoRangeMinimumSize(Double.MIN_VALUE);
+                    if (pValueData.getColumnCount() == 1){
+                        Comparable rowKey = (Comparable)pValueData.getRowKeys().get(0);
+                        Comparable colKey = (Comparable)pValueData.getColumnKeys().get(0);
+                        double value = (double)pValueData.getValue(rowKey, colKey);
+                        pValuechart.getCategoryPlot().getRangeAxis().setRange(value-(value*0.1), value+(value*0.1));
+                    }
                     pValuechart.getCategoryPlot().setDrawingSupplier(new DefaultDrawingSupplier(pValueColors,
                             DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE, DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
                             DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE, DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE) {
@@ -416,8 +432,8 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     pValuechart.removeLegend();
                     renderer.setBarPainter(new StandardBarPainter());
                     renderer.setShadowVisible(false);
-                    NumberAxis axis = (NumberAxis) (pValuechart.getCategoryPlot().getRangeAxis());
-                    axis.setAutoRangeIncludesZero(false);
+                    ValueAxis axis = (ValueAxis) (pValuechart.getCategoryPlot().getRangeAxis());
+                    //axis.setAutoRangeIncludesZero(false);
                     renderer.setIncludeBaseInRange(false);
                     pValuechart.getCategoryPlot().setBackgroundPaint(Color.WHITE);
                     pValuechart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
