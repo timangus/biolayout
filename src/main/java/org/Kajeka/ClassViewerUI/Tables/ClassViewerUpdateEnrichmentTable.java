@@ -29,7 +29,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.LogAxis;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.CategoryItemEntity;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -38,6 +37,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRendererState;
 import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.util.LogFormat;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultHeatMapDataset;
@@ -401,14 +401,13 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                         }
 
                     });
-                    for (int j = 0; j < pValueData.getColumnCount(); j++) {
-                        for (int k = 0; k < pValueData.getRowCount(); k++) {
-                            System.out.println(pValueData.getValue(k, j));
-                        }
-                    }
                     LogAxis logaxis = new LogAxis("Adj. P-value (Smaller is more significant)");
+                    logaxis.setBase(10);
+                    LogFormat format = new LogFormat(10.0, "10", "E", true);
+                    logaxis.setNumberFormatOverride(format);
                     //logaxis.setLowerBound(Double.MIN_VALUE);
                     pValuechart.getCategoryPlot().setRangeAxis(logaxis);
+                    ChartFactory.getChartTheme().apply(pValuechart);
                     renderer = (BarRenderer) pValuechart.getCategoryPlot().getRenderer();
                     renderer.setBaseToolTipGenerator(new CategoryToolTipGenerator() {
                         DecimalFormat SCIENCEFORMATTER = new DecimalFormat("0.##E0");
@@ -432,8 +431,6 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     pValuechart.removeLegend();
                     renderer.setBarPainter(new StandardBarPainter());
                     renderer.setShadowVisible(false);
-                    ValueAxis axis = (ValueAxis) (pValuechart.getCategoryPlot().getRangeAxis());
-                    //axis.setAutoRangeIncludesZero(false);
                     renderer.setIncludeBaseInRange(false);
                     pValuechart.getCategoryPlot().setBackgroundPaint(Color.WHITE);
                     pValuechart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
