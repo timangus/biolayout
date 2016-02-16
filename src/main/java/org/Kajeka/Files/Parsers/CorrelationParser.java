@@ -11,14 +11,14 @@ import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
-*
-* @author Anton Enright, full refactoring by Thanos Theo, 2008-2009-2010-2011
-* @version 3.0.0.0
-*
-*/
-
+ *
+ * @author Anton Enright, full refactoring by Thanos Theo, 2008-2009-2010-2011
+ * @version 3.0.0.0
+ *
+ */
 public class CorrelationParser extends CoreParser
 {
+
     private ObjectInputStream iistream = null;
     File file = null;
     private CorrelationData correlationData = null;
@@ -38,7 +38,7 @@ public class CorrelationParser extends CoreParser
         try
         {
             this.file = file;
-            iistream = new ObjectInputStream( new BufferedInputStream( new FileInputStream(file) ) );
+            iistream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
 
             return true;
         }
@@ -50,7 +50,10 @@ public class CorrelationParser extends CoreParser
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException while closing streamers in init():\n" + ioe.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("IOException while closing streamers in init():\n" + ioe.getMessage());
+                }
             }
             finally
             {
@@ -86,7 +89,7 @@ public class CorrelationParser extends CoreParser
             while (iistream.available() != 0)
             {
                 nodeId = iistream.readInt();
-                percent = (int)( 100.0f * ( (float)counter / (float)correlationData.getTotalRows() ) );
+                percent = (int) (100.0f * ((float) counter / (float) correlationData.getTotalRows()));
 
                 layoutProgressBarDialog.incrementProgress(percent);
 
@@ -124,7 +127,10 @@ public class CorrelationParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in parse():\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException in parse():\n" + ioe.getMessage());
+            }
         }
         finally
         {
@@ -134,7 +140,10 @@ public class CorrelationParser extends CoreParser
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException while closing streams in parse():\n" + ioe.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("IOException while closing streams in parse():\n" + ioe.getMessage());
+                }
             }
             finally
             {
@@ -153,7 +162,10 @@ public class CorrelationParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException while closing streams in close():\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException while closing streams in close():\n" + ioe.getMessage());
+            }
         }
     }
 
@@ -181,7 +193,7 @@ public class CorrelationParser extends CoreParser
                     else
                     {
                         weight = iistream.readFloat();
-                        index = (int)Math.floor(100.0f * weight);
+                        index = (int) Math.floor(100.0f * weight);
 
                         boolean filterOne = CURRENT_FILTER_SET.contains(nodeId);
                         boolean filterTwo = CURRENT_FILTER_SET.contains(otherId);
@@ -197,7 +209,10 @@ public class CorrelationParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in scan():\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException in scan():\n" + ioe.getMessage());
+            }
         }
     }
 
@@ -206,7 +221,7 @@ public class CorrelationParser extends CoreParser
         try
         {
             counts = correlationData.clearCounts();
-            iistream = new ObjectInputStream( new BufferedInputStream( new FileInputStream(file) ) );
+            iistream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
             scan();
         }
         catch (IOException ioe)
@@ -228,12 +243,15 @@ public class CorrelationParser extends CoreParser
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in check_file():\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException in check_file():\n" + ioe.getMessage());
+            }
 
             return false;
         }
 
-        if ( magicNumber == CorrelationData.FILE_MAGIC_NUMBER)
+        if (magicNumber == CorrelationData.FILE_MAGIC_NUMBER)
         {
             return true;
         }
@@ -253,16 +271,15 @@ public class CorrelationParser extends CoreParser
 
     public void removeSingletons()
     {
-        for ( Vertex vertex : nc.getVertices() )
+        for (Vertex vertex : nc.getVertices())
         {
-            if ( vertex.getEdgeConnectionsMap().isEmpty() )
+            if (vertex.getEdgeConnectionsMap().isEmpty())
             {
-                nc.getEdges().remove( vertex.getSelfEdge() );
-                nc.getVerticesMap().remove( vertex.getVertexName() );
+                nc.getEdges().remove(vertex.getSelfEdge());
+                nc.getVerticesMap().remove(vertex.getVertexName());
                 nc.getVertices().remove(vertex);
             }
         }
     }
-
 
 }

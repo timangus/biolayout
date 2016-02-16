@@ -21,18 +21,20 @@ import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
-*
-* The CorrelationData conveys the core of the correlation data calculations.
-*
-* @author Anton Enright, code updates/heavy optimizations/modifications/N-Core parallelization support/GPU Computing Thanos Theo, 2008-2009-2010-2011
-* @version 3.0.0.0
-*
-*/
-
+ *
+ * The CorrelationData conveys the core of the correlation data calculations.
+ *
+ * @author Anton Enright, code updates/heavy optimizations/modifications/N-Core
+ * parallelization support/GPU Computing Thanos Theo, 2008-2009-2010-2011
+ * @version 3.0.0.0
+ *
+ */
 public final class CorrelationData
 {
+
     public class ColumnAnnotation
     {
+
         private int index;
         private String name;
         private String[] values;
@@ -71,6 +73,7 @@ public final class CorrelationData
 
         class StringValueComparator implements Comparator<Integer>
         {
+
             Map<Integer, String> base;
 
             public StringValueComparator(Map<Integer, String> base)
@@ -121,14 +124,15 @@ public final class CorrelationData
     }
 
     /**
-    *  Constant used defining the amount of RAM to be used in the N-Core Parallelization algorithm.
-    *  Here, 128Mb (2^27) RAM will be allocated for the float results array.
-    */
+     * Constant used defining the amount of RAM to be used in the N-Core
+     * Parallelization algorithm. Here, 128Mb (2^27) RAM will be allocated for
+     * the float results array.
+     */
     private static final int MAX_ARRAY_RAM_USAGE = (1 << 27);
 
     /**
-    *  Constant used defining the max array size for the float results array.
-    */
+     * Constant used defining the max array size for the float results array.
+     */
     private static final int MAX_ARRAY_SIZE = MAX_ARRAY_RAM_USAGE / 4;
 
     public static final int FILE_MAGIC_NUMBER = 0xB73D0004;
@@ -184,8 +188,8 @@ public final class CorrelationData
     private final CyclicBarrier threadBarrier = (USE_MULTICORE_PROCESS) ? new CyclicBarrier(NUMBER_OF_AVAILABLE_PROCESSORS + 1, cyclicBarrierTimer) : null;
 
     /**
-    *  The constructor of the CorrelationData class.
-    */
+     * The constructor of the CorrelationData class.
+     */
     public CorrelationData(LayoutFrame layoutFrame)
     {
         this.layoutFrame = layoutFrame;
@@ -196,8 +200,8 @@ public final class CorrelationData
     }
 
     /**
-    *  Initalizes all the data structures.
-    */
+     * Initalizes all the data structures.
+     */
     public void initialize(int totalRows, int totalColumns, boolean transpose)
     {
         this.totalRows = totalRows;
@@ -243,7 +247,7 @@ public final class CorrelationData
 
     public ColumnAnnotation getColumnAnnotationByIndex(int index)
     {
-        if(columnAnnotations.containsKey(index))
+        if (columnAnnotations.containsKey(index))
         {
             return columnAnnotations.get(index);
         }
@@ -253,7 +257,7 @@ public final class CorrelationData
 
     public ColumnAnnotation getColumnAnnotationByName(String name)
     {
-        for(ColumnAnnotation columnAnnotation : columnAnnotations.values())
+        for (ColumnAnnotation columnAnnotation : columnAnnotations.values())
         {
             if (columnAnnotation.getName().equals(name))
             {
@@ -270,8 +274,8 @@ public final class CorrelationData
     }
 
     /**
-    *  Converts data to Spearman Rank order.
-    */
+     * Converts data to Spearman Rank order.
+     */
     private void convertToSpearmanRankOrder()
     {
         correlationRanksBuffer = FloatBuffer.allocate(totalRows * totalColumns);
@@ -283,7 +287,7 @@ public final class CorrelationData
             sumX2_cacheArray[i] = 0.0f;
         }
 
-        float[] rowValues  = new float[totalColumns];
+        float[] rowValues = new float[totalColumns];
         float[] originalValues = new float[totalColumns];
         HashMap<Float, Float> ranksMap = new HashMap<Float, Float>();
         float value = 0.0f;
@@ -306,17 +310,21 @@ public final class CorrelationData
             for (int j = 0; j < totalColumns; j++)
             {
                 currentRank++;
-                if ( ( j < (totalColumns - 1 ) ) && (rowValues[j] == rowValues[j + 1]) )
+                if ((j < (totalColumns - 1)) && (rowValues[j] == rowValues[j + 1]))
+                {
                     tied++;
+                }
                 else
                 {
-                    ranksMap.put(rowValues[j], (tied == 0.0f) ? currentRank : currentRank - ( currentRank - (currentRank - tied) ) / 2.0f);
+                    ranksMap.put(rowValues[j], (tied == 0.0f) ? currentRank : currentRank - (currentRank - (currentRank - tied)) / 2.0f);
                     tied = 0.0f;
                 }
             }
 
             for (int j = 0; j < totalColumns; j++)
-               correlationRanksArray[i * totalColumns + j] = ranksMap.get(originalValues[j]);
+            {
+                correlationRanksArray[i * totalColumns + j] = ranksMap.get(originalValues[j]);
+            }
         }
 
         // rebuild caches for rank order values, not raw values
@@ -332,15 +340,15 @@ public final class CorrelationData
     }
 
     /**
-    *  Builds the correlation network.
-    */
+     * Builds the correlation network.
+     */
     public void buildCorrelationNetwork(LayoutProgressBarDialog layoutProgressBarDialog, File correlationFile,
             String metricName, float threshold, boolean writeCorrelationTextFile)
     {
         this.layoutProgressBarDialog = layoutProgressBarDialog;
         this.rowIndex = 0;
-        this.searchSpace = (long)totalRows * (long)totalRows; // has to be cast like this so as to not lose the long conversion and result in an overflow after the multiplication
-        this.metricName = Character.toUpperCase( metricName.charAt(0) ) + metricName.substring(1);
+        this.searchSpace = (long) totalRows * (long) totalRows; // has to be cast like this so as to not lose the long conversion and result in an overflow after the multiplication
+        this.metricName = Character.toUpperCase(metricName.charAt(0)) + metricName.substring(1);
 
         this.nf1 = NumberFormat.getNumberInstance();
         this.nf1.setMaximumFractionDigits(0);
@@ -348,14 +356,16 @@ public final class CorrelationData
         this.nf2 = NumberFormat.getNumberInstance();
         this.nf2.setMaximumFractionDigits(2);
 
-        if ( writeCorrelationTextFile )
+        if (writeCorrelationTextFile)
         {
             this.nf3 = NumberFormat.getNumberInstance();
             this.nf3.setMaximumFractionDigits(5);
         }
 
-        if ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) )
+        if (CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN))
+        {
             convertToSpearmanRankOrder();
+        }
 
         File correlationFileTmp = new File(correlationFile.getAbsolutePath() + ".tmp");
         File correlationFileTextTmp = new File(correlationFile.getAbsolutePath() + ".txt.tmp");
@@ -364,8 +374,8 @@ public final class CorrelationData
 
         try
         {
-            outOstream = new ObjectOutputStream( new BufferedOutputStream( new FileOutputStream(correlationFileTmp) ) );
-            if ( writeCorrelationTextFile )
+            outOstream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(correlationFileTmp)));
+            if (writeCorrelationTextFile)
             {
                 outPrintWriter = new PrintWriter(correlationFileTextTmp);
             }
@@ -388,42 +398,50 @@ public final class CorrelationData
                 calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
                         outOstream, outPrintWriter, writeCorrelationTextFile);
             }
+            else if (!USE_MULTICORE_PROCESS)
+            {
+                performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream,
+                        outPrintWriter, writeCorrelationTextFile);
+            }
             else
             {
-                if (!USE_MULTICORE_PROCESS)
-                {
-                    performSingleCoreCorrelationCalculationAndWriteToFile(threshold, outOstream,
-                            outPrintWriter, writeCorrelationTextFile);
-                }
-                else
-                {
-                    calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
-                            outOstream, outPrintWriter, writeCorrelationTextFile);
-                }
+                calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(threshold,
+                        outOstream, outPrintWriter, writeCorrelationTextFile);
             }
 
             outOstream.flush();
-            if ( writeCorrelationTextFile )
+            if (writeCorrelationTextFile)
+            {
                 outPrintWriter.flush();
+            }
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in buildCorrelationNetwork()\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException in buildCorrelationNetwork()\n" + ioe.getMessage());
+            }
             JOptionPane.showMessageDialog(layoutFrame, "IOException in building the Correlation network\n" + ioe.getMessage(), "Error: IOException in building the Correlation network", JOptionPane.ERROR_MESSAGE);
         }
         finally
         {
             try
             {
-                if (outOstream != null) outOstream.close();
+                if (outOstream != null)
+                {
+                    outOstream.close();
+                }
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException in buildCorrelationNetwork() closing the outOstream stream\n" + ioe.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("IOException in buildCorrelationNetwork() closing the outOstream stream\n" + ioe.getMessage());
+                }
                 JOptionPane.showMessageDialog(layoutFrame, "IOException in closing the Correlation network outOstream stream\n" + ioe.getMessage(), "Error: IOException in closing the Correlation network outOstream stream", JOptionPane.ERROR_MESSAGE);
             }
 
-            if ( writeCorrelationTextFile )
+            if (writeCorrelationTextFile)
             {
                 if (outPrintWriter != null)
                 {
@@ -455,12 +473,13 @@ public final class CorrelationData
     }
 
     /**
-    *  Calculates the correlation values in a single thread and writes them to a binary file.
-    */
+     * Calculates the correlation values in a single thread and writes them to a
+     * binary file.
+     */
     private void performSingleCoreCorrelationCalculationAndWriteToFile(float threshold, ObjectOutputStream outOstream,
             PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
-        float[] correlationData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? correlationDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? correlationRanksArray : correlationDataArray );
+        float[] correlationData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? correlationDataArray : ((CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN)) ? correlationRanksArray : correlationDataArray);
         float correlation = 0.0f;
         for (int i = 0; i < totalRows - 1; i++) // last row does not perform any calculations, thus skipped
         {
@@ -488,8 +507,9 @@ public final class CorrelationData
     }
 
     /**
-    *  Calculates the steps needed, memory allocated per step and executes the correlation calculation with N-Core parallelism.
-    */
+     * Calculates the steps needed, memory allocated per step and executes the
+     * correlation calculation with N-Core parallelism.
+     */
     private void calculateStepsAndMemoryAllocatedForNCoreParallelismAndExecuteCorrelationCalculation(float threshold,
             ObjectOutputStream outOstream, PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
     {
@@ -517,14 +537,16 @@ public final class CorrelationData
                 if (arraySize >= MAX_ARRAY_SIZE)
                 {
                     // if last row to be checked, stop the process
-                    if ( i == (totalRows - 2) )
-                      rowsSearchProcessedStopped = true;
+                    if (i == (totalRows - 2))
+                    {
+                        rowsSearchProcessedStopped = true;
+                    }
                     endRow = i;
                     break;
                 }
 
                 // if last row to be checked, stop the process
-                if ( i == (totalRows - 2) )
+                if (i == (totalRows - 2))
                 {
                     endRow = i;
                     rowsSearchProcessedStopped = true;
@@ -534,7 +556,10 @@ public final class CorrelationData
             stepNumber++;
             stepResults = new float[arraySize];
 
-            if (DEBUG_BUILD) println("Now starting the N-Core parallelization process with the variables below:\nstartRow: " + (startRow + 1) + " endRow: " + (endRow + 1) + " arraySize: " + arraySize + " rowsSearchProcessedStopped: " + rowsSearchProcessedStopped);
+            if (DEBUG_BUILD)
+            {
+                println("Now starting the N-Core parallelization process with the variables below:\nstartRow: " + (startRow + 1) + " endRow: " + (endRow + 1) + " arraySize: " + arraySize + " rowsSearchProcessedStopped: " + rowsSearchProcessedStopped);
+            }
             performMultiCoreCorrelationCalculation(isPowerOfTwo, startRow, endRow, stepResults, cachedRowsResultsIndicesToSkip);
 
             if (layoutProgressBarDialog.userHasCancelled())
@@ -557,18 +582,21 @@ public final class CorrelationData
     }
 
     /**
-    *  Main method of the correlation calculation execution code. Uses an N-Core paralellism algorithm in case of multiple core availability.
-    */
+     * Main method of the correlation calculation execution code. Uses an N-Core
+     * paralellism algorithm in case of multiple core availability.
+     */
     private void performMultiCoreCorrelationCalculation(boolean isPowerOfTwo, int startRow, int endRow, float[] stepResults, int[] cachedRowsResultsIndicesToSkip)
     {
         LoggerThreadPoolExecutor executor = new LoggerThreadPoolExecutor(NUMBER_OF_AVAILABLE_PROCESSORS, NUMBER_OF_AVAILABLE_PROCESSORS, 0L, TimeUnit.MILLISECONDS,
-                                                                         new LinkedBlockingQueue<Runnable>(NUMBER_OF_AVAILABLE_PROCESSORS),
-                                                                         new LoggerThreadFactory("correlationData"),
-                                                                         new ThreadPoolExecutor.CallerRunsPolicy() );
+                new LinkedBlockingQueue<Runnable>(NUMBER_OF_AVAILABLE_PROCESSORS),
+                new LoggerThreadFactory("correlationData"),
+                new ThreadPoolExecutor.CallerRunsPolicy());
 
         cyclicBarrierTimer.clear();
         for (int threadId = 0; threadId < NUMBER_OF_AVAILABLE_PROCESSORS; threadId++)
-            executor.execute( correlationCalculationProcessKernel(threadId, isPowerOfTwo, startRow, endRow, stepResults, cachedRowsResultsIndicesToSkip) );
+        {
+            executor.execute(correlationCalculationProcessKernel(threadId, isPowerOfTwo, startRow, endRow, stepResults, cachedRowsResultsIndicesToSkip));
+        }
 
         try
         {
@@ -578,35 +606,46 @@ public final class CorrelationData
         }
         catch (BrokenBarrierException ex)
         {
-            if (DEBUG_BUILD) println("Problem with a broken barrier with the main correlation calculation thread in performMultiCoreCorrelationCalculation()!:\n" + ex.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("Problem with a broken barrier with the main correlation calculation thread in performMultiCoreCorrelationCalculation()!:\n" + ex.getMessage());
+            }
         }
         catch (InterruptedException ex)
         {
             // restore the interuption status after catching InterruptedException
             Thread.currentThread().interrupt();
-            if (DEBUG_BUILD) println("Problem with pausing the main correlation calculation thread in performMultiCoreCorrelationCalculation()!:\n" + ex.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("Problem with pausing the main correlation calculation thread in performMultiCoreCorrelationCalculation()!:\n" + ex.getMessage());
+            }
         }
 
-        if (DEBUG_BUILD) println("\nTotal Correlation Data N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
+        if (DEBUG_BUILD)
+        {
+            println("\nTotal Correlation Data N-CP run time: " + (cyclicBarrierTimer.getTime() / 1e6) + " ms.\n");
+        }
     }
 
     /**
-    *  Performs all correlation calculations.
-    */
+     * Performs all correlation calculations.
+     */
     private void allCorrelationCalculations(int threadId, boolean isPowerOfTwo, int startRow, int endRow, float[] stepResults, int[] cachedRowsResultsIndicesToSkip)
     {
-        float[] correlationData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? correlationDataArray : ( ( CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN) ) ? correlationRanksArray : correlationDataArray );
+        float[] correlationData = CURRENT_METRIC.equals(CorrelationTypes.PEARSON) ? correlationDataArray : ((CURRENT_METRIC.equals(CorrelationTypes.SPEARMAN)) ? correlationRanksArray : correlationDataArray);
         int rowResultIndex = 0;
         if (isPowerOfTwo)
         {
             for (int i = startRow; i <= endRow; i++)
             {
-                if ( ( i & (NUMBER_OF_AVAILABLE_PROCESSORS - 1) ) == threadId )
+                if ((i & (NUMBER_OF_AVAILABLE_PROCESSORS - 1)) == threadId)
                 {
                     updateMultiCoreGUI();
 
                     for (int j = (i + 1); j < totalRows; j++)
+                    {
                         stepResults[rowResultIndex++] = calculateCorrelation(i, j, correlationData);
+                    }
                 }
                 else
                 {
@@ -623,12 +662,14 @@ public final class CorrelationData
         {
             for (int i = startRow; i <= endRow; i++)
             {
-                if ( (i % NUMBER_OF_AVAILABLE_PROCESSORS) == threadId )
+                if ((i % NUMBER_OF_AVAILABLE_PROCESSORS) == threadId)
                 {
                     updateMultiCoreGUI();
 
                     for (int j = (i + 1); j < totalRows; j++)
+                    {
                         stepResults[rowResultIndex++] = calculateCorrelation(i, j, correlationData);
+                    }
                 }
                 else
                 {
@@ -644,8 +685,9 @@ public final class CorrelationData
     }
 
     /**
-    *   Return a light-weight runnable using the Adapter technique for the correlation calculation so as to avoid any load latencies.
-    */
+     * Return a light-weight runnable using the Adapter technique for the
+     * correlation calculation so as to avoid any load latencies.
+     */
     private Runnable correlationCalculationProcessKernel(final int threadId, final boolean isPowerOfTwo, final int startRow, final int endRow, final float[] stepResults, final int[] cachedRowsResultsIndicesToSkip)
     {
         return new Runnable()
@@ -656,7 +698,7 @@ public final class CorrelationData
             {
                 try
                 {
-                   threadBarrier.await();
+                    threadBarrier.await();
                     try
                     {
                         allCorrelationCalculations(threadId, isPowerOfTwo, startRow, endRow, stepResults, cachedRowsResultsIndicesToSkip);
@@ -668,62 +710,73 @@ public final class CorrelationData
                 }
                 catch (BrokenBarrierException ex)
                 {
-                    if (DEBUG_BUILD) println("Problem with a broken barrier with the N-Core thread with threadId " + threadId + " in correlationCalculationProcessKernel()!:\n" + ex.getMessage());
+                    if (DEBUG_BUILD)
+                    {
+                        println("Problem with a broken barrier with the N-Core thread with threadId " + threadId + " in correlationCalculationProcessKernel()!:\n" + ex.getMessage());
+                    }
                 }
                 catch (InterruptedException ex)
                 {
                     // restore the interuption status after catching InterruptedException
                     Thread.currentThread().interrupt();
-                    if (DEBUG_BUILD) println("Problem with pausing the N-Core thread with threadId " + threadId + " in correlationCalculationProcessKernel()!:\n" + ex.getMessage());
+                    if (DEBUG_BUILD)
+                    {
+                        println("Problem with pausing the N-Core thread with threadId " + threadId + " in correlationCalculationProcessKernel()!:\n" + ex.getMessage());
+                    }
                 }
             }
-
 
         };
     }
 
     /**
-    *  Updates the GUI for the single core correlation calculation.
-    */
+     * Updates the GUI for the single core correlation calculation.
+     */
     private void updateSingleCoreGUI()
     {
-        double calculation = ( (double)(++rowIndex) * (double)totalRows ); // has to be cast like this so as to not lose the double conversion and result in an overflow after the multiplication
+        double calculation = ((double) (++rowIndex) * (double) totalRows); // has to be cast like this so as to not lose the double conversion and result in an overflow after the multiplication
         double percent = 100.0 * (calculation / searchSpace);
 
-        layoutProgressBarDialog.incrementProgress( (int)percent );
-        layoutProgressBarDialog.setText("Done " + nf1.format(calculation) + " " + metricName + " calculations (" + createProgressBarTextValue( percent, nf2.format(percent) ) + "%)");
+        layoutProgressBarDialog.incrementProgress((int) percent);
+        layoutProgressBarDialog.setText("Done " + nf1.format(calculation) + " " + metricName + " calculations (" + createProgressBarTextValue(percent, nf2.format(percent)) + "%)");
     }
 
     /**
-    *  Updates the GUI for the correlation calculation iterations.
-    */
+     * Updates the GUI for the correlation calculation iterations.
+     */
     private void updateMultiCoreGUI()
     {
-        double calculation = ( (double)(++rowIndex) * (double)totalRows ); // has to be cast like this so as to not lose the double conversion and result in an overflow after the multiplication
+        double calculation = ((double) (++rowIndex) * (double) totalRows); // has to be cast like this so as to not lose the double conversion and result in an overflow after the multiplication
         double percent = 100.0 * (calculation / searchSpace);
 
-        layoutProgressBarDialog.incrementProgress( (int)percent );
-        layoutProgressBarDialog.setText("Done " + nf1.format(calculation) + " " + metricName + " calculations (" + createProgressBarTextValue( percent, nf2.format(percent) ) + "%)" +
-                                        "  (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)");
+        layoutProgressBarDialog.incrementProgress((int) percent);
+        layoutProgressBarDialog.setText("Done " + nf1.format(calculation) + " " + metricName + " calculations (" + createProgressBarTextValue(percent, nf2.format(percent)) + "%)"
+                + "  (Utilizing " + NUMBER_OF_AVAILABLE_PROCESSORS + "-Core Parallelism)");
     }
 
     /**
-    *  Creates the progress bar's text value.
-    */
+     * Creates the progress bar's text value.
+     */
     private String createProgressBarTextValue(double percent, String progressBarText)
     {
-        int addCheckIndex = ( (percent < 10.0) ? 0 : 1 );
-        if ( progressBarText.length() == (3 + addCheckIndex) )
+        int addCheckIndex = ((percent < 10.0) ? 0 : 1);
+        if (progressBarText.length() == (3 + addCheckIndex))
+        {
             return (progressBarText + "0");
-        else if ( progressBarText.length() == (1 + addCheckIndex) )
+        }
+        else if (progressBarText.length() == (1 + addCheckIndex))
+        {
             return (progressBarText + DECIMAL_SEPARATOR_STRING + "00");
+        }
         else
+        {
             return progressBarText;
+        }
     }
 
     /**
-    *  Writes all step results to a binary file.
-    */
+     * Writes all step results to a binary file.
+     */
     private void writeAllStepResultsToFile(float threshold, int startRow, int endRow,
             int stepNumber, float[] stepResults, ObjectOutputStream outOstream,
             PrintWriter outPrintWriter, boolean writeCorrelationTextFile) throws IOException
@@ -751,42 +804,46 @@ public final class CorrelationData
 
                 if (writeCorrelationTextFile)
                 {
-                    outPrintWriter.println(rowIDsArray[i] + "\t" + rowIDsArray[j] +
-                            "\t" + nf3.format(correlation));
+                    outPrintWriter.println(rowIDsArray[i] + "\t" + rowIDsArray[j]
+                            + "\t" + nf3.format(correlation));
                 }
             }
 
             outOstream.writeInt(i);
 
-            layoutProgressBarDialog.setText(currentLayoutProgressBarText +
-                    "  (Saving " + percent + "%)");
+            layoutProgressBarDialog.setText(currentLayoutProgressBarText
+                    + "  (Saving " + percent + "%)");
         }
     }
 
     /**
-    *  Calculates the correlation value.
-    */
+     * Calculates the correlation value.
+     */
     public float calculateCorrelation(int firstRow, int secondRow, float[] matrix)
     {
-        float denominator = (float)sqrt( (sumColumns_X2_cacheArray[firstRow] - sumX_sumX2_cacheArray[firstRow]) * (sumColumns_X2_cacheArray[secondRow] - sumX_sumX2_cacheArray[secondRow]) );
-        if ( (denominator != 0.0f) && !(denominator != denominator) ) // second check is to avoid an NaN problem, see definition of Float.isNaN()
+        float denominator = (float) sqrt((sumColumns_X2_cacheArray[firstRow] - sumX_sumX2_cacheArray[firstRow]) * (sumColumns_X2_cacheArray[secondRow] - sumX_sumX2_cacheArray[secondRow]));
+        if ((denominator != 0.0f) && !(denominator != denominator)) // second check is to avoid an NaN problem, see definition of Float.isNaN()
         {
             int indexFirstRowDimension = firstRow * totalColumns;
             int indexSecondRowDimension = secondRow * totalColumns;
             float sumXY = 0.0f;
             for (int i = 0; i < totalColumns; i++)
+            {
                 sumXY += (matrix[indexFirstRowDimension + i] * matrix[indexSecondRowDimension + i]);
+            }
 
-            float result = ( (totalColumns * sumXY) - (sumX_cacheArray[firstRow] * sumX_cacheArray[secondRow]) ) / denominator;
-            return (result > 1.0f) ? 1.0f : ( (result < -1.0f) ? -1.0f : result );
+            float result = ((totalColumns * sumXY) - (sumX_cacheArray[firstRow] * sumX_cacheArray[secondRow])) / denominator;
+            return (result > 1.0f) ? 1.0f : ((result < -1.0f) ? -1.0f : result);
         }
         else
+        {
             return -1.0f;
+        }
     }
 
     /**
-    *  Clears all the cached data structures.
-    */
+     * Clears all the cached data structures.
+     */
     private void clearAllCachedDataStructures()
     {
         sumX_cacheBuffer.clear();
@@ -831,16 +888,16 @@ public final class CorrelationData
     }
 
     /**
-    *  Gets the countsArray data structure.
-    */
+     * Gets the countsArray data structure.
+     */
     public int[][] getCounts()
     {
         return countsArray;
     }
 
     /**
-    *  Clears the countsArray data structure.
-    */
+     * Clears the countsArray data structure.
+     */
     public int[][] clearCounts()
     {
         countsArray = new int[totalRows][101];
@@ -848,37 +905,41 @@ public final class CorrelationData
     }
 
     /**
-    *  Gets a value from the data structure.
-    */
+     * Gets a value from the data structure.
+     */
     public float getDataValue(int i, int j)
     {
         return correlationDataArray[i * totalColumns + j];
     }
 
     /**
-    *  Sets a value to the data structure.
-    */
+     * Sets a value to the data structure.
+     */
     public void setDataValue(int i, int j, float value)
     {
         correlationDataArray[i * totalColumns + j] = value;
     }
 
     /**
-    *  Finds the max value from the data array.
-    */
+     * Finds the max value from the data array.
+     */
     public float findGlobalMaxValueFromCorrelationDataArray()
     {
         float maxValue = Float.MIN_VALUE;
         for (int i = 0; i < correlationDataArray.length; i++)
+        {
             if (maxValue < correlationDataArray[i])
+            {
                 maxValue = correlationDataArray[i];
+            }
+        }
 
         return maxValue;
     }
 
     /**
-    *  Finds the local (per-node) max values from the data array.
-    */
+     * Finds the local (per-node) max values from the data array.
+     */
     public float[] findLocalMaxValuesFromCorrelationDataArray(Collection<GraphNode> allGraphNodes)
     {
         float[] localMaxValues = new float[allGraphNodes.size()];
@@ -888,12 +949,14 @@ public final class CorrelationData
         for (GraphNode node : allGraphNodes)
         {
             localMaxValue = Float.MIN_VALUE;
-            index = getIdentityMap( node.getNodeName() );
+            index = getIdentityMap(node.getNodeName());
             for (int currentTick = 0; currentTick < getTotalColumns(); currentTick++)
             {
                 tempValue = getDataValue(index, currentTick);
                 if (localMaxValue < tempValue)
+                {
                     localMaxValue = tempValue;
+                }
             }
             localMaxValues[node.getNodeID()] = localMaxValue;
         }
@@ -902,8 +965,8 @@ public final class CorrelationData
     }
 
     /**
-    *  Gets the row ID data structure.
-    */
+     * Gets the row ID data structure.
+     */
     public String getRowID(int index)
     {
         return rowIDsArray[index];
@@ -923,8 +986,8 @@ public final class CorrelationData
     }
 
     /**
-    *  Sets the row ID data structure.
-    */
+     * Sets the row ID data structure.
+     */
     public void setRowID(int index, String id)
     {
         id = uniqueID(id);
@@ -933,8 +996,8 @@ public final class CorrelationData
     }
 
     /**
-    *  Gets the identityMap data structure.
-    */
+     * Gets the identityMap data structure.
+     */
     public int getIdentityMap(String key)
     {
         Integer value = identityMap.get(key);
@@ -942,8 +1005,8 @@ public final class CorrelationData
     }
 
     /**
-    *  Gets a column name by a given index.
-    */
+     * Gets a column name by a given index.
+     */
     public String getColumnName(int index)
     {
         if (sortColumnAnnotation != null)
@@ -969,8 +1032,8 @@ public final class CorrelationData
     }
 
     /**
-    *  Sets a column name by a given index.
-    */
+     * Sets a column name by a given index.
+     */
     public void setColumnName(int index, String name)
     {
         name = uniqueColumnName(name);
@@ -979,16 +1042,16 @@ public final class CorrelationData
     }
 
     /**
-    *  Gets the total rows.
-    */
+     * Gets the total rows.
+     */
     public int getTotalRows()
     {
         return totalRows;
     }
 
     /**
-    *  Gets the total columns.
-    */
+     * Gets the total columns.
+     */
     public int getTotalColumns()
     {
         return totalColumns;
@@ -1088,12 +1151,14 @@ public final class CorrelationData
     }
 
     private TransformType transformType;
+
     public void setTransformType(TransformType transformType)
     {
         this.transformType = transformType;
     }
 
     private ColumnAnnotation sortColumnAnnotation;
+
     public void setSortColumnAnnotation(String sortColumnAnnotationName)
     {
         if (sortColumnAnnotationName != null)
@@ -1116,8 +1181,8 @@ public final class CorrelationData
 
         Arrays.sort(values);
 
-        int _25Column = (int)java.lang.Math.round(totalColumns * 0.25);
-        int _75Column = (int)java.lang.Math.round(totalColumns * 0.75);
+        int _25Column = (int) java.lang.Math.round(totalColumns * 0.25);
+        int _75Column = (int) java.lang.Math.round(totalColumns * 0.75);
         float iqr = values[_75Column] - values[_25Column];
 
         return iqr;
@@ -1173,11 +1238,11 @@ public final class CorrelationData
 
         Arrays.sort(columnData);
 
-        if(totalColumns == 1)
+        if (totalColumns == 1)
         {
             return columnData[0];
         }
-        else if((totalColumns % 2) == 0)
+        else if ((totalColumns % 2) == 0)
         {
             int index2 = totalColumns / 2;
             int index1 = index2 - 1;
@@ -1233,7 +1298,7 @@ public final class CorrelationData
             return stddevCache[row];
         }
 
-        return (float)sqrt(getVarianceForRow(row));
+        return (float) sqrt(getVarianceForRow(row));
     }
 
     public void cacheStddevValues()
@@ -1282,7 +1347,7 @@ public final class CorrelationData
 
     public float getParetoForRow(int row)
     {
-        return (float)sqrt(getStddevForRow(row));
+        return (float) sqrt(getStddevForRow(row));
     }
 
     public float[] getTransformedRow(int row)
@@ -1292,8 +1357,8 @@ public final class CorrelationData
         float mean = getMeanForRow(row);
         float variance = getVarianceForRow(row, mean);
 
-        float stddev = (float)sqrt(variance);
-        float pareto = (float)sqrt(stddev);
+        float stddev = (float) sqrt(variance);
+        float pareto = (float) sqrt(stddev);
 
         int[] sortedColumnMap = null;
 
@@ -1388,21 +1453,18 @@ public final class CorrelationData
             {
                 median[column] = columnData[0];
             }
+            else if ((numRows % 2) == 0)
+            {
+                int index2 = numRows / 2;
+                int index1 = index2 - 1;
+
+                median[column] = (columnData[index1] + columnData[index2]) * 0.5f;
+            }
             else
             {
-                if ((numRows % 2) == 0)
-                {
-                    int index2 = numRows / 2;
-                    int index1 = index2 - 1;
+                int index = numRows / 2;
 
-                    median[column] = (columnData[index1] + columnData[index2]) * 0.5f;
-                }
-                else
-                {
-                    int index = numRows / 2;
-
-                    median[column] = columnData[index];
-                }
+                median[column] = columnData[index];
             }
         }
 
@@ -1437,7 +1499,7 @@ public final class CorrelationData
         float stddev[] = new float[totalColumns];
         for (int column = 0; column < totalColumns; column++)
         {
-            stddev[column] = (float)sqrt(variance[column]);
+            stddev[column] = (float) sqrt(variance[column]);
         }
 
         return stddev;
@@ -1447,10 +1509,10 @@ public final class CorrelationData
     {
         float stddev[] = getStddevForRows(rows);
         float stderr[] = new float[totalColumns];
-        float sqrtOfSampleSize = (float)sqrt(totalColumns);
+        float sqrtOfSampleSize = (float) sqrt(totalColumns);
         for (int column = 0; column < totalColumns; column++)
         {
-            stderr[column] = (float)stddev[column] / sqrtOfSampleSize;
+            stderr[column] = (float) stddev[column] / sqrtOfSampleSize;
         }
 
         return stderr;
@@ -1462,31 +1524,56 @@ public final class CorrelationData
         float pareto[] = new float[totalColumns];
         for (int column = 0; column < totalColumns; column++)
         {
-            stddev[column] = (float)sqrt(stddev[column]);
+            stddev[column] = (float) sqrt(stddev[column]);
         }
 
         return pareto;
     }
 
-    interface IRescaleDelegate { public float f(float x); }
+    interface IRescaleDelegate
+    {
+
+        public float f(float x);
+    }
+
     class RescaleLog2 implements IRescaleDelegate
     {
-        @Override public float f(float x) { return (float)(log(x) / log(2)); }
+
+        @Override
+        public float f(float x)
+        {
+            return (float) (log(x) / log(2));
+        }
     }
 
     class RescaleLog10 implements IRescaleDelegate
     {
-        @Override public float f(float x) { return (float)(log(x) / log(10)); }
+
+        @Override
+        public float f(float x)
+        {
+            return (float) (log(x) / log(10));
+        }
     }
 
     class RescaleAntiLog2 implements IRescaleDelegate
     {
-        @Override public float f(float x) { return (float)pow(2.0, x); }
+
+        @Override
+        public float f(float x)
+        {
+            return (float) pow(2.0, x);
+        }
     }
 
     class RescaleAntiLog10 implements IRescaleDelegate
     {
-        @Override public float f(float x) { return (float)pow(10.0, x); }
+
+        @Override
+        public float f(float x)
+        {
+            return (float) pow(10.0, x);
+        }
     }
 
     private void rescale(LayoutProgressBarDialog layoutProgressBarDialog, IRescaleDelegate d)

@@ -17,16 +17,16 @@ import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
-*
-*  org.Kajeka.File.CoreParser
-*
-* @author Full refactoring by Thanos Theo, 2008-2009-2010-2011-2012
-* @version 3.0.0.0
-*
-*/
-
+ *
+ * org.Kajeka.File.CoreParser
+ *
+ * @author Full refactoring by Thanos Theo, 2008-2009-2010-2011-2012
+ * @version 3.0.0.0
+ *
+ */
 public class CoreParser
 {
+
     protected NetworkContainer nc = null;
     protected LayoutFrame layoutFrame = null;
     protected File file = null;
@@ -41,28 +41,29 @@ public class CoreParser
     protected boolean isSuccessful = false;
 
     /**
-    *  String variable to store the simple file name.
-    */
+     * String variable to store the simple file name.
+     */
     protected String simpleFileName = "";
 
     /**
-    *  GraphmlNetworkContainer reference (reference for the grapml network container).
-    */
+     * GraphmlNetworkContainer reference (reference for the grapml network
+     * container).
+     */
     private GraphmlNetworkContainer gnc = null;
 
     /**
-    *  Variable only used for graphml files.
-    */
+     * Variable only used for graphml files.
+     */
     private HashMap<String, Tuple6<float[], String[], String[], String[], String[], String>> allGraphmlNodesMap = null;
 
     /**
-    *  Variable only used for graphml files.
-    */
+     * Variable only used for graphml files.
+     */
     private HashMap<String, Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]>> allGraphmlEdgesMap = null;
 
     /**
-    *  Variable only used for graphml files.
-    */
+     * Variable only used for graphml files.
+     */
     private ArrayList<GraphmlComponentContainer> alGraphmllPathwayComponentContainersFor3D = null;
 
     private ArrayList<Integer> nodeIdColumns;
@@ -71,8 +72,8 @@ public class CoreParser
     private float filterWeight;
 
     /**
-    *  The constructor of the CoreParser class.
-    */
+     * The constructor of the CoreParser class.
+     */
     public CoreParser(NetworkContainer nc, LayoutFrame layoutFrame,
             java.util.List<Integer> nodeIdColumns, int edgeWeightColumn,
             int edgeTypeColumn, float filterWeight)
@@ -96,10 +97,10 @@ public class CoreParser
 
         try
         {
-            fileReaderCounter  = new BufferedReader( new FileReader(file) );
-            fileReaderBuffered = new BufferedReader( new FileReader(file) );
+            fileReaderCounter = new BufferedReader(new FileReader(file));
+            fileReaderBuffered = new BufferedReader(new FileReader(file));
 
-            isSif = fileExtension.equals( SupportedInputFileTypes.SIF.toString() );
+            isSif = fileExtension.equals(SupportedInputFileTypes.SIF.toString());
             simpleFileName = file.getName();
 
             return true;
@@ -113,7 +114,10 @@ public class CoreParser
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException while closing streamers in CoreParser.init():\n" + ioe.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("IOException while closing streamers in CoreParser.init():\n" + ioe.getMessage());
+                }
             }
             finally
             {
@@ -125,6 +129,7 @@ public class CoreParser
     }
 
     private Pattern quotedStringRegex = Pattern.compile("\"([^\"]*)\"|(\\S+)");
+
     protected void tokenize(String line)
     {
         tokens = new ArrayList<String>();
@@ -156,41 +161,55 @@ public class CoreParser
 
         try
         {
-            while ( ( line = fileReaderCounter.readLine() ) != null )
+            while ((line = fileReaderCounter.readLine()) != null)
+            {
                 totalLines++;
+            }
 
             layoutProgressBarDialog.prepareProgressBar(totalLines, "Parsing " + simpleFileName + " Graph...");
             layoutProgressBarDialog.startProgressBar();
 
-            while ( ( line = fileReaderBuffered.readLine() ) != null )
+            while ((line = fileReaderBuffered.readLine()) != null)
             {
                 layoutProgressBarDialog.incrementProgress(++counter);
 
                 tokenize(line);
                 if (line.length() > 0)
                 {
-                    if ( line.startsWith("//") )
+                    if (line.startsWith("//"))
+                    {
                         updateVertexProperties();
+                    }
                     else
+                    {
                         createVertices(counter);
+                    }
                 }
             }
 
-            if ( nc.getIsGraphml() )
+            if (nc.getIsGraphml())
+            {
                 gnc.initAllGraphmlNodesMap(allGraphmlNodesMap, allGraphmlEdgesMap, alGraphmllPathwayComponentContainersFor3D);
+            }
 
             if (!iscorrelationData)
             {
-                AnnotationTypeManagerBG.getInstanceSingleton().setChipGeneCount( nc.getVerticesMap().size() );
+                AnnotationTypeManagerBG.getInstanceSingleton().setChipGeneCount(nc.getVerticesMap().size());
 
-                if (DEBUG_BUILD) println("Got a total of:" + AnnotationTypeManagerBG.getInstanceSingleton().getChipGeneCount());
+                if (DEBUG_BUILD)
+                {
+                    println("Got a total of:" + AnnotationTypeManagerBG.getInstanceSingleton().getChipGeneCount());
+                }
             }
 
             isSuccessful = true;
         }
         catch (IOException ioe)
         {
-            if (DEBUG_BUILD) println("IOException in CoreParser.parse():\n" + ioe.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("IOException in CoreParser.parse():\n" + ioe.getMessage());
+            }
         }
         finally
         {
@@ -201,7 +220,10 @@ public class CoreParser
             }
             catch (IOException ioe)
             {
-                if (DEBUG_BUILD) println("IOException while closing streams in CoreParser.parse():\n" + ioe.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("IOException while closing streams in CoreParser.parse():\n" + ioe.getMessage());
+                }
             }
             finally
             {
@@ -218,7 +240,7 @@ public class CoreParser
         String vertex = "";
         String field1 = "", field2 = "", field3 = "", field4 = "", field5 = "", field6 = "", field7 = "";
 
-        if (property.startsWith("//CORRELATION_DATA"))
+        if (property.startsWith("//CORRELATION_DATA") || property.startsWith("//EXPRESSION_DATA"))
         {
             field1 = getNext();
             field2 = getNext();
@@ -237,8 +259,25 @@ public class CoreParser
             CORRELATION_DATA_FIRST_COLUMN = Integer.parseInt(field2);
 
             iscorrelationData = true;
+            if (property.equals("//EXPRESSION_DATA"))
+            {
+                // Older files don't have this data, so fill with likely values
+                CORRELATION_DATA_FIRST_ROW = 1;
+                CORRELATION_DATA_TRANSPOSE = false;
+                CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field3);
+                CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
+            }
+            else if (property.equals("//EXPRESSION_DATA_V2")) // 3.0 through 3.2
+            {
+                field4 = getNext();
+                field5 = getNext();
 
-            if (property.equals("//CORRELATION_DATA_V1")) // 1.0
+                CORRELATION_DATA_FIRST_ROW = Integer.parseInt(field3);
+                CORRELATION_DATA_TRANSPOSE = Boolean.parseBoolean(field4);
+                CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field5);
+                CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
+            }
+            else if (property.equals("//CORRELATION_DATA_V1") || property.equals("//EXPRESSION_DATA_V3")) // 1.0
             {
                 field4 = getNext();
                 field5 = getNext();
@@ -254,48 +293,57 @@ public class CoreParser
                 iscorrelationData = false;
             }
         }
-        else if ( property.equals("//NODECOORD") )
+        else if (property.equals("//NODECOORD"))
         {
             field1 = getNext();
             field2 = getNext();
             field3 = getNext();
             field4 = getNext();
 
-            if ( field4.isEmpty() )
+            if (field4.isEmpty())
+            {
                 field4 = "0.0";
+            }
 
-            if (DEBUG_BUILD) println("name: " + field1 + " coord1: " + field2 + " coord2: " + field2);
+            if (DEBUG_BUILD)
+            {
+                println("name: " + field1 + " coord1: " + field2 + " coord2: " + field2);
+            }
 
-            nc.updateVertexLocation( field1, Float.parseFloat(field2), Float.parseFloat(field3), Float.parseFloat(field4) );
+            nc.updateVertexLocation(field1, Float.parseFloat(field2), Float.parseFloat(field3), Float.parseFloat(field4));
 
         }
-        else if ( property.equals("//NODEDESC") )
+        else if (property.equals("//NODEDESC"))
         {
             vertex = getNext();
             field1 = getNext();
 
-            if ( nc.getVerticesMap().containsKey(vertex) )
+            if (nc.getVerticesMap().containsKey(vertex))
+            {
                 nc.getVerticesMap().get(vertex).setDescription(field1);
+            }
         }
-        else if ( property.equals("//NODECLASS") )
+        else if (property.equals("//NODECLASS"))
         {
             vertex = getNext();
             field1 = getNext();
             field2 = getNext();
 
-            if ( nc.getVerticesMap().containsKey(vertex) )
+            if (nc.getVerticesMap().containsKey(vertex))
             {
                 // IF CLASS SET PROVIDED ADD THE VERTEX TO THE CLASS SET
                 // ELSE IF NO CLASS SET IS PROVIDED ADD TO THE DEFAULT CLASSES ID 0
-                LayoutClasses lc = ( (field2.length() > 0) ? nc.getLayoutClassSetsManager().getClassSet(field2) : nc.getLayoutClassSetsManager().getClassSet(0) );
+                LayoutClasses lc = ((field2.length() > 0) ? nc.getLayoutClassSetsManager().getClassSet(field2) : nc.getLayoutClassSetsManager().getClassSet(0));
                 VertexClass vc = lc.createClass(field1);
                 lc.setClass(nc.getVerticesMap().get(vertex), vc);
 
                 if (!iscorrelationData)
-                    AnnotationTypeManagerBG.getInstanceSingleton().add( vertex, lc.getClassSetName(), vc.getName() );
+                {
+                    AnnotationTypeManagerBG.getInstanceSingleton().add(vertex, lc.getClassSetName(), vc.getName());
+                }
             }
         }
-        else if ( property.equals("//NODECLASSCOLOR") )
+        else if (property.equals("//NODECLASSCOLOR"))
         {
             field1 = getNext();
             field2 = getNext();
@@ -307,103 +355,124 @@ public class CoreParser
             {
                 // IF CLASS SET PROVIDED SET THE COLOR TO THE CLASS SET
                 lc = nc.getLayoutClassSetsManager().getClassSet(field2);
-                lc.createClass(field1).setColor( Color.decode(field3) );
+                lc.createClass(field1).setColor(Color.decode(field3));
             }
             else
             {
                 // IF NO CLASS SET IS PROVIDED SET THE COLOR TO THE DEFAULT CLASSES ID 0
                 lc = nc.getLayoutClassSetsManager().getClassSet(0);
-                lc.createClass(field1).setColor( Color.decode(field2) );
+                lc.createClass(field1).setColor(Color.decode(field2));
             }
         }
-        else if ( property.equals("//NODESIZE") )
+        else if (property.equals("//NODESIZE"))
         {
             vertex = getNext();
             field1 = getNext();
 
-            if ( nc.getVerticesMap().containsKey(vertex) )
-                nc.getVerticesMap().get(vertex).setVertexSize( Float.parseFloat(field1) );
+            if (nc.getVerticesMap().containsKey(vertex))
+            {
+                nc.getVerticesMap().get(vertex).setVertexSize(Float.parseFloat(field1));
+            }
         }
-        else if ( property.equals("//NODECOLOR") )
+        else if (property.equals("//NODECOLOR"))
         {
             vertex = getNext();
             field1 = getNext();
 
-            if ( nc.getVerticesMap().containsKey(vertex) )
-                nc.getVerticesMap().get(vertex).setVertexColor( Color.decode(field1) );
+            if (nc.getVerticesMap().containsKey(vertex))
+            {
+                nc.getVerticesMap().get(vertex).setVertexColor(Color.decode(field1));
+            }
         }
-        else if ( property.equals("//NODESHAPE") )
+        else if (property.equals("//NODESHAPE"))
         {
             vertex = getNext();
             field1 = getNext();
             field2 = getNext();
 
-            if ( nc.getVerticesMap().containsKey(vertex) )
+            if (nc.getVerticesMap().containsKey(vertex))
             {
                 nc.getVerticesMap().get(vertex).setVertex2DShape(get2DShapeForString(field1));
                 nc.getVerticesMap().get(vertex).setVertex3DShape(get3DShapeForString(field2));
             }
         }
-        else if ( property.equals("//NODEALPHA") )
+        else if (property.equals("//NODEALPHA"))
         {
             vertex = getNext();
             field1 = getNext();
 
-            if ( nc.getVerticesMap().containsKey(vertex) )
-                nc.getVerticesMap().get(vertex).setVertexTransparencyAlpha( Float.parseFloat(field1) );
-        }
-        else if ( property.equals("//NODEURL") )
-        {
-            vertex = getNext();
-            field1 = getNext();
-
-            if ( nc.getVerticesMap().containsKey(vertex) )
-                nc.getVerticesMap().get(vertex).setVertexURLString(field1);
-        }
-        else if ( property.equals("//NODETYPE") )
-        {
-            vertex = getNext();
-            field1 = getNext();
-
-            if ( nc.getVerticesMap().containsKey(vertex) )
+            if (nc.getVerticesMap().containsKey(vertex))
             {
-                if ( field1.equals("IS_MEPN_COMPONENT") )
-                    nc.getVerticesMap().get(vertex).setmEPNComponent();
-                else if ( field1.equals("IS_MEPN_TRANSITION") )
-                    nc.getVerticesMap().get(vertex).setmEPNTransition();
+                nc.getVerticesMap().get(vertex).setVertexTransparencyAlpha(Float.parseFloat(field1));
             }
         }
-        else if ( property.equals("//CURRENTCLASSSET") )
+        else if (property.equals("//NODEURL"))
         {
-            nc.getLayoutClassSetsManager().switchClassSet( getNext() );
+            vertex = getNext();
+            field1 = getNext();
+
+            if (nc.getVerticesMap().containsKey(vertex))
+            {
+                nc.getVerticesMap().get(vertex).setVertexURLString(field1);
+            }
         }
-        else if ( property.equals("//EDGESIZE") )
+        else if (property.equals("//NODETYPE"))
         {
-            DEFAULT_EDGE_SIZE.set( Float.parseFloat( getNext() ) );
+            vertex = getNext();
+            field1 = getNext();
+
+            if (nc.getVerticesMap().containsKey(vertex))
+            {
+                if (field1.equals("IS_MEPN_COMPONENT"))
+                {
+                    nc.getVerticesMap().get(vertex).setmEPNComponent();
+                }
+                else if (field1.equals("IS_MEPN_TRANSITION"))
+                {
+                    nc.getVerticesMap().get(vertex).setmEPNTransition();
+                }
+            }
         }
-        else if ( property.equals("//EDGECOLOR") )
+        else if (property.equals("//CURRENTCLASSSET"))
         {
-            DEFAULT_EDGE_COLOR.set( Color.decode( getNext() ) );
+            nc.getLayoutClassSetsManager().switchClassSet(getNext());
         }
-        else if ( property.equals("//EDGEARROWHEADSIZE") )
+        else if (property.equals("//EDGESIZE"))
         {
-            ARROW_HEAD_SIZE.set( Integer.parseInt( getNext() ) );
+            DEFAULT_EDGE_SIZE.set(Float.parseFloat(getNext()));
         }
-        else if ( property.equals("//DEFAULTSEARCH") )
+        else if (property.equals("//EDGECOLOR"))
         {
-            if (DEBUG_BUILD) println("Default Search found.");
+            DEFAULT_EDGE_COLOR.set(Color.decode(getNext()));
+        }
+        else if (property.equals("//EDGEARROWHEADSIZE"))
+        {
+            ARROW_HEAD_SIZE.set(Integer.parseInt(getNext()));
+        }
+        else if (property.equals("//DEFAULTSEARCH"))
+        {
+            if (DEBUG_BUILD)
+            {
+                println("Default Search found.");
+            }
 
             field1 = getNext();
             boolean preset = false;
             for (int i = 0; i < PRESET_SEARCH_URL.length; i++)
             {
-                if ( field1.equals( PRESET_SEARCH_URL[i].getName() ) )
+                if (field1.equals(PRESET_SEARCH_URL[i].getName()))
                 {
-                    if (DEBUG_BUILD) println("Is a Preset Search.");
+                    if (DEBUG_BUILD)
+                    {
+                        println("Is a Preset Search.");
+                    }
 
                     SEARCH_URL = PRESET_SEARCH_URL[i];
 
-                    if (DEBUG_BUILD) println( SEARCH_URL.getUrl() );
+                    if (DEBUG_BUILD)
+                    {
+                        println(SEARCH_URL.getUrl());
+                    }
 
                     preset = true;
 
@@ -413,17 +482,23 @@ public class CoreParser
 
             if (!preset)
             {
-                if (DEBUG_BUILD) println("Is a Custom Search.");
+                if (DEBUG_BUILD)
+                {
+                    println("Is a Custom Search.");
+                }
 
                 SearchURL customSearchURL = new SearchURL(field1);
                 SEARCH_URL = customSearchURL;
 
-                if (DEBUG_BUILD) println( SEARCH_URL.getUrl() );
+                if (DEBUG_BUILD)
+                {
+                    println(SEARCH_URL.getUrl());
+                }
 
                 CUSTOM_SEARCH = true;
             }
         }
-        else if ( property.equals("//HAS_GRAPHML_NODE_DATA") )
+        else if (property.equals("//HAS_GRAPHML_NODE_DATA"))
         {
             // enable graphml-style parsing
 
@@ -439,58 +514,88 @@ public class CoreParser
             gnc.setIsGraphml(true);
             gnc.setRangeX(rangeX);
             gnc.setRangeY(rangeY);
-            gnc.setIsPetriNet( field3.equals("IS_SPN_MEPN_GRAPHML_GRAPH_TYPE") );
+            gnc.setIsPetriNet(field3.equals("IS_SPN_MEPN_GRAPHML_GRAPH_TYPE"));
 
             allGraphmlNodesMap = new HashMap<String, Tuple6<float[], String[], String[], String[], String[], String>>();
             allGraphmlEdgesMap = new HashMap<String, Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]>>();
             alGraphmllPathwayComponentContainersFor3D = new ArrayList<GraphmlComponentContainer>();
         }
-        else if ( property.equals("//GRAPHML_NODE_DATA") )
+        else if (property.equals("//GRAPHML_NODE_DATA"))
         {
             // parse node key-to-name hashmap
 
             field1 = getNext();
             field2 = getNext();
 
-            float graphmlCoordX = Float.parseFloat( getNext() );
-            float graphmlCoordY = Float.parseFloat( getNext() );
+            float graphmlCoordX = Float.parseFloat(getNext());
+            float graphmlCoordY = Float.parseFloat(getNext());
 
             String nextString = getNext();
             // older graphml layout files may not have the Z coord axis, so this check is required before parsing
-            float graphmlCoordZ = ( !nextString.isEmpty() ) ? Float.parseFloat(nextString) : 0.0f;
+            float graphmlCoordZ = (!nextString.isEmpty()) ? Float.parseFloat(nextString) : 0.0f;
 
-            Tuple6<float[], String[], String[], String[], String[], String> nodeTuple6 = Tuples.tuple( new float[] { 0.0f, 0.0f, graphmlCoordX, graphmlCoordY, graphmlCoordZ },
-                                                                                                       new String[] { "", "", "", "" },
-                                                                                                       new String[] { "", "", "", "" },
-                                                                                                       new String[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
-                                                                                                       new String[] { field2 },
-                                                                                                       "" );
+            Tuple6<float[], String[], String[], String[], String[], String> nodeTuple6 = Tuples.tuple(new float[]
+            {
+                0.0f, 0.0f, graphmlCoordX, graphmlCoordY, graphmlCoordZ
+            },
+                    new String[]
+                    {
+                        "", "", "", ""
+                    },
+                    new String[]
+                    {
+                        "", "", "", ""
+                    },
+                    new String[]
+                    {
+                        "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+                    },
+                    new String[]
+                    {
+                        field2
+                    },
+                    "");
             allGraphmlNodesMap.put(field1, nodeTuple6);
         }
-        else if ( property.equals("//GRAPHML_EDGE_DATA") )
+        else if (property.equals("//GRAPHML_EDGE_DATA"))
         {
             // parse edge key-to-name hashmap
 
             field1 = getNext();
             field2 = getNext();
 
-            float[] pathValues = new float[] { 0.0f, 0.0f, 0.0f, 0.0f };
+            float[] pathValues = new float[]
+            {
+                0.0f, 0.0f, 0.0f, 0.0f
+            };
             ArrayList<Point2D.Float> allPointValues = new ArrayList<Point2D.Float>();
-            while ( !( field3 = getNext() ).isEmpty() )
+            while (!(field3 = getNext()).isEmpty())
             {
                 field4 = getNext();
-                allPointValues.add( new Point2D.Float( Float.parseFloat(field3), Float.parseFloat(field4) ) );
+                allPointValues.add(new Point2D.Float(Float.parseFloat(field3), Float.parseFloat(field4)));
             }
             Tuple2<float[], ArrayList<Point2D.Float>> allPathValues = Tuples.tuple(pathValues, allPointValues);
             Tuple6<String, Tuple2<float[], ArrayList<Point2D.Float>>, String[], String[], String[], String[]> edgeTuple6 = Tuples.tuple(field2,
-                                                                                                                                        allPathValues,
-                                                                                                                                        new String[] { "", "", "" },
-                                                                                                                                        new String[] { "", "" },
-                                                                                                                                        new String[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
-                                                                                                                                        new String[] { "", "", "", "" });
+                    allPathValues,
+                    new String[]
+                    {
+                        "", "", ""
+                    },
+                    new String[]
+                    {
+                        "", ""
+                    },
+                    new String[]
+                    {
+                        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
+                    },
+                    new String[]
+                    {
+                        "", "", "", ""
+                    });
             allGraphmlEdgesMap.put(field1, edgeTuple6);
         }
-        else if ( property.equals("//GRAPHML_COMPONENT_CONTAINER_DATA") )
+        else if (property.equals("//GRAPHML_COMPONENT_CONTAINER_DATA"))
         {
             vertex = getNext();
             field1 = getNext();
@@ -501,13 +606,13 @@ public class CoreParser
             field6 = getNext();
             field7 = getNext();
 
-            alGraphmllPathwayComponentContainersFor3D.add( new GraphmlComponentContainer("", vertex,
-                                                                                  Integer.parseInt(field1),
-                                                                                  Float.parseFloat(field2),
-                                                                                  new Rectangle2D.Float( Float.parseFloat(field3), Float.parseFloat(field4), Float.parseFloat(field5), Float.parseFloat(field6) ),
-                                                                                  Color.decode(field7)
-                                                                                 )
-                                                  );
+            alGraphmllPathwayComponentContainersFor3D.add(new GraphmlComponentContainer("", vertex,
+                    Integer.parseInt(field1),
+                    Float.parseFloat(field2),
+                    new Rectangle2D.Float(Float.parseFloat(field3), Float.parseFloat(field4), Float.parseFloat(field5), Float.parseFloat(field6)),
+                    Color.decode(field7)
+            )
+            );
         }
     }
 
@@ -544,12 +649,14 @@ public class CoreParser
     }
 
     HashMap<String, Shapes2D> shapes2DMap = new HashMap<String, Shapes2D>();
+
     private Shapes2D get2DShapeForString(String field)
     {
         return getEnumValueForString(Shapes2D.class, shapes2DMap, field);
     }
 
     HashMap<String, Shapes3D> shapes3DMap = new HashMap<String, Shapes3D>();
+
     private Shapes3D get3DShapeForString(String field)
     {
         return getEnumValueForString(Shapes3D.class, shapes3DMap, field);
@@ -583,59 +690,37 @@ public class CoreParser
         {
             try
             {
-                weight = Float.parseFloat( weightString.replace(',', '.') );
+                weight = Float.parseFloat(weightString.replace(',', '.'));
             }
             catch (NumberFormatException nfe)
             {
-                if (DEBUG_BUILD) println("NumberFormatException in CoreParser.createVertices():\n" + nfe.getMessage());
+                if (DEBUG_BUILD)
+                {
+                    println("NumberFormatException in CoreParser.createVertices():\n" + nfe.getMessage());
+                }
             }
         }
 
         // SPN type edge
-        if ( !edgeType.isEmpty() && edgeType.startsWith("SPN_") )
+        if (!edgeType.isEmpty() && edgeType.startsWith("SPN_"))
         {
             String edgeName = "";
-            if ( edgeType.contains("SPN_EDGE_VALUE:") )
+            if (edgeType.contains("SPN_EDGE_VALUE:"))
             {
                 String[] splitEdgeType = edgeType.split("\\s+");
-                edgeName = splitEdgeType[0].substring( splitEdgeType[0].indexOf(":") + 1, splitEdgeType[0].length() );
+                edgeName = splitEdgeType[0].substring(splitEdgeType[0].indexOf(":") + 1, splitEdgeType[0].length());
             }
 
-            nc.addNetworkConnection( vertex1, vertex2, edgeName, edgeType.contains("SPN_IS_TOTAL_INHIBITOR_EDGE"), edgeType.contains("SPN_IS_PARTIAL_INHIBITOR_EDGE"), edgeType.contains("SPN_HAS_DUAL_ARROWHEAD") );
+            nc.addNetworkConnection(vertex1, vertex2, edgeName, edgeType.contains("SPN_IS_TOTAL_INHIBITOR_EDGE"), edgeType.contains("SPN_IS_PARTIAL_INHIBITOR_EDGE"), edgeType.contains("SPN_HAS_DUAL_ARROWHEAD"));
         }
-        else
+        else if (!Float.isNaN(weight))
         {
-            if (!Float.isNaN(weight))
+            if (weight > filterWeight)
             {
-                if (weight > filterWeight)
+                if (!edgeType.isEmpty())
                 {
-                    if (!edgeType.isEmpty())
-                    {
-                        nc.addNetworkConnection(vertex1, edgeType + lines, weight / 2.0f);
-                        nc.addNetworkConnection(edgeType + lines, vertex2, weight / 2.0f);
-
-                        Vertex vertex = nc.getVerticesMap().get(edgeType + lines);
-                        vertex.setVertexSize(vertex.getVertexSize() / 2);
-                        vertex.setPseudoVertex();
-
-                        LayoutClasses lc = nc.getLayoutClassSetsManager().getClassSet(0);
-                        VertexClass vc = lc.createClass(edgeType);
-                        lc.setClass(nc.getVerticesMap().get(edgeType + lines), vc);
-                    }
-                    else
-                    {
-                        nc.addNetworkConnection(vertex1, vertex2, weight);
-                    }
-                }
-
-                WEIGHTED_EDGES = true;
-            }
-            else
-            {
-                if ( !edgeType.isEmpty() )
-                {
-                    nc.addNetworkConnection(vertex1, edgeType + lines, 0.0f);
-                    nc.addNetworkConnection(edgeType + lines, vertex2, 0.0f);
+                    nc.addNetworkConnection(vertex1, edgeType + lines, weight / 2.0f);
+                    nc.addNetworkConnection(edgeType + lines, vertex2, weight / 2.0f);
 
                     Vertex vertex = nc.getVerticesMap().get(edgeType + lines);
                     vertex.setVertexSize(vertex.getVertexSize() / 2);
@@ -647,9 +732,28 @@ public class CoreParser
                 }
                 else
                 {
-                    nc.addNetworkConnection(vertex1, vertex2, 0.0f);
+                    nc.addNetworkConnection(vertex1, vertex2, weight);
                 }
             }
+
+            WEIGHTED_EDGES = true;
+        }
+        else if (!edgeType.isEmpty())
+        {
+            nc.addNetworkConnection(vertex1, edgeType + lines, 0.0f);
+            nc.addNetworkConnection(edgeType + lines, vertex2, 0.0f);
+
+            Vertex vertex = nc.getVerticesMap().get(edgeType + lines);
+            vertex.setVertexSize(vertex.getVertexSize() / 2);
+            vertex.setPseudoVertex();
+
+            LayoutClasses lc = nc.getLayoutClassSetsManager().getClassSet(0);
+            VertexClass vc = lc.createClass(edgeType);
+            lc.setClass(nc.getVerticesMap().get(edgeType + lines), vc);
+        }
+        else
+        {
+            nc.addNetworkConnection(vertex1, vertex2, 0.0f);
         }
     }
 

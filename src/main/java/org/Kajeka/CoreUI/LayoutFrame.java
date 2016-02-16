@@ -1107,7 +1107,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         CorrelationLoader correlationLoader = null;
         String reasonForLoadFailure = null;
         double correlationCutOffValue = 0.0;
-        boolean tabDelimited = fileExtension.equals(SupportedInputFileTypes.EXPRESSION.toString());
 
         // Blast data
         if ( fileExtension.equals( SupportedInputFileTypes.BLAST.toString() ) )
@@ -1125,6 +1124,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         else if ( fileExtension.equals( SupportedInputFileTypes.CSV.toString() ) ||
                 fileExtension.equals( SupportedInputFileTypes.EXPRESSION.toString() ))
         {
+            boolean tabDelimited = fileExtension.equals(SupportedInputFileTypes.EXPRESSION.toString());
             CorrelationLoaderDialog correlationLoaderDialog = new CorrelationLoaderDialog(this, file, tabDelimited);
 
             if (!correlationLoaderDialog.failed())
@@ -1143,7 +1143,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         correlationLoaderDialog.getFirstDataColumn(),
                         correlationLoaderDialog.getFirstDataRow(),
                         correlationLoaderDialog.transpose() );
-                isSuccessful = correlationLoader.parse(this, tabDelimited);
+                isSuccessful = correlationLoader.parse(this);
                 reasonForLoadFailure = correlationLoader.reasonForFailure; // "" if no failure
 
                 if (isSuccessful)
@@ -1369,7 +1369,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 // loading annotations now
                 if ( DATA_TYPE.equals(DataTypes.CORRELATION) )
                 {
-                    isSuccessful = isSuccessful && correlationLoader.parseAnnotations(this, nc, tabDelimited);
+                    isSuccessful = isSuccessful && correlationLoader.parseAnnotations(this, nc);
                 }
                 // else loading presaved data that points to data
                 // load data and annotations from original file
@@ -1389,12 +1389,12 @@ public final class LayoutFrame extends JFrame implements GraphListener
                                 CORRELATION_DATA_FIRST_COLUMN,
                                 CORRELATION_DATA_FIRST_ROW,
                                 CORRELATION_DATA_TRANSPOSE);
-                        isSuccessful = correlationLoader.parse(this, tabDelimited);
+                        isSuccessful = correlationLoader.parse(this);
                         reasonForLoadFailure = correlationLoader.reasonForFailure; // "" if no failure
 
                         correlationData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM);
 
-                        isSuccessful = isSuccessful && correlationLoader.parseAnnotations(this, nc, tabDelimited);
+                        isSuccessful = isSuccessful && correlationLoader.parseAnnotations(this, nc);
                         DATA_TYPE = DataTypes.CORRELATION;
                         CORRELATION_FILE_PATH = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
                     }

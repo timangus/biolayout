@@ -403,7 +403,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                     });
                     LogAxis logaxis = new LogAxis("Adj. P-value (Smaller is more significant)");
                     logaxis.setBase(10);
-                    LogFormat format = new LogFormat(10.0, "10", "E", true);
+                    LogFormat format = new LogFormat(10.0, "1", "E", true);
                     logaxis.setNumberFormatOverride(format);
                     //logaxis.setLowerBound(Double.MIN_VALUE);
                     pValuechart.getCategoryPlot().setRangeAxis(logaxis);

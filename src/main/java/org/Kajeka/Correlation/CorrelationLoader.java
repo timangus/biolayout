@@ -1,7 +1,6 @@
 package org.Kajeka.Correlation;
 
 import java.io.*;
-import static java.lang.Math.*;
 import org.Kajeka.Analysis.*;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.CoreUI.Dialogs.*;
@@ -11,14 +10,14 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
 /**
-*
-* @author Anton Enright, full refactoring by Thanos Theo, 2008-2009
-* @version 3.0.0.0
-*
-*/
-
+ *
+ * @author Anton Enright, full refactoring by Thanos Theo, 2008-2009
+ * @version 3.0.0.0
+ *
+ */
 public final class CorrelationLoader
 {
+
     private File file = null;
     private CorrelationData correlationData = null;
     private LayoutClassSetsManager layoutClassSetsManager = null;
@@ -48,6 +47,7 @@ public final class CorrelationLoader
 
     class ParseProgressIndicator implements TextDelimitedMatrix.ProgressIndicator
     {
+
         private LayoutProgressBarDialog layoutProgressBarDialog;
 
         public ParseProgressIndicator(LayoutProgressBarDialog layoutProgressBarDialog)
@@ -72,7 +72,7 @@ public final class CorrelationLoader
         reasonForFailure += reason;
     }
 
-    public boolean parse(LayoutFrame layoutFrame, boolean tabDelimited)
+    public boolean parse(LayoutFrame layoutFrame)
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
@@ -89,6 +89,9 @@ public final class CorrelationLoader
         {
             reasonForFailure = "";
 
+            String absFileName = file.getAbsolutePath();
+            String ext = absFileName.substring(absFileName.lastIndexOf(".") + 1, absFileName.length()).toUpperCase();
+            boolean tabDelimited = ext.equals(SupportedInputFileTypes.EXPRESSION.toString());
             String delimiter = tabDelimited ? "\t" : "";
             tdm = new TextDelimitedMatrix(file, ppi, delimiter);
 
@@ -151,8 +154,8 @@ public final class CorrelationLoader
                         else if (column >= firstDataColumn)
                         {
                             // Column annotation
-                            CorrelationData.ColumnAnnotation columnAnnotation =
-                                    correlationData.getColumnAnnotationByIndex(row - 1);
+                            CorrelationData.ColumnAnnotation columnAnnotation
+                                    = correlationData.getColumnAnnotationByIndex(row - 1);
 
                             columnAnnotation.setValue(dataColumn, value);
 
@@ -205,7 +208,7 @@ public final class CorrelationLoader
         return true;
     }
 
-    public boolean parseAnnotations(LayoutFrame layoutFrame, NetworkContainer nc, boolean tabDelimited)
+    public boolean parseAnnotations(LayoutFrame layoutFrame, NetworkContainer nc)
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
 
@@ -220,6 +223,9 @@ public final class CorrelationLoader
 
         try
         {
+            String absFileName = file.getAbsolutePath();
+            String ext = absFileName.substring(absFileName.lastIndexOf(".") + 1, absFileName.length()).toUpperCase();
+            boolean tabDelimited = ext.equals(SupportedInputFileTypes.EXPRESSION.toString());
             String delimiter = tabDelimited ? "\t" : "";
             tdm = new TextDelimitedMatrix(file, ppi, delimiter);
 
@@ -257,8 +263,8 @@ public final class CorrelationLoader
                     else if (vertex != null)
                     {
                         String annotation = cleanString(value);
-                        LayoutClasses layoutClasses =
-                                layoutClassSetsManager.getClassSetByName(rowAnnotationLabels[column - 1]);
+                        LayoutClasses layoutClasses
+                                = layoutClassSetsManager.getClassSetByName(rowAnnotationLabels[column - 1]);
 
                         if (annotation.isEmpty())
                         {
