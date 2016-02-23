@@ -315,12 +315,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         // wrapping the Graph GLCanvas reference in a JPanel so the JFrame can contain other (lightweight) UI
         JPanel graphPanel = new JPanel(new BorderLayout(), true);
-        GLJPanel glPanel = new GLJPanel(Graph.getCaps());
-        glPanel.setLayout(new BorderLayout());
-        glPanel.setOpaque(false);
-        glPanel.add(graph, BorderLayout.CENTER);
-        //graphPanel.add(glPanel, BorderLayout.CENTER);
-        globalPanel.add(glPanel, BorderLayout.CENTER);
+        graphPanel.add(graph, BorderLayout.CENTER);
+        globalPanel.add(graphPanel, BorderLayout.CENTER);
         globalPanel.add(propertiesPanel, BorderLayout.SOUTH);
         globalPanel.setOpaque(false);
 
