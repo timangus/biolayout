@@ -453,9 +453,6 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
         // trippy mode disabled for tile based rendering to avoid artifacts
         if (TRIPPY_BACKGROUND.get() && !takeHighResScreenshot)
             graph.colorCycle(BACKGROUND_COLOR_ARRAY);
-        
-        gl.glEnable(GL_BLEND);
-        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         gl.glClearColor(BACKGROUND_COLOR_ARRAY[0],BACKGROUND_COLOR_ARRAY[1],BACKGROUND_COLOR_ARRAY[2],BACKGROUND_COLOR_ARRAY[3]);
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // Clear The Screen And The Depth Buffer
