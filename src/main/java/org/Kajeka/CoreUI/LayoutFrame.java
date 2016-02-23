@@ -11,6 +11,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
+import javax.media.opengl.awt.GLJPanel;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.Kajeka.BuildConfig;
@@ -314,9 +315,14 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         // wrapping the Graph GLCanvas reference in a JPanel so the JFrame can contain other (lightweight) UI
         JPanel graphPanel = new JPanel(new BorderLayout(), true);
-        graphPanel.add(graph, BorderLayout.CENTER);
-        globalPanel.add(graphPanel, BorderLayout.CENTER);
+        GLJPanel glPanel = new GLJPanel(Graph.getCaps());
+        glPanel.setLayout(new BorderLayout());
+        glPanel.setOpaque(false);
+        glPanel.add(graph, BorderLayout.CENTER);
+        //graphPanel.add(glPanel, BorderLayout.CENTER);
+        globalPanel.add(glPanel, BorderLayout.CENTER);
         globalPanel.add(propertiesPanel, BorderLayout.SOUTH);
+        globalPanel.setOpaque(false);
 
         this.getContentPane().add(globalPanel);
 

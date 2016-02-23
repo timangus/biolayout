@@ -837,7 +837,7 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         if ( TRIPPY_BACKGROUND.get() )
             graph.colorCycle(BACKGROUND_COLOR_ARRAY);
 
-        gl.glClearColor(BACKGROUND_COLOR_ARRAY[0], BACKGROUND_COLOR_ARRAY[1], BACKGROUND_COLOR_ARRAY[2], 1.0f);
+        gl.glClearColor(BACKGROUND_COLOR_ARRAY[0], BACKGROUND_COLOR_ARRAY[1], BACKGROUND_COLOR_ARRAY[2], BACKGROUND_COLOR_ARRAY[3]);
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear The Screen And The Depth Buffer
     }
 

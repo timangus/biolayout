@@ -213,11 +213,13 @@ public class Graph extends GLCanvas implements GraphInterface
     public static GLCapabilities getCaps()
     {
         GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
-        caps.setAccumBlueBits(16);
-        caps.setAccumGreenBits(16);
-        caps.setAccumRedBits(16);
+        caps.setAccumBlueBits(8);
+        caps.setAccumGreenBits(8);
+        caps.setAccumRedBits(8);
+        caps.setAccumAlphaBits(8);
         caps.setDoubleBuffered(true);
         caps.setHardwareAccelerated(true);
+        caps.setBackgroundOpaque(false);
 
         if ( NORMAL_QUALITY_ANTIALIASING.get() || HIGH_QUALITY_ANTIALIASING.get() )
         {
@@ -1485,7 +1487,7 @@ public class Graph extends GLCanvas implements GraphInterface
             if ( USE_MOTION_BLUR_FOR_SCENE.get() )
             {
                 // Clear the accumulation buffer (we re-grab the screen into the accumulation buffer after drawing our current frame!)
-                gl.glClearAccum(0.0f, 0.0f, 0.0f, 1.0f);
+                gl.glClearAccum(0.0f, 0.0f, 0.0f, 0.0f);
                 gl.glClear(GL_ACCUM_BUFFER_BIT);
                 gl.glAccum(GL_LOAD, 0.0f);
             }
