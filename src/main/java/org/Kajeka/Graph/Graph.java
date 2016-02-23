@@ -315,6 +315,7 @@ public class Graph extends GLCanvas implements GraphInterface
         BACKGROUND_COLOR_ARRAY[0] = BACKGROUND_COLOR.get().getRed()   / 255.0f;
         BACKGROUND_COLOR_ARRAY[1] = BACKGROUND_COLOR.get().getGreen() / 255.0f;
         BACKGROUND_COLOR_ARRAY[2] = BACKGROUND_COLOR.get().getBlue()  / 255.0f;
+        BACKGROUND_COLOR_ARRAY[3] = BACKGROUND_COLOR.get().getAlpha()  / 255.0f;
 
         if (TRIPPY_BACKGROUND.get() && !takeHighResScreenshot) colorCycle(BACKGROUND_COLOR_ARRAY);
     }

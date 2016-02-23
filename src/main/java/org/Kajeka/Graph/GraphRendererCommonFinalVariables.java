@@ -89,7 +89,7 @@ public final class GraphRendererCommonFinalVariables
     /**
     *  Constant value needed for the OpenGL renderer.
     */
-    public static final float[] BACKGROUND_COLOR_ARRAY = new float[3];
+    public static final float[] BACKGROUND_COLOR_ARRAY = new float[4];
 
     /**
     *  Value needed for the OpenGL renderer.

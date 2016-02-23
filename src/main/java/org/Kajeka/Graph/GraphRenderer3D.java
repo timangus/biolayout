@@ -17,6 +17,9 @@ import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import javax.imageio.ImageIO;
+import static javax.media.opengl.GL.GL_ONE;
+import static javax.media.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
+import static javax.media.opengl.GL.GL_SRC_ALPHA;
 import static javax.media.opengl.GL2.*;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.DataStructures.*;
@@ -451,8 +454,8 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
         if (TRIPPY_BACKGROUND.get() && !takeHighResScreenshot)
             graph.colorCycle(BACKGROUND_COLOR_ARRAY);
 
-        gl.glClearColor(BACKGROUND_COLOR_ARRAY[0], BACKGROUND_COLOR_ARRAY[1], BACKGROUND_COLOR_ARRAY[2], 1.0f);
-        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear The Screen And The Depth Buffer
+        gl.glClearColor(BACKGROUND_COLOR_ARRAY[0], BACKGROUND_COLOR_ARRAY[1], BACKGROUND_COLOR_ARRAY[2], BACKGROUND_COLOR_ARRAY[3]);
+        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // Clear The Screen And The Depth Buffer
 
         FOG_COLOR.put(BACKGROUND_COLOR_ARRAY).rewind();
         gl.glFogfv(GL_FOG_COLOR, FOG_COLOR); // set Fog Color
@@ -1773,7 +1776,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
         // for line antialiasing and blending options usage only
         gl.glEnable(GL_BLEND);
-        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         boolean useProportionalEdgesSizeToWeightRendering = WEIGHTED_EDGES && PROPORTIONAL_EDGES_SIZE_TO_WEIGHT.get();
         float lineWidth = DEFAULT_EDGE_SIZE.get();
@@ -2002,7 +2005,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
-        gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         gl.glEnable(GL_LIGHTING);
         gl.glEnable(GL_NORMALIZE);
@@ -2257,7 +2260,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
                 // Enable blending, using the SrcOver rule
                 gl.glEnable(GL_BLEND);
-                gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+                gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
                 gl.glEnable(GL_LIGHTING);
                 gl.glEnable(GL_NORMALIZE);
@@ -2661,7 +2664,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
     {
         // Enable blending, using the SrcOver rule
         gl.glEnable(GL_BLEND);
-        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         // determine which areas of the polygon are to be renderered
         gl.glEnable(GL_ALPHA_TEST);
@@ -3286,7 +3289,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                 false
             };
 
-            GLPixelBuffer.GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 3);
+            GLPixelBuffer.GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 4);
             GLPixelBuffer pixelBuffer = pixelBufferProvider.allocate(gl, pixelAttribs, tileWidth, tileHeight, 1, true, 0);
 
             tr.setImageBuffer(pixelBuffer);
@@ -3640,7 +3643,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
         // for line antialiasing and blending options usage only
         gl.glEnable(GL_BLEND);
-        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         // fog values
         gl.glFogi(GL_FOG_MODE, GL_EXP2);                       // Exponential Fog Mode
