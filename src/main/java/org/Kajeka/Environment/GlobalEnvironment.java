@@ -154,7 +154,7 @@ public final class GlobalEnvironment
     public static final PrefBool SHOW_NAVIGATION_TOOLBAR = new PrefBool(true, "show_navigation_toolbar", true);
     public static final PrefBool SHOW_POPUP_OVERLAY_PLOT = new PrefBool(true, "show_popup_overlay_plot", true);
     public static final PrefBool COLLAPSE_NODES_BY_VOLUME = new PrefBool(false, "collapse_nodes_by_volume", true);
-    public static final PrefBool CONFIRM_PREFERENCES_SAVE  = new PrefBool(true, "confirm_preferences_save", true);
+    public static final PrefBool CONFIRM_PREFERENCES_SAVE  = new PrefBool(false, "confirm_preferences_save", true);
 
     public static enum GraphLayoutAlgorithm { FMMM, FRUCHTERMAN_REINGOLD, CIRCLE, ALWAYS_ASK }
     public static final PrefEnum<GraphLayoutAlgorithm> GRAPH_LAYOUT_ALGORITHM = new PrefEnum<GraphLayoutAlgorithm>(
