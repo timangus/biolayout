@@ -229,7 +229,6 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
             score[overallEntropies]           = new Double( MathUtil.calcScore( fishersPvalue[overallEntropies].doubleValue(), clusterMembers[overallEntropies].intValue(), relativeEntropy[overallEntropies].doubleValue() ) );
             overallEntropies++;
         }
-        System.out.println("Overall Entropies Model: "  + overallEntropies);
     }
     
     public void setHeatmapData(String heatmapPosition, int modelPosition){

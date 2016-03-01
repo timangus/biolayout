@@ -248,8 +248,6 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
         elementPosition = new HashMap<String, Integer>();
 
-        System.out.println("Overall entropies: " + overallEntropiesEntries);
-
         layoutProgressBarDialog.endProgressBar();
         layoutProgressBarDialog.stopProgressBar();
 
