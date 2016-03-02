@@ -29,6 +29,10 @@ public class AnnotationTypeManagerBG extends AnnotationTypeManager
 
         return instance;
     }
+    
+    public static void recreateSingleton(){
+        instance = null;
+    }
 
     public void setChipGeneCount(int chipGeneCount)
     {

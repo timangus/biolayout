@@ -55,6 +55,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
     private Boolean performIndividually = false;
     private ClassViewerFrame.JHeatMap heatmap = null;
     private JPanel chartPanel = null;
+    private LayoutFrame layoutFrame = null;
 
     // JFreeChart
     private JFreeChart fisherBarChart = null;
@@ -82,6 +83,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         this.heatmap = heatmap;
         this.enrichmentTable = enrichmentTable;
         this.chartPanel = chartFrame;
+        this.layoutFrame = layoutFrame;
 
         this.performIndividually = performIndividually;
 
@@ -105,14 +107,18 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
 
     @Override
     public void run() {
-        if (geneGroups.size() == 0) {
+        if (geneGroups.isEmpty()) {
             modelDetail.setSize(0);
             return;
         }
         setThreadStarted();
         selectedGenes = geneGroups.values().iterator().next();
+        List<LayoutClasses> layoutClasses = layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames();
+        Set<String> annotationClasses = new HashSet<>();
+        for (int i = 0; i < layoutClasses.size(); i++) {
+            annotationClasses.add(layoutClasses.get(i).getClassSetName());
+        }
 
-        Set<String> annotationClasses = AnnotationTypeManagerBG.getInstanceSingleton().getAllTypes();
         int numberOfAllAnnotationClasses = annotationClasses.size();
 
         // analysis calc
@@ -217,7 +223,6 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         int countSubTerms = 0;
         Map<String, Set<String>> subTerms = new HashMap<String, Set<String>>();
         for (int i = 0; i < list.size(); i++) {
-            int curTermCount = 0;
             for (Iterator<String> iterator = list.get(i).perType.keySet().iterator(); iterator.hasNext();) {
                 String groupName = iterator.next();
                 Set<String> types = new HashSet<>(list.get(i).perType.get(groupName).keySet());
@@ -233,12 +238,20 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                 }
             }
         }
+        if (countSubTerms == 0) {
+            // No Terms used, no way to test for enrichment
+            layoutProgressBarDialog.endProgressBar();
+            layoutProgressBarDialog.stopProgressBar();
+            setThreadFinished();
+            modelDetail.setSize(0);
+                //JOptionPane.showMessageDialog(chartPanel, "No Meta-Data ", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
         // Contigious list of subterms (for heatmap)
         ArrayList<String> subTermList = new ArrayList<>();
         for (Iterator<String> iterator = subTerms.keySet().iterator(); iterator.hasNext();) {
             subTermList.addAll(subTerms.get(iterator.next()));
         }
-
         hmds = new DefaultHeatMapDataset(geneGroups.size(), countSubTerms, 0, 100, 0, 100);
         for (int i = 0; i < hmds.getXSampleCount(); i++) {
             for (int j = 0; j < hmds.getYSampleCount(); j++) {
@@ -262,7 +275,7 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
         Iterator<HashSet<String>> iterator = geneGroups.values().iterator();
         int indexCounter = 0;
         int sizeOfSet = 0;
-        for (int i = 0; i < loopCount; i++) { 
+        for (int i = 0; i < loopCount; i++) {
             selectedGenes = iterator.next();
             EnrichmentData enrichmentData = list.get(i);
             clusterNames[i] = enrichmentData.clusterName;
@@ -416,11 +429,11 @@ public final class ClassViewerUpdateEnrichmentTable implements Runnable {
                         }
                     });
                     pValuechart.getCategoryPlot().getRangeAxis().setAutoRangeMinimumSize(Double.MIN_VALUE);
-                    if (pValueData.getColumnCount() == 1){
-                        Comparable rowKey = (Comparable)pValueData.getRowKeys().get(0);
-                        Comparable colKey = (Comparable)pValueData.getColumnKeys().get(0);
-                        double value = (double)pValueData.getValue(rowKey, colKey);
-                        pValuechart.getCategoryPlot().getRangeAxis().setRange(value-(value*0.1), value+(value*0.1));
+                    if (pValueData.getColumnCount() == 1) {
+                        Comparable rowKey = (Comparable) pValueData.getRowKeys().get(0);
+                        Comparable colKey = (Comparable) pValueData.getColumnKeys().get(0);
+                        double value = (double) pValueData.getValue(rowKey, colKey);
+                        pValuechart.getCategoryPlot().getRangeAxis().setRange(value - (value * 0.1), value + (value * 0.1));
                     }
                     pValuechart.getCategoryPlot().setDrawingSupplier(new DefaultDrawingSupplier(pValueColors,
                             DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE, DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,

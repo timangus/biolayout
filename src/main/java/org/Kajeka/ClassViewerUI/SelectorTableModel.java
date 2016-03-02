@@ -85,12 +85,12 @@ public class SelectorTableModel extends AbstractTableModel {
         return selectedClassess;
     }
 
-    public void refreshContent(ArrayList<LayoutClasses> classList){
+    public void refreshContent(Set<String> classList){
         data = new Object[classList.size()][2];
         int i = 0;
-        for(LayoutClasses obj : classList)
+        for(String obj : classList)
         {
-            data[i][0] = obj.getClassSetName();
+            data[i][0] = obj;
             for (int j = 0; j < 1; j++) {
                 data[i][1+j] = new Boolean(false);
             }

@@ -14,6 +14,7 @@ import java.util.concurrent.*;
 import javax.media.opengl.awt.GLJPanel;
 import javax.swing.*;
 import javax.swing.border.*;
+import org.Kajeka.Analysis.AnnotationTypeManagerBG;
 import org.Kajeka.BuildConfig;
 import org.Kajeka.ClassViewerUI.*;
 import org.Kajeka.Clustering.MCL.*;
@@ -1007,6 +1008,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 try
                 {
                     loadingFile = true;
+                    AnnotationTypeManagerBG.recreateSingleton();
 
                     blockAllAction.actionPerformed(blockEvent);
                     parseFile(file);

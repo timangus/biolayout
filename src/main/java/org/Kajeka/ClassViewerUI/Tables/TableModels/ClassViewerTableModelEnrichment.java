@@ -102,6 +102,8 @@ public final class ClassViewerTableModelEnrichment extends AbstractTableModel
     @Override
     public Object getValueAt(int row, int col)
     {
+        if (row > getRowCount() || col > getColumnCount())
+            return null;
         if (clusterName == null || clusterName.length == 0)
             col++;
         

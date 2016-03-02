@@ -1381,7 +1381,8 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
     public void populateEnrichmentTab() {
         addClassSets(cmbClassSelector);
-        enrichmentSelectorTableModel.refreshContent(layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames());
+        //enrichmentSelectorTableModel.refreshContent(layoutFrame.getNetworkRootContainer().getLayoutClassSetsManager().getClassSetNames());
+        enrichmentSelectorTableModel.refreshContent(AnnotationTypeManagerBG.getInstanceSingleton().getAllTypes());
         enrichmentSplitPane.validate();
         leftBox.validate();
         enrichmentSelectorTable.validate();
@@ -2376,6 +2377,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
         @Override
         public void mouseClicked(MouseEvent e) {
+            if (hmds == null) {
+                return;
+            }
             int keyOffset = keyHeight;
             int cellX = 0;
             int cellY = 0;
@@ -2440,6 +2444,9 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
         @Override
         public void mouseMoved(MouseEvent e) {
+            if (hmds == null) {
+                return;
+            }
             int keyOffset = keyHeight;
             int cellX = 0;
             int cellY = 0;
