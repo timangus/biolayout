@@ -1010,6 +1010,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     loadingFile = true;
                     // 
                     AnnotationTypeManagerBG.recreateSingleton();
+                    layoutClassSetsManager.clearClassSets();
                     classViewerFrame.resetView();
 
                     blockAllAction.actionPerformed(blockEvent);

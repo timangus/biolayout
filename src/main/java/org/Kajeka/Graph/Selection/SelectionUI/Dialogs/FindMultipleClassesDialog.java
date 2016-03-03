@@ -12,18 +12,17 @@ import org.Kajeka.Network.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 
 /**
-*
-*
-* @author Thanos Theo, 2008-2009-2010-2011
-* @version 3.0.0.0
-*
-*/
+ *
+ *
+ * @author Thanos Theo, 2008-2009-2010-2011
+ * @version 3.0.0.0
+ *
+ */
+public final class FindMultipleClassesDialog extends JDialog {
 
-public final class FindMultipleClassesDialog extends JDialog
-{
     /**
-    *  Serial version UID variable for the FindClassDialog class.
-    */
+     * Serial version UID variable for the FindClassDialog class.
+     */
     public static final long serialVersionUID = 111222333444555744L;
 
     private static final int CLASS_SET_NAMES_COLUMN = 0;
@@ -36,8 +35,7 @@ public final class FindMultipleClassesDialog extends JDialog
     private String prevClassSetName = "";
     private AbstractAction findMultipleClassesDialogAction = null;
 
-    public FindMultipleClassesDialog(LayoutFrame layoutFrame, JFrame jFrame)
-    {
+    public FindMultipleClassesDialog(LayoutFrame layoutFrame, JFrame jFrame) {
         super(jFrame, "Find By Multiple Classes", true);
 
         this.layoutFrame = layoutFrame;
@@ -46,26 +44,22 @@ public final class FindMultipleClassesDialog extends JDialog
         initComponents(jFrame);
     }
 
-    private void initActions()
-    {
-        findMultipleClassesDialogAction = new AbstractAction("Find By Multiple Classes")
-        {
+    private void initActions() {
+        findMultipleClassesDialogAction = new AbstractAction("Find By Multiple Classes") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555683L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 openDialogWindow();
             }
         };
         findMultipleClassesDialogAction.setEnabled(false);
     }
 
-    private void initComponents(final JFrame jFrame)
-    {
+    private void initComponents(final JFrame jFrame) {
         findMultipleClassesTableModel = new FindMultipleClassesTableModel();
         ClassViewerTable table = new ClassViewerTable(findMultipleClassesTableModel, FindMultipleClassesTableModel.COLUMN_NAMES, CV_AUTO_SIZE_COLUMNS.get());
         TableRowSorter<FindMultipleClassesTableModel> sorter = new TableRowSorter<FindMultipleClassesTableModel>(findMultipleClassesTableModel);
@@ -76,7 +70,7 @@ public final class FindMultipleClassesDialog extends JDialog
         selectDeselectAllButton.setToolTipText("Select All");
 
         JPanel buttonsPanel = new JPanel(true);
-        buttonsPanel.setLayout( new GridLayout() );
+        buttonsPanel.setLayout(new GridLayout());
         JButton okButton = createOkButton(jFrame);
         okButton.setToolTipText("OK");
         JButton cancelButton = createCancelButton();
@@ -85,9 +79,9 @@ public final class FindMultipleClassesDialog extends JDialog
         buttonsPanel.add(cancelButton);
 
         JScrollPane tableScrollPane = new JScrollPane(table);
-        table.setPreferredScrollableViewportSize( new Dimension(240, 400) );
+        table.setPreferredScrollableViewportSize(new Dimension(240, 400));
         JPanel tablePanel = new JPanel(true);
-        tablePanel.setLayout( new BorderLayout() );
+        tablePanel.setLayout(new BorderLayout());
         tablePanel.add(tableScrollPane, BorderLayout.NORTH);
         tablePanel.add(selectDeselectAllButton, BorderLayout.CENTER);
         tablePanel.add(buttonsPanel, BorderLayout.SOUTH);
@@ -98,115 +92,95 @@ public final class FindMultipleClassesDialog extends JDialog
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         // window gets positioned at left of the ImportClassSetsDialog
         this.setLocationRelativeTo(null);
-        this.addWindowListener( new WindowAdapter()
-        {
-           @Override
-            public void windowClosing(WindowEvent e)
-            {
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
                 closeDialogWindow();
             }
-        } );
+        });
     }
 
-    private JButton createSelectDeselectAllButton()
-    {
-        return new JButton( new AbstractAction("Deselect All")
-        {
+    private JButton createSelectDeselectAllButton() {
+        return new JButton(new AbstractAction("Deselect All") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555691L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 selectDeselectAllButtonModeState = !selectDeselectAllButtonModeState;
-                String buttonText = ( (!selectDeselectAllButtonModeState) ? "Deselect" : "Select" ) + " All";
+                String buttonText = ((!selectDeselectAllButtonModeState) ? "Deselect" : "Select") + " All";
                 selectDeselectAllButton.setText(buttonText);
                 selectDeselectAllButton.setToolTipText(buttonText);
                 findMultipleClassesTableModel.setSelectedAllColumns(!selectDeselectAllButtonModeState);
             }
-        } );
+        });
     }
 
-    private JButton createOkButton(final JFrame jFrame)
-    {
-        return new JButton( new AbstractAction("OK")
-        {
+    private JButton createOkButton(final JFrame jFrame) {
+        return new JButton(new AbstractAction("OK") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555691L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 HashSet<VertexClass> selectedVertexClasses = new HashSet<VertexClass>();
-                for ( String selectedClass : findMultipleClassesTableModel.getSelectedClasses() )
-                    selectedVertexClasses.add( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassesNamesMap().get(selectedClass) );
+                for (String selectedClass : findMultipleClassesTableModel.getSelectedClasses()) {
+                    selectedVertexClasses.add(layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassesNamesMap().get(selectedClass));
+                }
                 layoutFrame.getGraph().getSelectionManager().findMultipleClasses(jFrame, selectedVertexClasses);
 
                 closeDialogWindow();
             }
-        } );
+        });
     }
 
-    private JButton createCancelButton()
-    {
-        return new JButton( new AbstractAction("Cancel")
-        {
+    private JButton createCancelButton() {
+        return new JButton(new AbstractAction("Cancel") {
             /**
-            *  Serial version UID variable for the AbstractAction class.
-            */
+             * Serial version UID variable for the AbstractAction class.
+             */
             public static final long serialVersionUID = 111222333444555691L;
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 closeDialogWindow();
             }
-        } );
+        });
     }
 
-    private void resetSelectDeselectAllButton()
-    {
+    private void resetSelectDeselectAllButton() {
         this.selectDeselectAllButtonModeState = true;
         selectDeselectAllButton.setText("Select All");
     }
 
-    private void selectCurrentClassName()
-    {
+    private void selectCurrentClassName() {
         String currentClassName = layoutFrame.getClassViewerFrame().getCurrentClassName();
-        if ( !currentClassName.isEmpty() )
+        if (!currentClassName.isEmpty()) {
             findMultipleClassesTableModel.setSelectedClass(currentClassName);
+        }
     }
 
-    public void closeDialogWindow()
-    {
+    public void closeDialogWindow() {
         this.setVisible(false);
     }
 
-    public void openDialogWindow()
-    {
+    public void openDialogWindow() {
         // only reset enable/disable button state if a change of class sets have been detected
         String currentClassSetName = layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassSetName();
-        if ( !currentClassSetName.equals(prevClassSetName) )
-        {
-            findMultipleClassesTableModel.updateClassesTable( layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassesNamesMap().keySet() );
-            prevClassSetName = currentClassSetName;
-            resetSelectDeselectAllButton();
-            selectCurrentClassName();
-        }
-        else
-            selectCurrentClassName();
+        findMultipleClassesTableModel.updateClassesTable(layoutFrame.getLayoutClassSetsManager().getCurrentClassSetAllClasses().getClassesNamesMap().keySet());
+        prevClassSetName = currentClassSetName;
+        resetSelectDeselectAllButton();
+        selectCurrentClassName();
 
         this.setVisible(true);
     }
 
-    public AbstractAction getFindMultipleClassesDialogAction()
-    {
+    public AbstractAction getFindMultipleClassesDialogAction() {
         return findMultipleClassesDialogAction;
     }
-
 
 }
