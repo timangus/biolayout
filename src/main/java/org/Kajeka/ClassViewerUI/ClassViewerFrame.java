@@ -1691,6 +1691,12 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         }
         updateStatsLabel();
     }
+    
+    public void resetView(){
+        enrichmentTableModel.setSize(0);
+        enrichmentTableModel.fireTableDataChanged();
+        displayTable();
+    }
 
     public VertexClass navigateToCurrentClass() {
         VertexClass currentVertexClass = findClassDialog.currentVertexClass();
