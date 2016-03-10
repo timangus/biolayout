@@ -462,17 +462,24 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
            appendText("Done. ");
            runMCL();
 
-           if (!cancelMCLThread)
-           {
-             graph.rebuildGraph();
-             layoutFrame.getClassViewerFrame().refreshCurrentClassSetSelection();
-             layoutFrame.getClassViewerFrame().populateClassViewer(null, false, true, true);
-             cancelMCLThreadButton.setText("Close Window");
-             cancelMCLThreadButton.setToolTipText("Close Window");
-             vertexIDMap = null;
+            if (!cancelMCLThread)
+            {
+                graph.rebuildGraph();
+                EventQueue.invokeLater(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        layoutFrame.getClassViewerFrame().refreshCurrentClassSetSelection();
+                        layoutFrame.getClassViewerFrame().populateClassViewer(null, false, true, true);
+                    }
+                });
+                cancelMCLThreadButton.setText("Close Window");
+                cancelMCLThreadButton.setToolTipText("Close Window");
+                vertexIDMap = null;
 
-             this.repaint();
-           }
+                this.repaint();
+            }
         }
         else
         {
