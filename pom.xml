@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>Layout</name>
-    <url>http://kajeka.com</url>
+    <url>http://kajeka.com/wiki/</url>
 
     <properties>
         <productName>Layout</productName>
@@ -17,7 +17,7 @@
         <outFilename>${jarName}-${versionNumber}</outFilename>
         <mainClass>org.Kajeka.Layout</mainClass>
         <manifestVersion>1.0.0.0</manifestVersion>
-        <copyright>© Kajeka 2014-2015</copyright>
+        <copyright>© Kajeka 2014-2016</copyright>
         <icon>src/main/resources/Resources/Images/Icon.ico</icon>
 
         <minJavaVersion>1.7</minJavaVersion>
