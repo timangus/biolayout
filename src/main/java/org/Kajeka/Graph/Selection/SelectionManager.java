@@ -651,7 +651,7 @@ public final class SelectionManager
         graph.updateSelectedNodesDisplayList();
     }
 
-    private void deleteNodes(HashSet<GraphNode> nodes, String progressMessage)
+    private void deleteNodes(Set<GraphNode> nodes, String progressMessage)
     {
         LayoutProgressBarDialog layoutProgressBarDialog = layoutFrame.getLayoutProgressBar();
         layoutProgressBarDialog.prepareProgressBar(selectedNodes.size(), progressMessage);
@@ -688,7 +688,7 @@ public final class SelectionManager
 
     private void deleteSelection()
     {
-        deleteNodes((HashSet<GraphNode>)selectedNodes.keySet(), "Now Deleting Selection...");
+        deleteNodes(selectedNodes.keySet(), "Now Deleting Selection...");
     }
 
     private void deleteHidden()
