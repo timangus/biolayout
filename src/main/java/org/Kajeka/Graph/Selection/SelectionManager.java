@@ -665,10 +665,16 @@ public final class SelectionManager
 
             undoVertices.add( graphNode.getVertex()  );
             layoutFrame.getNetworkRootContainer().getVerticesMap().remove( graphNode.getVertex().getVertexName() );
-
+            
             for ( GraphEdge graphEdge : graphNode.getNodeEdges() )
             {
                 undoEdges.add( graphEdge.getEdge() );
+                Edge edge = graphEdge.getEdge();
+                if (edge.getFirstVertex() == graphNode.getVertex()) {
+                    edge.getSecondVertex().removeConnection(edge);
+                } else {
+                    edge.getFirstVertex().removeConnection(edge);
+                }
                 layoutFrame.getNetworkRootContainer().getEdges().remove( graphEdge.getEdge() );
             }
         }

@@ -41,7 +41,8 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
     private LayoutFrame layoutFrame = null;
     private Graph graph = null;
     private File fileInput = null;
-    private Vertex[] vertexIDs = null;
+    private HashMap<Integer, Vertex> vertexIDMap = null;
+    private HashMap<Vertex, Integer> idVertexMap = null;
     private Document MCL_text = null;
     private JTextArea textArea = null;
     private boolean cancelMCLThread = false;
@@ -119,21 +120,26 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
             int numberOfVertices = nc.getNumberOfVertices();
             int value = 0;
             String command = "";
-            vertexIDs = new Vertex[numberOfVertices];
+            vertexIDMap = new HashMap<>();
+            idVertexMap = new HashMap<>();
 
             fosw.write("(mclheader\nmcltype matrix\ndimensions " + numberOfVertices + "x" + numberOfVertices + "\n)\n");
             fosw.write("(\n(mclmatrix\nbegin\n");
+            
+            for ( Vertex vertex : nc.getVertices() ){
+                vertexIDMap.put(vertexIDMap.size(), vertex);
+                idVertexMap.put(vertex, idVertexMap.size());
+            }
 
             for ( Vertex vertex : nc.getVertices() )
             {
-                value = vertex.getVertexID();
-                vertexIDs[value] = vertex;
+                value = idVertexMap.get(vertex);
                 fosw.write(value + " ");
 
                 HashMap<Vertex, Edge> edgeConnection = vertex.getEdgeConnectionsMap();
                 for ( Vertex vertex2 : edgeConnection.keySet() )
                 {
-                    value = vertex2.getVertexID();
+                    value = idVertexMap.get(vertex2);
                     // putting also Petri Net case that is a graphml file but does enable weights for proper red edge inhibitor renderering
                     command = ( WEIGHTED_EDGES && !nc.getIsPetriNet() ) ? ( value + ":" + edgeConnection.get(vertex2).getWeight() + " ") : (value + " ");
                     fosw.write(command);
@@ -259,8 +265,8 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
                    index1 = Integer.parseInt(param[0]);
                    index2 = Integer.parseInt(param[1]);
                    weight = Float.parseFloat(param[2]);
-                   vertex1 = vertexIDs[index1];
-                   vertex2 = vertexIDs[index2];
+                   vertex1 = vertexIDMap.get(index1);
+                   vertex2 = vertexIDMap.get(index2);
 
                    if ( (vertex1 != null) && (vertex2 != null) )
                    {
@@ -395,7 +401,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
 
             // IF WE WANT: SET MEMBERS IN SMALL CLUSTERS TO NO CLASS
             for (int i = 0; i < MCL_param.length; i++)
-                layoutClasses.setClass(vertexIDs[new Integer(MCL_param[i])], ( MCL_param.length > MCL_SMALLEST_CLUSTER.get() ) ? classNumberIndex : 0);
+                layoutClasses.setClass(vertexIDMap.get(new Integer(MCL_param[i])), ( MCL_param.length > MCL_SMALLEST_CLUSTER.get() ) ? classNumberIndex : 0);
         }
     }
 
@@ -463,7 +469,7 @@ final class MCLWindowDialog extends JDialog implements Runnable, ActionListener 
              layoutFrame.getClassViewerFrame().populateClassViewer(null, false, true, true);
              cancelMCLThreadButton.setText("Close Window");
              cancelMCLThreadButton.setToolTipText("Close Window");
-             vertexIDs = null;
+             vertexIDMap = null;
 
              this.repaint();
            }

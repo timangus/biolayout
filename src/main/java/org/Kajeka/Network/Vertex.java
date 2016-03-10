@@ -69,6 +69,14 @@ public final class Vertex implements Comparable<Vertex>
             selfEdge = edge;
         }
     }
+    
+    public void removeConnection(Edge edge){
+        if (edge.getFirstVertex() == this){
+            edgeConnections.remove(edge.getSecondVertex());
+        } else {
+            edgeConnections.remove(edge.getFirstVertex());
+        }
+    }
 
     public String getVertexName()
     {
