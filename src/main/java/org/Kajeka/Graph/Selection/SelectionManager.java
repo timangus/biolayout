@@ -159,7 +159,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectAllNeighbours((HashSet<GraphNode>)selectedNodes.keySet());
+                selectAllNeighbours(selectedNodes.keySet());
             }
         };
         selectAllNeighbourAction.setEnabled(false);
@@ -174,7 +174,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectParents((HashSet<GraphNode>)selectedNodes.keySet());
+                selectParents(selectedNodes.keySet());
             }
         };
         selectParentsAction.setEnabled(false);
@@ -189,7 +189,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectAllParents((HashSet<GraphNode>)selectedNodes.keySet());
+                selectAllParents(selectedNodes.keySet());
             }
         };
         selectAllParentsAction.setEnabled(false);
@@ -204,7 +204,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectChildren((HashSet<GraphNode>)selectedNodes.keySet());
+                selectChildren(selectedNodes.keySet());
             }
         };
         selectChildrenAction.setEnabled(false);
@@ -219,7 +219,7 @@ public final class SelectionManager
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                selectAllChildren((HashSet<GraphNode>)selectedNodes.keySet());
+                selectAllChildren(selectedNodes.keySet());
             }
         };
         selectAllChildrenAction.setEnabled(false);
@@ -1007,7 +1007,7 @@ public final class SelectionManager
         graph.updateNodesAndSelectedNodesDisplayList();
     }
 
-    private void selectChildren(HashSet<GraphNode> nodes)
+    private void selectChildren(Set<GraphNode> nodes)
     {
         Set<GraphNode> neighbours = getChildren(nodes);
         if ( neighbours.isEmpty() )
@@ -1028,7 +1028,7 @@ public final class SelectionManager
         graph.updateNodesAndSelectedNodesDisplayList();
     }
 
-    private void selectParents(HashSet<GraphNode> nodes)
+    private void selectParents(Set<GraphNode> nodes)
     {
         Set<GraphNode> neighbours = getParents(nodes);
         if ( neighbours.isEmpty() )
@@ -1087,7 +1087,7 @@ public final class SelectionManager
         graph.updateNodesAndSelectedNodesDisplayList();
     }
 
-    private void selectAllParents(HashSet<GraphNode> nodes)
+    private void selectAllParents(Set<GraphNode> nodes)
     {
         Set<GraphNode> neighbours = getParents(nodes);
         Set<GraphNode> newNeighbours = getParents(neighbours);
