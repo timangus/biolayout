@@ -1,8 +1,17 @@
 #! /bin/bash
 
-SCRIPT_NAME=`greadlink -f $0`
+if hash greadlink 2>/dev/null;
+then
+  READLINK=greadlink
+else
+  READLINK=readlink
+fi
+
+echo READLINK=${READLINK}
+
+SCRIPT_NAME=`${READLINK} -f $0`
 SCRIPT_DIR=`dirname ${SCRIPT_NAME}`
-SRC_DIR=`greadlink -f ${SCRIPT_DIR}/..`
+SRC_DIR=`${READLINK} -f ${SCRIPT_DIR}/..`
 
 if [ -z "${OUTPUT_NAME}" ];
 then
