@@ -1,8 +1,8 @@
 #! /bin/bash
 
-SCRIPT_NAME=`readlink -f $0`
+SCRIPT_NAME=`greadlink -f $0`
 SCRIPT_DIR=`dirname ${SCRIPT_NAME}`
-SRC_DIR=`readlink -f ${SCRIPT_DIR}/..`
+SRC_DIR=`greadlink -f ${SCRIPT_DIR}/..`
 
 if [ -z "${OUTPUT_NAME}" ];
 then
