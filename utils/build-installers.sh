@@ -76,6 +76,10 @@ then
     cd ${SRC_DIR}/target/osx
     #	"Kajeka Limited" is the Apple Developer ID cert on the keychain
     codesign -f -v -s "Kajeka Limited" ${OUTPUT_NAME}.app
+    if [ "$?" != "0" ];
+    then
+        exit $?
+    fi
     rm ${OUTPUT_NAME}.dmg && appdmg dms.spec.json ${OUTPUT_NAME}.dmg
     zip -r9 ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg.zip ${OUTPUT_NAME}.dmg
   else
