@@ -80,7 +80,11 @@ then
     then
         exit $?
     fi
-    rm ${OUTPUT_NAME}.dmg && appdmg dms.spec.json ${OUTPUT_NAME}.dmg
+    cat ${SCRIPT_DIR}/dmg.spec.json.template | sed \
+      -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+      -e "s/_SCRIPT_DIR_/${SCRIPT_DIR}/g" > \
+      dmg.spec.json
+    rm ${OUTPUT_NAME}.dmg && appdmg dmg.spec.json ${OUTPUT_NAME}.dmg
     zip -r9 ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg.zip ${OUTPUT_NAME}.dmg
   else
     #	Install with "brew install node && npm install -g appdmg"
