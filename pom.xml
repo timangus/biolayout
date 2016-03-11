@@ -57,6 +57,117 @@
                 <debug.build>false</debug.build>
             </properties>
         </profile>
+
+        <profile>
+            <id>windows-exe</id>
+            <activation>
+                <property>
+                    <name>windows-exe</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+              <plugins>
+                <plugin>
+                    <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                    <artifactId>launch4j-maven-plugin</artifactId>
+                    <version>1.7.4</version>
+                    <executions>
+                        <execution>
+                            <id>l4j-32bit</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>launch4j</goal>
+                            </goals>
+                            <configuration>
+                                <headerType>gui</headerType>
+                                <outfile>${project.build.directory}/${outFilename}-32bit-unsigned.exe</outfile>
+                                <jar>${project.build.directory}/${outFilename}.jar</jar>
+                                <icon>${icon}</icon>
+                                <errTitle>${productName}</errTitle>
+                                <jre>
+                                    <minVersion>${minJavaVersion}.0</minVersion>
+                                    <maxHeapSize>920</maxHeapSize>
+                                </jre>
+                                <versionInfo>
+                                    <fileVersion>${manifestVersion}</fileVersion>
+                                    <txtFileVersion>${manifestVersion}</txtFileVersion>
+                                    <fileDescription>${productName}</fileDescription>
+                                    <copyright>${copyright}</copyright>
+                                    <productVersion>${manifestVersion}</productVersion>
+                                    <txtProductVersion>${manifestVersion}</txtProductVersion>
+                                    <productName>${productName}</productName>
+                                    <internalName>${jarName}</internalName>
+                                    <originalFilename>${outFilename}.exe</originalFilename>
+                                </versionInfo>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>l4j-64bit</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>launch4j</goal>
+                            </goals>
+                            <configuration>
+                                <headerType>gui</headerType>
+                                <outfile>${project.build.directory}/${outFilename}-64bit-unsigned.exe</outfile>
+                                <jar>${project.build.directory}/${outFilename}.jar</jar>
+                                <icon>${icon}</icon>
+                                <errTitle>${productName}</errTitle>
+                                <jre>
+                                    <minVersion>${minJavaVersion}.0</minVersion>
+                                    <maxHeapSize>32000</maxHeapSize>
+                                </jre>
+                                <versionInfo>
+                                    <fileVersion>${manifestVersion}</fileVersion>
+                                    <txtFileVersion>${manifestVersion}</txtFileVersion>
+                                    <fileDescription>${productName}</fileDescription>
+                                    <copyright>${copyright}</copyright>
+                                    <productVersion>${manifestVersion}</productVersion>
+                                    <txtProductVersion>${manifestVersion}</txtProductVersion>
+                                    <productName>${productName}</productName>
+                                    <internalName>${jarName}</internalName>
+                                    <originalFilename>${outFilename}.exe</originalFilename>
+                                </versionInfo>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.7</version>
+                    <executions>
+                        <execution>
+                            <id>signL4jExes</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <tasks if="codesign">
+                                    <exec executable="sign4j">
+                                        <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
+                                                -pass ${jarsigner.storepass} -n ${productName}
+                                                -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
+                                                -in ${project.build.directory}/${outFilename}-32bit-unsigned.exe
+                                                -out ${project.build.directory}/${outFilename}-32bit.exe"/>
+                                    </exec>
+                                    <exec executable="sign4j">
+                                        <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
+                                                -pass ${jarsigner.storepass} -n ${productName}
+                                                -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
+                                                -in ${project.build.directory}/${outFilename}-64bit-unsigned.exe
+                                                -out ${project.build.directory}/${outFilename}-64bit.exe"/>
+                                    </exec>
+                                </tasks>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+              </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -278,101 +389,9 @@
             </plugin>
 
             <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.4</version>
-                <executions>
-                    <execution>
-                        <id>l4j-32bit</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>${project.build.directory}/${outFilename}-32bit-unsigned.exe</outfile>
-                            <jar>${project.build.directory}/${outFilename}.jar</jar>
-                            <icon>${icon}</icon>
-                            <errTitle>${productName}</errTitle>
-                            <jre>
-                                <minVersion>${minJavaVersion}.0</minVersion>
-                                <maxHeapSize>920</maxHeapSize>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>${manifestVersion}</fileVersion>
-                                <txtFileVersion>${manifestVersion}</txtFileVersion>
-                                <fileDescription>${productName}</fileDescription>
-                                <copyright>${copyright}</copyright>
-                                <productVersion>${manifestVersion}</productVersion>
-                                <txtProductVersion>${manifestVersion}</txtProductVersion>
-                                <productName>${productName}</productName>
-                                <internalName>${jarName}</internalName>
-                                <originalFilename>${outFilename}.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>l4j-64bit</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>${project.build.directory}/${outFilename}-64bit-unsigned.exe</outfile>
-                            <jar>${project.build.directory}/${outFilename}.jar</jar>
-                            <icon>${icon}</icon>
-                            <errTitle>${productName}</errTitle>
-                            <jre>
-                                <minVersion>${minJavaVersion}.0</minVersion>
-                                <maxHeapSize>32000</maxHeapSize>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>${manifestVersion}</fileVersion>
-                                <txtFileVersion>${manifestVersion}</txtFileVersion>
-                                <fileDescription>${productName}</fileDescription>
-                                <copyright>${copyright}</copyright>
-                                <productVersion>${manifestVersion}</productVersion>
-                                <txtProductVersion>${manifestVersion}</txtProductVersion>
-                                <productName>${productName}</productName>
-                                <internalName>${jarName}</internalName>
-                                <originalFilename>${outFilename}.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
                 <executions>
-                    <execution>
-                        <id>signL4jExes</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks if="codesign">
-                                <exec executable="sign4j">
-                                    <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
-                                            -pass ${jarsigner.storepass} -n ${productName}
-                                            -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
-                                            -in ${project.build.directory}/${outFilename}-32bit-unsigned.exe
-                                            -out ${project.build.directory}/${outFilename}-32bit.exe"/>
-                                </exec>
-                                <exec executable="sign4j">
-                                    <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
-                                            -pass ${jarsigner.storepass} -n ${productName}
-                                            -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
-                                            -in ${project.build.directory}/${outFilename}-64bit-unsigned.exe
-                                            -out ${project.build.directory}/${outFilename}-64bit.exe"/>
-                                </exec>
-                            </tasks>
-                        </configuration>
-                    </execution>
-
                     <execution>
                         <id>osxAppCopy</id>
                         <phase>package</phase>
