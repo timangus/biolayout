@@ -50,23 +50,43 @@ echo BUILD_URL=${BUILD_URL}
 #rm -r ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 
-# Windows
-cd ${SRC_DIR}/nsis-installer
-cat installer.nsi | sed \
-  -e "s/_BASE_NAME_/${BASE_NAME}/g" \
-  -e "s/_OUTPUT_NAME_/${OUTPUT_NAME}/g" \
-  -e "s/_VERSION_/${VERSION}/g" \
-  | makensis -
-if [ "$?" != "0" ];
+if hash makensis 2>/dev/null;
 then
-    exit $?
+  # Windows
+  cd ${SRC_DIR}/nsis-installer
+  cat installer.nsi | sed \
+    -e "s/_BASE_NAME_/${BASE_NAME}/g" \
+    -e "s/_OUTPUT_NAME_/${OUTPUT_NAME}/g" \
+    -e "s/_VERSION_/${VERSION}/g" \
+    | makensis -
+  if [ "$?" != "0" ];
+  then
+      exit $?
+  fi
+  signexe ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe
+  cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe ${BUILD_DIR}
+else
+  echo "makensis not found, skipping Windows"
 fi
-signexe ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe
-cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe ${BUILD_DIR}
 
-# OS X
-cd ${SRC_DIR}/target/dmg
-zip -r9 ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.app.zip ${OUTPUT_NAME}.app
+
+if hash codesign 2>/dev/null;
+then
+  if hash codesign 2>/dev/null;
+  then
+    # OS X
+    cd ${SRC_DIR}/target/osx
+    #	"Kajeka Limited" is the Apple Developer ID cert on the keychain
+    codesign -f -v -s "Kajeka Limited" ${OUTPUT_NAME}.app
+    rm ${OUTPUT_NAME}.dmg && appdmg dms.spec.json ${OUTPUT_NAME}.dmg
+    zip -r9 ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg.zip ${OUTPUT_NAME}.dmg
+  else
+    #	Install with "brew install node && npm install -g appdmg"
+    echo "appdmg not found, skipping OSX"
+  fi
+else
+  echo "codesign not found, skipping OSX"
+fi
 
 # Everything else
 cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar \

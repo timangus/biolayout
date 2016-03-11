@@ -31,7 +31,7 @@
         <buildconfig.template.file>src/main/java/org/Kajeka/BuildConfig.template</buildconfig.template.file>
         <buildconfig.file>${generated.sources.dir}/org/Kajeka/BuildConfig.java</buildconfig.file>
 
-        <osx.app.dir>${project.build.directory}/dmg</osx.app.dir>
+        <osx.app.dir>${project.build.directory}/osx</osx.app.dir>
         <osx.appbundler.path>${project.basedir}/jars/com/oracle/appbundler/appbundler/1.0/appbundler-1.0.jar</osx.appbundler.path>
 
         <debug.build>true</debug.build>
