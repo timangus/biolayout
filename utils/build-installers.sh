@@ -40,12 +40,10 @@ VERSION=`${SCRIPT_DIR}/version.sh`
 GIT_REV=`git rev-parse HEAD`
 BUILDS_DIR="${SCRIPT_DIR}/builds"
 BUILD_DIR="${BUILDS_DIR}/${VERSION}"
-BUILD_URL="${BASE_URL}/${BUILD_NAME}"
 
 echo VERSION=${VERSION}
 echo GIT_REV=${GIT_REV}
 echo BUILD_DIR=${BUILD_DIR}
-echo BUILD_URL=${BUILD_URL}
 
 #rm -r ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
