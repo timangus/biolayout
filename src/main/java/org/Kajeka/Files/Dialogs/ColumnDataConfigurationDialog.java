@@ -203,8 +203,6 @@ public class ColumnDataConfigurationDialog extends JDialog
         {
             filterChanging = true;
 
-            int numEdgeWeights = sortedEdgeWeightColumn.length - 1;
-
             if (component == filterSlider)
             {
                 syncTextFieldToSlider();
