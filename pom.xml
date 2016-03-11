@@ -149,14 +149,14 @@
                                     <exec executable="sign4j">
                                         <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
                                                 -pass ${jarsigner.storepass} -n ${productName}
-                                                -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
+                                                -i http://www.kajeka.com/ -t ${jarsigner.tsa}
                                                 -in ${project.build.directory}/${outFilename}-32bit-unsigned.exe
                                                 -out ${project.build.directory}/${outFilename}-32bit.exe"/>
                                     </exec>
                                     <exec executable="sign4j">
                                         <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
                                                 -pass ${jarsigner.storepass} -n ${productName}
-                                                -i http://www.kajeka.com/ -t http://tsa.starfieldtech.com/
+                                                -i http://www.kajeka.com/ -t ${jarsigner.tsa}
                                                 -in ${project.build.directory}/${outFilename}-64bit-unsigned.exe
                                                 -out ${project.build.directory}/${outFilename}-64bit.exe"/>
                                     </exec>
