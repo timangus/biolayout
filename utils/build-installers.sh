@@ -93,7 +93,7 @@ then
       -e "s/_BASE_NAME_/${BASE_NAME}/g" \
       -e "s|_SCRIPT_DIR_|${SCRIPT_DIR}|g" > \
       dmg.spec.json
-    rm ${OUTPUT_NAME}.dmg && appdmg dmg.spec.json ${OUTPUT_NAME}.dmg
+    rm -f ${OUTPUT_NAME}.dmg && appdmg dmg.spec.json ${OUTPUT_NAME}.dmg
     zip -r9 ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg.zip ${OUTPUT_NAME}.dmg
   else
     #	Install with "brew install node && npm install -g appdmg"
