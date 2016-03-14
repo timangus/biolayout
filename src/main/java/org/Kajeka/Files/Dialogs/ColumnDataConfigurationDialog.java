@@ -550,10 +550,16 @@ public class ColumnDataConfigurationDialog extends JDialog
             int numRows = 0;
             int numColumns = 0;
             rows = new ArrayList<String[]>();
+            // Regex for comments and layout annotations
+            Pattern p = Pattern.compile("^\\s*//.*");
 
-            while (fileReaderBuffered.readLine() != null)
+            while (fileReaderBuffered.ready())
             {
-                numRows++;
+                String curLine = fileReaderBuffered.readLine();
+                // Ignore Comments + annotations
+                if (!p.matcher(curLine).matches()){
+                    numRows++;
+                }
             }
 
             fileReaderBuffered = new BufferedReader(new FileReader(file));
@@ -563,6 +569,9 @@ public class ColumnDataConfigurationDialog extends JDialog
 
             while ((line = fileReaderBuffered.readLine()) != null)
             {
+                // Skip comments and annotations
+                if (p.matcher(line).matches())
+                    continue;
                 if (line.length() > 0)
                 {
                     ArrayList<String> tokens = tokenize(line);
