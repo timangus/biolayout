@@ -356,6 +356,9 @@ public class ColumnDataConfigurationDialog extends JDialog
             @Override
             public void caretUpdate(CaretEvent e)
             {
+                if (!filterValueField.isEnabled()){
+                    return;
+                }
                 filterChanged(filterValueField);
             }
         });
