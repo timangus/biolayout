@@ -79,7 +79,7 @@ fi
 
 if hash codesign 2>/dev/null;
 then
-  if hash codesign 2>/dev/null;
+  if hash appdmg 2>/dev/null;
   then
     # OS X
     cd ${SRC_DIR}/target/osx
