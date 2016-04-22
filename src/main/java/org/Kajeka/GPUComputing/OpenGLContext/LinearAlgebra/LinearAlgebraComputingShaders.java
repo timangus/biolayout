@@ -1,6 +1,6 @@
 package org.Kajeka.GPUComputing.OpenGLContext.LinearAlgebra;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import org.Kajeka.Textures.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 

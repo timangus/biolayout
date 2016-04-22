@@ -1,11 +1,11 @@
 package org.Kajeka.GPUComputing.OpenGLContext.LinearAlgebra;
 
 import java.nio.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.common.nio.Buffers;
 import org.Kajeka.GPUComputing.OpenGLContext.*;
-import static javax.media.opengl.GL2.*;
+import static com.jogamp.opengl.GL2.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 

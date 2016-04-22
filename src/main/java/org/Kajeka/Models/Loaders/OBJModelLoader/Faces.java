@@ -1,9 +1,9 @@
 package org.Kajeka.Models.Loaders.OBJModelLoader;
 
 import java.util.*;
-import javax.media.opengl.*;
-import static javax.media.opengl.GL2.*;
-import static javax.media.opengl.GL3.*;
+import com.jogamp.opengl.*;
+import static com.jogamp.opengl.GL2.*;
+import static com.jogamp.opengl.GL3.*;
 import org.Kajeka.DataStructures.*;
 import org.Kajeka.Utils.*;
 import static org.Kajeka.Models.ModelShape.*;

@@ -1,6 +1,6 @@
 package org.Kajeka.Textures;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 

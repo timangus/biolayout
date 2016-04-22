@@ -4,7 +4,7 @@ import java.awt.image.*;
 import java.util.*;
 import java.util.concurrent.*;
 import static java.lang.Math.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Textures.DrawTextureSFXs.*;

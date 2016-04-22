@@ -2,10 +2,10 @@ package org.Kajeka.Textures;
 
 import java.io.*;
 import java.nio.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.common.nio.Buffers;
 import java.awt.EventQueue;
-import static javax.media.opengl.GL3.*;
+import static com.jogamp.opengl.GL3.*;
 import javax.swing.JOptionPane;
 import org.Kajeka.CoreUI.Dialogs.LayoutShaderCompileLogDialog;
 import static org.Kajeka.Environment.GlobalEnvironment.*;

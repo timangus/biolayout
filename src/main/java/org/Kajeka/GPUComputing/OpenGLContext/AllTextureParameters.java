@@ -1,6 +1,6 @@
 package org.Kajeka.GPUComputing.OpenGLContext;
 
-import static javax.media.opengl.GL2.*;
+import static com.jogamp.opengl.GL2.*;
 
 /*
 *

@@ -11,15 +11,15 @@ import java.util.*;
 import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import org.Kajeka.Utils.Path;
-import javax.media.opengl.awt.GLCanvas;
-import static javax.media.opengl.GL2.*;
+import com.jogamp.opengl.awt.GLCanvas;
+import static com.jogamp.opengl.GL2.*;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.Graph.ActionsUI.*;
 import org.Kajeka.Graph.GraphElements.*;
@@ -1286,8 +1286,8 @@ public class Graph extends GLCanvas implements GraphInterface
         */
         // glDrawable.setGL( new TraceGL( glDrawable.getGL(), System.out) );
 
-        width = glDrawable.getWidth();
-        height = glDrawable.getHeight();
+        width = glDrawable.getSurfaceWidth();
+        height = glDrawable.getSurfaceHeight();
 
         if (width <= 0) width = 1;
         if (height <= 0) height = 1;

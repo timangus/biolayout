@@ -4,7 +4,7 @@ import java.awt.image.*;
 import java.nio.*;
 import java.text.*;
 import java.util.concurrent.*;
-import javax.media.opengl.glu.*;
+import com.jogamp.opengl.glu.*;
 import com.jogamp.opengl.util.*;
 import org.Kajeka.Graph.Selection.SelectionUI.*;
 import static com.jogamp.opengl.util.gl2.GLUT.*;

@@ -34,7 +34,14 @@ public final class LoadNativeLibrary
     /**
     *  The file path of the library file to be copied from the OS-based specific path.
     */
-    private static final String[] EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH = { "Win32/", "Win64/", "Linux32/", "Linux64/", "Mac/" };
+    private static final String[] EXTRACT_FROM_LIBRARIES_OS_SPECIFIC_PATH =
+    {
+      "natives/windows-i586/",
+      "natives/windows-amd64/",
+      "natives/linux-i586/",
+      "natives/linux-amd64/",
+      "natives/macosx-universal/"
+    };
 
     /**
     *  The number version of MacOSX Lion.

@@ -2,7 +2,7 @@ package org.Kajeka.Graph;
 
 import java.awt.event.*;
 import java.awt.image.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import org.Kajeka.Graph.ActionsUI.*;
 import org.Kajeka.Graph.ActiveRendering.*;
 

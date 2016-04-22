@@ -4,7 +4,7 @@ import java.awt.*;
 import java.nio.*;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.*;
-import static javax.media.opengl.GL.*;
+import static com.jogamp.opengl.GL.*;
 import org.Kajeka.Graph.Camera.*;
 import org.Kajeka.Utils.*;
 import static org.Kajeka.Graph.Camera.GraphCameraEyeTypes.*;

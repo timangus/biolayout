@@ -5,13 +5,13 @@ import java.io.*;
 import java.nio.*;
 import javax.swing.*;
 import static java.lang.Math.*;
-import javax.media.opengl.*;
-import javax.media.opengl.awt.GLCanvas;
+import com.jogamp.opengl.*;
+import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.common.nio.Buffers;
 import java.awt.Color;
-import static javax.media.opengl.GL2.*;
+import static com.jogamp.opengl.GL2.*;
 import org.Kajeka.Graph.*;
 import org.Kajeka.Models.*;
 import org.Kajeka.Models.Lathe3D.*;
@@ -1285,8 +1285,8 @@ public class ModelShapeRenderer extends GLCanvas implements GLEventListener, Key
         */
         // glDrawable.setGL( new TraceGL( glDrawable.getGL(), System.out) );
 
-        width = glDrawable.getWidth();
-        height = glDrawable.getHeight();
+        width = glDrawable.getSurfaceWidth();
+        height = glDrawable.getSurfaceHeight();
 
         if (width <= 0) width = 1;
         if (height <= 0) height = 1;

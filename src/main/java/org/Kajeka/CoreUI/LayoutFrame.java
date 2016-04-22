@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
-import javax.media.opengl.awt.GLJPanel;
+import com.jogamp.opengl.awt.GLJPanel;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.Kajeka.Analysis.AnnotationTypeManagerBG;

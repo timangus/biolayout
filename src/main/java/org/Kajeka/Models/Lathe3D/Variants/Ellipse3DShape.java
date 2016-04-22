@@ -1,6 +1,6 @@
 package org.Kajeka.Models.Lathe3D.Variants;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import static java.lang.Math.*;
 import org.Kajeka.Models.*;
 import org.Kajeka.Models.Lathe3D.*;

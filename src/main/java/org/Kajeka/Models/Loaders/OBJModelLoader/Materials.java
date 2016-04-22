@@ -3,7 +3,7 @@ package org.Kajeka.Models.Loaders.OBJModelLoader;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import javax.swing.*;
 import com.jogamp.opengl.util.texture.*;
 import static org.Kajeka.Models.Loaders.OBJModelLoader.OBJModelLoader.*;

@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import static java.lang.Math.*;
 import javax.swing.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.common.nio.Buffers;
@@ -17,10 +17,10 @@ import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import javax.imageio.ImageIO;
-import static javax.media.opengl.GL.GL_ONE;
-import static javax.media.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
-import static javax.media.opengl.GL.GL_SRC_ALPHA;
-import static javax.media.opengl.GL2.*;
+import static com.jogamp.opengl.GL.GL_ONE;
+import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
+import static com.jogamp.opengl.GL.GL_SRC_ALPHA;
+import static com.jogamp.opengl.GL2.*;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.DataStructures.*;
 import org.Kajeka.GPUComputing.GLSL.*;
@@ -58,7 +58,7 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 * @see org.Kajeka.Textures.Glyphbombing3DTexture
 * @see org.Kajeka.Textures.PerlinNoise3DTexture
 * @see org.Kajeka.Textures.ShaderLightingSFXs
-* @see javax.media.opengl.GLCanvas
+* @see com.jogamp.opengl.GLCanvas
 * @see org.Kajeka.Graph.Graph
 * @see org.Kajeka.Graph.GraphRendererCommonVariables
 * @see org.Kajeka.Graph.GraphRendererCommonFinalVariables
@@ -3289,8 +3289,10 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                 false
             };
 
-            GLPixelBuffer.GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 4);
-            GLPixelBuffer pixelBuffer = pixelBufferProvider.allocate(gl, pixelAttribs, tileWidth, tileHeight, 1, true, 0);
+            GLPixelBuffer.GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 4, true);
+            GLPixelBuffer pixelBuffer = pixelBufferProvider.allocate(gl,
+                pixelBufferProvider.getHostPixelComp(GLProfile.getDefault(), 4),
+                pixelAttribs, true, tileWidth, tileHeight, 1, 0);
 
             tr.setImageBuffer(pixelBuffer);
 

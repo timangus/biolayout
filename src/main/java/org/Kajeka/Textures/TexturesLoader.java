@@ -4,7 +4,7 @@ import java.awt.image.*;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import static cpath.service.CmdArgs.source;

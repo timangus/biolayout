@@ -1,9 +1,9 @@
 package org.Kajeka.Textures;
 
 import java.awt.image.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.*;
-import static javax.media.opengl.GL.*;
+import static com.jogamp.opengl.GL.*;
 import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Textures.ShaderTextureSFXs.*;
 import static org.Kajeka.Graph.Graph.*;

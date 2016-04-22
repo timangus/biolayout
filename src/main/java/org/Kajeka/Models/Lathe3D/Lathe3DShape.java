@@ -2,7 +2,7 @@ package org.Kajeka.Models.Lathe3D;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import static java.lang.Math.*;
 import org.Kajeka.CPUParallelism.Executors.*;
 import org.Kajeka.Math3DTransformations.*;

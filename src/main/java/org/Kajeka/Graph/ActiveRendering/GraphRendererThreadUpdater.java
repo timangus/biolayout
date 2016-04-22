@@ -1,8 +1,8 @@
 package org.Kajeka.Graph.ActiveRendering;
 
 import java.util.concurrent.*;
-import javax.media.opengl.*;
-import javax.media.opengl.awt.GLCanvas;
+import com.jogamp.opengl.*;
+import com.jogamp.opengl.awt.GLCanvas;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 

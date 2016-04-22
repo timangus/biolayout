@@ -8,7 +8,7 @@ import java.nio.*;
 import java.util.*;
 import java.util.concurrent.*;
 import javax.swing.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.GLPixelBuffer.GLPixelAttributes;
 import com.jogamp.opengl.util.texture.*;
@@ -17,7 +17,7 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import static java.lang.Math.*;
 import javax.imageio.ImageIO;
-import static javax.media.opengl.GL2.*;
+import static com.jogamp.opengl.GL2.*;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.DataStructures.*;
 import org.Kajeka.GPUComputing.GLSL.Animation.*;
@@ -49,7 +49,7 @@ import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 * @see org.Kajeka.Textures.TextureSFXs
 * @see org.Kajeka.Textures.ShaderTextureSFXs
 * @see org.Kajeka.Textures.DrawTextureSFXs
-* @see javax.media.opengl.GLCanvas
+* @see com.jogamp.opengl.GLCanvas
 * @see org.Kajeka.Graph.Graph
 * @see org.Kajeka.Graph.GraphRendererCommonVariables
 * @see org.Kajeka.Graph.GraphRendererCommonFinalVariables
@@ -660,8 +660,10 @@ final class GraphRenderer2D implements GraphInterface, TileRendererBase.TileRend
                 false
             };
 
-            GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 3);
-            GLPixelBuffer pixelBuffer = pixelBufferProvider.allocate(gl, pixelAttribs, tileWidth, tileHeight, 1, true, 0);
+            GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 3, true);
+            GLPixelBuffer pixelBuffer = pixelBufferProvider.allocate(gl,
+                pixelBufferProvider.getHostPixelComp(GLProfile.getDefault(), 3),
+                pixelAttribs, true, tileWidth, tileHeight, 1, 0);
 
             tr.setImageBuffer(pixelBuffer);
 

@@ -1,6 +1,6 @@
 package org.Kajeka.Models.Lathe3D;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import org.Kajeka.Models.*;
 import org.Kajeka.Models.Lathe3D.Variants.*;
 import static org.Kajeka.StaticLibraries.EnumUtils.*;

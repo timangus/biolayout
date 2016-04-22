@@ -1,7 +1,7 @@
 package org.Kajeka.Models.SuperQuadric;
 
 import java.util.concurrent.*;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import static java.lang.Math.*;
 import org.Kajeka.CPUParallelism.Executors.*;
 import org.Kajeka.Models.*;

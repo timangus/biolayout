@@ -23,7 +23,7 @@
         <minJavaVersion>1.7</minJavaVersion>
 
         <!-- The -01 is because apparently the 2.1.5 release was screwed up and is missing all its class files -->
-        <jogampVersion>2.1.5-01</jogampVersion>
+        <jogampVersion>2.3.2</jogampVersion>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -451,9 +451,9 @@
                                     <classifier>natives-windows-i586</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win32</outputDirectory>
-                                    <includes>*.dll</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.dll</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
                                 <!-- gluegen-rt native windows-i586 -->
@@ -464,9 +464,9 @@
                                     <classifier>natives-windows-i586</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win32</outputDirectory>
-                                    <includes>*.dll</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.dll</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
                                 <!-- jogl-all native windows-amd64 -->
@@ -477,9 +477,9 @@
                                     <classifier>natives-windows-amd64</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win64</outputDirectory>
-                                    <includes>*.dll</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.dll</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
                                 <!-- gluegen-rt native windows-amd64 -->
@@ -490,9 +490,9 @@
                                     <classifier>natives-windows-amd64</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Win64</outputDirectory>
-                                    <includes>*.dll</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.dll</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
 
@@ -504,9 +504,9 @@
                                     <classifier>natives-linux-i586</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux32</outputDirectory>
-                                    <includes>*.so</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.so</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
                                 <!-- gluegen-rt native linux-i586 -->
@@ -517,9 +517,9 @@
                                     <classifier>natives-linux-i586</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux32</outputDirectory>
-                                    <includes>*.so</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.so</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
 
@@ -531,9 +531,9 @@
                                     <classifier>natives-linux-amd64</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux64</outputDirectory>
-                                    <includes>*.so</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.so</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
                                 <!-- gluegen-rt native linux-amd64 -->
@@ -544,9 +544,9 @@
                                     <classifier>natives-linux-amd64</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Linux64</outputDirectory>
-                                    <includes>*.so</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.so</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
 
@@ -558,9 +558,9 @@
                                     <classifier>natives-macosx-universal</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Mac</outputDirectory>
-                                    <includes>*.jnilib</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.jnilib</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
                                 <!-- gluegen-rt native macosx-universal -->
@@ -571,9 +571,9 @@
                                     <classifier>natives-macosx-universal</classifier>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries/Mac</outputDirectory>
-                                    <includes>*.jnilib</includes>
-                                    <excludes>*newt.*,*_mobile.*</excludes>
+                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
+                                    <includes>**\/*.jnilib</includes>
+                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
                             </artifactItems>

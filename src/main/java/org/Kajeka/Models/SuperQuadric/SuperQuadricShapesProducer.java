@@ -1,6 +1,6 @@
 package org.Kajeka.Models.SuperQuadric;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import static java.lang.Math.*;
 import org.Kajeka.Models.*;
 import static org.Kajeka.StaticLibraries.EnumUtils.*;

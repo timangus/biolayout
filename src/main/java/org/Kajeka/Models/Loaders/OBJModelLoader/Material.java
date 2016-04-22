@@ -1,8 +1,8 @@
 package org.Kajeka.Models.Loaders.OBJModelLoader;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.*;
-import static javax.media.opengl.GL2.*;
+import static com.jogamp.opengl.GL2.*;
 import org.Kajeka.StaticLibraries.*;
 import org.Kajeka.Utils.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;

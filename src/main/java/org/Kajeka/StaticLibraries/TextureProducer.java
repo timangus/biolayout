@@ -3,7 +3,7 @@ package org.Kajeka.StaticLibraries;
 import java.awt.image.*;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import org.Kajeka.GPUComputing.OpenGLContext.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;

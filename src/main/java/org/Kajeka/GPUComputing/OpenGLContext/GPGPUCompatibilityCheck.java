@@ -1,8 +1,8 @@
 package org.Kajeka.GPUComputing.OpenGLContext;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.*;
 import org.Kajeka.DataStructures.*;
-import static javax.media.opengl.GL.*;
+import static com.jogamp.opengl.GL.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 
