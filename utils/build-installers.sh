@@ -54,7 +54,7 @@ echo VERSION=${VERSION}
 echo GIT_REV=${GIT_REV}
 echo BUILD_DIR=${BUILD_DIR}
 
-#rm -r ${BUILD_DIR}
+rm -r ${BUILD_DIR}
 mkdir -p ${BUILD_DIR}
 
 if hash makensis 2>/dev/null;
