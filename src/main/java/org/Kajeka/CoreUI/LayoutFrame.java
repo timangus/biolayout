@@ -11,7 +11,6 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
-import com.jogamp.opengl.awt.GLJPanel;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.Kajeka.Analysis.AnnotationTypeManagerBG;
@@ -155,6 +154,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
     public LayoutFrame initializeFrame(boolean useDefaults, Map<String, String> preferences,
             final boolean startWithAutomaticFileLoading)
     {
+        initMacHandlers();
+
         if (!useDefaults)
         {
             LayoutPreferences.getLayoutPreferencesSingleton().loadPreferences();
@@ -377,6 +378,75 @@ public final class LayoutFrame extends JFrame implements GraphListener
         frameInitializationFinish(startWithAutomaticFileLoading);
 
         return this;
+    }
+
+    private void initMacHandlers()
+    {
+        try
+        {
+            final Class<?> eawtApplicationClass
+                    = this.getClass().getClassLoader().loadClass("com.apple.eawt.Application");
+            final Class<?> eawtApplicationListenerInterface
+                    = this.getClass().getClassLoader().loadClass("com.apple.eawt.ApplicationListener");
+            final Class<?> eawtApplicationEventClass
+                    = this.getClass().getClassLoader().loadClass("com.apple.eawt.ApplicationEvent");
+
+            final Method appEventSetHandledMethod
+                    = eawtApplicationEventClass.getMethod("setHandled", boolean.class);
+
+            InvocationHandler handler = new InvocationHandler()
+            {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args)
+                        throws Throwable {
+                    Object appEvent = args[0];
+                    if ("handleAbout".equals(method.getName()))
+                    {
+                        appEventSetHandledMethod.invoke(appEvent, Boolean.TRUE);
+                        System.out.println("about");
+                        layoutAboutDialog.getAboutAction().actionPerformed(
+                                new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null) {});
+                    }
+                    else if ("handleQuit".equals(method.getName()))
+                    {
+                        appEventSetHandledMethod.invoke(appEvent, Boolean.FALSE);
+                        closeApplication();
+                    }
+                    else if ("handlePreferences".equals(method.getName()))
+                    {
+                        appEventSetHandledMethod.invoke(appEvent, Boolean.TRUE);
+                        layoutGraphPropertiesDialog.getGeneralPropertiesAction().actionPerformed(
+                                new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null) {});
+                    }
+
+                    return null;
+                }
+            };
+
+            Object applicationListenerObject
+                    = Proxy.newProxyInstance(this.getClass().getClassLoader(),
+                            new Class<?>[]{eawtApplicationListenerInterface}, handler);
+
+            Method getApplicationMethod
+                    = eawtApplicationClass.getMethod("getApplication");
+            Object applicationObject = getApplicationMethod.invoke(null);
+
+            Method setEnabledPreferencesMenuMethod
+                    = eawtApplicationClass.getMethod("setEnabledPreferencesMenu",
+                            boolean.class);
+            setEnabledPreferencesMenuMethod.invoke(applicationObject, Boolean.TRUE);
+
+            Method addApplicationListenerMethod
+                    = eawtApplicationClass.getMethod("addApplicationListener",
+                            eawtApplicationListenerInterface);
+            addApplicationListenerMethod.invoke(applicationObject,
+                    applicationListenerObject);
+        }
+        catch (Exception e)
+        {
+            if(DEBUG_BUILD)
+                System.out.println("Failed to install Mac menu handlers");
+        }
     }
 
     public ImportWebService getImportWebService()
