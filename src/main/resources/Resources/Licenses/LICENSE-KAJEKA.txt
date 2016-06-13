@@ -1,6 +1,6 @@
  A tool for the visualisation and analysis of networks
 
- Copyright (�):	Kajeka 2014-2015
+ Copyright (�):	Kajeka 2014-2016
  Website: http://kajeka.com/
 
  Distributed under Version 3 of the GNU General Public License (GNU GPLv3) or any later version. See below for details.
