@@ -24,6 +24,7 @@
 
         <!-- The -01 is because apparently the 2.1.5 release was screwed up and is missing all its class files -->
         <jogampVersion>2.3.2</jogampVersion>
+        <sbgnVersion>milestone2</sbgnVersion>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -35,7 +36,7 @@
         <osx.appbundler.path>${project.basedir}/jars/com/oracle/appbundler/appbundler/1.0/appbundler-1.0.jar</osx.appbundler.path>
 
         <debug.build>true</debug.build>
-
+        
         <jarsigner.keystore>selfsign.jks</jarsigner.keystore>
         <jarsigner.p12keystore>selfsign.p12</jarsigner.p12keystore>
         <jarsigner.alias>selfsigned</jarsigner.alias>
@@ -191,6 +192,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.sbgn</groupId>
+            <artifactId>sbgn</artifactId>
+            <version>${sbgnVersion}</version>
+        </dependency>
+
+        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
@@ -299,7 +306,7 @@
                 </snapshots>
         </repository>
 
-        <!-- This allows us to treat local jars as
+        <!-- This allows us to treat local jars (e.g. libsbgn) as
              normal dependencies -->
         <repository>
             <id>jars</id>
