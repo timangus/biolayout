@@ -36,6 +36,13 @@ public final class CorrelationEnvironment
         ANTILOG10,
     }
     public static ScaleTransformType CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
+    
+    public static enum NormalisationType
+    {
+        NONE,
+        MINMAX
+    }
+    public static NormalisationType CURRENT_NORMALISATION = NormalisationType.NONE;
 
     public static final float DEFAULT_CORRELATION_THRESHOLD = 0.85f;
     public static final float DEFAULT_STORED_CORRELATION_THRESHOLD = 0.70f;

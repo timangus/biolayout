@@ -31,6 +31,7 @@ public final class CorrelationLoaderDialog extends JDialog implements ActionList
     private JComboBox<String> correlationMetric = null;
     private JCheckBox transposeCheckBox = null;
     private JComboBox<String> scaleTransformComboBox = null;
+    private JComboBox<String> normalisationComboBox = null;
     private JEditorPane textArea = null;
     private JCheckBox saveCorrelationTextFileCheckBox = null;
     private File correlationFile = null;
@@ -140,8 +141,19 @@ public final class CorrelationLoaderDialog extends JDialog implements ActionList
         }
         scaleTransformComboBox.setSelectedIndex(0);
         scaleTransformComboBox.setToolTipText("Scale Transform");
-        tabLine1.add(new JLabel("Scale Transform:"));
+        tabLine1.add(new JLabel("Transform:"));
         tabLine1.add(scaleTransformComboBox);
+        
+        normalisationComboBox = new JComboBox<String>();
+        for (NormalisationType type : NormalisationType.values())
+        {
+            String s = Utils.titleCaseOf(type.toString());
+            normalisationComboBox.addItem(s);
+        }
+        normalisationComboBox.setSelectedIndex(0);
+        tabLine1.add(new JLabel("Normalisation:"));
+        tabLine1.add(normalisationComboBox);
+       
 
         // Transpose
         transposeCheckBox = new JCheckBox(transposeChangedAction);
@@ -219,6 +231,7 @@ public final class CorrelationLoaderDialog extends JDialog implements ActionList
 
                 CURRENT_METRIC = CorrelationTypes.values()[correlationMetric.getSelectedIndex()];
                 CURRENT_SCALE_TRANSFORM = ScaleTransformType.values()[scaleTransformComboBox.getSelectedIndex()];
+                CURRENT_NORMALISATION = NormalisationType.values()[normalisationComboBox.getSelectedIndex()];
                 proceed = true;
                 setVisible(false);
             }
@@ -579,7 +592,7 @@ public final class CorrelationLoaderDialog extends JDialog implements ActionList
     {
         return transposeCheckBox.isSelected();
     }
-
+   
     public boolean saveCorrelationTextFile()
     {
         return saveCorrelationTextFileCheckBox.isSelected();

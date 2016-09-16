@@ -266,6 +266,7 @@ public class CoreParser
                 CORRELATION_DATA_TRANSPOSE = false;
                 CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field3);
                 CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
+                CURRENT_NORMALISATION = NormalisationType.NONE;
             }
             else if (property.equals("//EXPRESSION_DATA_V2")) // 3.0 through 3.2
             {
@@ -276,17 +277,24 @@ public class CoreParser
                 CORRELATION_DATA_TRANSPOSE = Boolean.parseBoolean(field4);
                 CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field5);
                 CURRENT_SCALE_TRANSFORM = ScaleTransformType.NONE;
+                CURRENT_NORMALISATION = NormalisationType.NONE;
             }
             else if (property.equals("//CORRELATION_DATA_V1") || property.equals("//EXPRESSION_DATA_V3")) // 1.0
             {
                 field4 = getNext();
                 field5 = getNext();
                 field6 = getNext();
+                field7 = getNext();
 
                 CORRELATION_DATA_FIRST_ROW = Integer.parseInt(field3);
                 CORRELATION_DATA_TRANSPOSE = Boolean.parseBoolean(field4);
                 CURRENT_CORRELATION_THRESHOLD = Float.parseFloat(field5);
                 CURRENT_SCALE_TRANSFORM = Enum.valueOf(ScaleTransformType.class, field6);
+                
+                if (field7.isEmpty())
+                    CURRENT_NORMALISATION = NormalisationType.NONE;
+                else
+                    CURRENT_NORMALISATION = Enum.valueOf(NormalisationType.class, field7);
             }
             else
             {

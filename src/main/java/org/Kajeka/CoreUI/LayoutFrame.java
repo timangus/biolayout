@@ -1237,7 +1237,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
                     boolean generateTextFile = correlationLoaderDialog.saveCorrelationTextFile();
 
-                    correlationData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM);
+                    correlationData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM, CURRENT_NORMALISATION);
 
                     if (DEBUG_BUILD) println("Correlation File is: " + CORRELATION_FILE_PATH + CORRELATION_FILE);
                     String metricName = CURRENT_METRIC.toString().toLowerCase();
@@ -1253,6 +1253,11 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     if (CURRENT_SCALE_TRANSFORM != ScaleTransformType.NONE)
                     {
                         correlationFilename += "_" + Utils.hyphenatedOf(CURRENT_SCALE_TRANSFORM.toString());
+                    }
+                    
+                    if (CURRENT_NORMALISATION != NormalisationType.NONE)
+                    {
+                        correlationFilename += "_normalise" + Utils.hyphenatedOf(CURRENT_NORMALISATION.toString());
                     }
 
                     correlationFilename += "_" + metricName;
@@ -1472,7 +1477,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                         isSuccessful = correlationLoader.parse(this);
                         reasonForLoadFailure = correlationLoader.reasonForFailure; // "" if no failure
 
-                        correlationData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM);
+                        correlationData.preprocess(layoutProgressBarDialog, CURRENT_SCALE_TRANSFORM, CURRENT_NORMALISATION);
 
                         isSuccessful = isSuccessful && correlationLoader.parseAnnotations(this, nc);
                         DATA_TYPE = DataTypes.CORRELATION;

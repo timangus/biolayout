@@ -78,6 +78,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     private JCheckBox viewAllClassSets = null;
     private AbstractAction refreshSelectionInTableAction = null;
     private JCheckBox autoSizeColumnsCheckBox = null;
+    private JCheckBox showTransposePlotsCheckbox = null;
     private JButton selectDeselectAllButton = null;
     private boolean selectDeselectAllButtonModeState = false;
     private boolean updateResetSelectDeselectAllButton = true;
@@ -637,9 +638,31 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
         this.toFront();
     }
+    
+    private void hideTransposePlots()
+    {
+        tabGeneralPanel.remove(splitPane);
+        splitPane.remove(generalTablePanel);
+        splitPane.setRightComponent(null);
+        
+        tabGeneralPanel.add(generalTablePanel, BorderLayout.CENTER);
+
+        renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(false);
+        renderPlotImageToFileButton.setVisible(false);
+    }
+    
+    private void showTransposePlots()
+    {
+        tabGeneralPanel.remove(generalTablePanel);
+        splitPane.setRightComponent(generalTablePanel);
+        tabGeneralPanel.add(splitPane, BorderLayout.CENTER);
+        
+        renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(true);
+        renderPlotImageToFileButton.setVisible(true);
+    }
 
     private void initializeCommonComponents() {
-        if (DATA_TYPE.equals(DataTypes.CORRELATION) && !layoutFrame.getCorrelationData().isTransposed()) {
+        if (DATA_TYPE.equals(DataTypes.CORRELATION)) {
             // Correlation data
             plotPanel = new CorrelationGraphPanel(this, layoutFrame, layoutFrame.getCorrelationData());
         } else if (DATA_TYPE.equals(DataTypes.GRAPHML) && layoutFrame.getNetworkRootContainer().getIsPetriNet()) {
@@ -690,6 +713,15 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(false);
             renderPlotImageToFileButton.setVisible(false);
         }
+        
+        if (layoutFrame.getCorrelationData().isTransposed())
+        {
+            showTransposePlotsCheckbox.setVisible(true);
+            showTransposePlotsCheckbox.setSelected(false);
+            hideTransposePlots();
+        } else 
+            showTransposePlotsCheckbox.setVisible(false);
+
 
         tableModelGeneral.proccessSelected(viewAllClassSets.isSelected());
         selectedGenes = entropyTableModel.proccessSelected();
@@ -785,6 +817,13 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         autoSizeColumnsCheckBox.addActionListener(this);
         autoSizeColumnsCheckBox.setToolTipText("Auto Size Columns");
         autoSizeColumnsCheckBox.setSelected(CV_AUTO_SIZE_COLUMNS.get());
+        
+        showTransposePlotsCheckbox = new JCheckBox("Show Transpose Plots");
+        showTransposePlotsCheckbox.addActionListener(this);
+        showTransposePlotsCheckbox.setToolTipText("Show Transpose Plots");
+        showTransposePlotsCheckbox.setVisible(false);
+        
+        
 
         // generalTable, center
         tableModelGeneral = new ClassViewerTableModelGeneral(layoutFrame, this);
@@ -880,6 +919,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
         setUpSearchDatabaseButton(false); //set texts and disable
 
         // topPanel, north
+        generalTopPanel.add(showTransposePlotsCheckbox);
         generalTopPanel.add(new JLabel("Class Set:"));
         generalTopPanel.add(classSetsBox);
         generalTopPanel.add(viewAllClassSets);
@@ -2044,6 +2084,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             CV_AUTO_SIZE_COLUMNS.set(autoSizeColumnsCheckBox.isSelected());
             generalTable.setAutoSizeColumns(CV_AUTO_SIZE_COLUMNS.get());
             populateClassViewer(false, true);
+        } else if (e.getSource().equals(showTransposePlotsCheckbox)) {
+            if (showTransposePlotsCheckbox.isSelected())
+                showTransposePlots();
+            else
+                hideTransposePlots();
         }
     }
 

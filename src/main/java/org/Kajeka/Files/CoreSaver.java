@@ -296,7 +296,8 @@ public final class CoreSaver
                         CORRELATION_DATA_FIRST_ROW + "\t" +
                         CORRELATION_DATA_TRANSPOSE + "\t" +
                         Float.toString(CURRENT_CORRELATION_THRESHOLD) + "\t" +
-                        CURRENT_SCALE_TRANSFORM.toString() + "\n");
+                        CURRENT_SCALE_TRANSFORM.toString() + "\t" +
+                        CURRENT_NORMALISATION.toString() + "\n" );
             }
 
             savePairWiseData(layoutProgressBarDialog, fileWriter);

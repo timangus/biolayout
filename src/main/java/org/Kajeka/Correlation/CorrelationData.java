@@ -1017,6 +1017,26 @@ public final class CorrelationData
 
         return columnNamesArray[index];
     }
+    
+    public float getMaxValueForColumn(int col)
+    {
+        float maxColumnValue = Float.MIN_VALUE;
+        for (int row = 0; row < totalRows; row++)
+        {
+            maxColumnValue = java.lang.Math.max(maxColumnValue, getDataValue(row, col));
+        }
+        return maxColumnValue;
+    }
+    
+    public float getMinValueForColumn(int col)
+    {
+        float minColumnValue = Float.MAX_VALUE;
+        for (int row = 0; row < totalRows; row++)
+        {
+            minColumnValue = java.lang.Math.min(minColumnValue, getDataValue(row, col));
+        }
+        return minColumnValue;
+    }
 
     private String uniqueColumnName(String name)
     {
@@ -1575,6 +1595,40 @@ public final class CorrelationData
             return (float) pow(10.0, x);
         }
     }
+    
+    private void normalise(LayoutProgressBarDialog layoutProgressBarDialog)
+    {
+        for (int row = 0; row < totalRows; row++)
+        {
+            for (int column = 0; column < totalColumns; column++)
+            {
+                float columnMaxValue = getMaxValueForColumn(column);
+                float columnMinValue = getMinValueForColumn(column);
+                float diff = columnMaxValue - columnMinValue;
+                
+                float value = getDataValue(row, column);
+                value = (value - columnMinValue) / (diff);
+
+                if (value == Float.POSITIVE_INFINITY)
+                {
+                    value = Float.MAX_VALUE;
+                }
+                else if (value == Float.NEGATIVE_INFINITY)
+                {
+                    value = Float.MIN_VALUE;
+                }
+                else if (Float.isNaN(value))
+                {
+                    value = 0.0f;
+                }
+
+                setDataValue(row, column, value);
+            }
+
+            int percent = (100 * row) / totalRows;
+            layoutProgressBarDialog.incrementProgress(percent);
+        }
+    }
 
     private void rescale(LayoutProgressBarDialog layoutProgressBarDialog, IRescaleDelegate d)
     {
@@ -1656,7 +1710,7 @@ public final class CorrelationData
     }
 
     public void preprocess(LayoutProgressBarDialog layoutProgressBarDialog,
-            ScaleTransformType scaleTransformType)
+            ScaleTransformType scaleTransformType, NormalisationType normalisationType)
     {
         layoutProgressBarDialog.prepareProgressBar(100, "Preprocessing");
         layoutProgressBarDialog.startProgressBar();
@@ -1666,7 +1720,6 @@ public final class CorrelationData
             default:
             case NONE:
                 break;
-
             case LOG2:
                 rescale(layoutProgressBarDialog, new RescaleLog2());
                 break;
@@ -1681,6 +1734,16 @@ public final class CorrelationData
 
             case ANTILOG10:
                 rescale(layoutProgressBarDialog, new RescaleAntiLog10());
+                break;
+        }
+        
+        switch(normalisationType)
+        {
+            default:
+            case NONE:
+                break;
+            case MINMAX:
+                normalise(layoutProgressBarDialog);
                 break;
         }
 
