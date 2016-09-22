@@ -40,7 +40,8 @@ public final class CorrelationEnvironment
     public static enum NormalisationType
     {
         NONE,
-        MINMAX
+        MINMAX,
+        QUANTILE,
     }
     public static NormalisationType CURRENT_NORMALISATION = NormalisationType.NONE;
 

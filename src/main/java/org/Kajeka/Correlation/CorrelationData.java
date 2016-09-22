@@ -1596,6 +1596,63 @@ public final class CorrelationData
         }
     }
     
+    private void quantileNormalise(LayoutProgressBarDialog layoutProgressBarDialog)
+    {
+        int[] quantileRanking = new int[correlationDataArray.length];
+        float[] sortedColumnValues = new float[correlationDataArray.length];
+        float[] meanValues = new float[totalRows];
+        for (int column = 0; column < totalColumns; column++)
+        {
+            // Sort the ColumnValues
+            List<Float> columnValues = new ArrayList<>();
+            for (int row = 0; row < totalRows; row++)
+            {
+                float value = getDataValue(row, column);
+                columnValues.add(value);
+            }
+            Collections.sort(columnValues);
+            Set<Float> uniqueSortedColumnValues = new TreeSet<>(columnValues);
+            
+            for (int row = 0; row < totalRows; row++)
+            {
+                // Set the ranking
+                float dataValue = getDataValue(row, column);
+                int i = 0;
+                for (Float columnValue : uniqueSortedColumnValues)
+                {
+                    if (columnValue == dataValue)
+                        quantileRanking[row * totalColumns + column] = i;
+                    i++;
+                }
+                // Copy Result to sortedColumns
+                sortedColumnValues[row * totalColumns + column] = columnValues.get(row);
+            }
+        }
+
+        // Set 
+        for (int row = 0; row < totalRows; row++)
+        {
+            float meanValue = 0;
+            String values = "";
+            for (int column = 0; column < totalColumns; column++)
+            {
+                meanValue += sortedColumnValues[row * totalColumns + column];
+                values += " " + sortedColumnValues[row * totalColumns + column];
+            }
+            meanValues[row] = meanValue/totalColumns;
+        }
+        
+        // Set the mean value based on the ranking
+        for (int row = 0; row < totalRows; row++)
+        {
+            for (int column = 0; column < totalColumns; column++)
+            {
+                int index = row * totalColumns + column;
+                setDataValue(row, column, meanValues[quantileRanking[index]]);
+            }
+        }
+    }
+    
     private void normalise(LayoutProgressBarDialog layoutProgressBarDialog)
     {
         for (int row = 0; row < totalRows; row++)
@@ -1744,6 +1801,9 @@ public final class CorrelationData
                 break;
             case MINMAX:
                 normalise(layoutProgressBarDialog);
+                break;
+            case QUANTILE:
+                quantileNormalise(layoutProgressBarDialog);
                 break;
         }
 
