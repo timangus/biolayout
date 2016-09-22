@@ -246,7 +246,7 @@ public final class CoreSaver
             String saveFilePath = saveFile.getAbsolutePath().substring(0, saveFile.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
             if ( DATA_TYPE.equals(DataTypes.CORRELATION) && !saveFilePath.equals(CORRELATION_FILE_PATH) )
             {
-                dialogReturnValue = JOptionPane.showConfirmDialog(layoutFrame, "You have chosen to save your correlation data derived layout file to a different drive/folder than its parent correlation file.\nIt is advised to save the layout file in the same drive/folder as its parent correlation file. Please press ok to continue.", "Layout folder/drive saving advice", JOptionPane.YES_NO_OPTION);
+                dialogReturnValue = JOptionPane.showConfirmDialog(layoutFrame, "You have chosen to save your correlation data derived layout file to a different drive/folder than its parent correlation file.\nIt is advised to save the layout file in the same drive/folder as its parent correlation file. Please press 'Yes' to continue.", "Layout folder/drive saving advice", JOptionPane.YES_NO_OPTION);
                 doSaveFile = (dialogReturnValue == JOptionPane.YES_OPTION);
             }
         }
