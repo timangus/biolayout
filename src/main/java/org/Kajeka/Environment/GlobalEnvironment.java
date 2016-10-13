@@ -360,9 +360,9 @@ public final class GlobalEnvironment
     public static boolean CUSTOM_SEARCH = false;
 
     public static final int MIN_NODE_SIZE = 1;
-    public static final int MAX_NODE_SIZE = 100;
+    public static final int MAX_NODE_SIZE = 200;
     public static final int MIN_EDGE_THICKNESS = 1;
-    public static final int MAX_EDGE_THICKNESS = 100;
+    public static final int MAX_EDGE_THICKNESS = 200;
     public static final int MIN_ARROWHEAD_SIZE = 1;
     public static final int MAX_ARROWHEAD_SIZE = 60;
     public static final float MIN_MANUAL_NODE_SIZE = 0.01f;
