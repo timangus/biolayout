@@ -216,7 +216,6 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
         gridLinesCheckBox.setSelected(PLOT_GRID_LINES.get());
         axesLegendCheckBox.setSelected(PLOT_AXES_LEGEND.get());
         maximumVisibleSamplesSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 999, 1));
-        maximumVisibleSamplesSpinner.getModel().addChangeListener(this);
 
         classStatComboBox = new JComboBox<String>();
         for (StatisticType type : StatisticType.values())
@@ -1430,6 +1429,7 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
     {
         SpinnerNumberModel snm = (SpinnerNumberModel) maximumVisibleSamplesSpinner.getModel();
         snm.setValue(correlationData.getTotalColumns());
+        maximumVisibleSamplesSpinner.getModel().addChangeListener(this);
 
         columnInfoPopupMenu.removeAll();
         columnInfoPopupMenu.add(sampleNameCheckBox);
