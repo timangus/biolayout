@@ -1403,6 +1403,7 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
         }
         else if (ce.getSource().equals(maximumVisibleSamplesSpinner.getModel()))
         {
+            mainPlot.getRangeAxis().setAutoRange(false);
             for (int datasetIndex = 0; datasetIndex < mainPlot.getDatasetCount(); datasetIndex++)
             {
                 SlidingCategoryDataset slidingDataset = (SlidingCategoryDataset) mainPlot.getDataset(datasetIndex);
@@ -1420,7 +1421,6 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
                     slidingDataset.setMaximumCategoryCount(maximumVisibleSamples());
                 }
             }
-
             refreshZoomScrollbar();
         }
     }
