@@ -887,7 +887,7 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
                 {
                     String nodeName = graphNode.getNodeName();
 
-                    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+                    FastCategoryDataset dataset = new FastCategoryDataset();
                     for (int column = 0; column < totalColumns; column++)
                     {
                         String columnName = correlationData.getColumnName(column);
