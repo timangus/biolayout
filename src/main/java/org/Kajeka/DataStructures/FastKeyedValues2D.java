@@ -546,6 +546,10 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
         // should be immutable...
         clone.columnKeys = new java.util.ArrayList(this.columnKeys);
         clone.rowKeys = new java.util.ArrayList(this.rowKeys);
+        clone.columnKeyIndexMap =
+            new java.util.HashMap<>(this.columnKeyIndexMap);
+        clone.rowKeyIndexMap =
+            new java.util.HashMap<>(this.rowKeyIndexMap);
 
         // but the row data requires a deep copy
         clone.rows = (List) ObjectUtilities.deepClone(this.rows);

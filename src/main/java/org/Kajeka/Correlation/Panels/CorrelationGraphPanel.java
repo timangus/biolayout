@@ -277,7 +277,7 @@ public final class CorrelationGraphPanel extends ClassViewerPlotPanel implements
         JPanel plotOptionsLine2 = new JPanel();
         plotOptionsLine1.add(new JLabel("Scaling:"));
         plotOptionsLine1.add(transformComboBox);
-        plotOptionsLine1.add(new JLabel("Maximum Samples:"));
+        plotOptionsLine1.add(new JLabel("Maximum Columns:"));
         plotOptionsLine1.add(maximumVisibleSamplesSpinner);
         plotOptionsLine1.add(columnInfoButton);
         plotOptionsLine1.add(sortColumnAnnotationComboBox);

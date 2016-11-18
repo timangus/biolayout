@@ -1414,7 +1414,7 @@ public class LayoutGraphPropertiesDialog extends JDialog implements LayoutClasse
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Inflation");
+        MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Cluster Granularity (Inflation)");
         addTitledButtonBorder(MCLPropertiesPanelBorder, MCL_inflationPanel, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, leftPanel);
 
         MCLPropertiesPanelBorder = BorderFactory.createTitledBorder(ETCHED, "Pre Inflation");
