@@ -73,6 +73,9 @@ public final class GraphmlLookUpmEPNTables
                                              SINK_PROTEASOMAL_DEGRADATION,
                                              OXIDATION,
                                              MUTATION,
+                                             ISOMERISATION,
+                                             DIFFUSION,
+                                             REDUCTION,
                                              UNKNOWN_TRANSITION,
 
                                              // Edge Annotations
@@ -129,6 +132,9 @@ public final class GraphmlLookUpmEPNTables
                                                                                 SINK_PROTEASOMAL_DEGRADATION,
                                                                                 OXIDATION,
                                                                                 MUTATION,
+                                                                                ISOMERISATION,
+                                                                                DIFFUSION,
+                                                                                REDUCTION,
                                                                                 UNKNOWN_TRANSITION
                                                                               };
 
@@ -176,12 +182,15 @@ public final class GraphmlLookUpmEPNTables
                                                                           Tuples.tuple("/",   "ellipse", SINK_PROTEASOMAL_DEGRADATION, decode("#FFFFFF"), 5.0f, CIRCLE, TORUS),  //index 33 - BioPAX Degradation
                                                                           Tuples.tuple("Ox",  "ellipse", OXIDATION,                    decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE), //index 34
                                                                           Tuples.tuple("M",   "ellipse", MUTATION,                     decode("#FF99CC"), 5.0f, CIRCLE, SPHERE), //index 35
-                                                                          Tuples.tuple("?",   "ellipse", UNKNOWN_TRANSITION,           decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE), //index 36 - BioPAX Interaction
+                                                                          Tuples.tuple("Is",  "ellipse", ISOMERISATION,                decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE), //index 36
+                                                                          Tuples.tuple("Df",  "ellipse", DIFFUSION,                    decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE), //index 37
+                                                                          Tuples.tuple("Re",  "ellipse", REDUCTION,                    decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE), //index 38
+                                                                          Tuples.tuple("?",   "ellipse", UNKNOWN_TRANSITION,           decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE), //index 39 - BioPAX Interaction
 
                                                                           // Edge Annotations
-                                                                          Tuples.tuple("A",   "diamond", EDGE_ACTIVATES,               decode("#00CC33"), 5.0f, DIAMOND, OCTAHEDRON), //index 37
-                                                                          Tuples.tuple("I",   "diamond", EDGE_INHIBITS,                decode("#FF0000"), 5.0f, DIAMOND, OCTAHEDRON), //index 38
-                                                                          Tuples.tuple("C",   "diamond", EDGE_CATALYSIS,               decode("#CC99FF"), 5.0f, DIAMOND, OCTAHEDRON)  //index 39
+                                                                          Tuples.tuple("A",   "diamond", EDGE_ACTIVATES,               decode("#00CC33"), 5.0f, DIAMOND, OCTAHEDRON), //index 40
+                                                                          Tuples.tuple("I",   "diamond", EDGE_INHIBITS,                decode("#FF0000"), 5.0f, DIAMOND, OCTAHEDRON), //index 41
+                                                                          Tuples.tuple("C",   "diamond", EDGE_CATALYSIS,               decode("#CC99FF"), 5.0f, DIAMOND, OCTAHEDRON)  //index 42
                                                                         };
 
     /**
@@ -315,7 +324,7 @@ public final class GraphmlLookUpmEPNTables
         interactionNameMap.put("BiochemicalReaction", GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[8]); //CATALYSIS
         interactionNameMap.put("Catalysis", GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[8]); //CATALYSIS
 
-        
+
         interactionNameMap.put("ComplexAssembly", GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_1[2]); //BINDING
 
         interactionNameMap.put("Control",                   Tuples.tuple("CTL",   "ellipse", UNKNOWN_TRANSITION, decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE)); //CTL (new)
