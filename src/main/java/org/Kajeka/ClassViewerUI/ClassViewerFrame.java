@@ -641,30 +641,72 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
     
     private void hideTransposePlots()
     {
-        tabGeneralPanel.remove(splitPane);
-        splitPane.remove(generalTablePanel);
-        splitPane.setRightComponent(null);
-        
-        tabGeneralPanel.add(generalTablePanel, BorderLayout.CENTER);
+        if ((splitPane != null) && (plotPanel != null))
+        {
+            tabGeneralPanel.remove(splitPane);
+            splitPane.remove(generalTablePanel);
+            splitPane.setRightComponent(null);
 
-        renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(false);
-        renderPlotImageToFileButton.setVisible(false);
+            tabGeneralPanel.add(generalTablePanel, BorderLayout.CENTER);
+
+            renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(false);
+            renderPlotImageToFileButton.setVisible(false);
+        }
     }
     
     private void showTransposePlots()
     {
-        tabGeneralPanel.remove(generalTablePanel);
-        splitPane.setRightComponent(generalTablePanel);
-        tabGeneralPanel.add(splitPane, BorderLayout.CENTER);
-        
-        renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(true);
-        renderPlotImageToFileButton.setVisible(true);
+        if ((splitPane != null) && (plotPanel != null))
+        {
+            tabGeneralPanel.remove(generalTablePanel);
+            splitPane.setRightComponent(generalTablePanel);
+            tabGeneralPanel.add(splitPane, BorderLayout.CENTER);
+
+            renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(true);
+            renderPlotImageToFileButton.setVisible(true);
+            plotPanel.refreshPlot();
+        }
+        else
+        {
+            tabGeneralPanel.remove(generalTablePanel);
+            // Need to create the new plot!
+            plotPanel = new CorrelationGraphPanel(this, layoutFrame, layoutFrame.getCorrelationData());
+                        plotPanel.setMinimumSize(new Dimension(300, 300));
+
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotPanel, generalTablePanel);
+            splitPane.setOneTouchExpandable(true);
+            splitPane.setContinuousLayout(false);
+            tabGeneralPanel.add(splitPane, BorderLayout.CENTER);
+
+            AbstractAction renderAllCurrentClassSetPlotImagesToFilesAction
+                    = plotPanel.getRenderAllCurrentClassSetPlotImagesToFilesAction();
+            if (renderAllCurrentClassSetPlotImagesToFilesAction != null) {
+                renderAllCurrentClassSetPlotImagesToFilesAction.setEnabled(true);
+                renderAllCurrentClassSetPlotImagesToFilesButton.setAction(
+                        renderAllCurrentClassSetPlotImagesToFilesAction);
+                renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(true);
+            } else {
+                renderAllCurrentClassSetPlotImagesToFilesButton.setVisible(false);
+            }
+
+            AbstractAction renderPlotImageToFileAction = plotPanel.getRenderPlotImageToFileAction();
+            if (renderPlotImageToFileAction != null) {
+                renderPlotImageToFileAction.setEnabled(true);
+                renderPlotImageToFileButton.setAction(renderPlotImageToFileAction);
+                renderPlotImageToFileButton.setVisible(true);
+            } else {
+                renderPlotImageToFileButton.setVisible(false);
+            }
+            
+            plotPanel.onFirstShown();
+        }
     }
 
     private void initializeCommonComponents() {
-        if (DATA_TYPE.equals(DataTypes.CORRELATION)) {
+        if (DATA_TYPE.equals(DataTypes.CORRELATION) && (!layoutFrame.getCorrelationData().isTransposed() || showTransposePlotsCheckbox.isSelected()))
+        {
             // Correlation data
-            plotPanel = new CorrelationGraphPanel(this, layoutFrame, layoutFrame.getCorrelationData());
+            plotPanel = new CorrelationGraphPanel(this, layoutFrame, layoutFrame.getCorrelationData());      
         } else if (DATA_TYPE.equals(DataTypes.GRAPHML) && layoutFrame.getNetworkRootContainer().getIsPetriNet()) {
             // SPN simulation data
             plotPanel = new SimulationResultsPanel(this, layoutFrame);
@@ -1502,7 +1544,11 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
             if (plotPanel != null) {
                 if (refreshPlot) {
-                    plotPanel.refreshPlot();
+                    if (layoutFrame.getCorrelationData().isTransposed())
+                        if (showTransposePlotsCheckbox.isSelected())
+                            plotPanel.refreshPlot();
+                    else
+                        plotPanel.refreshPlot();
                 }
 
                 plotPanel.repaint();
@@ -2084,9 +2130,23 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
             CV_AUTO_SIZE_COLUMNS.set(autoSizeColumnsCheckBox.isSelected());
             generalTable.setAutoSizeColumns(CV_AUTO_SIZE_COLUMNS.get());
             populateClassViewer(false, true);
-        } else if (e.getSource().equals(showTransposePlotsCheckbox)) {
+        } else if (e.getSource().equals(showTransposePlotsCheckbox)) 
+        {
             if (showTransposePlotsCheckbox.isSelected())
-                showTransposePlots();
+            {
+                int COLUMN_WARNING_LIMIT = 10000;
+                if (layoutFrame.getCorrelationData().getTotalColumns() > COLUMN_WARNING_LIMIT)
+                {
+                    if( JOptionPane.showConfirmDialog(this, "Displaying plots with " + Integer.toString(layoutFrame.getCorrelationData().getTotalColumns()) + " columns will take a considerable amount of time to process. Are you sure you want to do this?", "Warning: High column count", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                    {
+                        showTransposePlots();
+                    }
+                    else
+                    {
+                        showTransposePlotsCheckbox.setSelected(false);
+                    }
+                }
+            }
             else
                 hideTransposePlots();
         }
