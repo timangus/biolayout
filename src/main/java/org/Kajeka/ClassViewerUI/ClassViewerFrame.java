@@ -1544,8 +1544,7 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
 
             if (plotPanel != null) {
                 if (refreshPlot) {
-                    if (layoutFrame.getCorrelationData().isTransposed())
-                        if (showTransposePlotsCheckbox.isSelected())
+                    if (!layoutFrame.getCorrelationData().isTransposed() || showTransposePlotsCheckbox.isSelected())
                             plotPanel.refreshPlot();
                     else
                         plotPanel.refreshPlot();
@@ -2145,6 +2144,10 @@ public final class ClassViewerFrame extends JFrame implements ActionListener, Li
                     {
                         showTransposePlotsCheckbox.setSelected(false);
                     }
+                }
+                else
+                {
+                    showTransposePlots();
                 }
             }
             else
