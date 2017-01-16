@@ -1436,7 +1436,7 @@ public final class ExportSbgn
 
         for (Arc arc : arcList)
         {
-            if (arc.getTarget() == glyph)
+            if (arc.getTarget() == glyph && arc.getSource() != glyph)
             {
                 out.add(arc);
             }
@@ -1451,7 +1451,22 @@ public final class ExportSbgn
 
         for (Arc arc : arcList)
         {
-            if (arc.getSource() == glyph)
+            if (arc.getSource() == glyph && arc.getTarget() != glyph)
+            {
+                out.add(arc);
+            }
+        }
+
+        return out;
+    }
+
+    private static List<Arc> arcsIncidentOn(Glyph glyph, List<Arc> arcList)
+    {
+        List<Arc> out = new ArrayList<Arc>();
+
+        for (Arc arc : arcList)
+        {
+            if (arc.getSource() == glyph || arc.getTarget() == glyph)
             {
                 out.add(arc);
             }
@@ -1560,9 +1575,12 @@ public final class ExportSbgn
                     }
                 }
 
-                // Remove original Arcs
-                arcList.removeAll(sourceArcList);
-                arcList.removeAll(targetArcList);
+                // Remove all Arcs that touch glyph
+                List<Arc> incidentArcs = arcsIncidentOn(glyph, arcList);
+                for (Arc arc : incidentArcs)
+                {
+                    arcList.remove(arc);
+                }
 
                 // Remove original glyph
                 glyphIt.remove();
