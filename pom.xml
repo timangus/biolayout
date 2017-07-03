@@ -22,7 +22,6 @@
 
         <minJavaVersion>1.7</minJavaVersion>
 
-        <!-- The -01 is because apparently the 2.1.5 release was screwed up and is missing all its class files -->
         <jogampVersion>2.3.2</jogampVersion>
         <sbgnVersion>milestone2</sbgnVersion>
 
