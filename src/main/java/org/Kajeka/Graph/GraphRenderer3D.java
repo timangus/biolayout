@@ -13,6 +13,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.nativewindow.util.PixelFormat;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import com.jogamp.opengl.util.awt.ImageUtil;
@@ -21,6 +22,7 @@ import static com.jogamp.opengl.GL.GL_ONE;
 import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
 import static com.jogamp.opengl.GL.GL_SRC_ALPHA;
 import static com.jogamp.opengl.GL2.*;
+import java.nio.charset.StandardCharsets;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.DataStructures.*;
 import org.Kajeka.GPUComputing.GLSL.*;
@@ -3256,15 +3258,23 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
     {
         float originalEdgeSize = DEFAULT_EDGE_SIZE.get();
         DEFAULT_EDGE_SIZE.set(originalEdgeSize * TILE_SCREEN_FACTOR.get());
+
+        // WARNING: The gl instance is different on MacOS/OSX, make sure to
+        // rebuild the gl call lists before screenshotting as below
+        updateNodesDisplayList = true;
         updateEdgesDisplayList = true;
-        buildAllDisplayLists(gl);
+        updateSelectedNodesDisplayList = true;
+
+        takeHighResScreenshot = false;
 
         try
         {
             // do the trick below so as to avoid tile rendering artifacts for every tile being rendered and then changed
             boolean tempShow3DEnvironmentMapping = SHOW_3D_ENVIRONMENT_MAPPING.get();
             if (tempShow3DEnvironmentMapping)
+            {
                 SHOW_3D_ENVIRONMENT_MAPPING.set(false);
+            }
 
             // do the trick below so as to avoid tile rendering artifacts for every tile being rendered and then changed
             boolean tempMaterialAntiAliasShading = false;
@@ -3272,63 +3282,94 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
             {
                 tempMaterialAntiAliasShading = MATERIAL_ANIMATED_SHADING.get();
                 if (tempMaterialAntiAliasShading)
+                {
                     MATERIAL_ANIMATED_SHADING.set(false);
+                }
             }
 
-            int tileWidth = width * TILE_SCREEN_FACTOR.get();
-            int tileHeight = height * TILE_SCREEN_FACTOR.get();
+            final int finalImageWidth = width * TILE_SCREEN_FACTOR.get();
+            final int finalImageHeight = height * TILE_SCREEN_FACTOR.get();
 
-            TileRenderer tr = new TileRenderer();
+            GLProfile profile = GLProfile.get(GLProfile.GL2);
+            final GLCapabilities caps = new GLCapabilities(profile);
+            caps.setDoubleBuffered(false);
 
-            tr.setTileSize(256, 256, 0);
-            tr.setImageSize(tileWidth, tileHeight);
+            final GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
+            final GLAutoDrawable glad = factory.createOffscreenAutoDrawable(null, caps, null, 256, 256);
+
+            glad.addGLEventListener(this);
+
+            final TileRenderer tr = new TileRenderer();
+
+            tr.setImageSize(finalImageWidth, finalImageHeight);
+            tr.setTileSize(glad.getSurfaceWidth(), glad.getSurfaceHeight(), 0);
+            tr.attachAutoDrawable(glad);
 
             final GLPixelBuffer.GLPixelBufferProvider pixelBufferProvider = GLPixelBuffer.defaultProviderWithRowStride;
-            final boolean[] flipVertically =
+            final boolean[] flipVertically
+                    =
+                    {
+                        false
+                    };
+
+            final GLEventListener preTileGLEL = new GLEventListener()
             {
-                false
+                @Override
+                public void init(final GLAutoDrawable drawable)
+                {
+                    final GL gl = drawable.getGL();
+                    final PixelFormat.Composition hostPixelComp = pixelBufferProvider.getHostPixelComp(gl.getGLProfile(), 3);
+                    final GLPixelBuffer.GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 3, true);
+                    final GLPixelBuffer pixelBuffer = pixelBufferProvider.allocate(gl, hostPixelComp, pixelAttribs, true, finalImageWidth, finalImageHeight, 1, 0);
+                    tr.setImageBuffer(pixelBuffer);
+                    flipVertically[0] = !drawable.isGLOriented();
+                }
+
+                @Override
+                public void dispose(final GLAutoDrawable drawable)
+                {
+                }
+
+                @Override
+                public void display(final GLAutoDrawable drawable)
+                {
+                }
+
+                @Override
+                public void reshape(final GLAutoDrawable drawable, final int x, final int y, final int width, final int height)
+                {
+                }
             };
-
-            GLPixelBuffer.GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, 4, true);
-            GLPixelBuffer pixelBuffer = pixelBufferProvider.allocate(gl,
-                pixelBufferProvider.getHostPixelComp(GLProfile.getDefault(), 4),
-                pixelAttribs, true, tileWidth, tileHeight, 1, 0);
-
-            tr.setImageBuffer(pixelBuffer);
+            tr.setGLEventListener(preTileGLEL, null);
 
             int tileCount = 0;
             this.addTileRendererNotify(tr);
-            while(!tr.eot())
+
+            while (!tr.eot())
             {
-                tr.beginTile(gl);
-                this.reshape(gl,
-                    tr.getParam(TileRendererBase.TR_CURRENT_TILE_X_POS),
-                    tr.getParam(TileRendererBase.TR_CURRENT_TILE_Y_POS),
-                    tr.getParam(TileRendererBase.TR_CURRENT_TILE_WIDTH),
-                    tr.getParam(TileRendererBase.TR_CURRENT_TILE_HEIGHT),
-                    tr.getParam(TileRendererBase.TR_IMAGE_WIDTH),
-                    tr.getParam(TileRendererBase.TR_IMAGE_HEIGHT));
-
-                clearScreen3D(gl);
-                renderScene3D(gl, true);
-
-                layoutProgressBarDialog.incrementProgress(++tileCount);
-                tr.endTile(gl);
+                tr.display();
             }
             this.removeTileRendererNotify(tr);
+            tr.detachAutoDrawable();
 
-            if (DEBUG_BUILD) println(tileCount + " tiles drawn\n");
+            if (DEBUG_BUILD)
+            {
+                println(tileCount + " tiles drawn\n");
+            }
 
             layoutProgressBarDialog.incrementProgress(100);
-            layoutProgressBarDialog.setText( "Writing image to: " + saveScreenshotFile.getAbsolutePath() );
+            layoutProgressBarDialog.setText("Writing image to: " + saveScreenshotFile.getAbsolutePath());
 
-            if (DEBUG_BUILD) println( "Now Writing High Res BufferedImage to File: " + saveScreenshotFile.getAbsolutePath() );
+            if (DEBUG_BUILD)
+            {
+                println("Now Writing High Res BufferedImage to File: " + saveScreenshotFile.getAbsolutePath());
+            }
 
             final GLPixelBuffer imageBuffer = tr.getImageBuffer();
             final TextureData textureData = new TextureData(
                     GLProfile.getDefault(),
                     0 /* internalFormat */,
-                    tileWidth, tileHeight,
+                    finalImageWidth, finalImageHeight,
                     0,
                     imageBuffer.pixelAttributes,
                     false, false,
@@ -3340,26 +3381,38 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
             // do the trick below so as to avoid tile rendering artifacts for every tile being rendered and then changed
             if (tempShow3DEnvironmentMapping)
+            {
                 SHOW_3D_ENVIRONMENT_MAPPING.set(true);
+            }
 
             // do the trick below so as to avoid tile rendering artifacts for every tile being rendered and then changed
             if (USE_SHADERS_PROCESS)
+            {
                 if (tempMaterialAntiAliasShading)
+                {
                     MATERIAL_ANIMATED_SHADING.set(true);
+                }
+            }
 
             System.gc();
 
-            if (DEBUG_BUILD) println("Done Writing High Res BufferedImage to File");
+            if (DEBUG_BUILD)
+            {
+                println("Done Writing High Res BufferedImage to File");
+            }
 
             layoutProgressBarDialog.endProgressBar();
             layoutProgressBarDialog.stopProgressBar();
             layoutProgressBarDialog.setIndeterminate(false);
 
             InitDesktop.open(saveScreenshotFile);
-        }
+        } 
         catch (OutOfMemoryError memErr)
         {
-            if (DEBUG_BUILD) println("Out of Memory Error with creating the High Res Image to File in GraphRenderer3D.takeHighResScreenshot():\n" + memErr.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("Out of Memory Error with creating the High Res Image to File in GraphRenderer3D.takeHighResScreenshot():\n" + memErr.getMessage());
+            }
 
             // do it here before the showMessageDialog() so as to avoid refreshes that will fire up the high res screenshot rendering!
             takeHighResScreenshot = false;
@@ -3369,10 +3422,13 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
             layoutProgressBarDialog.setIndeterminate(false);
 
             JOptionPane.showMessageDialog(graph, "Out of memory while creating the high resolution image to file:\n" + memErr.getMessage() + "\nPlease try again with a smaller scale value.", "Error with creating the high resolution image to file!", JOptionPane.ERROR_MESSAGE);
-        }
+        } 
         catch (Exception exc)
         {
-            if (DEBUG_BUILD) println("Exception with writing the Image to File in GraphRenderer3D.takeHighResScreenshot():\n" + exc.getMessage());
+            if (DEBUG_BUILD)
+            {
+                println("Exception with writing the Image to File in GraphRenderer3D.takeHighResScreenshot():\n" + exc.getMessage());
+            }
 
             // do it here before the showMessageDialog() so as to avoid refreshes that will fire up the high res screenshot rendering!
             takeHighResScreenshot = false;
@@ -3394,7 +3450,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
             CENTER_VIEW_CAMERA.setProjection(gl);
 
-            DEFAULT_EDGE_SIZE.set(originalEdgeSize);
+            //DEFAULT_EDGE_SIZE.set(originalEdgeSize);
             updateEdgesDisplayList = true;
             buildAllDisplayLists(gl);
         }
