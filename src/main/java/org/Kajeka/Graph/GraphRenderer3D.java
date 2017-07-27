@@ -3290,15 +3290,15 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
             final int finalImageWidth = width * TILE_SCREEN_FACTOR.get();
             final int finalImageHeight = height * TILE_SCREEN_FACTOR.get();
 
-            GLProfile profile = GLProfile.get(GLProfile.GL2);
+            GLProfile profile = GLProfile.getDefault();
             final GLCapabilities caps = new GLCapabilities(profile);
             caps.setDoubleBuffered(false);
 
             final GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
             final GLAutoDrawable glad = factory.createOffscreenAutoDrawable(null, caps, null, 256, 256);
-            glad.setContext(gl.getContext(), false);
+            glad.setContext(glad.createContext(gl.getContext()), false);
             glad.addGLEventListener(this);
-
+            
             final TileRenderer tr = new TileRenderer();
 
             tr.setImageSize(finalImageWidth, finalImageHeight);
@@ -3407,9 +3407,6 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
             layoutProgressBarDialog.setIndeterminate(false);
 
             InitDesktop.open(saveScreenshotFile);
-            
-            autoDrawable.setContext(glad.getContext(), false);
-            autoDrawable.getContext().makeCurrent();
         } 
         catch (OutOfMemoryError memErr)
         {
