@@ -46,7 +46,7 @@ public final class LoadNativeLibrary
     /**
     *  The number version of MacOSX Lion.
     */
-    private static final float MACOSX_LION_NUMBER_VERSION = 10.7f;
+    private static final int MACOSX_LION_NUMBER_VERSION = 7;
 
     /**
     *  Unpacks the native library to a selected folder and loads it.
@@ -369,10 +369,9 @@ public final class LoadNativeLibrary
     public static boolean isMacLionAndAbove()
     {
         String osVersionString = System.getProperty("os.version");
-        int firstIndexOfDot = osVersionString.indexOf(".");
-        float osVersion = Float.parseFloat( osVersionString.substring(0, firstIndexOfDot + 2) );
+        float osVersionMinor = Float.parseFloat( osVersionString.split("\\.")[1] );
 
-        return ( isMac() && (osVersion >= MACOSX_LION_NUMBER_VERSION) );
+        return isMac() && osVersionMinor >= MACOSX_LION_NUMBER_VERSION;
     }
 
     /**

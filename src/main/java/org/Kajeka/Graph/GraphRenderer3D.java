@@ -3254,7 +3254,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
     /**
     *  Takes a high resolution screenshot.
     */
-    private void takeHighResScreenshot(GL2 gl)
+    private void takeHighResScreenshot(GL2 gl, GLAutoDrawable autoDrawable)
     {
         float originalEdgeSize = DEFAULT_EDGE_SIZE.get();
         DEFAULT_EDGE_SIZE.set(originalEdgeSize * TILE_SCREEN_FACTOR.get());
@@ -3296,7 +3296,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
             final GLDrawableFactory factory = GLDrawableFactory.getFactory(profile);
             final GLAutoDrawable glad = factory.createOffscreenAutoDrawable(null, caps, null, 256, 256);
-
+            glad.setContext(gl.getContext(), false);
             glad.addGLEventListener(this);
 
             final TileRenderer tr = new TileRenderer();
@@ -3311,6 +3311,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
                     {
                         false
                     };
+            
 
             final GLEventListener preTileGLEL = new GLEventListener()
             {
@@ -3406,6 +3407,9 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
             layoutProgressBarDialog.setIndeterminate(false);
 
             InitDesktop.open(saveScreenshotFile);
+            
+            autoDrawable.setContext(glad.getContext(), false);
+            autoDrawable.getContext().makeCurrent();
         } 
         catch (OutOfMemoryError memErr)
         {
@@ -3450,7 +3454,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
 
             CENTER_VIEW_CAMERA.setProjection(gl);
 
-            //DEFAULT_EDGE_SIZE.set(originalEdgeSize);
+            DEFAULT_EDGE_SIZE.set(originalEdgeSize);
             updateEdgesDisplayList = true;
             buildAllDisplayLists(gl);
         }
@@ -3665,12 +3669,12 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
             refreshDisplay();
         }
     }
-
+    
     /**
     *  Called by the JOGL2 glDrawable immediately after the OpenGL context is initialized.
     */
     @Override
-    public void init(GLAutoDrawable glDrawable)
+    final public void init(GLAutoDrawable glDrawable)
     {
         if (DEBUG_BUILD) println("GraphRenderer3D init()");
 
@@ -3810,7 +3814,7 @@ final class GraphRenderer3D implements GraphInterface, TileRendererBase.TileRend
             if ( selectMode && !(autoRotate || autoPulsate) ) selectScene(gl);
 
             if (takeScreenshot) takeScreenshot(gl, renderToFile);
-            if (takeHighResScreenshot) takeHighResScreenshot(gl);
+            if (takeHighResScreenshot) takeHighResScreenshot(gl, glDrawable);
         }
 
         if (autoPulsate)
