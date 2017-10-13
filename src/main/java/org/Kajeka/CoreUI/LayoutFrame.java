@@ -152,17 +152,9 @@ public final class LayoutFrame extends JFrame implements GraphListener
     /**
     *  Initializes the frame. This method is specified to return the 'this' reference upon which it is invoked. This allows the method invocation to be chained.
     */
-    public LayoutFrame initializeFrame(boolean useDefaults, Map<String, String> preferences,
-            final boolean startWithAutomaticFileLoading)
+    public LayoutFrame initializeFrame(final boolean startWithAutomaticFileLoading)
     {
         initMacHandlers();
-
-        if (!useDefaults)
-        {
-            LayoutPreferences.getLayoutPreferencesSingleton().loadPreferences();
-        }
-
-        LayoutPreferences.getLayoutPreferencesSingleton().useSpecifiedPreferences(preferences);
 
         loadRestOfPreferences();
 
@@ -1081,7 +1073,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 try
                 {
                     loadingFile = true;
-                    // 
+                    //
                     AnnotationTypeManagerBG.recreateSingleton();
                     layoutClassSetsManager.clearClassSets();
                     classViewerFrame.resetView();
@@ -1254,7 +1246,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     {
                         correlationFilename += "_" + Utils.hyphenatedOf(CURRENT_SCALE_TRANSFORM.toString());
                     }
-                    
+
                     if (CURRENT_NORMALISATION != NormalisationType.NONE)
                     {
                         correlationFilename += "_normalise" + Utils.hyphenatedOf(CURRENT_NORMALISATION.toString());

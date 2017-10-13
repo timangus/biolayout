@@ -11,6 +11,7 @@ import org.Kajeka.StaticLibraries.*;
 import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Environment.DataFolder;
+import org.Kajeka.Environment.Preferences.LayoutPreferences;
 import org.Kajeka.Utils.Path;
 import org.Kajeka.Utils.ThreadExceptionHandler;
 
@@ -48,7 +49,6 @@ public final class Layout
     *  Constructor of the Layout class.
     */
     private Layout(String fileName, boolean onlineConnect, String repository, String dataSets,
-            boolean useDefaults, Map<String, String> preferences,
             boolean hasChosenUseShadersProcessCommandLine, boolean useShadersProcess)
     {
 
@@ -67,13 +67,13 @@ public final class Layout
         if (!onlineConnect)
         {
             if ( fileName.isEmpty() )
-                new LayoutFrame().initializeFrame(useDefaults, preferences, false);
+                new LayoutFrame().initializeFrame(false);
             else
-                new LayoutFrame().initializeFrame(useDefaults, preferences, true).loadDataSet( new File(fileName) );
+                new LayoutFrame().initializeFrame(true).loadDataSet( new File(fileName) );
         }
         else
         {
-            new LayoutFrame().initializeFrame(useDefaults, preferences, true).loadOnlineDataSet(repository, dataSets);
+            new LayoutFrame().initializeFrame(true).loadOnlineDataSet(repository, dataSets);
         }
     }
 
@@ -478,8 +478,14 @@ public final class Layout
 
         Thread.setDefaultUncaughtExceptionHandler(new ThreadExceptionHandler());
 
+        if (!useDefaultSettings)
+        {
+            LayoutPreferences.getLayoutPreferencesSingleton().loadPreferences();
+        }
+
+        LayoutPreferences.getLayoutPreferencesSingleton().useSpecifiedPreferences(preferences);
+
         Layout layout = new Layout( ( !fileName.isEmpty() ) ? fileName : "", !dataSets.isEmpty(),
-                repository, dataSets, useDefaultSettings, preferences,
-                hasChosenUseShadersProcessCommandLine, useShadersProcess );
+                repository, dataSets, hasChosenUseShadersProcessCommandLine, useShadersProcess );
     }
 }
