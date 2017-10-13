@@ -218,7 +218,7 @@ public final class Layout
         int ONE_MB = 1 << 20; // (1024 * 1024);
         int ONE_KB = 1 << 10; // (1024);
 
-        println(DISPLAY_PRODUCT_NAME_AND_VERSION);
+        println(VERSION);
         println("---------------------------------------------------------------------");
         println("Max Memory Set to: " + (RUNTIME.maxMemory() / ONE_MB) + " MB");
         println("Total memory: " + (RUNTIME.totalMemory() / ONE_KB) + " KB");

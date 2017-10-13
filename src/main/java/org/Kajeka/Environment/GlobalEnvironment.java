@@ -27,9 +27,13 @@ import static org.Kajeka.StaticLibraries.ImageProducer.*;
 public final class GlobalEnvironment
 {
     public static final String PRODUCT_NAME = BuildConfig.NAME;
-    public static String DISPLAY_PRODUCT_NAME = PRODUCT_NAME;
-    public static String DISPLAY_PRODUCT_NAME_AND_VERSION;
+    public static final String TITLE = PRODUCT_NAME;
+    public static final String TITLE_VERSION = " Version ";
+    public static final String TITLE_VERSION_NUMBER = BuildConfig.VERSION;
     public static final boolean DEBUG_BUILD = BuildConfig.DEBUG;
+    public static final String VERSION = TITLE + (TITLE_VERSION_NUMBER.equals("development") ?
+            " internal development version" :
+            TITLE_VERSION + TITLE_VERSION_NUMBER);
     public static final String DOMAIN_URL = BuildConfig.URL;
     public static final String SERVER_DATASETS_DIRECTORY = "/datasets/";
     public static final String DATASETS_CONTROL_FILE = "ListOfDataSets.ctr";
@@ -409,10 +413,6 @@ public final class GlobalEnvironment
     public static OpenGLFontTypes NODE_NAMES_OPENGL_FONT_TYPE = OpenGLFontTypes.BITMAP_HELVETICA_12;
     public static final PrefString CUSTOMIZE_NODE_NAMES_OPENGL_NAME_FONT_TYPE = new PrefString(OpenGLFontTypes.BITMAP_HELVETICA_12.toString(), "customize_node_names_opengl_name_font_type", SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS);
     public static final PrefInt CUSTOMIZE_NODE_NAMES_NAME_RENDERING_TYPE = new PrefInt(0, "customize_node_names_name_rendering_type", SAVE_CUSTOMIZE_NODE_NAMES_OPTIONS);
-
-    public static final PrefString LICENSE_EMAIL = new PrefString("", "license_email", true);
-    public static final PrefString LICENSE_KEY = new PrefString("", "license_key", true);
-    public static boolean IS_LICENSED = false;
 
     static
     {

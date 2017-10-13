@@ -35,7 +35,7 @@
         <osx.appbundler.path>${project.basedir}/jars/com/oracle/appbundler/appbundler/1.0/appbundler-1.0.jar</osx.appbundler.path>
 
         <debug.build>true</debug.build>
-        
+
         <jarsigner.keystore>selfsign.jks</jarsigner.keystore>
         <jarsigner.p12keystore>selfsign.p12</jarsigner.p12keystore>
         <jarsigner.alias>selfsigned</jarsigner.alias>

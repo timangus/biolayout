@@ -33,7 +33,7 @@ public abstract class PrefType
     /**
     *  Constant variable to be used for the config file first comment line.
     */
-    private static final String CONFIG_FILE_FIRST_COMMENT_LINE = "# " + DISPLAY_PRODUCT_NAME_AND_VERSION + " config file used to save various applications settings, (#) used for commenting";
+    private static final String CONFIG_FILE_FIRST_COMMENT_LINE = "# " + TITLE + TITLE_VERSION + TITLE_VERSION_NUMBER + " config file used to save various applications settings, (#) used for commenting";
 
     /**
     *  Constant variable to be used for the config file equals options symbol.

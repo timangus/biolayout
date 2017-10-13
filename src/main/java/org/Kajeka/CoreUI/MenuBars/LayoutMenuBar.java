@@ -695,12 +695,6 @@ public final class LayoutMenuBar extends JMenuBar implements ActionListener
         helpAbout.setMnemonic(KeyEvent.VK_A);
     }
 
-    public void setHelpMenuValidateLicenseKeyAction(AbstractAction validateLicenseKeyAction)
-    {
-        addSeparator(helpMenu);
-        helpMenu.add(validateLicenseKeyAction);
-    }
-
     public void set2DMenuEnabled(boolean state)
     {
         _2DMenu.setVisible(state);

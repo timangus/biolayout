@@ -26,7 +26,7 @@ public final class LayoutLicensesDialog extends JDialog implements ActionListene
 
     public LayoutLicensesDialog(JFrame frame)
     {
-        super(frame, "License Agreement For " + DISPLAY_PRODUCT_NAME_AND_VERSION, true);
+        super(frame, "License Agreement For " + VERSION, true);
 
         initActions();
         initComponents();
@@ -88,7 +88,7 @@ public final class LayoutLicensesDialog extends JDialog implements ActionListene
 
     private void setGeneralLicense(JTextArea textArea)
     {
-        textArea.append(" - " + DISPLAY_PRODUCT_NAME_AND_VERSION + "\n" + readLicenseFile(LICENSES_FILES_NAMES[LicensesFiles.LICENSE_KAJEKA.ordinal()], false));
+        textArea.append(" - " + VERSION + "\n" + readLicenseFile(LICENSES_FILES_NAMES[LicensesFiles.LICENSE_KAJEKA.ordinal()], false));
     }
 
     private void setDetailedLicenses(JTextArea textArea)

@@ -177,7 +177,7 @@ public final class ExportCorrelationNodesEdgesTable
             layoutProgressBarDialog.startProgressBar();
 
             fileWriter = new FileWriter(saveFile);
-            fileWriter.write("//" + DISPLAY_PRODUCT_NAME_AND_VERSION + " " + " Correlation Nodes Edges Table File\n");
+            fileWriter.write("//" + VERSION + " " + " Correlation Nodes Edges Table File\n");
             fileWriter.write("//CORRELATION_DATA\t\"" + CORRELATION_FILE + "\"\n");
 
             saveCorrelationNodesEdgesTableData(layoutProgressBarDialog, fileWriter);

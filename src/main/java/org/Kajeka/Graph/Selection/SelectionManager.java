@@ -3,7 +3,6 @@ package org.Kajeka.Graph.Selection;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
-import org.Kajeka.BuildConfig;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.CoreUI.Dialogs.*;
 import org.Kajeka.Graph.*;
@@ -111,7 +110,7 @@ public final class SelectionManager
         {
             layoutFrame.getGraph().setEnabledUndoNodeDragging(value);
             layoutFrame.getGraph().setEnabledRedoNodeDragging(value);
-            layoutFrame.getCoreSaver().getSaveSelectedAction().setEnabled( !selectedNodes.isEmpty() && IS_LICENSED );
+            layoutFrame.getCoreSaver().getSaveSelectedAction().setEnabled( !selectedNodes.isEmpty() );
             layoutFrame.getExportClassSets().getExportClassSetsFromGraphSelectionAction().setEnabled(value);
             layoutFrame.getLayoutAnimationControlDialog().setEnabledSelectedNodesCheckbox(value);
         }
@@ -767,7 +766,7 @@ public final class SelectionManager
         deleteHiddenAction.setEnabled(true);
 
         if ( !layoutFrame.getCoreSaver().getSaveVisibleAction().isEnabled() )
-            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(true && IS_LICENSED);
+            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(true);
 
         if ( !layoutFrame.getExportClassSets().getExportClassSetsFromVisibleGraphAction().isEnabled() )
             layoutFrame.getExportClassSets().getExportClassSetsFromVisibleGraphAction().setEnabled(true);

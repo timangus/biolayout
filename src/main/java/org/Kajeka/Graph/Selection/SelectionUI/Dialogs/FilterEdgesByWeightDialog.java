@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import org.Kajeka.BuildConfig;
 import org.Kajeka.CoreUI.*;
 import org.Kajeka.DataStructures.*;
 import org.Kajeka.Graph.GraphElements.*;
@@ -301,7 +300,7 @@ public final class FilterEdgesByWeightDialog extends JDialog implements ChangeLi
 
             // enable the unhide all and delete hidden actions if a change has been detected
             boolean flag = ( visibleEdges.size() != movedEdges.size() );
-            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag && IS_LICENSED);
+            layoutFrame.getCoreSaver().getSaveVisibleAction().setEnabled(flag);
             layoutFrame.getGraph().getSelectionManager().getUnhideAllAction().setEnabled(flag);
             layoutFrame.getGraph().getSelectionManager().getDeleteHiddenAction().setEnabled(flag);
 

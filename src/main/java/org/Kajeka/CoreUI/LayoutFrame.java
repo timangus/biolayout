@@ -9,12 +9,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.*;
 import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import org.Kajeka.Analysis.AnnotationTypeManagerBG;
-import org.Kajeka.BuildConfig;
 import org.Kajeka.ClassViewerUI.*;
 import org.Kajeka.Clustering.MCL.*;
 import org.Kajeka.CoreUI.Dialogs.*;
@@ -45,8 +43,6 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
 import static org.Kajeka.Correlation.CorrelationEnvironment.*;
 import static org.Kajeka.DebugConsole.ConsoleOutput.*;
 import org.Kajeka.Files.Dialogs.ColumnDataConfigurationDialog;
-import org.Kajeka.Licensing.LicenseKeyValidator;
-import org.Kajeka.Licensing.RevocationChecker;
 import org.Kajeka.Utils.ToolbarLayout;
 import org.Kajeka.Utils.UsageTracker;
 
@@ -104,7 +100,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private LayoutLicensesDialog layoutLicensesDialog = null;
     private LayoutOpenGLDriverCapsDialog layoutOpenGLDriverCapsDialog = null;
     private LayoutJavaPlatformCapsDialog layoutJavaPlatformCapsDialog = null;
-    private LayoutValidateLicenseKeyDialog layoutValidateLicenseKeyDialog = null;
     private UsageTracker usageTracker;
 
     private AbstractAction fileMenuOpenAction = null;
@@ -132,8 +127,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
     private ExportSbgn exportSbgn = null;
     private ExportD3 exportD3 = null;
 
-    private RevocationChecker revocationChecker = null;
-
     private boolean navigationWizardShownOnce = false;
 
     /**
@@ -146,7 +139,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
     */
     public LayoutFrame()
     {
-        super(DISPLAY_PRODUCT_NAME_AND_VERSION);
+        super(VERSION);
     }
 
     /**
@@ -157,34 +150,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         initMacHandlers();
 
         loadRestOfPreferences();
-
-        LicenseKeyValidator lkv = new LicenseKeyValidator(LICENSE_EMAIL.get());
-        layoutValidateLicenseKeyDialog = new LayoutValidateLicenseKeyDialog(this);
-
-        IS_LICENSED = lkv.valid(LICENSE_KEY.get());
-
-        if (IS_LICENSED)
-        {
-            revocationChecker = new RevocationChecker(LICENSE_EMAIL.get());
-            while (revocationChecker.start())
-            {
-                IS_LICENSED = false;
-                layoutValidateLicenseKeyDialog.setSuggestRestart(false);
-                layoutValidateLicenseKeyDialog.getValidateLicenseKeyAction().actionPerformed(
-                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Validate"));
-
-                if(!layoutValidateLicenseKeyDialog.isLicensed())
-                {
-                    this.dispose();
-                    System.exit(0);
-                }
-            }
-        }
-
-        DISPLAY_PRODUCT_NAME = PRODUCT_NAME + (!IS_LICENSED ? " Evaluation" : "");
-        DISPLAY_PRODUCT_NAME_AND_VERSION = DISPLAY_PRODUCT_NAME + (BuildConfig.VERSION.equals("development") ?
-            " internal development version" :
-            " Version " + BuildConfig.VERSION);
 
         Insets insets = this.getInsets();
         this.setSize( new Dimension(APPLICATION_SCREEN_DIMENSION.width + insets.left + insets.right - 2, APPLICATION_SCREEN_DIMENSION.height + insets.top + insets.bottom - 2) );
@@ -201,7 +166,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutProgressBarDialog = new LayoutProgressBarDialog(this);
         layoutNavigationWizardDialog = new LayoutNavigationWizardDialog(this);
         layoutTipOfTheDayDialog = new LayoutTipOfTheDayDialog(this);
-
         usageTracker = new UsageTracker();
 
         sleepMaxTime(prevTimeInMSecs);
@@ -364,7 +328,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         } );
 
         this.setLocation( (SCREEN_DIMENSION.width - APPLICATION_SCREEN_DIMENSION.width) / 2, (SCREEN_DIMENSION.height - APPLICATION_SCREEN_DIMENSION.height) / 2 );
-        this.setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
+        this.setTitle(VERSION);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         sleep(MAX_TIME_IN_MSECS_TO_SLEEP_FOR_LOADING);
@@ -790,7 +754,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
         layoutMenuBar.setHelpMenuOpenGLDriverCapsAction( layoutOpenGLDriverCapsDialog.getOpenGLDriverCapsAction() );
         layoutMenuBar.setHelpMenuJavaPlatformCapsAction( layoutJavaPlatformCapsDialog.getJavaPlatformCapsAction() );
         layoutMenuBar.setHelpMenuAboutAction( layoutAboutDialog.getAboutAction() );
-        layoutMenuBar.setHelpMenuValidateLicenseKeyAction(layoutValidateLicenseKeyDialog.getValidateLicenseKeyAction());
 
         // Adds the 2D/3D menus in 2D/3D mode
         if (RENDERER_MODE_3D)
@@ -913,7 +876,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     }
                     catch (Exception exc)
                     {
-                        if (DEBUG_BUILD) println(DISPLAY_PRODUCT_NAME + " frame initialization error: " + exc.getMessage());
+                        if (DEBUG_BUILD) println(PRODUCT_NAME + " frame initialization error: " + exc.getMessage());
 
                         dispose();
                         System.exit(1);
@@ -1332,7 +1295,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                     CORRELATION_FILE_PATH = "";
                     fileNameLoaded = "";
                     fileNameAbsolutePath = "";
-                    setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
+                    setTitle(VERSION);
                     INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
                     disableAllActions();
@@ -1485,57 +1448,44 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 }
             }
 
-            final int EVALUATION_NODES_LIMIT = 3000;
-            boolean sizeLimitExceeded = !IS_LICENSED ? nc.getVertices().size() > EVALUATION_NODES_LIMIT : false;
+            setStatusLabel("Layout");
 
-            if(!sizeLimitExceeded)
+            // has to enable weights for SPN graphml graphs so as to have the correct rendering of the red inhibitor edges
+            // has to be enabled at this, so the graph is built with weight support on
+            if ( ( DATA_TYPE.equals(DataTypes.GRAPHML) || DATA_TYPE.equals(DataTypes.LAYOUT) ) && nc.getIsPetriNet() )
+                WEIGHTED_EDGES = true;
+
+            // directional edges off by default, since directionality there has no meaning
+            // for the rest of the data files, directionality can be on by default
+            boolean disableDirectionalEdges = DATA_TYPE.equals(DataTypes.CORRELATION) || DATA_TYPE.equals(DataTypes.MATRIX);
+            DIRECTIONAL_EDGES.set(!disableDirectionalEdges);
+            layoutGraphPropertiesDialog.setHasNewPreferencesBeenApplied(true);
+            graph.getSelectionManager().getGroupManager().resetState();
+            nc.createNetworkComponentsContainer();
+
+            GraphLayoutAlgorithm gla = GraphLayoutAlgorithm.ALWAYS_ASK;
+            if (!nc.getVertices().isEmpty()) // fail-safe check in case the parsed file is an empty graph
             {
-                setStatusLabel("Layout");
-
-                // has to enable weights for SPN graphml graphs so as to have the correct rendering of the red inhibitor edges
-                // has to be enabled at this, so the graph is built with weight support on
-                if ( ( DATA_TYPE.equals(DataTypes.GRAPHML) || DATA_TYPE.equals(DataTypes.LAYOUT) ) && nc.getIsPetriNet() )
-                    WEIGHTED_EDGES = true;
-
-                // directional edges off by default, since directionality there has no meaning
-                // for the rest of the data files, directionality can be on by default
-                boolean disableDirectionalEdges = DATA_TYPE.equals(DataTypes.CORRELATION) || DATA_TYPE.equals(DataTypes.MATRIX);
-                DIRECTIONAL_EDGES.set(!disableDirectionalEdges);
-                layoutGraphPropertiesDialog.setHasNewPreferencesBeenApplied(true);
-                graph.getSelectionManager().getGroupManager().resetState();
-                nc.createNetworkComponentsContainer();
-
-                GraphLayoutAlgorithm gla;
-                if (!nc.getVertices().isEmpty()) // fail-safe check in case the parsed file is an empty graph
+                if (!nc.isOptimized())
                 {
-                    if (!nc.isOptimized())
-                    {
-                        gla = GRAPH_LAYOUT_ALGORITHM.get();
+                    gla = GRAPH_LAYOUT_ALGORITHM.get();
 
-                        if (gla == GraphLayoutAlgorithm.ALWAYS_ASK)
-                        {
-                            // Ask the user
-                            LayoutAlgorithmSelectionDialog lasd = new LayoutAlgorithmSelectionDialog(this);
-                            gla = lasd.getGraphLayoutAlgorithm();
-                        }
-
-                        nc.optimize(gla);
-                    }
-                    else
+                    if (gla == GraphLayoutAlgorithm.ALWAYS_ASK)
                     {
-                        nc.setKvalue();
+                        // Ask the user
+                        LayoutAlgorithmSelectionDialog lasd = new LayoutAlgorithmSelectionDialog(this);
+                        gla = lasd.getGraphLayoutAlgorithm();
                     }
+
+                    nc.optimize(gla);
+                }
+                else
+                {
+                    nc.setKvalue();
                 }
             }
-            else
-            {
-                JOptionPane.showMessageDialog(this, "This graph contains more than " +
-                        EVALUATION_NODES_LIMIT + " nodes.\n" +
-                        "Please purchase the full version to remove this limitation.",
-                        "Limit Exceeded", JOptionPane.ERROR_MESSAGE);
-            }
 
-            if (!layoutProgressBarDialog.userHasCancelled() && !sizeLimitExceeded)
+            if (!layoutProgressBarDialog.userHasCancelled())
             {
                 nc.clearRoot();
                 nc.normaliseWeights();
@@ -1554,7 +1504,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             fileNameLoaded = file.getName();
             fileNameAbsolutePath = file.getAbsolutePath().substring(0, file.getAbsolutePath().lastIndexOf( System.getProperty("file.separator") ) + 1);
             String correlationValueString = ( DATA_TYPE.equals(DataTypes.CORRELATION) ) ? " at " + CURRENT_CORRELATION_THRESHOLD : ( DATA_TYPE.equals(DataTypes.MATRIX) ? " at " + correlationCutOffValue : "" );
-            this.setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION + "  [ " + file.getAbsolutePath() + correlationValueString + " ] " + ( (WEIGHTED_EDGES) ? "(" : "(non-" ) + "weighted graph)");
+            this.setTitle(VERSION + "  [ " + file.getAbsolutePath() + correlationValueString + " ] " + ( (WEIGHTED_EDGES) ? "(" : "(non-" ) + "weighted graph)");
             INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = !USE_INSTALL_DIR_FOR_SCREENSHOTS.get();
 
             classViewerFrame.getClassViewerAction().setEnabled(true);
@@ -1578,7 +1528,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
                 CORRELATION_FILE_PATH = "";
                 fileNameLoaded = "";
                 fileNameAbsolutePath = "";
-                setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
+                setTitle(VERSION);
                 INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
                 disableAllActions();
@@ -1649,7 +1599,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
         CORRELATION_FILE_PATH = "";
         fileNameLoaded = "";
         fileNameAbsolutePath = "";
-        setTitle(DISPLAY_PRODUCT_NAME_AND_VERSION);
+        setTitle(VERSION);
         INSTALL_DIR_FOR_SCREENSHOTS_HAS_CHANGED = false;
 
         if(disableAllActions)
@@ -1677,7 +1627,7 @@ public final class LayoutFrame extends JFrame implements GraphListener
             layoutHomeToolBar.setEnabled(true);
 
 
-        if ( !saver.getSaveAction().isEnabled() && IS_LICENSED )
+        if ( !saver.getSaveAction().isEnabled() )
             saver.getSaveAction().setEnabled(true);
 
         if ( !importClassSetsParser.getImportClassSetsAction().isEnabled() )
@@ -1998,8 +1948,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
         if ( layoutGraphPropertiesDialog.getHasNewPreferencesBeenApplied() && CONFIRM_PREFERENCES_SAVE.get())
         {
             int option = JOptionPane.showConfirmDialog(this,
-                    "Do you want to save your preferences before exiting " + DISPLAY_PRODUCT_NAME + "?",
-                    "Save Preferences & Exit " + DISPLAY_PRODUCT_NAME, JOptionPane.YES_NO_CANCEL_OPTION);
+                    "Do you want to save your preferences before exiting " + PRODUCT_NAME + "?",
+                    "Save Preferences & Exit " + PRODUCT_NAME, JOptionPane.YES_NO_CANCEL_OPTION);
 
             if (option == JOptionPane.CANCEL_OPTION)
             {
@@ -2013,8 +1963,8 @@ public final class LayoutFrame extends JFrame implements GraphListener
         else if (!nc.getVertices().isEmpty())
         {
             if (JOptionPane.showConfirmDialog(this,
-                    "Do you really want to exit " + DISPLAY_PRODUCT_NAME + "?",
-                    "Exit " + DISPLAY_PRODUCT_NAME, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
+                    "Do you really want to exit " + PRODUCT_NAME + "?",
+                    "Exit " + PRODUCT_NAME, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
             {
                 return;
             }
@@ -2027,11 +1977,6 @@ public final class LayoutFrame extends JFrame implements GraphListener
 
         usageTracker.log("close");
         usageTracker.upload();
-
-        if(revocationChecker != null)
-        {
-            revocationChecker.stop();
-        }
 
         fileDragNDrop.remove(graph, true);
         this.dispose();

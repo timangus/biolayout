@@ -45,7 +45,7 @@ public class LayoutProgressBarDialog extends JDialog implements ActionListener
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(this);
 
-        label.setText(" " + DISPLAY_PRODUCT_NAME_AND_VERSION);
+        label.setText(" " + VERSION);
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
         progressBar.setString(" Ready");

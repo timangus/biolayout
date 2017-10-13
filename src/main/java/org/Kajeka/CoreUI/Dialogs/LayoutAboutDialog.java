@@ -32,7 +32,7 @@ public final class LayoutAboutDialog extends JDialog implements ActionListener, 
 
     public LayoutAboutDialog(JFrame frame, boolean isSplash)
     {
-        super(frame, "About " + DISPLAY_PRODUCT_NAME_AND_VERSION, !isSplash);
+        super(frame, "About " + VERSION, !isSplash);
 
         this.setIconImages(ICON_IMAGES);
         image = new JLabel( new ImageIcon(LOGO_IMAGE) );
