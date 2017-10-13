@@ -27,7 +27,7 @@ VIProductVersion "1.0.0.0"
 
 VIAddVersionKey ProductName "${LONG_NAME}"
 VIAddVersionKey Comments "${LONG_NAME}"
-VIAddVersionKey LegalCopyright "� Kajeka 2014-2016"
+VIAddVersionKey LegalCopyright "� Kajeka 2014-2017"
 VIAddVersionKey FileDescription "${LONG_NAME}"
 VIAddVersionKey FileVersion "1.0.0.0"
 VIAddVersionKey ProductVersion "1.0.0.0"
