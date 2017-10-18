@@ -2,6 +2,9 @@ package org.Kajeka;
 
 import java.awt.Dimension;
 import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.net.URLDecoder;
 import java.util.*;
 import javax.swing.*;
 import java.text.SimpleDateFormat;
@@ -339,6 +342,90 @@ public final class Layout
         return true;
     }
 
+    private static String jarPath()
+    {
+        try
+        {
+            String path = Layout.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+            String decodedPath = URLDecoder.decode(path, "UTF-8");
+
+            if (decodedPath.endsWith("jar") && new File(decodedPath).isFile())
+                return decodedPath;
+        }
+        catch(Exception e)
+        {
+        }
+
+        System.out.println("Could not find jar path");
+        return null;
+    }
+
+    private static List<String> jvmArguments()
+    {
+        RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+        return runtimeMxBean.getInputArguments();
+    }
+
+    private static boolean jvmArgumentsSpecifiyMaxMemory()
+    {
+        for (String jvmArgument : jvmArguments())
+        {
+            if (jvmArgument.startsWith("-Xmx"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static void respawn(String jar, String[] args, long maxMemory)
+    {
+        List<String> commandLine = new ArrayList<>();
+        commandLine.add("java");
+        commandLine.addAll(jvmArguments());
+        commandLine.add("-Xmx" + maxMemory + "m");
+        commandLine.add("-jar");
+        commandLine.add(jar);
+        commandLine.add("-respawned");
+
+        commandLine.addAll(Arrays.asList(args));
+
+        StringBuilder sb = new StringBuilder();
+        for (String s : commandLine)
+        {
+            sb.append(s);
+            sb.append(" ");
+        }
+
+        System.out.println("Respawning: " + sb.toString());
+
+        try
+        {
+            ProcessBuilder pb = new ProcessBuilder(commandLine);
+            Process process = pb.start();
+
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader buff = new BufferedReader(isr);
+
+            String line;
+            while ((line = buff.readLine()) != null)
+            {
+                System.out.println(line);
+            }
+
+            int exitCode = process.waitFor();
+            System.exit(exitCode);
+        }
+        catch (IOException | InterruptedException e)
+        {
+            System.out.println("Failed to respawn (JVM doesn't understand -Xmx?)");
+            // If we fail, just run on anyway, so that we give the non-respawned
+            // invocation a chance to work
+        }
+    }
+
     /**
     *  The void main entry point.
     */
@@ -347,6 +434,20 @@ public final class Layout
         if (DEBUG_BUILD)
             if (args.length > 0)
                 System.out.println("Command-line command detected:\n");
+
+        String jar = jarPath();
+
+        // Check if we've already been respawned so we can't get into the situation
+        // where we recursively respawn (for whatever reason)
+        boolean alreadyRespawned = Arrays.asList(args).contains("-respawned");
+
+        // If we're not started with a specified maximum heap resize, respawn the JVM with a
+        // value appropriate to the bitness of the JVM we're running under
+        if(!DEBUG_BUILD && jar != null && !jvmArgumentsSpecifiyMaxMemory() && !alreadyRespawned)
+        {
+            long maxMemory = IS_64BIT ? 32000 : 920;
+            respawn(jar, args, maxMemory);
+        }
 
         String fileName = "";
         boolean consoleOutput = false;
@@ -416,6 +517,13 @@ public final class Layout
                 else if ("-help".equals(args[i]))
                 {
                     usage("Help page requested.");
+                }
+                else if ("-respawned".equals(args[i]))
+                {
+                    if (DEBUG_BUILD)
+                    {
+                        System.out.println("Started with -respawned");
+                    }
                 }
                 else
                 {
