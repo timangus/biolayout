@@ -4,7 +4,7 @@ import java.awt.Dimension;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
-import java.net.URLDecoder;
+import java.net.URL;
 import java.util.*;
 import javax.swing.*;
 import java.text.SimpleDateFormat;
@@ -17,6 +17,7 @@ import org.Kajeka.Environment.DataFolder;
 import org.Kajeka.Environment.Preferences.LayoutPreferences;
 import org.Kajeka.Utils.Path;
 import org.Kajeka.Utils.ThreadExceptionHandler;
+import org.scijava.util.FileUtils;
 
 /**
 *
@@ -346,11 +347,12 @@ public final class Layout
     {
         try
         {
-            String path = Layout.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-            String decodedPath = URLDecoder.decode(path, "UTF-8");
+            URL url = Layout.class.getResource(Layout.class.getSimpleName() + ".class");
+            File file = FileUtils.urlToFile(url);
+            String path = FileUtils.urlToFile(url).getAbsolutePath();
 
-            if (decodedPath.endsWith("jar") && new File(decodedPath).isFile())
-                return decodedPath;
+            if (path.endsWith("jar") && file.isFile())
+                return path;
         }
         catch(Exception e)
         {
@@ -402,7 +404,7 @@ public final class Layout
 
         try
         {
-            ProcessBuilder pb = new ProcessBuilder(commandLine);
+            ProcessBuilder pb = new ProcessBuilder(commandLine).redirectErrorStream(true);
             Process process = pb.start();
 
             InputStream is = process.getInputStream();
