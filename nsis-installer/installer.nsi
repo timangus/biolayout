@@ -12,9 +12,10 @@
 !define BASE_DIR ".."
 
 !define INSTALLER_NAME "${OUTPUT_NAME}-_VERSION_-installer.exe"
-!define 32BIT_EXE_NAME "${BASE_NAME}-_VERSION_-32bit.exe"
-!define 64BIT_EXE_NAME "${BASE_NAME}-_VERSION_-64bit.exe"
+!define EXE_NAME "${BASE_NAME}-_VERSION_.exe"
+!define JAR_NAME "${BASE_NAME}-_VERSION_.jar"
 !define OUTPUT_EXE_NAME "${BASE_NAME}.exe"
+!define OUTPUT_JAR_NAME "${BASE_NAME}.exe"
 
 ; General
 Name "${LONG_NAME}"
@@ -80,31 +81,6 @@ Function Launch
     ShellExecAsUser::ShellExecAsUser "" "$INSTDIR\${OUTPUT_EXE_NAME}"
 FunctionEnd
 
-Function CheckJVM
-    Var /GLOBAL JVM_BITNESS
-
-    File DetectJVM.exe
-    ClearErrors
-    nsExec::Exec "$INSTDIR\DetectJVM.exe"
-    Pop $0
-    IfErrors DetectExecError
-    IntCmp $0 0 DetectError DetectError DoneDetect
-    DetectExecError:
-        StrCpy $0 "exec error"
-    DetectError:
-        MessageBox MB_OK "Could not determine JVM architecture ($0). Assuming 32-bit."
-        Goto NotX64
-    DoneDetect:
-    IntCmp $0 64 X64 NotX64 NotX64
-    X64:
-        StrCpy $JVM_BITNESS "64"
-        Goto DoneX64
-    NotX64:
-        StrCpy $JVM_BITNESS "32"
-    DoneX64:
-    Delete $INSTDIR\DetectJvm.exe
-FunctionEnd
-
 ;Languages
 !insertmacro MUI_LANGUAGE "English"
 
@@ -113,13 +89,8 @@ Section "-${LONG_NAME}"
 
     SetOutPath "$INSTDIR"
 
-    Call CheckJVM
-
-    ${If} $JVM_BITNESS = '64'
-        File "/oname=${OUTPUT_EXE_NAME}" "${BASE_DIR}/target/${64BIT_EXE_NAME}"
-    ${Else}
-        File "/oname=${OUTPUT_EXE_NAME}" "${BASE_DIR}/target/${32BIT_EXE_NAME}"
-    ${Endif}
+    File "/oname=${OUTPUT_EXE_NAME}" "${BASE_DIR}/target/${EXE_NAME}"
+    File "/oname=${OUTPUT_JAR_NAME}" "${BASE_DIR}/target/${JAR_NAME}"
 
     File "Licenses.txt"
 
@@ -177,6 +148,7 @@ SectionEnd
 Section "Uninstall"
 
     Delete "$INSTDIR\${OUTPUT_EXE_NAME}"
+    Delete "$INSTDIR\${OUTPUT_JAR_NAME}"
     Delete "$INSTDIR\Licenses.txt"
 
     Delete "$INSTDIR\Uninstall.exe"
