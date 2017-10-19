@@ -15,7 +15,6 @@
 !define EXE_NAME "${BASE_NAME}-_VERSION_.exe"
 !define JAR_NAME "${BASE_NAME}-_VERSION_.jar"
 !define OUTPUT_EXE_NAME "${BASE_NAME}.exe"
-!define OUTPUT_JAR_NAME "${BASE_NAME}.jar"
 
 ; General
 Name "${LONG_NAME}"
@@ -90,7 +89,7 @@ Section "-${LONG_NAME}"
     SetOutPath "$INSTDIR"
 
     File "/oname=${OUTPUT_EXE_NAME}" "${BASE_DIR}/target/${EXE_NAME}"
-    File "/oname=${OUTPUT_JAR_NAME}" "${BASE_DIR}/target/${JAR_NAME}"
+    File "/oname=${JAR_NAME}" "${BASE_DIR}/target/${JAR_NAME}"
 
     File "Licenses.txt"
 
@@ -148,7 +147,7 @@ SectionEnd
 Section "Uninstall"
 
     Delete "$INSTDIR\${OUTPUT_EXE_NAME}"
-    Delete "$INSTDIR\${OUTPUT_JAR_NAME}"
+    Delete "$INSTDIR\${JAR_NAME}"
     Delete "$INSTDIR\Licenses.txt"
 
     Delete "$INSTDIR\Uninstall.exe"
