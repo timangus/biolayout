@@ -20,7 +20,7 @@
         <copyright>© Kajeka 2014-2017</copyright>
         <icon>src/main/resources/Resources/Images/Icon.ico</icon>
 
-        <minJavaVersion>1.7</minJavaVersion>
+        <minJavaVersion>1.8</minJavaVersion>
 
         <jogampVersion>2.3.2</jogampVersion>
         <sbgnVersion>milestone2</sbgnVersion>
