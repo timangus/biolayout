@@ -1,6 +1,7 @@
 package org.Kajeka;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -428,6 +429,52 @@ public final class Layout
         }
     }
 
+    static private void checkJVM()
+    {
+        if (IS_64BIT)
+        {
+            return;
+        }
+
+        if (!JVM_WARNING.get())
+        {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+
+            JLabel text = new JLabel("<html><p style=\"width:300px\">" +
+                    "The installed Java Virtual Machine only " +
+                    "allows for 32-bit operation. It is strongly advised that a " +
+                    "64-bit JVM is installed for optimum performance." +
+                    "</p></html>");
+            panel.add(text);
+
+            panel.add(Box.createRigidArea(new Dimension(0,5)));
+
+            JCheckBox checkbox = new JCheckBox("Don't show this message again");
+            checkbox.addActionListener(new AbstractAction()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    JVM_WARNING.set(checkbox.isSelected());
+                }
+            });
+            panel.add(checkbox);
+
+            Object[] options = {"Continue", "Exit"};
+            int result = JOptionPane.showOptionDialog(null, panel, "Warning",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
+                    null, options, options[1]);
+
+            LayoutPreferences.getLayoutPreferencesSingleton().savePreferences();
+
+            if(result == 1 || result == JOptionPane.CLOSED_OPTION)
+            {
+                System.exit(0);
+            }
+        }
+    }
+
     /**
     *  The void main entry point.
     */
@@ -594,6 +641,8 @@ public final class Layout
         }
 
         LayoutPreferences.getLayoutPreferencesSingleton().useSpecifiedPreferences(preferences);
+
+        checkJVM();
 
         Layout layout = new Layout( ( !fileName.isEmpty() ) ? fileName : "", !dataSets.isEmpty(),
                 repository, dataSets, hasChosenUseShadersProcessCommandLine, useShadersProcess );

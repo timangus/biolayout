@@ -44,6 +44,8 @@ public final class GlobalEnvironment
     public static final boolean IS_LINUX = LoadNativeLibrary.isLinux();
     public static final boolean IS_MAC = LoadNativeLibrary.isMac();
     public static final boolean IS_64BIT = LoadNativeLibrary.is64bit();
+    public static final PrefBool JVM_WARNING = new PrefBool(false, "jvm_warning", true);
+
     public static final int NUMBER_OF_AVAILABLE_PROCESSORS = RUNTIME.availableProcessors();
     public static final boolean USE_MULTICORE_PROCESS = (NUMBER_OF_AVAILABLE_PROCESSORS > 1);
     public static final char DECIMAL_SEPARATOR_CHARACTER = DecimalFormatSymbols.getInstance().getDecimalSeparator();
