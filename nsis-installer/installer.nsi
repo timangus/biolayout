@@ -88,6 +88,8 @@ Section "-${LONG_NAME}"
 
     SetOutPath "$INSTDIR"
 
+    Delete "$INSTDIR\*.jar"
+
     File "/oname=${OUTPUT_EXE_NAME}" "${BASE_DIR}/target/${EXE_NAME}"
     File "/oname=${JAR_NAME}" "${BASE_DIR}/target/${JAR_NAME}"
 
@@ -145,12 +147,6 @@ SectionEnd
 
 ; Uninstaller
 Section "Uninstall"
-
-    Delete "$INSTDIR\${OUTPUT_EXE_NAME}"
-    Delete "$INSTDIR\${JAR_NAME}"
-    Delete "$INSTDIR\Licenses.txt"
-
-    Delete "$INSTDIR\Uninstall.exe"
 
     RMDir /r "$INSTDIR"
 
