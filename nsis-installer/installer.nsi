@@ -15,7 +15,7 @@
 !define EXE_NAME "${BASE_NAME}-_VERSION_.exe"
 !define JAR_NAME "${BASE_NAME}-_VERSION_.jar"
 !define OUTPUT_EXE_NAME "${BASE_NAME}.exe"
-!define OUTPUT_JAR_NAME "${BASE_NAME}.exe"
+!define OUTPUT_JAR_NAME "${BASE_NAME}.jar"
 
 ; General
 Name "${LONG_NAME}"
