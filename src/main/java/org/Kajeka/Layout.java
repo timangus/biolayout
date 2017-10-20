@@ -402,7 +402,7 @@ public final class Layout
         try
         {
             // Just try invoking java from the system path; this of course
-            // assumes "java[.exe]" is /acutally/ Java
+            // assumes "java[.exe]" is /actually/ Java
             final String NAKED_JAVA = "java";
             new ProcessBuilder(NAKED_JAVA).start();
 
