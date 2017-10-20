@@ -382,10 +382,50 @@ public final class Layout
         return false;
     }
 
+    private static String javaExe()
+    {
+        final String JAVA_HOME = System.getProperty("java.home");
+        final File BIN = new File(JAVA_HOME, "bin");
+        File exe = new File(BIN, "java");
+
+        if (!exe.exists())
+        {
+            // We might be on Windows, which needs an exe extension
+            exe = new File(BIN, "java.exe");
+        }
+
+        if (exe.exists())
+        {
+            return exe.getAbsolutePath();
+        }
+
+        try
+        {
+            // Just try invoking java from the system path; this of course
+            // assumes "java[.exe]" is /acutally/ Java
+            final String NAKED_JAVA = "java";
+            new ProcessBuilder(NAKED_JAVA).start();
+
+            return NAKED_JAVA;
+        }
+        catch (IOException e)
+        {
+            return null;
+        }
+    }
+
     private static void respawn(String jar, String[] args, long maxMemory)
     {
+        String exe = javaExe();
+
+        if (exe == null)
+        {
+            // Give up on respawning if we don't have an exe
+            return;
+        }
+
         List<String> commandLine = new ArrayList<>();
-        commandLine.add("java");
+        commandLine.add(exe);
         commandLine.addAll(jvmArguments());
         commandLine.add("-Xmx" + maxMemory + "m");
         commandLine.add("-jar");
