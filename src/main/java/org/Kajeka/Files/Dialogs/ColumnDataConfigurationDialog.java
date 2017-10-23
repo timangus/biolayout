@@ -809,6 +809,9 @@ class EditableHeader extends JTableHeader implements CellEditorListener
         }
     }
 
+    // There is a reason for using setNextFocusableComponent...
+    // just can't remember what it is
+    @SuppressWarnings("deprecation")
     public Component prepareEditor(TableCellEditor editor, int index)
     {
         Object value = columnModel.getColumn(index).getHeaderValue();
@@ -818,7 +821,8 @@ class EditableHeader extends JTableHeader implements CellEditorListener
                 isSelected, row, index);
         if (comp instanceof JComponent)
         {
-            ((JComponent) comp).setNextFocusableComponent(this);
+            JComponent jcomponent = (JComponent)comp;
+            jcomponent.setNextFocusableComponent(this);
         }
         return comp;
     }
