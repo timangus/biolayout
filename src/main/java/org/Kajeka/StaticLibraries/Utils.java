@@ -209,14 +209,6 @@ public final class Utils
     }
 
     /**
-    *  Creates a String representing the T object data in a more readable line-by-line format than the standard toString() method.
-    */
-    public static <T> String objectArrayFormat(T... t)
-    {
-        return collectionFormat( Arrays.asList(t) );
-    }
-
-    /**
     *  Creates a String representing the Double number with a set number of fraction digits.
     */
     public static String numberFormatting(Double result, int numberOfDigits)
