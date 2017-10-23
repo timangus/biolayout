@@ -184,8 +184,8 @@ public class FastCategoryDataset extends AbstractDataset
      * @see #getValue(Comparable, Comparable)
      * @see #removeValue(Comparable, Comparable)
      */
-    public void addValue(Number value, Comparable rowKey,
-                         Comparable columnKey) {
+    public void addValue(Number value, String rowKey,
+                         String columnKey) {
         this.data.addValue(value, rowKey, columnKey);
         fireDatasetChanged();
     }
@@ -199,8 +199,8 @@ public class FastCategoryDataset extends AbstractDataset
      *
      * @see #getValue(Comparable, Comparable)
      */
-    public void addValue(double value, Comparable rowKey,
-                         Comparable columnKey) {
+    public void addValue(double value, String rowKey,
+                         String columnKey) {
         addValue(new Double(value), rowKey, columnKey);
     }
 
@@ -214,8 +214,8 @@ public class FastCategoryDataset extends AbstractDataset
      *
      * @see #getValue(Comparable, Comparable)
      */
-    public void setValue(Number value, Comparable rowKey,
-                         Comparable columnKey) {
+    public void setValue(Number value, String rowKey,
+                         String columnKey) {
         this.data.setValue(value, rowKey, columnKey);
         fireDatasetChanged();
     }
@@ -230,8 +230,8 @@ public class FastCategoryDataset extends AbstractDataset
      *
      * @see #getValue(Comparable, Comparable)
      */
-    public void setValue(double value, Comparable rowKey,
-                         Comparable columnKey) {
+    public void setValue(double value, String rowKey,
+                         String columnKey) {
         setValue(new Double(value), rowKey, columnKey);
     }
 
@@ -246,8 +246,8 @@ public class FastCategoryDataset extends AbstractDataset
      * @throws UnknownKeyException if either key is not defined in the dataset.
      */
     public void incrementValue(double value,
-                               Comparable rowKey,
-                               Comparable columnKey) {
+                               String rowKey,
+                               String columnKey) {
         double existing = 0.0;
         Number n = getValue(rowKey, columnKey);
         if (n != null) {
@@ -265,7 +265,7 @@ public class FastCategoryDataset extends AbstractDataset
      *
      * @see #addValue(Number, Comparable, Comparable)
      */
-    public void removeValue(Comparable rowKey, Comparable columnKey) {
+    public void removeValue(String rowKey, String columnKey) {
         this.data.removeValue(rowKey, columnKey);
         fireDatasetChanged();
     }
@@ -291,7 +291,7 @@ public class FastCategoryDataset extends AbstractDataset
      *
      * @see #removeColumn(Comparable)
      */
-    public void removeRow(Comparable rowKey) {
+    public void removeRow(String rowKey) {
         this.data.removeRow(rowKey);
         fireDatasetChanged();
     }
@@ -320,7 +320,7 @@ public class FastCategoryDataset extends AbstractDataset
      * @throws UnknownKeyException if <code>columnKey</code> is not defined
      *         in the dataset.
      */
-    public void removeColumn(Comparable columnKey) {
+    public void removeColumn(String columnKey) {
         this.data.removeColumn(columnKey);
         fireDatasetChanged();
     }

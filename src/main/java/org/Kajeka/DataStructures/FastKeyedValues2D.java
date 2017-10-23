@@ -6,7 +6,9 @@
 package org.Kajeka.DataStructures;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,6 @@ import org.jfree.data.DefaultKeyedValues;
 import org.jfree.data.KeyedValues2D;
 import org.jfree.data.UnknownKeyException;
 
-import org.jfree.util.ObjectUtilities;
 import org.jfree.util.PublicCloneable;
 
 /**
@@ -30,17 +31,17 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
     private static final long serialVersionUID = -5514169970951994748L;
 
     /** The row keys. */
-    private List rowKeys;
+    private List<String> rowKeys;
 
     /** The column keys. */
-    private List columnKeys;
+    private List<String> columnKeys;
 
     /** The row data. */
-    private List rows;
-    
+    private List<DefaultKeyedValues> rows;
+
     /** The row key index map */
     private Map<Object, Integer> rowKeyIndexMap;
-    
+
     /** The column key index map */
     private Map<Object, Integer> columnKeyIndexMap;
 
@@ -60,13 +61,13 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
      * @param sortRowKeys  if the row keys should be sorted.
      */
     public FastKeyedValues2D(boolean sortRowKeys) {
-        this.rowKeys = new java.util.ArrayList();
-        this.columnKeys = new java.util.ArrayList();
-        this.rows = new java.util.ArrayList();
-        
-        this.rowKeyIndexMap = new java.util.HashMap<Object, Integer>();
-        this.columnKeyIndexMap = new java.util.HashMap<Object, Integer>();
-        
+        this.rowKeys = new ArrayList<>();
+        this.columnKeys = new ArrayList<>();
+        this.rows = new ArrayList<>();
+
+        this.rowKeyIndexMap = new HashMap<>();
+        this.columnKeyIndexMap = new HashMap<>();
+
         this.sortRowKeys = sortRowKeys;
     }
 
@@ -149,7 +150,7 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
     public int getRowIndex(Comparable key) {
         ParamChecks.nullNotPermitted(key, "key");
         if (this.sortRowKeys) {
-            return Collections.binarySearch(this.rowKeys, key);
+            return Collections.binarySearch(this.rowKeys, (String)key);
         }
         else {
             if (!this.rowKeyIndexMap.containsKey(key))
@@ -266,8 +267,8 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
      * @see #setValue(Number, Comparable, Comparable)
      * @see #removeValue(Comparable, Comparable)
      */
-    public void addValue(Number value, Comparable rowKey,
-                         Comparable columnKey) {
+    public void addValue(Number value, String rowKey,
+                         String columnKey) {
         // defer argument checking
         setValue(value, rowKey, columnKey);
     }
@@ -282,8 +283,8 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
      * @see #addValue(Number, Comparable, Comparable)
      * @see #removeValue(Comparable, Comparable)
      */
-    public void setValue(Number value, Comparable rowKey,
-                         Comparable columnKey) {
+    public void setValue(Number value, String rowKey,
+                         String columnKey) {
 
         DefaultKeyedValues row;
         int rowIndex = getRowIndex(rowKey);
@@ -323,7 +324,7 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
      *
      * @see #addValue(Number, Comparable, Comparable)
      */
-    public void removeValue(Comparable rowKey, Comparable columnKey) {
+    public void removeValue(String rowKey, String columnKey) {
         setValue(null, rowKey, columnKey);
 
         // 1. check whether the row is now empty.
@@ -398,7 +399,7 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
      * @throws UnknownKeyException if <code>rowKey</code> is not defined in the
      *         table.
      */
-    public void removeRow(Comparable rowKey) {
+    public void removeRow(String rowKey) {
         ParamChecks.nullNotPermitted(rowKey, "rowKey");
         int index = getRowIndex(rowKey);
         if (index >= 0) {
@@ -418,7 +419,7 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
      * @see #removeRow(int)
      */
     public void removeColumn(int columnIndex) {
-        Comparable columnKey = getColumnKey(columnIndex);
+        String columnKey = (String)getColumnKey(columnIndex);
         removeColumn(columnKey);
     }
 
@@ -435,7 +436,7 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
      * @see #removeColumn(int)
      * @see #removeRow(Comparable)
      */
-    public void removeColumn(Comparable columnKey) {
+    public void removeColumn(String columnKey) {
         ParamChecks.nullNotPermitted(columnKey, "columnKey");
         if (!this.columnKeys.contains(columnKey)) {
             throw new UnknownKeyException("Unknown key: " + columnKey);
@@ -544,15 +545,20 @@ public class FastKeyedValues2D implements KeyedValues2D, PublicCloneable,
         FastKeyedValues2D clone = (FastKeyedValues2D) super.clone();
         // for the keys, a shallow copy should be fine because keys
         // should be immutable...
-        clone.columnKeys = new java.util.ArrayList(this.columnKeys);
-        clone.rowKeys = new java.util.ArrayList(this.rowKeys);
+        clone.columnKeys = new ArrayList<>(this.columnKeys);
+        clone.rowKeys = new ArrayList<>(this.rowKeys);
         clone.columnKeyIndexMap =
-            new java.util.HashMap<>(this.columnKeyIndexMap);
+            new HashMap<>(this.columnKeyIndexMap);
         clone.rowKeyIndexMap =
-            new java.util.HashMap<>(this.rowKeyIndexMap);
+            new HashMap<>(this.rowKeyIndexMap);
 
         // but the row data requires a deep copy
-        clone.rows = (List) ObjectUtilities.deepClone(this.rows);
+        clone.rows = new ArrayList<>(this.rows.size());
+        for(DefaultKeyedValues value : this.rows)
+        {
+            clone.rows.add((DefaultKeyedValues)value.clone());
+        }
+
         return clone;
     }
 
