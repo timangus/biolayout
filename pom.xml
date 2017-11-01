@@ -118,11 +118,20 @@
                             <configuration>
                                 <tasks if="codesign">
                                     <exec executable="sign4j">
-                                        <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
-                                                -pass ${jarsigner.storepass} -n ${productName}
-                                                -i http://www.kajeka.com/ -t ${jarsigner.tsa}
-                                                -in '${project.build.directory}/${outFilename}-unsigned.exe'
-                                                -out '${project.build.directory}/${outFilename}.exe'"/>
+                                        <arg value="osslsigncode sign -pkcs12"/>
+                                        <arg value="${jarsigner.p12keystore}"/>
+                                        <arg value="-pass"/>
+                                        <arg value="${jarsigner.storepass}"/>
+                                        <arg value="-n"/>
+                                        <arg value="${productName}"/>
+                                        <arg value="-i"/>
+                                        <arg value="http://www.kajeka.com/"/>
+                                        <arg value="-t"/>
+                                        <arg value="${jarsigner.tsa}"/>
+                                        <arg value="-in"/>
+                                        <arg value="${project.build.directory}/${outFilename}-unsigned.exe"/>
+                                        <arg value="-out"/>
+                                        <arg value="${project.build.directory}/${outFilename}.exe"/>
                                     </exec>
                                 </tasks>
                             </configuration>
