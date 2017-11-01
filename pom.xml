@@ -121,8 +121,8 @@
                                         <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
                                                 -pass ${jarsigner.storepass} -n ${productName}
                                                 -i http://www.kajeka.com/ -t ${jarsigner.tsa}
-                                                -in ${project.build.directory}/${outFilename}-unsigned.exe
-                                                -out ${project.build.directory}/${outFilename}.exe"/>
+                                                -in &quot;${project.build.directory}/${outFilename}-unsigned.exe&quot;
+                                                -out &quot;${project.build.directory}/${outFilename}.exe&quot;"/>
                                     </exec>
                                 </tasks>
                             </configuration>
