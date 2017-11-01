@@ -37,10 +37,10 @@ function signexe
     -n "${BASE_NAME}" \
     -i http://www.kajeka.com/ \
     -t http://tsa.starfieldtech.com/ \
-    -in ${1} \
-    -out ${1}.signed
+    -in "${1}" \
+    -out "${1}.signed"
 
-  mv ${1}.signed ${1}
+  mv "${1}.signed" "${1}"
 }
 
 cd ${SRC_DIR}
