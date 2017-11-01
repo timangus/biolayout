@@ -70,8 +70,8 @@ then
   then
       exit $?
   fi
-  signexe ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe
-  cp ${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe \
+  signexe "${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe"
+  cp "${SRC_DIR}/nsis-installer/${OUTPUT_NAME}-${VERSION}-installer.exe" \
     ${BUILD_DIR}
 else
   echo "makensis not found, skipping Windows"
@@ -85,7 +85,7 @@ then
     # OS X
     cd ${SRC_DIR}/target/osx
     #	"Kajeka Limited" is the Apple Developer ID cert on the keychain
-    codesign -f -v -s "Kajeka Limited" ${OUTPUT_NAME}.app
+    codesign -f -v -s "Kajeka Limited" "${OUTPUT_NAME}.app"
     if [ "$?" != "0" ];
     then
         exit $?
@@ -94,8 +94,8 @@ then
       -e "s/_BASE_NAME_/${BASE_NAME}/g" \
       -e "s|_SCRIPT_DIR_|${SCRIPT_DIR}|g" > \
       dmg.spec.json
-    rm -f ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg && \
-      appdmg dmg.spec.json ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg
+    rm -f "${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg" && \
+      appdmg dmg.spec.json "${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.dmg"
   else
     #	Install with "brew install node && npm install -g appdmg"
     echo "appdmg not found, skipping OSX"
@@ -106,12 +106,12 @@ fi
 
 # Everything else
 cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar \
-  ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.jar
+  "${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.jar"
 
 # Source code
 cd ${SRC_DIR}
 git archive --format zip -9 \
-  --output ${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}-source.zip ${GIT_REV}
+  --output "${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}-source.zip" ${GIT_REV}
 
 cp ${SRC_DIR}/src/main/resources/Resources/Images/Splash.png ${BUILD_DIR}
 cp ${SRC_DIR}/src/main/resources/Resources/Images/Icon512x512.png ${BUILD_DIR}
