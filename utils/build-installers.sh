@@ -105,7 +105,7 @@ else
 fi
 
 # Everything else
-cp ${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar \
+cp "${SRC_DIR}/target/${BASE_NAME}-${VERSION}.jar" \
   "${BUILD_DIR}/${OUTPUT_NAME}-${VERSION}.jar"
 
 # Source code

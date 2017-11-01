@@ -59,7 +59,7 @@ Var STARTMENU_FOLDER
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\${LONG_NAME}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 
-!insertmacro MUI_PAGE_STARTMENU ${BASE_NAME} $STARTMENU_FOLDER
+!insertmacro MUI_PAGE_STARTMENU "${BASE_NAME}" $STARTMENU_FOLDER
 
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -104,7 +104,7 @@ Section "-${LONG_NAME}"
 
     WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-    !insertmacro MUI_STARTMENU_WRITE_BEGIN ${BASE_NAME}
+    !insertmacro MUI_STARTMENU_WRITE_BEGIN "${BASE_NAME}"
 
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER\"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
@@ -140,7 +140,7 @@ SectionGroupEnd
 
 ; Desktop shortcut
 Section "Desktop shortcut"
-    !insertmacro MUI_STARTMENU_WRITE_BEGIN ${BASE_NAME}
+    !insertmacro MUI_STARTMENU_WRITE_BEGIN "${BASE_NAME}"
     CreateShortCut "$DESKTOP\${LONG_NAME}.lnk" "$INSTDIR\${OUTPUT_EXE_NAME}"
     !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
@@ -150,7 +150,7 @@ Section "Uninstall"
 
     RMDir /r "$INSTDIR"
 
-    !insertmacro MUI_STARTMENU_GETFOLDER ${BASE_NAME} $MUI_TEMP
+    !insertmacro MUI_STARTMENU_GETFOLDER "${BASE_NAME}" $MUI_TEMP
 
     Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\${LONG_NAME}.lnk"
