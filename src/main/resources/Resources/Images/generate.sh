@@ -35,3 +35,4 @@ function iconFilesOfSize()
 }
 
 icotool -c $(iconFilesOfSize "256 128 64 48 32 16") -o ${SCRIPT_DIR}/${BASE_NAME}.ico
+png2icns ${SCRIPT_DIR}/../../../osx/Contents/Resources/${BASE_NAME}.icns $(iconFilesOfSize "1024 512 256 128 32 16")
