@@ -9,9 +9,9 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
-   width="757.5177"
-   height="787.5965"
-   viewBox="0 0 7575.177 7875.965"
+   width="731.09106"
+   height="788.91779"
+   viewBox="0 0 7310.9106 7889.1779"
    preserveAspectRatio="xMidYMid meet"
    id="svg12359"
    inkscape:version="0.91 r13725"
@@ -86,7 +86,7 @@
        x2="4539.2476"
        y2="3381.5879"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.2177047,0.05114018,-0.04089083,0.97365627,388.82139,388.37577)" />
+       gradientTransform="matrix(1.2175258,0.05523502,-0.04416499,0.97351325,323.28296,491.50105)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4227"
@@ -96,7 +96,7 @@
        x2="5635.9482"
        y2="1513.2665"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.170008,0.50173875,-0.6988753,0.83361664,-368.28778,603.90878)" />
+       gradientTransform="matrix(1.1028659,0.49492727,-0.65876963,0.82229966,-223.837,639.83567)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4227"
@@ -156,7 +156,7 @@
        x2="2047.7227"
        y2="3811.967"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.3653465,-0.07002792,-0.00842442,0.9716321,-284.38876,711.36817)" />
+       gradientTransform="matrix(1.3653465,-0.07002792,-0.00842442,0.9716321,-108.21131,755.41253)" />
     <radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient15499"
@@ -166,7 +166,7 @@
        fx="3651.2595"
        fy="1191.0443"
        r="1004.1633"
-       gradientTransform="matrix(1.2010752,0.02332722,-0.02371303,1.1908577,798.91226,412.59777)"
+       gradientTransform="matrix(1.2010752,0.02332722,-0.02371303,1.1908577,699.81244,401.58668)"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
@@ -188,7 +188,7 @@
        fx="4039.512"
        fy="4457.4824"
        r="780.01996"
-       gradientTransform="matrix(0.80161406,-0.02653237,0.03425865,0.78756795,1864.6138,1538.8085)"
+       gradientTransform="matrix(0.80161406,-0.02653237,0.03425865,0.78756795,1765.514,1516.7863)"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
@@ -199,7 +199,7 @@
        fx="3732.0474"
        fy="5649.1338"
        r="1237.2882"
-       gradientTransform="matrix(0.89942867,-0.0097979,0.01152363,0.98669412,1559.2673,588.02992)"
+       gradientTransform="matrix(0.89942867,-0.0097979,0.01152363,0.98669412,1449.1564,588.02992)"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
@@ -210,7 +210,7 @@
        fx="923.30957"
        fy="5239.6709"
        r="821.28381"
-       gradientTransform="matrix(1.0819801,-0.00499012,0.00606887,1.1246449,223.91063,-193.00821)"
+       gradientTransform="matrix(1.0819801,-0.00499012,0.00606887,1.1246449,400.08809,-181.99712)"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
@@ -221,7 +221,7 @@
        fx="916.67072"
        fy="2580.8269"
        r="994.79089"
-       gradientTransform="matrix(1.2199521,0.00686121,-0.00683889,1.2202313,152.38429,-264.89165)"
+       gradientTransform="matrix(1.2199521,0.00686121,-0.00683889,1.2202313,273.50629,-286.91383)"
        gradientUnits="userSpaceOnUse" />
     <filter
        style="color-interpolation-filters:sRGB"
@@ -287,6 +287,38 @@
          result="composite2"
          id="feComposite5859" />
     </filter>
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Drop Shadow"
+       id="filter6131">
+      <feFlood
+         flood-opacity="1"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood6133" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite6135" />
+      <feGaussianBlur
+         in="composite1"
+         stdDeviation="40"
+         result="blur"
+         id="feGaussianBlur6137" />
+      <feOffset
+         dx="12"
+         dy="12"
+         result="offset"
+         id="feOffset6139" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite6141" />
+    </filter>
   </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -302,8 +334,8 @@
      id="namedview13424"
      showgrid="false"
      inkscape:zoom="0.90817521"
-     inkscape:cx="181.79556"
-     inkscape:cy="460.30997"
+     inkscape:cx="167.48115"
+     inkscape:cy="460.42004"
      inkscape:window-x="65"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -319,16 +351,16 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="shadow"
-     transform="translate(321.08126,436.4583)" />
+     transform="translate(177.93716,448.57048)" />
   <g
      inkscape:groupmode="layer"
      id="layer15"
      inkscape:label="base"
      style="display:inline;opacity:1"
-     transform="translate(83.610413,-188.0506)">
+     transform="translate(-59.533691,-175.93842)">
     <g
-       id="g5617"
-       style="filter:url(#filter5849)">
+       id="g5887"
+       style="filter:url(#filter6131)">
       <ellipse
          ry="667.9917"
          rx="719.19763"
@@ -345,15 +377,15 @@
       <ellipse
          ry="924.23004"
          rx="981.12756"
-         cy="5755.3472"
-         cx="1701.1786"
+         cy="5766.3584"
+         cx="1877.356"
          id="path14530-35"
          style="fill:url(#radialGradient15495);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:58.88999939;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccc"
          inkscape:connector-curvature="0"
          id="rect15259"
-         d="m 1358.9704,3583.7369 584.6182,-22.4229 -15.7272,1507.4913 c -126.5225,90.2989 -345.5373,115.7196 -475.7516,19.054 z"
+         d="m 1535.1479,3627.7813 584.6182,-22.4229 -15.7272,1507.4913 c -126.5225,90.2989 -345.5373,115.7196 -475.7516,19.054 z"
          style="fill:url(#linearGradient15392);fill-opacity:1;fill-rule:nonzero;stroke:#0a0a0a;stroke-width:46.06125259;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccc"
@@ -364,8 +396,8 @@
       <ellipse
          ry="775.5274"
          rx="880.27728"
-         cy="4980.5239"
-         cx="5615.7085"
+         cy="4958.502"
+         cx="5516.6089"
          id="path14530-7"
          style="fill:url(#radialGradient15491);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:71.31999969;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
@@ -383,28 +415,28 @@
       <ellipse
          ry="1151.4918"
          rx="1156.9725"
-         cy="1995.8728"
-         cx="5703.3286"
+         cy="1984.8617"
+         cx="5604.229"
          id="path14530"
          style="fill:url(#radialGradient15475);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:77.59999847;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccc"
          inkscape:connector-curvature="0"
          id="rect15267"
-         d="m 2488.1195,3325.0261 2718.2298,1223.096 c 7.8055,136.9184 -77.5291,203.9822 -192.1363,252.1662 L 2178.893,3630.0554 Z"
-         style="fill:url(#linearGradient15318);fill-opacity:1;fill-rule:nonzero;stroke:#0a0a0a;stroke-width:46.06125259;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         d="m 2468.6524,3324.0118 2562.2415,1206.4915 c 7.3575,135.0596 -73.0801,201.213 -181.1104,248.7428 L 2177.1712,3624.9 Z"
+         style="fill:url(#linearGradient15318);fill-opacity:1;fill-rule:nonzero;stroke:#0a0a0a;stroke-width:44.41550064;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <ellipse
          ry="1153.0306"
          rx="1173.9927"
-         cy="2973.4446"
-         cx="1721.647"
+         cy="2951.4224"
+         cx="1842.7689"
          id="path14530-3"
          style="fill:url(#radialGradient15497);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:68.48999786;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccc"
          inkscape:connector-curvature="0"
          id="rect15255"
-         d="m 5393.2387,2671.7843 c 96.2146,-113.5937 440.8118,-88.996 550.5387,7.9326 l -87.3757,2532.8183 -603.2862,-108.8734 z"
+         d="m 5319.9929,2791.7265 c 96.596,-113.2695 441.1085,-87.513 550.5088,9.7841 l -95.893,2532.5101 -602.9167,-110.9016 z"
          style="fill:url(#linearGradient15286);fill-opacity:1;fill-rule:nonzero;stroke:#0a0a0a;stroke-width:43.5929718;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccc"
@@ -416,9 +448,9 @@
          ry="1259.207"
          rx="1264.0449"
          cy="6148.4775"
-         cx="5514.021"
+         cx="5403.9097"
          id="path14530-5"
-         style="fill:url(#radialGradient15493);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:90.31999969;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:url(#radialGradient15493);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:72.31999969;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>
