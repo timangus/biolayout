@@ -9,9 +9,9 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
-   width="731.09106"
-   height="788.91779"
-   viewBox="0 0 7310.9106 7889.1779"
+   width="789"
+   height="789"
+   viewBox="0 0 7890 7890"
    preserveAspectRatio="xMidYMid meet"
    id="svg12359"
    inkscape:version="0.91 r13725"
@@ -351,16 +351,17 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="shadow"
-     transform="translate(177.93716,448.57048)" />
+     transform="translate(177.93716,449.39262)" />
   <g
      inkscape:groupmode="layer"
      id="layer15"
      inkscape:label="base"
      style="display:inline;opacity:1"
-     transform="translate(-59.533691,-175.93842)">
+     transform="translate(-59.533691,-175.11628)">
     <g
        id="g5887"
-       style="filter:url(#filter6131)">
+       style="filter:url(#filter6131)"
+       transform="translate(297.29946,0)">
       <ellipse
          ry="667.9917"
          rx="719.19763"
