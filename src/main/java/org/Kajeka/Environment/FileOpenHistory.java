@@ -38,7 +38,7 @@ public class FileOpenHistory extends StringHistory
         PrefString value = null;
         for (int i = 0; i < maxHistory; i++)
         {
-            value = new PrefString("", PRODUCT_NAME.toLowerCase() + "_express_3d_history_file_" + i, true);
+            value = new PrefString("", "history_file_" + i, true);
             value.loadPref();
             preferences.add(value);
         }
