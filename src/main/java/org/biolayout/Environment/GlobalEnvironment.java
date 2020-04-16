@@ -109,10 +109,10 @@ public final class GlobalEnvironment
     public static enum SupportedOutputFileTypes { LAYOUT, TXT }
     public static enum SupportedImportExportFileTypes { CLASSSETS, TXT }
     public static enum SupportedSimulationFileTypes { SPN, TXT }
-    public static enum LicensesFiles { LICENSE_KAJEKA, LICENSE_GPLV3, LICENSE_JOGL }
+    public static enum LicensesFiles { LICENSE, LICENSE_GPLV3, LICENSE_JOGL }
     public static final String LICENSES_FILES_PATH = "/Resources/Licenses/";
     public static final String LICENSES_SEPARATOR = "\n\n\n\n\n";
-    public static final String[] LICENSES_FILES_NAMES = { "LICENSE-KAJEKA.txt",
+    public static final String[] LICENSES_FILES_NAMES = { "LICENSE.txt",
                                                           "LICENSE-GPLv3.txt",
                                                           "LICENSE-JOGL.txt"
                                                         };
