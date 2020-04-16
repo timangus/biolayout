@@ -15,7 +15,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class UsageTracker
 {
-    private final static String UPLOAD_URL = "http://stats.kajeka.com/";
+    private final static String UPLOAD_URL = "http://stats.biolayout.org/";
     private String log;
 
     public UsageTracker()
