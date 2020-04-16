@@ -14,7 +14,7 @@ import static org.Kajeka.Environment.GlobalEnvironment.*;
  */
 public class DataFolder
 {
-    private static final String ROOT_FOLDER_NAME = "Kajeka";
+    private static final String ROOT_FOLDER_NAME = "BioLayout";
     private static final String ROOT_FOLDER_NAME_UNIX = "." + ROOT_FOLDER_NAME;
 
     public static String get()

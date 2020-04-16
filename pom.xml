@@ -8,16 +8,16 @@
     <packaging>jar</packaging>
 
     <name>Layout</name>
-    <url>http://kajeka.com/wiki/</url>
+    <url>http://biolayout.org/</url>
 
     <properties>
-        <productName>Layout</productName>
-        <versionNumber>development</versionNumber>
+        <productName>BioLayout</productName>
+        <versionNumber>3.4</versionNumber>
         <jarName>${productName}</jarName>
         <outFilename>${jarName}-${versionNumber}</outFilename>
         <mainClass>org.Kajeka.Layout</mainClass>
         <manifestVersion>1.0.0.0</manifestVersion>
-        <copyright>© Kajeka 2014-2017</copyright>
+        <copyright>© University of Edinburgh 2020</copyright>
         <icon>src/main/resources/Resources/Images/Icon.ico</icon>
 
         <minJavaVersion>1.8</minJavaVersion>
@@ -82,7 +82,7 @@
                             <configuration>
                                 <headerType>gui</headerType>
                                 <dontWrapJar>true</dontWrapJar>
-                                <outfile>${project.build.directory}/${outFilename}-unsigned.exe</outfile>
+                                <outfile>${project.build.directory}/${outFilename}.exe</outfile>
                                 <jar>${outFilename}.jar</jar>
                                 <icon>${icon}</icon>
                                 <errTitle>${productName}</errTitle>
@@ -100,31 +100,6 @@
                                     <internalName>${jarName}</internalName>
                                     <originalFilename>${outFilename}.exe</originalFilename>
                                 </versionInfo>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.7</version>
-                    <executions>
-                        <execution>
-                            <id>signL4jExes</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                            <configuration>
-                                <tasks if="codesign">
-                                    <exec executable="sign4j">
-                                        <arg line="osslsigncode sign -pkcs12 ${jarsigner.p12keystore}
-                                                -pass ${jarsigner.storepass} -n &quot;${productName}&quot;
-                                                -i http://www.kajeka.com/ -t ${jarsigner.tsa}
-                                                -in &quot;${project.build.directory}/${outFilename}-unsigned.exe&quot;
-                                                -out &quot;${project.build.directory}/${outFilename}.exe&quot;"/>
-                                    </exec>
-                                </tasks>
                             </configuration>
                         </execution>
                     </executions>

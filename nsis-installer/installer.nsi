@@ -5,15 +5,15 @@
 
 !addplugindir "."
 
-!define LONG_NAME "_BASE_NAME_"
-!define VERSION "_VERSION_"
-!define BASE_NAME "_BASE_NAME_"
-!define OUTPUT_NAME "_OUTPUT_NAME_"
+!define LONG_NAME "BioLayout"
+!define VERSION "3.4"
+!define BASE_NAME "BioLayout"
+!define OUTPUT_NAME "BioLayout"
 !define BASE_DIR ".."
 
-!define INSTALLER_NAME "${OUTPUT_NAME}-_VERSION_-installer.exe"
-!define EXE_NAME "${BASE_NAME}-_VERSION_.exe"
-!define JAR_NAME "${BASE_NAME}-_VERSION_.jar"
+!define INSTALLER_NAME "${OUTPUT_NAME}-${VERSION}-installer.exe"
+!define EXE_NAME "${BASE_NAME}-${VERSION}.exe"
+!define JAR_NAME "${BASE_NAME}-${VERSION}.jar"
 !define OUTPUT_EXE_NAME "${BASE_NAME}.exe"
 
 ; General
@@ -27,7 +27,7 @@ VIProductVersion "1.0.0.0"
 
 VIAddVersionKey ProductName "${LONG_NAME}"
 VIAddVersionKey Comments "${LONG_NAME}"
-VIAddVersionKey LegalCopyright "� Kajeka 2014-2017"
+VIAddVersionKey LegalCopyright "� University of Edinburgh 2020"
 VIAddVersionKey FileDescription "${LONG_NAME}"
 VIAddVersionKey FileVersion "1.0.0.0"
 VIAddVersionKey ProductVersion "1.0.0.0"
@@ -128,7 +128,7 @@ SectionGroup "File associations"
     SectionEnd
 
     Section "Gene expression file (.expression)"
-        !insertmacro APP_ASSOCIATE "expression" "Kajeka.expression" "Kajeka Expression File" \
+        !insertmacro APP_ASSOCIATE "expression" "BioLayout.expression" "BioLayout Expression File" \
             "$INSTDIR\${OUTPUT_EXE_NAME},0" "Open" "$INSTDIR\${OUTPUT_EXE_NAME} $\"%1$\""
     SectionEnd
 
@@ -163,7 +163,7 @@ Section "Uninstall"
     DeleteRegKey HKLM "SOFTWARE\${LONG_NAME}"
 
     !insertmacro APP_UNASSOCIATE "sif"        "${BASE_NAME}.sif"
-    !insertmacro APP_UNASSOCIATE "expression" "Kajeka.expression"
+    !insertmacro APP_UNASSOCIATE "expression" "BioLayout.expression"
     !insertmacro APP_UNASSOCIATE "matrix"     "${BASE_NAME}.matrix"
     !insertmacro UPDATEFILEASSOC
 
