@@ -34,10 +34,10 @@ import java.lang.*;
 import java.util.*;
 import java.io.*;
 import ogdf.basic.*;
-import org.Kajeka.Utils.ref;
-import org.Kajeka.CoreUI.Dialogs.LayoutProgressBarDialog;
-import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.DebugConsole.ConsoleOutput.*;
+import org.biolayout.Utils.ref;
+import org.biolayout.CoreUI.Dialogs.LayoutProgressBarDialog;
+import static org.biolayout.Environment.GlobalEnvironment.*;
+import static org.biolayout.DebugConsole.ConsoleOutput.*;
 
 public class FMMMLayout
 {

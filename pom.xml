@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.Kajeka</groupId>
+    <groupId>org.biolayout</groupId>
     <artifactId>Layout</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
@@ -15,7 +15,7 @@
         <versionNumber>3.4</versionNumber>
         <jarName>${productName}</jarName>
         <outFilename>${jarName}-${versionNumber}</outFilename>
-        <mainClass>org.Kajeka.Layout</mainClass>
+        <mainClass>org.biolayout.Layout</mainClass>
         <manifestVersion>1.0.0.0</manifestVersion>
         <copyright>© University of Edinburgh 2020</copyright>
         <icon>src/main/resources/Resources/Images/Icon.ico</icon>
@@ -28,8 +28,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <generated.sources.dir>${project.build.directory}/generated-sources/java</generated.sources.dir>
-        <buildconfig.template.file>src/main/java/org/Kajeka/BuildConfig.template</buildconfig.template.file>
-        <buildconfig.file>${generated.sources.dir}/org/Kajeka/BuildConfig.java</buildconfig.file>
+        <buildconfig.template.file>src/main/java/org/biolayout/BuildConfig.template</buildconfig.template.file>
+        <buildconfig.file>${generated.sources.dir}/org/biolayout/BuildConfig.java</buildconfig.file>
 
         <osx.app.dir>${project.build.directory}/osx</osx.app.dir>
         <osx.appbundler.path>${project.basedir}/jars/com/oracle/appbundler/appbundler/1.0/appbundler-1.0.jar</osx.appbundler.path>
@@ -307,7 +307,7 @@
                     <archive>
                         <manifest>
                             <mainClass>${mainClass}</mainClass>
-                            <packageName>org.Kajeka</packageName>
+                            <packageName>org.biolayout</packageName>
                         </manifest>
                         <manifestEntries>
                             <url>${project.url}</url>

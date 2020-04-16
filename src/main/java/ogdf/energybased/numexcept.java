@@ -39,8 +39,8 @@ package ogdf.energybased;
 import java.util.Random;
 import ogdf.basic.DPoint;
 import ogdf.basic.PointFactory;
-import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.DebugConsole.ConsoleOutput.*;
+import static org.biolayout.Environment.GlobalEnvironment.*;
+import static org.biolayout.DebugConsole.ConsoleOutput.*;
 
 public class numexcept
 {

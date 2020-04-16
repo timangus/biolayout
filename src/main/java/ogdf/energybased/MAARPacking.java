@@ -32,9 +32,9 @@ package ogdf.energybased;
  */
 import java.util.*;
 import ogdf.basic.*;
-import org.Kajeka.Utils.ref;
-import static org.Kajeka.Environment.GlobalEnvironment.*;
-import static org.Kajeka.DebugConsole.ConsoleOutput.*;
+import org.biolayout.Utils.ref;
+import static org.biolayout.Environment.GlobalEnvironment.*;
+import static org.biolayout.DebugConsole.ConsoleOutput.*;
 
 class PackingRowInfo
 {
