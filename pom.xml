@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.biolayout</groupId>
@@ -242,7 +242,7 @@
         <repository>
                 <id>pathway-commons</id>
                 <name>Pathway Commons Repository at Google Code</name>
-                <url>http://repo.pathway-commons.googlecode.com/hg/</url>
+                <url>https://repo.pathway-commons.googlecode.com/hg/</url>
                 <snapshots>
                     <enabled>true</enabled>
                 </snapshots>
@@ -252,7 +252,7 @@
         <repository>
                 <id>biopax.releases</id>
                 <name>BioPAX Repository</name>
-                <url>http://www.biopax.org/m2repo/releases/</url>
+                <url>https://www.biopax.org/m2repo/releases/</url>
                 <snapshots>
                     <enabled>false</enabled>
                 </snapshots>
@@ -261,7 +261,7 @@
         <repository>
                 <id>biopax.snapshots</id>
                 <name>BioPAX Snapshots Repository</name>
-                <url>http://www.biopax.org/m2repo/snapshots/</url>
+                <url>https://www.biopax.org/m2repo/snapshots/</url>
                 <snapshots>
                     <enabled>true</enabled>
                 </snapshots>
@@ -270,7 +270,7 @@
         <repository>
                 <id>biopax.snapshots.trove</id>
                 <name>BioPAX Snapshots Repository</name>
-                <url>http://www.biopax.org/m2repo/snapshots/org/biopax/paxtools/paxtools-trove/</url>
+                <url>https://www.biopax.org/m2repo/snapshots/org/biopax/paxtools/paxtools-trove/</url>
                 <snapshots>
                     <enabled>true</enabled>
                 </snapshots>
