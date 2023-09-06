@@ -436,7 +436,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-windows-i586</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.dll</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -449,7 +449,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-windows-i586</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.dll</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -462,7 +462,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-windows-amd64</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.dll</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -475,7 +475,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-windows-amd64</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.dll</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -489,7 +489,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-linux-i586</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.so</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -502,7 +502,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-linux-i586</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.so</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -516,7 +516,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-linux-amd64</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.so</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -529,7 +529,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-linux-amd64</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.so</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -543,7 +543,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-macosx-universal</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.jnilib</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
@@ -556,7 +556,7 @@
                                     <version>${jogampVersion}</version>
                                     <classifier>natives-macosx-universal</classifier>
                                     <type>jar</type>
-                                    <overWrite>false</overWrite>
+                                    <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.jnilib</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
