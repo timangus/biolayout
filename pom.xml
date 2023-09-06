@@ -23,7 +23,6 @@
         <minJavaVersion>1.8</minJavaVersion>
 
         <jogampVersion>2.3.2</jogampVersion>
-        <sbgnVersion>milestone2</sbgnVersion>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -149,9 +148,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.sbgn</groupId>
-            <artifactId>sbgn</artifactId>
-            <version>${sbgnVersion}</version>
+            <groupId>com.github.sbgn</groupId>
+            <artifactId>libsbgn</artifactId>
+            <version>milestone2</version>
         </dependency>
 
         <dependency>
@@ -219,12 +218,6 @@
         </dependency>
 
         <dependency>
-          <groupId>com.oracle.appbundler</groupId>
-          <artifactId>appbundler</artifactId>
-          <version>1.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.9.1</version>
@@ -288,7 +281,12 @@
                 </snapshots>
         </repository>
 
-        <!-- This allows us to treat local jars (e.g. libsbgn) as
+        <repository>
+	        <id>jitpack.io</id>
+	        <url>https://jitpack.io</url>
+        </repository>
+
+        <!-- This allows us to treat local jars as
              normal dependencies -->
         <repository>
             <id>jars</id>
