@@ -41,7 +41,6 @@
         <jarsigner.alias>selfsigned</jarsigner.alias>
         <jarsigner.storepass>password</jarsigner.storepass>
         <jarsigner.keypass>password</jarsigner.keypass>
-        <jarsigner.tsa>http://tsa.starfieldtech.com/</jarsigner.tsa>
     </properties>
 
     <profiles>
@@ -356,7 +355,6 @@
                     <alias>${jarsigner.alias}</alias>
                     <storepass>${jarsigner.storepass}</storepass>
                     <keypass>${jarsigner.keypass}</keypass>
-                    <tsa>${jarsigner.tsa}</tsa>
                     <arguments>
                         <argument>-sigalg</argument>
                         <argument>SHA1withRSA</argument>
