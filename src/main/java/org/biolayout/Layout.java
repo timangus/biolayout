@@ -656,15 +656,18 @@ public final class Layout
             setLoggingParameters(consoleOutput, fileOutput);
         setLookAndFeel(nimbusLAF);
 
-        if ( initJOGLNativeLibraries() )
+        if (jar != null)
         {
-            if (DEBUG_BUILD) println("\nJOGL Libraries working!\n");
-        }
-        else
-        {
-            if (DEBUG_BUILD) println("Error: JOGL Libraries not installed or found!\n");
-            JOptionPane.showMessageDialog(null, "Error: JOGL Libraries not installed or found!", "JOGL error", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+            if ( initJOGLNativeLibraries() )
+            {
+                if (DEBUG_BUILD) println("\nJOGL Libraries working!\n");
+            }
+            else
+            {
+                if (DEBUG_BUILD) println("Error: JOGL Libraries not installed or found!\n");
+                JOptionPane.showMessageDialog(null, "Error: JOGL Libraries not installed or found!", "JOGL error", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
         }
 
         if (DEBUG_BUILD)
