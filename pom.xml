@@ -108,7 +108,7 @@
     </profiles>
 
     <dependencies>
-        
+
         <!-- Java 6 = JAX-B Version 2.0   -->
         <!-- Java 7 = JAX-B Version 2.2.3 -->
         <!-- Java 8 = JAX-B Version 2.2.8 -->
