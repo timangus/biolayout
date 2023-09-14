@@ -76,6 +76,13 @@ public final class GraphmlLookUpmEPNTables
       ISOMERISATION,
       DIFFUSION,
       REDUCTION,
+      DIFFERENTIATION,
+      MIGRATION,
+      APOPTOSIS,
+      MATURATION,
+      PROLIFERATION,
+      PRIME,
+      PROMOTE,
       UNKNOWN_TRANSITION,
 
       // Edge Annotations
@@ -135,6 +142,13 @@ public final class GraphmlLookUpmEPNTables
       ISOMERISATION,
       DIFFUSION,
       REDUCTION,
+      DIFFERENTIATION,
+      MIGRATION,
+      APOPTOSIS,
+      MATURATION,
+      PROLIFERATION,
+      PRIME,
+      PROMOTE,
       UNKNOWN_TRANSITION
     };
 
@@ -186,6 +200,14 @@ public final class GraphmlLookUpmEPNTables
       Tuples.tuple("Df",  "ellipse", DIFFUSION,                    decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
       Tuples.tuple("Re",  "ellipse", REDUCTION,                    decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE),
       Tuples.tuple("?",   "ellipse", UNKNOWN_TRANSITION,           decode("#F0FFFF"), 5.0f, CIRCLE, SPHERE), // BioPAX Interaction
+
+      Tuples.tuple("Diff","ellipse", DIFFERENTIATION,              decode("#99FF99"), 5.0f, CIRCLE, SPHERE),
+      Tuples.tuple("Migr","ellipse", MIGRATION,                    decode("#00CCFF"), 5.0f, CIRCLE, SPHERE),
+      Tuples.tuple("Apop","ellipse", APOPTOSIS,                    decode("#FF6666"), 5.0f, CIRCLE, SPHERE),
+      Tuples.tuple("Matu","ellipse", MATURATION,                   decode("#FF99CC"), 5.0f, CIRCLE, SPHERE),
+      Tuples.tuple("Prol","ellipse", PROLIFERATION,                decode("#CCFFCC"), 5.0f, CIRCLE, SPHERE),
+      Tuples.tuple("Prim","ellipse", PRIME,                        decode("#FF9900"), 5.0f, CIRCLE, SPHERE),
+      Tuples.tuple("Prom","ellipse", PROMOTE,                      decode("#9999FF"), 5.0f, CIRCLE, SPHERE),
 
       // Edge Annotations
       Tuples.tuple("A",   "diamond", EDGE_ACTIVATES,               decode("#00CC33"), 5.0f, DIAMOND, OCTAHEDRON),
