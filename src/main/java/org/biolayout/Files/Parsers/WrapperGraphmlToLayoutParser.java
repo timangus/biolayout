@@ -451,6 +451,10 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
             currentGraphmlShape = (GraphmlShapesGroup3)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].second;
 
+            // Node names containing ~ are never generic entities
+            if ( currentGraphmlShape.equals(GraphmlShapesGroup3.GENERIC_ENTITY) && nodeName.contains("~"))
+                continue;
+
             // Node names containing : are never protein peptides
             if ( currentGraphmlShape.equals(GraphmlShapesGroup3.PROTEIN_PEPTIDE) && nodeName.contains(":") )
                 continue;
@@ -469,6 +473,11 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 case GENERIC_ENTITY:
                 case DRUG:
                 case ION_SIMPLE_MOLECULE:
+                case CELL:
+                case BACTERIA:
+                case VIRUS:
+                case PRIMARY_INPUT:
+                case TERMINAL_OUTPUT:
                     ismEPNComponent = true;
                     break;
 

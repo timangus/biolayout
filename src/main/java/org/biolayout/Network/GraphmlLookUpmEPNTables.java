@@ -284,6 +284,11 @@ public final class GraphmlLookUpmEPNTables
       GENERIC_ENTITY,
       DRUG,
       ION_SIMPLE_MOLECULE,
+      CELL,
+      BACTERIA,
+      VIRUS,
+      PRIMARY_INPUT,
+      TERMINAL_OUTPUT,
 
       // Other
       ENERGY_MOLECULAR_TRANSFER,
@@ -312,6 +317,12 @@ public final class GraphmlLookUpmEPNTables
       Tuples.tuple("ellipse",        GENERIC_ENTITY,            decode("#CC99FF"), 15.5f, CIRCLE,          Shapes3D.PINEAPPLE_SLICE_ELLIPSOID),
       Tuples.tuple("trapezoid",      DRUG,                      decode("#FFFF00"),  5.0f, TRAPEZOID1,      Shapes3D.DOUBLE_PYRAMID_THIN),
       Tuples.tuple("diamond",        ION_SIMPLE_MOLECULE,       decode("#C0C0C0"),  5.0f, DIAMOND,         Shapes3D.DOUBLE_PYRAMID_LARGE),
+
+      Tuples.tuple("ellipse",        CELL,                      decode("#99CCFF"), 25.0f, ELLIPSE,         Shapes3D.PINEAPPLE_SLICE_ELLIPSOID),
+      Tuples.tuple("star5",          BACTERIA,                  decode("#00CCCC"), 15.0f, STAR5,           Shapes3D.DOUBLE_PYRAMID_LARGE),
+      Tuples.tuple("star8",          VIRUS,                     decode("#00FFFF"), 15.0f, STAR8,           Shapes3D.SAUCER_12_PETALS),
+      Tuples.tuple("fatarrow",       PRIMARY_INPUT,             decode("#99FF99"), 15.0f, FATARROW,        Shapes3D.CONE_RIGHT),
+      Tuples.tuple("star6",          TERMINAL_OUTPUT,           decode("#FF6666"), 15.0f, STAR6,           Shapes3D.SAUCER_9_PETALS),
 
       // Other
       Tuples.tuple("trapezoid2",     ENERGY_MOLECULAR_TRANSFER, decode("#FFFFFF"), 10.0f, TRAPEZOID2,      Shapes3D.TRAPEZOID_DOWN),
