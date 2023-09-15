@@ -22,7 +22,7 @@
 
         <maven.compiler.release>8</maven.compiler.release>
 
-        <jogampVersion>2.3.2</jogampVersion>
+        <jogampVersion>2.4.0</jogampVersion>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -287,6 +287,11 @@
 	        <url>https://jitpack.io</url>
         </repository>
 
+        <repository>
+	        <id>jogamp.org</id>
+	        <url>https://jogamp.org/deployment/maven</url>
+        </repository>
+
         <!-- This allows us to treat local jars as
              normal dependencies -->
         <repository>
@@ -430,32 +435,6 @@
                         <configuration>
                             <artifactItems>
 
-                                <!-- jogl-all native windows-i586 -->
-                                <artifactItem>
-                                    <groupId>org.jogamp.jogl</groupId>
-                                    <artifactId>jogl-all</artifactId>
-                                    <version>${jogampVersion}</version>
-                                    <classifier>natives-windows-i586</classifier>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
-                                    <includes>**\/*.dll</includes>
-                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
-                                </artifactItem>
-
-                                <!-- gluegen-rt native windows-i586 -->
-                                <artifactItem>
-                                    <groupId>org.jogamp.gluegen</groupId>
-                                    <artifactId>gluegen-rt</artifactId>
-                                    <version>${jogampVersion}</version>
-                                    <classifier>natives-windows-i586</classifier>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
-                                    <includes>**\/*.dll</includes>
-                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
-                                </artifactItem>
-
                                 <!-- jogl-all native windows-amd64 -->
                                 <artifactItem>
                                     <groupId>org.jogamp.jogl</groupId>
@@ -479,33 +458,6 @@
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
                                     <includes>**\/*.dll</includes>
-                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
-                                </artifactItem>
-
-
-                                <!-- jogl-all native linux-i586 -->
-                                <artifactItem>
-                                    <groupId>org.jogamp.jogl</groupId>
-                                    <artifactId>jogl-all</artifactId>
-                                    <version>${jogampVersion}</version>
-                                    <classifier>natives-linux-i586</classifier>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
-                                    <includes>**\/*.so</includes>
-                                    <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
-                                </artifactItem>
-
-                                <!-- gluegen-rt native linux-i586 -->
-                                <artifactItem>
-                                    <groupId>org.jogamp.gluegen</groupId>
-                                    <artifactId>gluegen-rt</artifactId>
-                                    <version>${jogampVersion}</version>
-                                    <classifier>natives-linux-i586</classifier>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
-                                    <includes>**\/*.so</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
@@ -546,7 +498,7 @@
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
-                                    <includes>**\/*.jnilib</includes>
+                                    <includes>**\/*.dylib</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 
@@ -559,7 +511,7 @@
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/classes/Resources/Libraries</outputDirectory>
-                                    <includes>**\/*.jnilib</includes>
+                                    <includes>**\/*.dylib</includes>
                                     <excludes>**\/*newt.*,**\/*_mobile.*</excludes>
                                 </artifactItem>
 

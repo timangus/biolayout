@@ -310,7 +310,7 @@ public final class Layout
         // falling back on loading extracted versions which we create from our jar
         System.setProperty("jogamp.gluegen.UseTempJarCache", "false");
 
-        if( LoadNativeLibrary.extractNativeLibrary("gluegen-rt") == null )
+        if( LoadNativeLibrary.extractNativeLibrary("gluegen_rt") == null )
             return false;
 
         if( LoadNativeLibrary.extractNativeLibrary("jogl_desktop") == null )
