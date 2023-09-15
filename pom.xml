@@ -12,7 +12,7 @@
 
     <properties>
         <productName>BioLayout</productName>
-        <versionNumber>3.4</versionNumber>
+        <versionNumber>3.5</versionNumber>
         <jarName>${productName}</jarName>
         <outFilename>${jarName}-${versionNumber}</outFilename>
         <mainClass>org.biolayout.Layout</mainClass>
