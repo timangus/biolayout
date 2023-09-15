@@ -20,7 +20,7 @@
         <copyright>© University of Edinburgh 2020</copyright>
         <icon>src/main/resources/Resources/Images/Icon.ico</icon>
 
-        <minJavaVersion>1.8</minJavaVersion>
+        <maven.compiler.release>8</maven.compiler.release>
 
         <jogampVersion>2.3.2</jogampVersion>
 
@@ -86,7 +86,7 @@
                                 <errTitle>${productName}</errTitle>
                                 <jre>
                                     <path>${JAVA_HOME};${PATH}</path>
-                                    <minVersion>${minJavaVersion}.0</minVersion>
+                                    <minVersion>1.${maven.compiler.release}.0</minVersion>
                                 </jre>
                                 <versionInfo>
                                     <fileVersion>${manifestVersion}</fileVersion>
@@ -631,20 +631,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <source>${minJavaVersion}</source>
-                    <target>${minJavaVersion}</target>
-                    <compilerArguments>
-                        <Xlint:unchecked />
-                        <Xlint:deprecation />
-                    </compilerArguments>
-                </configuration>
             </plugin>
 
             <plugin>
