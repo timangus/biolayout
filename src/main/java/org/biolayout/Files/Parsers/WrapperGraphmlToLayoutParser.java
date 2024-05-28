@@ -438,7 +438,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
     /**
     *  Look up shapes method for graphml shapes group 3 for shape only, also returning color.
     */
-    private Tuple6<GraphmlShapesGroup3, Color, Float, Shapes2D, Shapes3D, Boolean> graphmlShapeLookUpGroup3(String nodeName, String nodeShape, Color nodeColor1)
+    private Tuple6<GraphmlShapesGroup3, Color, Float, Shapes2D, Shapes3D, Boolean> graphmlShapeLookUpGroup3(String nodeName, String nodeShape, Color nodeColor)
     {
         int numberOfShapes = GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3.length;
         GraphmlShapesGroup3 currentGraphmlShape = GraphmlShapesGroup3.NONE;
@@ -460,7 +460,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                 continue;
 
             // Mild hack: require generic entities to be the correct colour
-            if ( currentGraphmlShape.equals(GraphmlShapesGroup3.GENERIC_ENTITY) && !nodeColor1.equals( (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third ))
+            if ( currentGraphmlShape.equals(GraphmlShapesGroup3.GENERIC_ENTITY) && !nodeColor.equals( (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third ))
                 return Tuples.tuple(GraphmlShapesGroup3.NONE, Color.BLACK, 0.0f, CIRCLE, SPHERE, false);
 
             switch(currentGraphmlShape)
