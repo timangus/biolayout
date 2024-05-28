@@ -440,16 +440,13 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
     */
     private Tuple6<GraphmlShapesGroup3, Color, Float, Shapes2D, Shapes3D, Boolean> graphmlShapeLookUpGroup3(String nodeName, String nodeShape, Color nodeColor)
     {
-        int numberOfShapes = GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3.length;
-        GraphmlShapesGroup3 currentGraphmlShape = GraphmlShapesGroup3.NONE;
-        boolean ismEPNComponent = false;
         int shapeIndex = 0;
-        for (int i = 0; i < numberOfShapes; i++)
+        for (int i = 0; i < GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3.length; i++)
         {
             if ( !nodeShape.equals( (String)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].first ) )
                 continue;
 
-            currentGraphmlShape = (GraphmlShapesGroup3)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].second;
+            GraphmlShapesGroup3 currentGraphmlShape = (GraphmlShapesGroup3)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].second;
 
             // Node names containing ~ are never generic entities
             if ( currentGraphmlShape.equals(GraphmlShapesGroup3.GENERIC_ENTITY) && nodeName.contains("~"))
@@ -463,6 +460,7 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             if ( currentGraphmlShape.equals(GraphmlShapesGroup3.GENERIC_ENTITY) && !nodeColor.equals( (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third ))
                 return Tuples.tuple(GraphmlShapesGroup3.NONE, Color.BLACK, 0.0f, CIRCLE, SPHERE, false);
 
+            boolean ismEPNComponent = false;
             switch(currentGraphmlShape)
             {
                 case PROTEIN_COMPLEX:
