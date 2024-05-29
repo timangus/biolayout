@@ -440,7 +440,6 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
     */
     private Tuple6<GraphmlShapesGroup3, Color, Float, Shapes2D, Shapes3D, Boolean> graphmlShapeLookUpGroup3(String nodeName, String nodeShape, Color nodeColor)
     {
-        int shapeIndex = 0;
         for (int i = 0; i < GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3.length; i++)
         {
             if ( !nodeShape.equals( (String)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].first ) )
@@ -487,13 +486,12 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                     break;
             }
 
-            shapeIndex = currentGraphmlShape.ordinal();
-            return Tuples.tuple(currentGraphmlShape,                                             // return type of graphml shape
-                                   (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[shapeIndex].third,  // return graphml color
-                                   (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[shapeIndex].fourth, // return graphml shape size
-                                (Shapes2D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[shapeIndex].fifth,  // return graphml 2D shape
-                                (Shapes3D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[shapeIndex].sixth,  // return graphml 3D shape
-                                ismEPNComponent);                                                // return mEPN Component
+            return Tuples.tuple(currentGraphmlShape,                                    // return type of graphml shape
+                                   (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third,  // return graphml color
+                                   (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].fourth, // return graphml shape size
+                                (Shapes2D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].fifth,  // return graphml 2D shape
+                                (Shapes3D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].sixth,  // return graphml 3D shape
+                                ismEPNComponent);                                       // return mEPN Component
         }
 
         return Tuples.tuple(GraphmlShapesGroup3.NONE, Color.BLACK, 0.0f, CIRCLE, SPHERE, false);
