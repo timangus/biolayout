@@ -456,6 +456,10 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
             if ( currentGraphmlShape.equals(GraphmlShapesGroup3.PROTEIN_PEPTIDE) && nodeName.contains(":") )
                 continue;
 
+            // Node names not containing : are never protein complexes
+            if ( currentGraphmlShape.equals(GraphmlShapesGroup3.PROTEIN_COMPLEX) && !nodeName.contains(":") )
+                continue;
+
             // Mild hack: require generic entities to be the correct colour
             if ( currentGraphmlShape.equals(GraphmlShapesGroup3.GENERIC_ENTITY) && !nodeColor.equals( (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third ))
                 return Tuples.tuple(GraphmlShapesGroup3.NONE, Color.BLACK, 0.0f, CIRCLE, SPHERE, false);
