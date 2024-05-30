@@ -486,9 +486,16 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
                     break;
             }
 
+            switch(currentGraphmlShape)
+            {
+                default:
+                    nodeColor = (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third;
+                    break;
+            }
+
             return Tuples.tuple(currentGraphmlShape,                                    // return type of graphml shape
-                                   (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third,  // return graphml color
-                                   (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].fourth, // return graphml shape size
+                                nodeColor,
+                                (Float)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].fourth,    // return graphml shape size
                                 (Shapes2D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].fifth,  // return graphml 2D shape
                                 (Shapes3D)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].sixth,  // return graphml 3D shape
                                 ismEPNComponent);                                       // return mEPN Component
