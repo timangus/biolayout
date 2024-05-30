@@ -488,6 +488,10 @@ public final class WrapperGraphmlToLayoutParser extends CoreParser implements Gr
 
             switch(currentGraphmlShape)
             {
+                case TERMINAL_OUTPUT:
+                    // Passthrough source color
+                    break;
+
                 default:
                     nodeColor = (Color)GRAPHML_MEPN_SHAPES_LOOKUP_TABLE_3[i].third;
                     break;
