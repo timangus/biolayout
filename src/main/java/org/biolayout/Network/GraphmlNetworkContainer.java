@@ -241,7 +241,9 @@ public class GraphmlNetworkContainer
             }
             else
             {
-                if (DEBUG_BUILD) println("No mEPN notation was recorded for this vertex.");
+                vc = lc.createClass("Spacer");
+                lc.setClass(vertex, vc);
+                vc.setColor(Color.WHITE);
             }
         }
 
