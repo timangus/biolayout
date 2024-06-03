@@ -27,7 +27,7 @@ VIProductVersion "1.0.0.0"
 
 VIAddVersionKey ProductName "${LONG_NAME}"
 VIAddVersionKey Comments "${LONG_NAME}"
-VIAddVersionKey LegalCopyright "� University of Edinburgh 2020"
+VIAddVersionKey LegalCopyright "� University of Edinburgh 2020-2024"
 VIAddVersionKey FileDescription "${LONG_NAME}"
 VIAddVersionKey FileVersion "1.0.0.0"
 VIAddVersionKey ProductVersion "1.0.0.0"
