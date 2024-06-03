@@ -77,7 +77,7 @@ Var STARTMENU_FOLDER
 
 ;Launch function
 Function Launch
-    ShellExecAsUser::ShellExecAsUser "" "$INSTDIR\${OUTPUT_EXE_NAME}"
+    ExecShell "open" "$INSTDIR\${OUTPUT_EXE_NAME}"
 FunctionEnd
 
 ;Languages
