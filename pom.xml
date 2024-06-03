@@ -21,8 +21,6 @@
         <icon>src/main/resources/Resources/Images/Icon.ico</icon>
 
         <java.version>8</java.version>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.release>8</maven.compiler.release>
 
         <jogampVersion>2.4.0</jogampVersion>
@@ -315,6 +313,16 @@
         <finalName>${jarName}-${versionNumber}-no-deps</finalName>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
             <!-- This unpacks the jars we depend on into the final jar -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
